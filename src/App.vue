@@ -10,7 +10,11 @@ import HelloWorld from './components/HelloWorld.vue'
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
 
-      <div style="margin-top: 1rem;">
+      <div class="mt-4 p-4 bg-blue-500 text-white rounded-lg shadow-lg">
+        Tailwind 4.0 验证成功！
+      </div>
+
+      <div style="margin-top: 1rem">
         <t-button theme="primary">TDesign 验证按钮</t-button>
       </div>
 
