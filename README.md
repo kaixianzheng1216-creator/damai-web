@@ -1,78 +1,89 @@
-# 大麦网 Web 端项目 (damai-web)
+# Damai Web (大麦网前端)
 
-基于 Vue 3 + TypeScript + Vite + TDesign + Tailwind CSS 4 构建的大麦网前端项目。
+基于 Vue 3 + TypeScript + Vite 构建的企业级前端项目。
 
-## 技术栈
+## 🛠 技术栈
 
-- **前端框架**: [Vue 3.5+](https://vuejs.org/) (Composition API, `<script setup lang="ts">`)
-- **构建工具**: [Vite 7+](https://vitejs.dev/)
-- **编程语言**: [TypeScript 5+](https://www.typescriptlang.org/)
-- **UI 组件库**: [TDesign Vue Next](https://tdesign.tencent.com/vue-next/)
-- **CSS 框架**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **状态管理**: [Pinia 3+](https://pinia.vuejs.org/)
-- **路由管理**: [Vue Router 5](https://router.vuejs.org/)
-- **HTTP 客户端**: [Axios](https://axios-http.com/)
-- **Mock 服务**: [Mock.js](http://mockjs.com/) & [vite-plugin-mock](https://github.com/vbenjs/vite-plugin-mock)
-- **代码规范**: [ESLint](https://eslint.org/), [Oxlint](https://oxc.rs/docs/guide/usage/oxlint.html), [Prettier](https://prettier.io/)
+- **框架**: [Vue 3](https://cn.vuejs.org/) (Composition API + `<script setup>`)
+- **构建工具**: [Vite](https://vitejs.dev/)
+- **开发语言**: [TypeScript](https://www.typescriptlang.org/)
+- **路由管理**: [Vue Router](https://router.vuejs.org/)
+- **状态管理**: [Pinia](https://pinia.vuejs.org/)
+- **UI 组件库**: [TDesign Vue Next](https://tdesign.tencent.com/vue-next/overview)
+- **CSS 框架**: [Tailwind CSS](https://tailwindcss.com/)
+- **数据请求**: [Axios](https://axios-http.com/) + [TanStack Query (Vue Query)](https://tanstack.com/query/latest/docs/framework/vue/overview)
+- **Mock 数据**: [Mock.js](http://mockjs.com/) + `vite-plugin-mock`
+- **工具库**: [VueUse](https://vueuse.org/), [Day.js](https://day.js.org/), [Zod](https://zod.dev/)
+- **代码规范**: ESLint, Oxlint, Prettier, Husky, lint-staged
 
-## 项目结构
+## ✨ 特性
 
-```text
-src/
-├── api/          # Axios 实例及 API 接口定义
-├── assets/       # 静态资源 (图片, 全局样式)
-├── components/   # 通用业务组件
-├── composables/  # 组合式函数 (Reusable Logic)
-├── layouts/      # 布局组件 (如 MainLayout)
-├── router/       # 路由配置 (支持 meta.title)
-├── stores/       # Pinia 状态库
-├── types/        # TypeScript 类型/接口定义
-├── utils/        # 通用工具函数 (formatDate, debounce, etc.)
-└── views/        # 页面视图组件
+- **自动按需引入**: 自动导入 Vue API、组件库以及 Icon 图标，减少手动 `import` 的繁琐操作。
+- **完善的代码规范**: 集成了 ESLint + Oxlint 进行代码检查，Prettier 进行格式化，并配合 Husky + lint-staged 实现提交前的自动校验。
+- **Mock 支持**: 内置 Mock 数据支持，方便前后端并行开发。
+- **TypeScript 支持**: 严格的 TypeScript 类型检查，保证代码健壮性。
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Node.js: `>=20.19.0` 或 `>=22.12.0`
+
+### 安装依赖
+
+```bash
+npm install
 ```
 
-## 开发脚本
+### 运行开发环境
 
-在项目根目录下运行：
-
-### 启动开发服务器
 ```bash
 npm run dev
 ```
 
-### 构建生产环境包
+### 构建生产环境
+
 ```bash
 npm run build
 ```
 
-### 预览构建后的项目
+### 预览生产环境构建结果
+
 ```bash
 npm run preview
 ```
 
-### 代码检查与修复
-```bash
-# 运行 Oxlint 和 ESLint
-npm run lint
+## 📜 常用命令
 
-# 运行 Prettier 格式化
-npm run format
+| 命令                 | 说明                               |
+| -------------------- | ---------------------------------- |
+| `npm run dev`        | 启动本地开发服务器                 |
+| `npm run build`      | 执行类型检查并打包生产环境代码     |
+| `npm run type-check` | 运行 TypeScript 类型检查           |
+| `npm run lint`       | 运行代码规范检查 (Oxlint + ESLint) |
+| `npm run format`     | 运行 Prettier 格式化代码           |
+
+## 📁 目录结构
+
+```text
+├── mock/                  # Mock 数据
+├── public/                # 静态资源 (不经过 Vite 处理)
+├── src/
+│   ├── api/               # API 接口请求
+│   ├── components/        # 公共业务组件
+│   ├── constants/         # 全局常量
+│   ├── layouts/           # 页面布局组件
+│   ├── router/            # Vue Router 路由配置
+│   ├── stores/            # Pinia 状态管理
+│   ├── styles/            # 全局样式文件
+│   ├── types/             # TypeScript 类型定义
+│   ├── utils/             # 工具函数
+│   ├── views/             # 页面视图组件
+│   ├── App.vue            # 根组件
+│   └── main.ts            # 项目入口文件
+├── .env                   # 默认环境变量
+├── .env.production        # 生产环境变量
+├── eslint.config.ts       # ESLint 配置文件
+├── vite.config.ts         # Vite 配置文件
+└── tsconfig.json          # TypeScript 配置文件
 ```
-
-## 环境要求
-
-- **Node.js**: `^20.19.0` 或 `>=22.12.0`
-- **推荐编辑器**: [VS Code](https://code.visualstudio.com/)
-- **推荐扩展**:
-  - [Vue - Official (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
-  - [TypeScript Vue Plugin](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin)
-  - [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
-  - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-  - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-
-## 开发规范
-
-- 使用 `<script setup lang="ts">`。
-- 组件名使用 `PascalCase`，目录名使用 `kebab-case`。
-- 变量名使用 `camelCase`。
-- Tailwind 配置及自定义主题在 `src/assets/main.css` 的 `@theme` 中定义。
