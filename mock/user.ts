@@ -14,7 +14,7 @@ const mocks: MockMethod[] = [
             id: '1',
             username: 'admin',
             nickname: '管理员',
-            avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
+            avatar: 'https://placehold.co/100x100',
             mobile: '13800138000',
             token: 'mock-token-123456',
           },
@@ -38,7 +38,7 @@ const mocks: MockMethod[] = [
           id: '1',
           username: 'admin',
           nickname: '管理员',
-          avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
+          avatar: 'https://placehold.co/100x100',
           mobile: '13800138000',
         },
       }

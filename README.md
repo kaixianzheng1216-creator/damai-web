@@ -9,8 +9,9 @@
 - **开发语言**: [TypeScript](https://www.typescriptlang.org/)
 - **路由管理**: [Vue Router](https://router.vuejs.org/)
 - **状态管理**: [Pinia](https://pinia.vuejs.org/)
-- **UI 组件库**: [TDesign Vue Next](https://tdesign.tencent.com/vue-next/overview)
+- **UI 组件库**: [daisyUI](https://daisyui.com/) (基于 Tailwind CSS 的组件库)
 - **CSS 框架**: [Tailwind CSS](https://tailwindcss.com/)
+- **消息提示**: [Vue3-Toastify](https://vue3-toastify.js-org.netlify.app/)
 - **数据请求**: [Axios](https://axios-http.com/) + [TanStack Query (Vue Query)](https://tanstack.com/query/latest/docs/framework/vue/overview)
 - **Mock 数据**: [Mock.js](http://mockjs.com/) + `vite-plugin-mock`
 - **工具库**: [VueUse](https://vueuse.org/), [Day.js](https://day.js.org/), [Zod](https://zod.dev/)

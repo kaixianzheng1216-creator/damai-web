@@ -7,7 +7,6 @@ import { viteMockServe } from 'vite-plugin-mock'
 import tailwindcss from '@tailwindcss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import { TDesignResolver } from 'unplugin-vue-components/resolvers'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 
@@ -32,16 +31,12 @@ export default defineConfig(({ mode }) => {
           '@vueuse/core',
           { '@tanstack/vue-query': ['useQuery', 'useMutation', 'useQueryClient'] },
         ],
-        resolvers: [TDesignResolver({ library: 'vue-next' })],
         dirs: ['src/stores', 'src/composables', 'src/api'],
         dts: 'src/types/auto-imports.d.ts',
       }),
       Icons({ autoInstall: true }),
       Components({
-        resolvers: [
-          TDesignResolver({ library: 'vue-next' }),
-          IconsResolver({ prefix: 'icon', enabledCollections: ['tdesign'] }),
-        ],
+        resolvers: [IconsResolver({ prefix: 'icon' })],
         dirs: ['src/components'],
         dts: 'src/types/components.d.ts',
       }),

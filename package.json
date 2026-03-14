@@ -31,20 +31,19 @@
     "axios": "^1.13.6",
     "dayjs": "^1.11.20",
     "pinia": "^3.0.4",
-    "tdesign-icons-vue-next": "^0.4.2",
-    "tdesign-vue-next": "^1.18.5",
     "vue": "^3.5.29",
     "vue-router": "^5.0.3",
+    "vue3-toastify": "^0.2.9",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@iconify-json/tdesign": "^1.2.12",
     "@tailwindcss/vite": "^4.2.1",
     "@tsconfig/node24": "^24.0.4",
     "@types/node": "^24.11.0",
-    "@vitejs/plugin-vue": "^6.0.4",
+    "@vitejs/plugin-vue": "^5.2.1",
     "@vue/eslint-config-typescript": "^14.7.0",
     "@vue/tsconfig": "^0.8.1",
+    "daisyui": "^5.5.19",
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.50.0",
@@ -61,12 +60,12 @@
     "unplugin-auto-import": "^20.3.0",
     "unplugin-icons": "^23.0.1",
     "unplugin-vue-components": "^30.0.0",
-    "vite": "^7.3.1",
+    "vite": "^6.0.11",
     "vite-plugin-mock": "^3.0.2",
     "vite-plugin-vue-devtools": "^8.0.6",
     "vue-tsc": "^3.2.5"
   },
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": "^20.0.0 || >=22.0.0"
   }
 }

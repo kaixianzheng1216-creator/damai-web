@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance, type AxiosResponse, type AxiosError } from 'axios'
-import { MessagePlugin } from 'tdesign-vue-next'
+import { toast } from 'vue3-toastify'
 import type { ApiResponse } from '@/types/api'
 import { useUserStore } from '@/stores/user'
 import type { RequestConfig } from './types'
@@ -28,12 +28,12 @@ service.interceptors.response.use(
 
     if (data.code === 200) return (rawResponse ? data : data.data) as unknown as AxiosResponse
 
-    if (showError) MessagePlugin.error(data.message || '操作失败')
+    if (showError) toast.error(data.message || '操作失败')
 
     return Promise.reject(new Error())
   },
   (err: AxiosError<ApiResponse>) => {
-    MessagePlugin.error('网络异常')
+    toast.error('网络异常')
 
     return Promise.reject(err)
   },

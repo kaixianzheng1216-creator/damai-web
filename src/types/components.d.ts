@@ -11,28 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    LoginForm: typeof import('./../components/auth/LoginForm.vue')['default']
-    PageContainer: typeof import('./../components/common/PageContainer.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    TAvatar: typeof import('tdesign-vue-next')['Avatar']
-    TButton: typeof import('tdesign-vue-next')['Button']
-    TCard: typeof import('tdesign-vue-next')['Card']
-    TContent: typeof import('tdesign-vue-next')['Content']
-    TDropdown: typeof import('tdesign-vue-next')['Dropdown']
-    TFooter: typeof import('tdesign-vue-next')['Footer']
-    TForm: typeof import('tdesign-vue-next')['Form']
-    TFormItem: typeof import('tdesign-vue-next')['FormItem']
-    THeader: typeof import('tdesign-vue-next')['Header']
-    TheHeader: typeof import('./../components/layout/TheHeader.vue')['default']
-    TIcon: typeof import('tdesign-vue-next')['Icon']
-    TImage: typeof import('tdesign-vue-next')['Image']
-    TInput: typeof import('tdesign-vue-next')['Input']
-    TLayout: typeof import('tdesign-vue-next')['Layout']
-    TLink: typeof import('tdesign-vue-next')['Link']
-    TResult: typeof import('tdesign-vue-next')['Result']
-    TSwiper: typeof import('tdesign-vue-next')['Swiper']
-    TSwiperItem: typeof import('tdesign-vue-next')['SwiperItem']
-    TTag: typeof import('tdesign-vue-next')['Tag']
   }
 }
