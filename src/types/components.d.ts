@@ -25,9 +25,12 @@ declare module 'vue' {
     TFormItem: typeof import('tdesign-vue-next')['FormItem']
     THeader: typeof import('tdesign-vue-next')['Header']
     TheHeader: typeof import('./../components/layout/TheHeader.vue')['default']
+    TIcon: typeof import('tdesign-vue-next')['Icon']
     TInput: typeof import('tdesign-vue-next')['Input']
     TLayout: typeof import('tdesign-vue-next')['Layout']
     TLink: typeof import('tdesign-vue-next')['Link']
     TResult: typeof import('tdesign-vue-next')['Result']
+    TSwiper: typeof import('tdesign-vue-next')['Swiper']
+    TSwiperItem: typeof import('tdesign-vue-next')['SwiperItem']
   }
 }
