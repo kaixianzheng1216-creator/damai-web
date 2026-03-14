@@ -26,7 +26,7 @@ service.interceptors.response.use(
     const { data, config } = res
     const { rawResponse = false, showError = true } = config as RequestConfig
 
-    if (data.code === 200) return rawResponse ? data : data.data
+    if (data.code === 200) return (rawResponse ? data : data.data) as unknown as AxiosResponse
 
     if (showError) MessagePlugin.error(data.message || '操作失败')
 
