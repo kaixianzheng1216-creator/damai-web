@@ -1,17 +1,10 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-primary: var(--td-brand-color);
-  --color-primary-hover: var(--td-brand-color-hover);
-  --color-primary-active: var(--td-brand-color-active);
 }
 
 @layer base {
-  body {
-    @apply m-0 p-0 bg-(--td-bg-color-page) text-(--td-text-color-primary);
-  }
+}
 
-  #app {
-    @apply min-h-screen flex flex-col;
-  }
+@layer components {
 }
