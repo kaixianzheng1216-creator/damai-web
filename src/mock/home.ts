@@ -1,5 +1,6 @@
-import type { MockMethod } from 'vite-plugin-mock'
-import { Random } from 'mockjs'
+import Mock from 'mockjs'
+
+const { Random } = Mock
 
 const generateEvents = (count: number, category: string) => {
   const events = []
@@ -69,4 +70,4 @@ export default [
       }
     },
   },
-] as MockMethod[]
+] as any[]

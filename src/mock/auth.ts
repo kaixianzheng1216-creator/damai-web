@@ -1,5 +1,6 @@
-import type { MockMethod } from 'vite-plugin-mock'
-import { Random } from 'mockjs'
+import Mock from 'mockjs'
+
+const { Random } = Mock
 
 export default [
   {
@@ -81,4 +82,4 @@ export default [
       }
     },
   },
-] as MockMethod[]
+] as any[]
