@@ -43,6 +43,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.1",
     "@tsconfig/node24": "^24.0.4",
+    "@types/mockjs": "^1.0.10",
     "@types/node": "^24.11.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/eslint-config-typescript": "^14.7.0",

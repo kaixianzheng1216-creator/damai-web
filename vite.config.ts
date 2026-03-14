@@ -13,6 +13,7 @@ import IconsResolver from 'unplugin-icons/resolver'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
+  const isMock = env.VITE_USE_MOCK === 'true'
 
   return {
     plugins: [
@@ -20,8 +21,8 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       vueDevTools(),
       viteMockServe({
-        mockPath: 'mock',
-        enable: true,
+        mockPath: 'src/mock',
+        enable: isMock,
       }),
       AutoImport({
         imports: [
@@ -42,13 +43,15 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     server: {
-      proxy: {
-        [env.VITE_API_BASE_URL]: {
-          target: env.VITE_API_TARGET_URL,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(new RegExp(`^${env.VITE_API_BASE_URL}`), ''),
-        },
-      },
+      proxy: isMock
+        ? {}
+        : {
+            [env.VITE_API_BASE_URL]: {
+              target: env.VITE_API_TARGET_URL,
+              changeOrigin: true,
+              rewrite: (path) => path.replace(new RegExp(`^${env.VITE_API_BASE_URL}`), ''),
+            },
+          },
     },
     resolve: {
       alias: {
