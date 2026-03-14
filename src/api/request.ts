@@ -1,62 +1,51 @@
-import axios from 'axios'
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { type AxiosInstance, type AxiosResponse, type AxiosError } from 'axios'
 import { MessagePlugin } from 'tdesign-vue-next'
 import type { ApiResponse } from '@/types/api'
+import { useUserStore } from '@/stores/user'
+import type { RequestConfig } from './types'
 
-const request: AxiosInstance = axios.create({
+const service: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
 })
 
-request.interceptors.request.use(
+service.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const { token } = useUserStore()
 
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`
 
     return config
   },
-  (error) => {
-    return Promise.reject(error)
+  (error) => Promise.reject(error),
+)
+
+service.interceptors.response.use(
+  (res: AxiosResponse<ApiResponse>) => {
+    const { data, config } = res
+    const { rawResponse = false, showError = true } = config as RequestConfig
+
+    if (data.code === 200) return rawResponse ? data : data.data
+
+    if (showError) MessagePlugin.error(data.message || '操作失败')
+
+    return Promise.reject(new Error())
+  },
+  (err: AxiosError<ApiResponse>) => {
+    MessagePlugin.error('网络异常')
+
+    return Promise.reject(err)
   },
 )
 
-request.interceptors.response.use(
-  (response: AxiosResponse<ApiResponse>) => {
-    const { data } = response
+export const request = {
+  get: <T>(url: string, config?: RequestConfig) => service.get<unknown, T>(url, config),
+  post: <T>(url: string, data?: unknown, config?: RequestConfig) =>
+    service.post<unknown, T>(url, data, config),
+  put: <T>(url: string, data?: unknown, config?: RequestConfig) =>
+    service.put<unknown, T>(url, data, config),
+  del: <T>(url: string, config?: RequestConfig) => service.delete<unknown, T>(url, config),
+}
 
-    if (data.code === 200) {
-      return data.data
-    }
-
-    MessagePlugin.error(data.message || 'Error')
-
-    return Promise.reject(new Error(data.message || 'Error'))
-  },
-  (error) => {
-    const message = error.response?.data?.message || error.message || 'Network Error'
-
-    MessagePlugin.error(message)
-
-    return Promise.reject(error)
-  },
-)
-
-export default request
-
-export const get = <T>(url: string, config?: AxiosRequestConfig): Promise<T> =>
-  request.get(url, config)
-
-export const post = <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
-  request.post(url, data, config)
-
-export const put = <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
-  request.put(url, data, config)
-
-export const del = <T>(url: string, config?: AxiosRequestConfig): Promise<T> =>
-  request.delete(url, config)
+export default service
