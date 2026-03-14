@@ -348,11 +348,11 @@ declare global {
   } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { UserInfo } from '../stores/user'
-  import('../stores/user')
-  // @ts-ignore
   export type { RequestConfig } from '../api/types'
   import('../api/types')
+  // @ts-ignore
+  export type { UserInfo } from '../stores/user'
+  import('../stores/user')
 }
 
 // for vue template auto import
