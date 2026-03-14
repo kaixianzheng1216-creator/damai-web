@@ -6,13 +6,12 @@
   --color-primary-active: var(--td-brand-color-active);
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--td-bg-color-page);
-  color: var(--td-text-color-primary);
-}
+@layer base {
+  body {
+    @apply m-0 p-0 bg-(--td-bg-color-page) text-(--td-text-color-primary);
+  }
 
-#app {
-  height: 100vh;
+  #app {
+    @apply min-h-screen flex flex-col;
+  }
 }

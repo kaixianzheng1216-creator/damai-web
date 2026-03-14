@@ -27,6 +27,7 @@ declare module 'vue' {
     TheHeader: typeof import('./../components/layout/TheHeader.vue')['default']
     TInput: typeof import('tdesign-vue-next')['Input']
     TLayout: typeof import('tdesign-vue-next')['Layout']
+    TLink: typeof import('tdesign-vue-next')['Link']
     TResult: typeof import('tdesign-vue-next')['Result']
   }
 }
