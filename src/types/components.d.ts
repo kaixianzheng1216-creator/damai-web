@@ -11,10 +11,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Button: typeof import('./../components/ui/button/Button.vue')['default']
-    Input: typeof import('./../components/ui/input/Input.vue')['default']
+    Button: typeof import('./../components/common/ui/button/Button.vue')['default']
+    CategoryNav: typeof import('./../components/home/CategoryNav.vue')['default']
+    EventCard: typeof import('./../components/home/EventCard.vue')['default']
+    EventSection: typeof import('./../components/home/EventSection.vue')['default']
+    HomeBanner: typeof import('./../components/home/HomeBanner.vue')['default']
+    Input: typeof import('./../components/common/ui/input/Input.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    TheHeader: typeof import('./../components/layout/TheHeader.vue')['default']
+    TheHeader: typeof import('./../components/common/TheHeader.vue')['default']
   }
 }

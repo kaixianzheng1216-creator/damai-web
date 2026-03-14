@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import MainLayout from '@/layouts/MainLayout.vue'
 import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
@@ -8,18 +6,18 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: MainLayout,
+      component: () => import('@/layouts/MainLayout.vue'),
       children: [
         {
           path: '',
           name: 'home',
-          component: HomeView,
+          component: () => import('@/views/home/HomeView.vue'),
           meta: { title: '首页' },
         },
         {
           path: 'profile',
           name: 'profile',
-          component: () => import('@/views/HomeView.vue'),
+          component: () => import('@/views/home/HomeView.vue'),
           meta: { title: '个人中心', requiresAuth: true },
         },
       ],
@@ -27,13 +25,13 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/LoginView.vue'),
+      component: () => import('@/views/auth/LoginView.vue'),
       meta: { title: '登录' },
     },
     {
       path: '/register',
       name: 'register',
-      component: () => import('@/views/RegisterView.vue'),
+      component: () => import('@/views/auth/RegisterView.vue'),
       meta: { title: '注册' },
     },
     {
