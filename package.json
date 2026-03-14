@@ -12,17 +12,33 @@
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
-    "format": "prettier --write --experimental-cli src/"
+    "format": "prettier --write --experimental-cli src/",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts,vue}": [
+      "oxlint --fix",
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,scss,html,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
+    "@tanstack/vue-query": "^5.92.9",
+    "@vueuse/core": "^14.2.1",
     "axios": "^1.13.6",
+    "dayjs": "^1.11.20",
     "pinia": "^3.0.4",
     "tdesign-icons-vue-next": "^0.4.2",
     "tdesign-vue-next": "^1.18.5",
     "vue": "^3.5.29",
-    "vue-router": "^5.0.3"
+    "vue-router": "^5.0.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@iconify-json/tdesign": "^1.2.12",
     "@tailwindcss/vite": "^4.2.1",
     "@tsconfig/node24": "^24.0.4",
     "@types/node": "^24.11.0",
@@ -33,13 +49,18 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.50.0",
     "eslint-plugin-vue": "~10.8.0",
+    "husky": "^9.1.7",
     "jiti": "^2.6.1",
+    "lint-staged": "^16.3.3",
     "mockjs": "^1.1.0",
     "npm-run-all2": "^8.0.4",
     "oxlint": "~1.50.0",
     "prettier": "3.8.1",
     "tailwindcss": "^4.2.1",
     "typescript": "~5.9.3",
+    "unplugin-auto-import": "^20.3.0",
+    "unplugin-icons": "^23.0.1",
+    "unplugin-vue-components": "^30.0.0",
     "vite": "^7.3.1",
     "vite-plugin-mock": "^3.0.2",
     "vite-plugin-vue-devtools": "^8.0.6",
