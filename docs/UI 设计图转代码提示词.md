@@ -3,7 +3,11 @@
 ### 核心约束条件：
 
 1. **仅提取结构与布局**：请重点分析图片中的页面骨架、组件层级、排版布局（如左右分布、上下结构）以及元素间的空间关系。
-2. **完全忽略颜色与特殊视觉样式**：**绝对不要**从图片中提取任何具体的颜色值（Hex/RGB）、阴影或特殊字体样式进行硬编码。请统一使用项目默认的 `Tailwind CSS` 语义化类名（如 `text-foreground`, `text-muted-foreground`, `bg-background` 等）或 `shadcn-vue` 的预设样式。
+2. **设计风格与配色 (白底黑橙)**：
+   - **背景**：统一使用白色背景 (`bg-background` / `bg-white`)。
+   - **文字**：主要文字使用黑色 (`text-foreground`)，次要文字使用灰色 (`text-muted-foreground`)。
+   - **点缀色**：使用**品牌橙色** (`text-primary` / `bg-primary`) 作为核心点缀，用于按钮、高亮文字、图标激活态等。
+   - **禁止**：严禁使用深色模式或非品牌色的其他高饱和度颜色。
 3. **UI 组件库映射 (shadcn-vue)**：
    - 识别图片中的交互元素（按钮、输入框、表格、标签等），优先使用 `shadcn-vue` 提供的基础组件。
    - 如果图片中存在项目中尚未安装的 `shadcn-vue` 组件，请在代码注释中注明需要通过 `npx shadcn-vue@latest add [component-name]` 安装。
