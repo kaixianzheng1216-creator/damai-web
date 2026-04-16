@@ -90,11 +90,13 @@ const selectedMethodStr = computed({
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.ticketTier }}</p>
-                <p class="font-medium text-foreground">{{ order.ticketTypeNameSnapshot }} x {{ order.quantity }}</p>
+                <p class="font-medium text-foreground">
+                  {{ order.ticketTypeNameSnapshot }} x {{ order.quantity }}
+                </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">单价</p>
-                <p class="font-medium text-foreground">{{ formatPrice(order.unitPrice) }}</p>
+                <p class="font-medium text-foreground">{{ formatPrice(order.unitPrice ?? 0) }}</p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.orderNo }}</p>
@@ -106,7 +108,9 @@ const selectedMethodStr = computed({
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">时间</p>
-                <p class="font-medium text-foreground">{{ formatDateTime(order.sessionStartAtSnapshot) }}</p>
+                <p class="font-medium text-foreground">
+                  {{ formatDateTime(order.sessionStartAtSnapshot ?? '') }}
+                </p>
               </div>
               <div v-if="isPaid && order.payTime">
                 <p class="text-sm text-muted-foreground">支付时间</p>
@@ -123,14 +127,14 @@ const selectedMethodStr = computed({
         <div class="mt-8 rounded-xl bg-muted/30 p-5">
           <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.amount }}</p>
           <p class="mt-2 text-3xl font-bold text-primary">
-            {{ formatPrice(order.totalAmount) }}
+            {{ formatPrice(order.totalAmount ?? 0) }}
           </p>
           <p v-if="isPending" class="mt-2 text-xs text-muted-foreground">
             {{ PAYMENT_COPY.pendingDescPrefix }} {{ remainText }}
             {{ PAYMENT_COPY.pendingDescSuffix }}
           </p>
           <p v-else-if="isPaid" class="mt-2 text-xs text-emerald-700">
-            {{ PAYMENT_COPY.paidAt }}{{ formatDateTime(order.payTime) }}
+            {{ PAYMENT_COPY.paidAt }}{{ formatDateTime(order.payTime ?? '') }}
           </p>
           <p v-else-if="isCancelled || isClosed" class="mt-2 text-xs text-muted-foreground">
             {{ PAYMENT_COPY.closedDesc }}
@@ -158,10 +162,7 @@ const selectedMethodStr = computed({
             @click="isPending && !channel.disabled && (selectedChannel = channel.value)"
           >
             <IconAlipay v-if="channel.value === PAYMENT_CHANNELS.ALIPAY" class="h-8 w-8" />
-            <IconWechatPay
-              v-else-if="channel.value === PAYMENT_CHANNELS.WECHAT"
-              class="h-8 w-8"
-            />
+            <IconWechatPay v-else-if="channel.value === PAYMENT_CHANNELS.WECHAT" class="h-8 w-8" />
             <icon-lucide-credit-card v-else class="h-8 w-8" />
             <span class="text-sm font-medium text-foreground">{{ channel.label }}</span>
             <span v-if="channel.disabled" class="text-xs text-muted-foreground">暂未开放</span>
@@ -171,16 +172,16 @@ const selectedMethodStr = computed({
         <h3 class="mt-6 text-base font-semibold text-foreground">
           {{ PAYMENT_COPY.selectPaymentMethod }}
         </h3>
-        <RadioGroup
-          v-model="selectedMethodStr"
-          class="mt-3 space-y-2"
-          :disabled="!isPending"
-        >
+        <RadioGroup v-model="selectedMethodStr" class="mt-3 space-y-2" :disabled="!isPending">
           <div
             v-for="method in PAYMENT_METHOD_OPTIONS"
             :key="method.value"
             class="flex items-center gap-3 rounded-lg border border-border p-3 transition-colors"
-            :class="[!isPending || method.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-muted/30 cursor-pointer']"
+            :class="[
+              !isPending || method.disabled
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:bg-muted/30 cursor-pointer',
+            ]"
           >
             <RadioGroupItem
               :id="`method-${method.value}`"
@@ -190,7 +191,10 @@ const selectedMethodStr = computed({
             <Label
               :for="`method-${method.value}`"
               class="text-sm font-normal"
-              :class="{ 'cursor-pointer': isPending && !method.disabled, 'cursor-not-allowed': !isPending || method.disabled }"
+              :class="{
+                'cursor-pointer': isPending && !method.disabled,
+                'cursor-not-allowed': !isPending || method.disabled,
+              }"
             >
               {{ method.label }}
             </Label>
@@ -226,18 +230,11 @@ const selectedMethodStr = computed({
             />
             取消订单
           </Button>
-          <Button
-            v-else
-            variant="outline"
-            class="w-full"
-            disabled
-          >
+          <Button v-else variant="outline" class="w-full" disabled>
             <icon-lucide-check-circle class="mr-2 h-4 w-4" />
             {{ isPaid ? '已支付' : isCancelled ? '已取消' : isClosed ? '已关闭' : '已退款' }}
           </Button>
-          <Button variant="outline" class="w-full" @click="goOrders">
-            返回订单列表
-          </Button>
+          <Button variant="outline" class="w-full" @click="goOrders"> 返回订单列表 </Button>
         </div>
       </aside>
 

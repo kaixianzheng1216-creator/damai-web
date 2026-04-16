@@ -44,4 +44,12 @@ export const request = {
   del: <T = any>(url: string, config?: any): Promise<T> => service.delete(url, config),
 }
 
+export const uploadFormData = <T = any>(url: string, file: File): Promise<T> => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return service.post(url, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+}
+
 export default service

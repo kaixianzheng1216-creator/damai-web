@@ -29,12 +29,6 @@ const router = createRouter({
       meta: { title: '登录' },
     },
     {
-      path: '/register',
-      name: 'register',
-      component: () => import('@/views/auth/RegisterView.vue'),
-      meta: { title: '注册' },
-    },
-    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('@/views/error/NotFound.vue'),

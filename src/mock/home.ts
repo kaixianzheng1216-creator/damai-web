@@ -1,3 +1,4 @@
+// @ts-expect-error mockjs has no type declarations
 import Mock from 'mockjs'
 
 const { Random } = Mock

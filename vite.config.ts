@@ -4,7 +4,6 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
-import { viteMockServe } from 'vite-plugin-mock'
 
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
@@ -43,10 +42,6 @@ export default defineConfig(({ mode }) => {
         dts: 'src/types/components.d.ts',
       }),
       Icons({ autoInstall: true }),
-      viteMockServe({
-        mockPath: 'src/mock',
-        enable: isMock,
-      }),
     ],
     server: {
       proxy: isMock

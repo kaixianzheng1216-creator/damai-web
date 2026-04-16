@@ -4,7 +4,7 @@ import { fetchMyOrderPage } from '@/api/trade'
 import { ORDER_PAGE_SIZE, ORDER_STATUS_BY_FILTER, type OrderFilterKey } from '@/constants'
 import { formatPrice, formatDateTime } from '@/utils/format'
 import { mapOrderStatus } from '@/utils/statusMappers'
-import type { OrderItem } from '@/api/account'
+import type { OrderItem, OrderStatus } from '@/api/account'
 import type { TicketOrderVO } from '@/api/trade'
 
 type OrderFilter = OrderFilterKey
@@ -16,7 +16,7 @@ const mapTicketOrderToOrderItem = (order: TicketOrderVO): OrderItem => ({
   datetime: order.sessionStartAtSnapshot ? formatDateTime(order.sessionStartAtSnapshot) : '-',
   amount: order.totalAmount !== undefined ? formatPrice(order.totalAmount) : '-',
   status: order.status,
-  statusLabel: order.statusLabel || mapOrderStatus(order.status),
+  statusLabel: (order.statusLabel || mapOrderStatus(order.status)) as OrderStatus,
 })
 
 export const useOrderList = () => {
@@ -50,10 +50,11 @@ export const useOrderList = () => {
     if (!keyword) {
       return orderList.value
     }
-    return orderList.value.filter((item) =>
-      item.title.includes(keyword) ||
-      item.id.includes(keyword) ||
-      (item.orderNo && item.orderNo.includes(keyword))
+    return orderList.value.filter(
+      (item) =>
+        item.title.includes(keyword) ||
+        item.id.includes(keyword) ||
+        (item.orderNo && item.orderNo.includes(keyword)),
     )
   })
 
