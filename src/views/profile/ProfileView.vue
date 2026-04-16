@@ -1,0 +1,191 @@
+<script setup lang="ts">
+import ProfilePassengerDialog from '@/components/features/profile/ProfilePassengerDialog.vue'
+import ProfilePassengersSection from '@/components/features/profile/ProfilePassengersSection.vue'
+import ProfileConfirmDialog from '@/components/features/profile/ProfileConfirmDialog.vue'
+import ProfileInfoSection from '@/components/features/profile/ProfileInfoSection.vue'
+import ProfileOrdersSection from '@/components/features/profile/ProfileOrdersSection.vue'
+import ProfileTicketsSection from '@/components/features/profile/ProfileTicketsSection.vue'
+
+import ProfileSidebar from '@/components/features/profile/ProfileSidebar.vue'
+import ProfileMobileBottomNav from '@/components/features/profile/ProfileMobileBottomNav.vue'
+import { PROFILE_DIALOG_COPY } from '@/constants'
+import { useProfilePage } from '@/composables/profile/useProfilePage'
+
+const {
+  activeSection,
+  infoForm,
+  passengerList,
+  passengerPage,
+  passengerPageSize,
+  passengerTotalPages,
+  passengerTotalRow,
+  passengerKeyword,
+  showPassengerModal,
+  showDeletePassengerModal,
+  editingPassengerId,
+  passengerError,
+  passengerForm,
+  orderFilter,
+  orderKeyword,
+  orderPage,
+  orderPageSize,
+  orderTotalRow,
+  ticketPage,
+  ticketPageSize,
+  ticketTotalRow,
+  years,
+  months,
+  days,
+  tradeSections,
+  accountSections,
+  currentTitle,
+  displayAvatar,
+  userInfoQuery,
+  passengerListQuery,
+  myOrderPageQuery,
+  myTicketPageQuery,
+  paginatedOrders,
+  paginatedTickets,
+  orderTotalPages,
+  ticketTotalPages,
+  updateOrderPage,
+  updateOrderPageSize,
+  updateTicketPage,
+  updateTicketPageSize,
+  updatePassengerPage,
+  updatePassengerPageSize,
+  updatePassengerKeyword,
+  openSection,
+  saveInfo,
+  openCreatePassengerModal,
+  openEditPassengerModal,
+  closePassengerModal,
+  submitPassenger,
+  openDeletePassengerModal,
+  closeDeletePassengerModal,
+  confirmDeletePassenger,
+  updateAvatar,
+} = useProfilePage()
+
+const allSections = computed(() => [...tradeSections.value, ...accountSections.value])
+
+const profileCenterQuery = computed(() => ({
+  isLoading:
+    userInfoQuery.isLoading.value ||
+    passengerListQuery.isLoading.value ||
+    myOrderPageQuery.isLoading.value ||
+    myTicketPageQuery.isLoading.value,
+}))
+</script>
+
+<template>
+  <div class="bg-background py-4 md:py-6">
+    <div class="container mx-auto px-4 md:px-6">
+      <div class="grid items-start gap-4 lg:gap-6 lg:grid-cols-[240px_1fr]">
+        <ProfileSidebar
+          class="hidden lg:block"
+          :active-section="activeSection"
+          :trade-sections="tradeSections"
+          :account-sections="accountSections"
+          @open-section="openSection"
+        />
+
+        <div class="space-y-4">
+          <ProfileMobileBottomNav
+            :active-section="activeSection"
+            :all-sections="allSections"
+            @open-section="openSection"
+          />
+
+          <section class="rounded-2xl border border-border bg-background p-4 md:p-5 lg:p-6 shadow-sm">
+          <div
+            v-if="profileCenterQuery.isLoading"
+            class="flex min-h-[320px] items-center justify-center"
+          >
+            <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
+          </div>
+
+          <template v-else>
+            <div
+              class="mb-4 md:mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4"
+            >
+              <h1 class="text-lg md:text-xl font-semibold text-foreground">{{ currentTitle }}</h1>
+            </div>
+
+            <ProfileInfoSection
+              v-if="activeSection === 'info'"
+              v-model:form="infoForm"
+              :display-avatar="displayAvatar"
+              :years="years"
+              :months="months"
+              :days="days"
+              @save="saveInfo"
+              @avatar-selected="updateAvatar"
+            />
+
+            <ProfilePassengersSection
+              v-else-if="activeSection === 'passengers'"
+              :passengers="passengerList"
+              :passenger-page="passengerPage"
+              :passenger-page-size="passengerPageSize"
+              :passenger-total-pages="passengerTotalPages"
+              :passenger-total-row="passengerTotalRow"
+              :passenger-keyword="passengerKeyword"
+              @create="openCreatePassengerModal"
+              @edit="openEditPassengerModal"
+              @delete="openDeletePassengerModal"
+              @update:passenger-page="updatePassengerPage"
+              @update:passenger-page-size="updatePassengerPageSize"
+              @update:passenger-keyword="updatePassengerKeyword"
+            />
+
+            <ProfileOrdersSection
+              v-else-if="activeSection === 'orders'"
+              :order-filter="orderFilter"
+              :order-keyword="orderKeyword"
+              :paginated-orders="paginatedOrders"
+              :order-page="orderPage"
+              :order-page-size="orderPageSize"
+              :order-total-pages="orderTotalPages"
+              :order-total-row="orderTotalRow"
+              @update:order-filter="orderFilter = $event"
+              @update:order-keyword="orderKeyword = $event"
+              @update:order-page="updateOrderPage"
+              @update:order-page-size="updateOrderPageSize"
+            />
+
+            <ProfileTicketsSection
+              v-else-if="activeSection === 'tickets'"
+              :paginated-tickets="paginatedTickets"
+              :ticket-page="ticketPage"
+              :ticket-page-size="ticketPageSize"
+              :ticket-total-pages="ticketTotalPages"
+              :ticket-total-row="ticketTotalRow"
+              @update:ticket-page="updateTicketPage"
+              @update:ticket-page-size="updateTicketPageSize"
+            />
+          </template>
+        </section>
+        </div>
+      </div>
+    </div>
+
+    <ProfilePassengerDialog
+      v-model:form="passengerForm"
+      :open="showPassengerModal"
+      :editing-passenger-id="editingPassengerId"
+      :passenger-error="passengerError"
+      @close="closePassengerModal"
+      @submit="submitPassenger"
+    />
+
+    <ProfileConfirmDialog
+      :open="showDeletePassengerModal"
+      :title="PROFILE_DIALOG_COPY.deletePassengerTitle"
+      :description="PROFILE_DIALOG_COPY.deletePassengerDescription"
+      :confirm-text="PROFILE_DIALOG_COPY.deletePassengerConfirmText"
+      @close="closeDeletePassengerModal"
+      @confirm="confirmDeletePassenger"
+    />
+  </div>
+</template>

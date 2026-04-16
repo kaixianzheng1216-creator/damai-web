@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npx vue-tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(xargs wc:*)",
+      "Bash(grep -E \"\\\\.\\(vue|ts|js\\)$\")",
+      "Bash(xargs grep:*)",
+      "Bash(npx vite:*)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(curl -s http://localhost:5173/api/event/front/categories)",
+      "Bash(curl -s http://localhost:5173/api/event/front/banners)",
+      "Bash(npx shadcn-vue@latest add popover --yes)",
+      "Bash(npx eslint *)",
+      "Bash(npx shadcn-vue@latest *)",
+      "Bash(npx oxlint *)"
+    ]
+  }
+}

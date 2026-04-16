@@ -1,0 +1,5 @@
+export const HOME_CONFIG = {
+  CATEGORY_LIMIT: 10,
+  TOP_CATEGORY_LIMIT: 4,
+  EVENT_PAGE_SIZE: 6,
+} as const

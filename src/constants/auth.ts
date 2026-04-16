@@ -1,0 +1,18 @@
+export const AUTH_COPY = {
+  mobileRequired: '请输入 11 位手机号',
+  codeRequired: '请输入 6 位验证码',
+  mobileFormatError: '手机号格式不正确',
+  validationFailed: '校验失败',
+  sendCodeFailed: '验证码发送失败，请稍后重试',
+  loginFailed: '登录失败，请稍后重试',
+  sendCode: '获取验证码',
+  resendCodeSuffix: '后重试',
+  loginTitle: '手机号登录',
+  loginDesc: '首次登录即为注册',
+  mobileLabel: '手机号',
+  mobilePlaceholder: '请输入手机号',
+  codeLabel: '验证码',
+  codePlaceholder: '请输入 6 位验证码',
+  loginButton: '登录',
+  loginTestHint: import.meta.env.DEV ? '测试账号：13800000000，测试验证码：123456' : '',
+}

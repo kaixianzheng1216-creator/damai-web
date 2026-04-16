@@ -1,0 +1,90 @@
+export type OrderFilterKey = 'all' | 'pending' | 'paid' | 'done' | 'cancel'
+
+export interface OrderFilterOption {
+  key: OrderFilterKey
+  label: string
+}
+
+export const ORDER_STATUS = {
+  PENDING: 0,
+  PAID: 1,
+  CANCELLED: 2,
+  CLOSED: 3,
+  REFUNDED: 4,
+} as const
+
+export const TICKET_STATUS = {
+  UNUSED: 0,
+  USED: 1,
+  VOIDED: 2,
+  REFUNDED: 3,
+} as const
+
+export const ORDER_PAGE_SIZE = 10
+
+export const ORDER_FILTER_OPTIONS: OrderFilterOption[] = [
+  { key: 'all', label: '全部' },
+  { key: 'pending', label: '待付款' },
+  { key: 'paid', label: '已支付' },
+  { key: 'done', label: '已完成' },
+  { key: 'cancel', label: '已取消' },
+]
+
+export const ORDER_STATUS_BY_FILTER: Partial<Record<Exclude<OrderFilterKey, 'all'>, number>> = {
+  pending: ORDER_STATUS.PENDING,
+  paid: ORDER_STATUS.PAID,
+  done: ORDER_STATUS.REFUNDED,
+  cancel: ORDER_STATUS.CANCELLED,
+}
+
+export const PAYMENT_CHANNELS = {
+  ALIPAY: 1,
+  WECHAT: 2,
+} as const
+
+export const PAYMENT_METHODS = {
+  QR_CODE: 1,
+} as const
+
+export interface PaymentChannelOption {
+  value: number
+  label: string
+  disabled?: boolean
+}
+
+export interface PaymentMethodOption {
+  value: number
+  label: string
+  disabled?: boolean
+}
+
+export const PAYMENT_CHANNEL_OPTIONS: PaymentChannelOption[] = [
+  { value: PAYMENT_CHANNELS.ALIPAY, label: '支付宝' },
+  { value: PAYMENT_CHANNELS.WECHAT, label: '微信支付', disabled: true },
+]
+
+export const PAYMENT_METHOD_OPTIONS: PaymentMethodOption[] = [
+  { value: PAYMENT_METHODS.QR_CODE, label: '扫码支付' },
+]
+
+export const PAYMENT_COPY = {
+  loadFailed: '订单加载失败，请稍后重试',
+  backHome: '返回首页',
+  confirmPay: '确认支付',
+  venue: '场馆',
+  ticketTier: '票档',
+  orderNo: '订单号',
+  amount: '支付金额',
+  pendingDescPrefix: '请在',
+  pendingDescSuffix: '内完成支付，超时订单将自动关闭。',
+  paidAt: '支付完成时间：',
+  closedDesc: '订单已关闭，请返回详情页重新下单。',
+  selectPaymentChannel: '选择支付渠道',
+  selectPaymentMethod: '选择支付方式',
+  qrCodeAlt: '支付二维码',
+  tradeNo: '交易号：',
+  payNow: '立即支付',
+  refreshStatus: '刷新支付状态',
+  backDetail: '返回详情',
+  viewOrders: '查看订单',
+} as const

@@ -1,0 +1,54 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { IconCalendar, IconUsers, IconMapPin, IconTags, IconBuilding, IconPhoto, IconUserCircle, IconStack, IconFileText, IconShieldCheck } from '@tabler/icons-vue'
+
+const router = useRouter()
+const userStore = useUserStore()
+
+const adminName = computed(() => userStore.adminInfo?.username ?? '管理员')
+
+const quickActionItems = [
+  { key: 'banners', label: 'Banner 管理', icon: IconPhoto, path: '/admin/banners' },
+  { key: 'events', label: '活动管理', icon: IconCalendar, path: '/admin/events' },
+  { key: 'series', label: '系列管理', icon: IconStack, path: '/admin/series' },
+  { key: 'cities', label: '城市管理', icon: IconMapPin, path: '/admin/cities' },
+  { key: 'categories', label: '分类管理', icon: IconTags, path: '/admin/categories' },
+  { key: 'venues', label: '场馆管理', icon: IconBuilding, path: '/admin/venues' },
+  { key: 'participants', label: '参与方管理', icon: IconUserCircle, path: '/admin/participants' },
+  { key: 'notices', label: '须知模板', icon: IconFileText, path: '/admin/notices' },
+  { key: 'services', label: '服务保障', icon: IconShieldCheck, path: '/admin/services' },
+  { key: 'admins', label: '管理员管理', icon: IconUsers, path: '/admin/admins' },
+]
+
+const navigate = (path: string) => router.push(path)
+</script>
+
+<template>
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold text-foreground">欢迎回来，{{ adminName }} 👋</h1>
+      <p class="text-muted-foreground mt-1 text-sm">这是大麦票务管理后台，请选择要管理的模块。</p>
+    </div>
+
+    <div class="mt-6">
+      <h2 class="text-lg font-semibold text-foreground mb-4">快捷操作</h2>
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <button
+          v-for="item in quickActionItems"
+          :key="item.key"
+          class="group flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-card p-6 text-center shadow-sm transition-all hover:border-primary hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          @click="navigate(item.path)"
+        >
+          <div
+            class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white"
+          >
+            <component :is="item.icon" class="h-6 w-6" />
+          </div>
+          <span class="text-sm font-medium text-foreground">{{ item.label }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
