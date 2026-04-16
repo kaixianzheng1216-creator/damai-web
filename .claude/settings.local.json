@@ -17,7 +17,8 @@
       "Bash(npx shadcn-vue@latest add popover --yes)",
       "Bash(npx eslint *)",
       "Bash(npx shadcn-vue@latest *)",
-      "Bash(npx oxlint *)"
+      "Bash(npx oxlint *)",
+      "Bash(npx lint-staged *)"
     ]
   }
 }
