@@ -1,0 +1,934 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://192.168.10.1:18084",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/payment/callback/alipay": {
+      "post": {
+        "tags": [
+          "支付回调接口"
+        ],
+        "summary": "支付宝支付回调",
+        "operationId": "alipayNotify",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/ticket-orders": {
+      "post": {
+        "tags": [
+          "订单前台接口"
+        ],
+        "summary": "创建订单",
+        "operationId": "createTicketOrder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketOrderCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOrderStatusVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/ticket-orders/{id}/refund": {
+      "post": {
+        "tags": [
+          "订单前台接口"
+        ],
+        "summary": "发起退款",
+        "operationId": "createRefund",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseRefundVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/ticket-orders/{id}/pay": {
+      "post": {
+        "tags": [
+          "订单前台接口"
+        ],
+        "summary": "发起支付",
+        "operationId": "createPayment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePaymentVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/ticket-orders/{id}/cancel": {
+      "post": {
+        "tags": [
+          "订单前台接口"
+        ],
+        "summary": "取消订单",
+        "operationId": "cancelTicketOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/ticket-orders/{id}": {
+      "get": {
+        "tags": [
+          "订单内部接口"
+        ],
+        "summary": "获取订单详情",
+        "operationId": "getTicketOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTicketOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/ticket-orders/{id}": {
+      "get": {
+        "tags": [
+          "订单前台接口"
+        ],
+        "summary": "获得订单详情",
+        "operationId": "getTicketOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTicketOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/ticket-orders/{id}/status": {
+      "get": {
+        "tags": [
+          "订单前台接口"
+        ],
+        "summary": "查询订单状态（轮询接口）",
+        "operationId": "getOrderStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOrderStatusVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/ticket-orders/my": {
+      "get": {
+        "tags": [
+          "订单前台接口"
+        ],
+        "summary": "获取我的订单分页列表",
+        "operationId": "getMyTicketOrderPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TicketOrderPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseTicketOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/ticket-orders": {
+      "get": {
+        "tags": [
+          "订单管理接口"
+        ],
+        "summary": "获取订单分页列表",
+        "operationId": "getTicketOrderPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TicketOrderPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseTicketOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/ticket-orders/{id}": {
+      "get": {
+        "tags": [
+          "订单管理接口"
+        ],
+        "summary": "获取订单详情",
+        "operationId": "getTicketOrderById_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTicketOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TicketOrderCreateRequest": {
+        "type": "object",
+        "description": "创建订单请求",
+        "properties": {
+          "eventId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          },
+          "venueId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场馆 ID"
+          },
+          "sessionId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场次 ID"
+          },
+          "ticketTypeId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "票种 ID"
+          },
+          "passengerIds": {
+            "type": "array",
+            "description": "购票人 ID 列表",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "eventId",
+          "passengerIds",
+          "sessionId",
+          "ticketTypeId",
+          "venueId"
+        ]
+      },
+      "ApiResponseOrderStatusVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/OrderStatusVO"
+          }
+        }
+      },
+      "OrderStatusVO": {
+        "type": "object",
+        "description": "订单状态 VO",
+        "properties": {
+          "orderId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "订单 ID"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "订单状态：0 待支付，1 已支付，2 已取消，3 已关闭"
+          }
+        }
+      },
+      "RefundCreateRequest": {
+        "type": "object",
+        "description": "创建退款请求",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "退款原因",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "ApiResponseRefundVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/RefundVO"
+          }
+        }
+      },
+      "RefundVO": {
+        "type": "object",
+        "description": "退款 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "退款 ID"
+          },
+          "refundNo": {
+            "type": "string",
+            "description": "退款单号"
+          },
+          "paymentId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "支付 ID"
+          },
+          "orderId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "订单 ID"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户 ID"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "退款金额（分）"
+          },
+          "reason": {
+            "type": "string",
+            "description": "退款原因"
+          },
+          "channel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "支付渠道：1 支付宝，2 微信支付"
+          },
+          "channelLabel": {
+            "type": "string",
+            "description": "支付渠道 Label"
+          },
+          "outRefundNo": {
+            "type": "string",
+            "description": "商户退款号"
+          },
+          "channelRefundNo": {
+            "type": "string",
+            "description": "渠道退款号"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "退款状态：0 待处理，1 处理中，2 退款成功，3 退款失败"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "退款状态 Label"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          }
+        }
+      },
+      "PaymentCreateRequest": {
+        "type": "object",
+        "description": "创建支付请求",
+        "properties": {
+          "channel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "支付渠道：1 支付宝，2 微信支付"
+          },
+          "payMethod": {
+            "type": "integer",
+            "format": "int32",
+            "description": "支付方式：1 扫码支付"
+          }
+        },
+        "required": [
+          "channel",
+          "payMethod"
+        ]
+      },
+      "ApiResponsePaymentVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PaymentVO"
+          }
+        }
+      },
+      "PaymentVO": {
+        "type": "object",
+        "description": "支付 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "支付 ID"
+          },
+          "paymentNo": {
+            "type": "string",
+            "description": "支付单号"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户 ID"
+          },
+          "orderId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "订单 ID"
+          },
+          "orderNo": {
+            "type": "string",
+            "description": "订单号"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "支付金额（分）"
+          },
+          "subject": {
+            "type": "string",
+            "description": "支付标题"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "支付状态：0 待支付，1 支付成功，2 支付失败"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "支付状态 Label"
+          },
+          "channel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "支付渠道：1 支付宝，2 微信支付"
+          },
+          "channelLabel": {
+            "type": "string",
+            "description": "支付渠道 Label"
+          },
+          "payMethod": {
+            "type": "integer",
+            "format": "int32",
+            "description": "支付方式：1 二维码支付"
+          },
+          "payMethodLabel": {
+            "type": "string",
+            "description": "支付方式 Label"
+          },
+          "outTradeNo": {
+            "type": "string",
+            "description": "商户交易号"
+          },
+          "channelTradeNo": {
+            "type": "string",
+            "description": "渠道交易号"
+          },
+          "qrCodeUrl": {
+            "type": "string",
+            "description": "二维码 URL"
+          },
+          "qrCodeBase64": {
+            "type": "string",
+            "description": "二维码图片 Base64"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          }
+        }
+      },
+      "ApiResponseVoid": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {}
+        }
+      },
+      "ApiResponseTicketOrderVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TicketOrderVO"
+          }
+        }
+      },
+      "TicketOrderVO": {
+        "type": "object",
+        "description": "订单 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "订单 ID"
+          },
+          "orderNo": {
+            "type": "string",
+            "description": "订单号"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户 ID"
+          },
+          "unitPrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "票种单价（分）"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "description": "数量"
+          },
+          "totalAmount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "总金额（分）"
+          },
+          "eventId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          },
+          "eventNameSnapshot": {
+            "type": "string",
+            "description": "活动名称快照"
+          },
+          "eventCoverUrlSnapshot": {
+            "type": "string",
+            "description": "活动封面快照"
+          },
+          "venueId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场馆 ID"
+          },
+          "venueNameSnapshot": {
+            "type": "string",
+            "description": "场馆名称快照"
+          },
+          "venueAddressSnapshot": {
+            "type": "string",
+            "description": "场馆地址快照"
+          },
+          "sessionId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场次 ID"
+          },
+          "sessionNameSnapshot": {
+            "type": "string",
+            "description": "场次名称快照"
+          },
+          "sessionStartAtSnapshot": {
+            "type": "string",
+            "format": "date-time",
+            "description": "场次开始时间快照"
+          },
+          "ticketTypeId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "票种 ID"
+          },
+          "ticketTypeNameSnapshot": {
+            "type": "string",
+            "description": "票种名称快照"
+          },
+          "passengerIds": {
+            "type": "array",
+            "description": "购票人 ID 列表",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "订单状态：0 待支付，1 已支付，2 已取消，3 已关闭，4 已退款"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "订单状态 Label"
+          },
+          "payTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "支付时间"
+          },
+          "cancelTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "取消时间"
+          },
+          "closeTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "关闭时间"
+          },
+          "refundTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "退款时间"
+          },
+          "expireAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "过期时间"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "payments": {
+            "type": "array",
+            "description": "支付记录列表",
+            "items": {
+              "$ref": "#/components/schemas/PaymentVO"
+            }
+          },
+          "refunds": {
+            "type": "array",
+            "description": "退款记录列表",
+            "items": {
+              "$ref": "#/components/schemas/RefundVO"
+            }
+          }
+        }
+      },
+      "TicketOrderPageRequest": {
+        "type": "object",
+        "description": "订单分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户 ID"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "订单状态"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseTicketOrderVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseTicketOrderVO"
+          }
+        }
+      },
+      "PageResponseTicketOrderVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/TicketOrderVO"
+            }
+          }
+        }
+      }
+    }
+  }
+}

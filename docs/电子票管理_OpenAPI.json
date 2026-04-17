@@ -1,0 +1,424 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://192.168.10.1:18085",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/inner/ticket/refund/{orderId}": {
+      "post": {
+        "tags": [
+          "电子票内部接口"
+        ],
+        "summary": "退票",
+        "operationId": "refundTickets",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/ticket/generate/{orderId}": {
+      "post": {
+        "tags": [
+          "电子票内部接口"
+        ],
+        "summary": "生成电子票",
+        "operationId": "generateTickets",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/tickets/checkin/{qrCodeToken}": {
+      "post": {
+        "tags": [
+          "电子票管理接口"
+        ],
+        "summary": "检票",
+        "operationId": "verifyAndCheckIn",
+        "parameters": [
+          {
+            "name": "qrCodeToken",
+            "in": "path",
+            "description": "二维码 Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/tickets/{id}": {
+      "get": {
+        "tags": [
+          "电子票前台接口"
+        ],
+        "summary": "查看电子票详情",
+        "operationId": "getTicketDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "电子票 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTicketVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/tickets/my": {
+      "get": {
+        "tags": [
+          "电子票前台接口"
+        ],
+        "summary": "我的电子票分页列表",
+        "operationId": "getMyTicketPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TicketPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseTicketVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiResponseVoid": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {}
+        }
+      },
+      "ApiResponseTicketVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TicketVO"
+          }
+        }
+      },
+      "TicketVO": {
+        "type": "object",
+        "description": "电子票 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "电子票 ID"
+          },
+          "ticketNo": {
+            "type": "string",
+            "description": "电子票号"
+          },
+          "qrCodeToken": {
+            "type": "string",
+            "description": "二维码 Token"
+          },
+          "qrCodeBase64": {
+            "type": "string",
+            "description": "二维码 Base64"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户 ID"
+          },
+          "orderId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "订单 ID"
+          },
+          "orderNo": {
+            "type": "string",
+            "description": "订单号"
+          },
+          "passengerId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "购票人 ID"
+          },
+          "passengerNameSnapshot": {
+            "type": "string",
+            "description": "购票人姓名"
+          },
+          "passengerIdTypeSnapshot": {
+            "type": "integer",
+            "format": "int32",
+            "description": "购票人证件类型"
+          },
+          "passengerIdNoMaskedSnapshot": {
+            "type": "string",
+            "description": "购票人证件号脱敏"
+          },
+          "eventId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          },
+          "eventNameSnapshot": {
+            "type": "string",
+            "description": "活动名"
+          },
+          "eventCoverUrlSnapshot": {
+            "type": "string",
+            "description": "活动封面图"
+          },
+          "venueId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场馆 ID"
+          },
+          "venueNameSnapshot": {
+            "type": "string",
+            "description": "场馆名"
+          },
+          "venueAddressSnapshot": {
+            "type": "string",
+            "description": "场馆地址"
+          },
+          "sessionId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场次 ID"
+          },
+          "sessionNameSnapshot": {
+            "type": "string",
+            "description": "场次名"
+          },
+          "sessionStartAtSnapshot": {
+            "type": "string",
+            "format": "date-time",
+            "description": "场次开演时间"
+          },
+          "ticketTypeId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "票种 ID"
+          },
+          "ticketTypeNameSnapshot": {
+            "type": "string",
+            "description": "票种名"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "电子票状态：0 未使用，1 已使用，2 已作废，3 已退票"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "电子票状态 Label"
+          },
+          "usedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "使用时间"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          }
+        }
+      },
+      "TicketPageRequest": {
+        "type": "object",
+        "description": "电子票分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户 ID"
+          },
+          "orderId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "订单 ID"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "电子票状态"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseTicketVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseTicketVO"
+          }
+        }
+      },
+      "PageResponseTicketVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/TicketVO"
+            }
+          }
+        }
+      }
+    }
+  }
+}

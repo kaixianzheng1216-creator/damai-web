@@ -19,6 +19,8 @@ declare global {
   const computedWithControl: typeof import('@vueuse/core').computedWithControl
   const controlledComputed: typeof import('@vueuse/core').controlledComputed
   const controlledRef: typeof import('@vueuse/core').controlledRef
+  const convertCategoryVOToHomeItem: typeof import('../utils/mappers').convertCategoryVOToHomeItem
+  const convertEventVOToCardItem: typeof import('../utils/mappers').convertEventVOToCardItem
   const createApp: typeof import('vue').createApp
   const createEventHook: typeof import('@vueuse/core').createEventHook
   const createGlobalState: typeof import('@vueuse/core').createGlobalState
@@ -40,10 +42,15 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const extendRef: typeof import('@vueuse/core').extendRef
   const fetchHomeData: typeof import('../api/home').fetchHomeData
+  const formatDateTime: typeof import('../utils/format').formatDateTime
+  const formatDateTimeLocalInput: typeof import('../utils/format').formatDateTimeLocalInput
+  const formatPrice: typeof import('../utils/format').formatPrice
   const getActivePinia: typeof import('pinia').getActivePinia
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
+  const getOrderStatusBadgeClass: typeof import('../utils/statusMappers').getOrderStatusBadgeClass
+  const getTicketStatusClass: typeof import('../utils/statusMappers').getTicketStatusClass
   const getUserInfo: typeof import('../api/auth').getUserInfo
   const h: typeof import('vue').h
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
@@ -60,6 +67,8 @@ declare global {
   const makeDestructurable: typeof import('@vueuse/core').makeDestructurable
   const mapActions: typeof import('pinia').mapActions
   const mapGetters: typeof import('pinia').mapGetters
+  const mapOrderStatus: typeof import('../utils/statusMappers').mapOrderStatus
+  const mapPassengerToPassengerItem: typeof import('../utils/mappers').mapPassengerToPassengerItem
   const mapState: typeof import('pinia').mapState
   const mapStores: typeof import('pinia').mapStores
   const mapWritableState: typeof import('pinia').mapWritableState
@@ -133,6 +142,7 @@ declare global {
   const unref: typeof import('vue').unref
   const unrefElement: typeof import('@vueuse/core').unrefElement
   const until: typeof import('@vueuse/core').until
+  const uploadFormData: typeof import('../api/request').uploadFormData
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
   const useAnimate: typeof import('@vueuse/core').useAnimate
   const useArrayDifference: typeof import('@vueuse/core').useArrayDifference
@@ -348,10 +358,10 @@ declare global {
   } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { RequestConfig } from '../api/types'
+  export type { RequestConfig, PaginatedResponse } from '../api/types'
   import('../api/types')
   // @ts-ignore
-  export type { UserInfo } from '../stores/user'
+  export type { UserInfo, AdminInfo } from '../stores/user'
   import('../stores/user')
 }
 
@@ -373,6 +383,12 @@ declare module 'vue' {
     readonly computedWithControl: UnwrapRef<(typeof import('@vueuse/core'))['computedWithControl']>
     readonly controlledComputed: UnwrapRef<(typeof import('@vueuse/core'))['controlledComputed']>
     readonly controlledRef: UnwrapRef<(typeof import('@vueuse/core'))['controlledRef']>
+    readonly convertCategoryVOToHomeItem: UnwrapRef<
+      (typeof import('../utils/mappers'))['convertCategoryVOToHomeItem']
+    >
+    readonly convertEventVOToCardItem: UnwrapRef<
+      (typeof import('../utils/mappers'))['convertEventVOToCardItem']
+    >
     readonly createApp: UnwrapRef<(typeof import('vue'))['createApp']>
     readonly createEventHook: UnwrapRef<(typeof import('@vueuse/core'))['createEventHook']>
     readonly createGlobalState: UnwrapRef<(typeof import('@vueuse/core'))['createGlobalState']>
@@ -402,10 +418,21 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<(typeof import('vue'))['effectScope']>
     readonly extendRef: UnwrapRef<(typeof import('@vueuse/core'))['extendRef']>
     readonly fetchHomeData: UnwrapRef<(typeof import('../api/home'))['fetchHomeData']>
+    readonly formatDateTime: UnwrapRef<(typeof import('../utils/format'))['formatDateTime']>
+    readonly formatDateTimeLocalInput: UnwrapRef<
+      (typeof import('../utils/format'))['formatDateTimeLocalInput']
+    >
+    readonly formatPrice: UnwrapRef<(typeof import('../utils/format'))['formatPrice']>
     readonly getActivePinia: UnwrapRef<(typeof import('pinia'))['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<(typeof import('vue'))['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<(typeof import('vue'))['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<(typeof import('vue'))['getCurrentWatcher']>
+    readonly getOrderStatusBadgeClass: UnwrapRef<
+      (typeof import('../utils/statusMappers'))['getOrderStatusBadgeClass']
+    >
+    readonly getTicketStatusClass: UnwrapRef<
+      (typeof import('../utils/statusMappers'))['getTicketStatusClass']
+    >
     readonly getUserInfo: UnwrapRef<(typeof import('../api/auth'))['getUserInfo']>
     readonly h: UnwrapRef<(typeof import('vue'))['h']>
     readonly ignorableWatch: UnwrapRef<(typeof import('@vueuse/core'))['ignorableWatch']>
@@ -422,6 +449,10 @@ declare module 'vue' {
     readonly makeDestructurable: UnwrapRef<(typeof import('@vueuse/core'))['makeDestructurable']>
     readonly mapActions: UnwrapRef<(typeof import('pinia'))['mapActions']>
     readonly mapGetters: UnwrapRef<(typeof import('pinia'))['mapGetters']>
+    readonly mapOrderStatus: UnwrapRef<(typeof import('../utils/statusMappers'))['mapOrderStatus']>
+    readonly mapPassengerToPassengerItem: UnwrapRef<
+      (typeof import('../utils/mappers'))['mapPassengerToPassengerItem']
+    >
     readonly mapState: UnwrapRef<(typeof import('pinia'))['mapState']>
     readonly mapStores: UnwrapRef<(typeof import('pinia'))['mapStores']>
     readonly mapWritableState: UnwrapRef<(typeof import('pinia'))['mapWritableState']>
@@ -495,6 +526,7 @@ declare module 'vue' {
     readonly unref: UnwrapRef<(typeof import('vue'))['unref']>
     readonly unrefElement: UnwrapRef<(typeof import('@vueuse/core'))['unrefElement']>
     readonly until: UnwrapRef<(typeof import('@vueuse/core'))['until']>
+    readonly uploadFormData: UnwrapRef<(typeof import('../api/request'))['uploadFormData']>
     readonly useActiveElement: UnwrapRef<(typeof import('@vueuse/core'))['useActiveElement']>
     readonly useAnimate: UnwrapRef<(typeof import('@vueuse/core'))['useAnimate']>
     readonly useArrayDifference: UnwrapRef<(typeof import('@vueuse/core'))['useArrayDifference']>

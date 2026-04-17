@@ -6,11 +6,9 @@ export interface RequestConfig extends AxiosRequestConfig {
 }
 
 export interface PaginatedResponse<T> {
+  pageNumber: number
+  pageSize: number
+  totalRow: number
+  totalPage: number
   records: T[]
-  total: number
-  size: number
-  current: number
-  pages: number
-  totalPage?: number
-  totalRow?: number
 }

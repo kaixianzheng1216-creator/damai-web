@@ -219,15 +219,18 @@ export interface BannerCreateRequest {
   cityId: string
   title: string
   imageUrl: string
+  mobileImageUrl: string
   jumpUrl: string
   displayStartAt: string
   displayEndAt: string
+  sortOrder?: number
 }
 
 export interface BannerUpdateRequest {
   cityId?: string
   title?: string
   imageUrl?: string
+  mobileImageUrl?: string
   jumpUrl?: string
   sortOrder?: number
   displayStartAt?: string
@@ -239,6 +242,7 @@ export interface BannerPageQuery {
   size?: number
   sortField?: string
   sortOrder?: string
+  cityId?: string
   title?: string
 }
 

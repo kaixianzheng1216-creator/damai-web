@@ -1,0 +1,5417 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://192.168.10.1:18083",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/admin/venues/{id}": {
+      "get": {
+        "tags": [
+          "场馆管理接口"
+        ],
+        "summary": "获取场馆详情",
+        "operationId": "getVenueById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "场馆 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVenueVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "场馆管理接口"
+        ],
+        "summary": "编辑场馆信息",
+        "operationId": "updateVenue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "场馆 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VenueUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "场馆管理接口"
+        ],
+        "summary": "删除场馆",
+        "operationId": "deleteVenue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "场馆 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/services/{id}": {
+      "get": {
+        "tags": [
+          "服务保障与选项管理接口"
+        ],
+        "summary": "获取服务保障详情",
+        "operationId": "getServiceById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "服务保障 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseServiceGuaranteeVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "服务保障与选项管理接口"
+        ],
+        "summary": "编辑服务保障信息",
+        "operationId": "updateService",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "服务保障 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceGuaranteeUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "服务保障与选项管理接口"
+        ],
+        "summary": "删除服务保障",
+        "operationId": "deleteService",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "服务保障 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/services/options/{id}": {
+      "put": {
+        "tags": [
+          "服务保障与选项管理接口"
+        ],
+        "summary": "编辑服务选项信息",
+        "operationId": "updateServiceOption",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "选项 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceGuaranteeOptionUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "服务保障与选项管理接口"
+        ],
+        "summary": "删除服务选项",
+        "operationId": "deleteServiceOption",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "选项 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/series/{id}": {
+      "get": {
+        "tags": [
+          "活动系列管理接口"
+        ],
+        "summary": "获取系列详情",
+        "operationId": "getSeriesById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "系列 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseSeriesVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "活动系列管理接口"
+        ],
+        "summary": "编辑系列信息",
+        "operationId": "updateSeries",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "系列 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeriesUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "活动系列管理接口"
+        ],
+        "summary": "删除系列",
+        "operationId": "deleteSeries",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "系列 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/participants/{id}": {
+      "get": {
+        "tags": [
+          "参与方管理接口"
+        ],
+        "summary": "获取参与方详情",
+        "operationId": "getParticipantById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "参与方 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseParticipantVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "参与方管理接口"
+        ],
+        "summary": "编辑参与方信息",
+        "operationId": "updateParticipant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "参与方 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParticipantUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "参与方管理接口"
+        ],
+        "summary": "删除参与方",
+        "operationId": "deleteParticipant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "参与方 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/notices/{id}": {
+      "get": {
+        "tags": [
+          "须知管理接口"
+        ],
+        "summary": "获取须知模板详情",
+        "operationId": "getNoticeById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "须知 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "须知管理接口"
+        ],
+        "summary": "编辑须知模板",
+        "operationId": "updateNotice",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "须知 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoticeUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "须知管理接口"
+        ],
+        "summary": "删除须知模板",
+        "operationId": "deleteNotice",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "须知 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}": {
+      "get": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "获取活动详情",
+        "operationId": "getEventDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseEventDetailVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "更新活动",
+        "operationId": "updateEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "删除活动",
+        "operationId": "deleteEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/ticket-types/{ticketTypeId}": {
+      "put": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "更新票种",
+        "operationId": "updateTicketType",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "ticketTypeId",
+            "in": "path",
+            "description": "票种 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketTypeUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "删除票种",
+        "operationId": "deleteTicketType",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "ticketTypeId",
+            "in": "path",
+            "description": "票种 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/ticket-types/{ticketTypeId}/inventory": {
+      "put": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "调整库存",
+        "operationId": "adjustTicketTypeInventory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "ticketTypeId",
+            "in": "path",
+            "description": "票种 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketTypeInventoryAdjustRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/sessions/{sessionId}": {
+      "put": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "更新场次",
+        "operationId": "updateSession",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "场次 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "删除场次",
+        "operationId": "deleteSession",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "场次 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/publish": {
+      "put": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "发布活动",
+        "operationId": "publishEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/participants/sort": {
+      "put": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "更新参与方排序",
+        "operationId": "sortParticipants",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventParticipantSortRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/offline": {
+      "put": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "下线活动",
+        "operationId": "offlineEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/detail": {
+      "put": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "保存活动信息",
+        "operationId": "createEventInfo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventInfoCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/cities/{id}": {
+      "get": {
+        "tags": [
+          "城市管理接口"
+        ],
+        "summary": "获取城市详情",
+        "operationId": "getCityById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "城市 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCityVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "城市管理接口"
+        ],
+        "summary": "编辑城市信息",
+        "operationId": "updateCity",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "城市 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CityUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "城市管理接口"
+        ],
+        "summary": "删除城市",
+        "operationId": "deleteCity",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "城市 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/categories/{id}": {
+      "get": {
+        "tags": [
+          "分类管理接口"
+        ],
+        "summary": "获取分类详情",
+        "operationId": "getCategoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "分类 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "分类管理接口"
+        ],
+        "summary": "编辑分类信息",
+        "operationId": "updateCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "分类 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "分类管理接口"
+        ],
+        "summary": "删除分类",
+        "operationId": "deleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "分类 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/banners/{id}": {
+      "get": {
+        "tags": [
+          "Banner 管理接口"
+        ],
+        "summary": "获取 Banner 详情",
+        "operationId": "getBannerById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Banner ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBannerVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Banner 管理接口"
+        ],
+        "summary": "编辑 Banner 信息",
+        "operationId": "updateBanner",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Banner ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BannerUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Banner 管理接口"
+        ],
+        "summary": "删除 Banner",
+        "operationId": "deleteBanner",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Banner ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/ticket-type/{ticketTypeId}/release-inventory/{quantity}": {
+      "post": {
+        "tags": [
+          "活动内部接口"
+        ],
+        "summary": "释放票种库存",
+        "operationId": "releaseTicketTypeInventory",
+        "parameters": [
+          {
+            "name": "ticketTypeId",
+            "in": "path",
+            "description": "票种 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "quantity",
+            "in": "path",
+            "description": "释放数量",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/ticket-type/{ticketTypeId}/lock-inventory/{quantity}": {
+      "post": {
+        "tags": [
+          "活动内部接口"
+        ],
+        "summary": "锁定票种库存",
+        "operationId": "lockTicketTypeInventory",
+        "parameters": [
+          {
+            "name": "ticketTypeId",
+            "in": "path",
+            "description": "票种 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "quantity",
+            "in": "path",
+            "description": "锁定数量",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/ticket-type/{ticketTypeId}/deduct-inventory/{quantity}": {
+      "post": {
+        "tags": [
+          "活动内部接口"
+        ],
+        "summary": "扣减票种库存",
+        "operationId": "deductTicketTypeInventory",
+        "parameters": [
+          {
+            "name": "ticketTypeId",
+            "in": "path",
+            "description": "票种 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "quantity",
+            "in": "path",
+            "description": "扣减数量",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/venues": {
+      "get": {
+        "tags": [
+          "场馆管理接口"
+        ],
+        "summary": "获取场馆列表",
+        "operationId": "getVenueList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListVenueVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "场馆管理接口"
+        ],
+        "summary": "新增场馆",
+        "operationId": "createVenue",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VenueCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/services": {
+      "get": {
+        "tags": [
+          "服务保障与选项管理接口"
+        ],
+        "summary": "获取服务保障列表",
+        "operationId": "getServiceList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListServiceGuaranteeVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "服务保障与选项管理接口"
+        ],
+        "summary": "新增服务保障",
+        "operationId": "createService",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceGuaranteeCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/services/{serviceId}/options": {
+      "post": {
+        "tags": [
+          "服务保障与选项管理接口"
+        ],
+        "summary": "为服务保障新增选项",
+        "operationId": "createServiceOption",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "description": "服务保障 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceGuaranteeOptionCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/series": {
+      "get": {
+        "tags": [
+          "活动系列管理接口"
+        ],
+        "summary": "查询系列列表",
+        "operationId": "getSeriesList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListSeriesVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "活动系列管理接口"
+        ],
+        "summary": "新增系列",
+        "operationId": "createSeries",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeriesCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/participants": {
+      "get": {
+        "tags": [
+          "参与方管理接口"
+        ],
+        "summary": "获取参与方列表",
+        "operationId": "getParticipantList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListParticipantVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "参与方管理接口"
+        ],
+        "summary": "新增参与方",
+        "operationId": "createParticipant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParticipantCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/notices": {
+      "get": {
+        "tags": [
+          "须知管理接口"
+        ],
+        "summary": "获取须知模板列表",
+        "operationId": "getNoticeList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListNoticeVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "须知管理接口"
+        ],
+        "summary": "新增须知模板",
+        "operationId": "createNotice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoticeCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events": {
+      "post": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "创建活动",
+        "operationId": "createEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/ticket-types/copy": {
+      "post": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "复制票种",
+        "operationId": "copyTicketType",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketTypeCopyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/sessions/{sessionId}/ticket-types": {
+      "post": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "添加票种",
+        "operationId": "createTicketType",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "场次 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketTypeCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/sessions/batch": {
+      "post": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "批量添加场次",
+        "operationId": "batchAddSessions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionBatchCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/services/batch": {
+      "post": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "批量添加服务保障",
+        "operationId": "batchAddServices",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventServiceBatchAddRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/participants/batch": {
+      "post": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "批量添加参与方",
+        "operationId": "batchAddParticipants",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventParticipantBatchAddRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/cities": {
+      "get": {
+        "tags": [
+          "城市管理接口"
+        ],
+        "summary": "获取城市列表",
+        "operationId": "getCityList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListCityVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "城市管理接口"
+        ],
+        "summary": "新增城市",
+        "operationId": "createCity",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CityCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/categories": {
+      "get": {
+        "tags": [
+          "分类管理接口"
+        ],
+        "summary": "获取一级分类列表",
+        "operationId": "getRootCategoryList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListCategoryVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "分类管理接口"
+        ],
+        "summary": "新增分类",
+        "operationId": "createCategory",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/banners": {
+      "post": {
+        "tags": [
+          "Banner 管理接口"
+        ],
+        "summary": "新增 Banner",
+        "operationId": "createBanner",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BannerCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/cities/{id}/featured": {
+      "patch": {
+        "tags": [
+          "城市管理接口"
+        ],
+        "summary": "设为/取消热门城市",
+        "operationId": "updateCityFeatured",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "城市 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeaturedUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/venues/{id}": {
+      "get": {
+        "tags": [
+          "场馆前台接口"
+        ],
+        "summary": "获取场馆详情",
+        "operationId": "getVenueById_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "场馆 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVenueVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/participants/{id}": {
+      "get": {
+        "tags": [
+          "参与方前台接口"
+        ],
+        "summary": "获取参与方详情",
+        "operationId": "getParticipantById_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "参与方 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseParticipantVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/events/{id}": {
+      "get": {
+        "tags": [
+          "活动前台接口"
+        ],
+        "summary": "获取活动详情",
+        "operationId": "getEventDetail_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseEventDetailVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/events/page": {
+      "get": {
+        "tags": [
+          "活动前台接口"
+        ],
+        "summary": "获取活动分页列表",
+        "operationId": "getEventPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EventPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseEventVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/cities": {
+      "get": {
+        "tags": [
+          "城市前台接口"
+        ],
+        "summary": "获取分组城市列表",
+        "operationId": "getGroupedCityList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCityListVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/cities/list": {
+      "get": {
+        "tags": [
+          "城市前台接口"
+        ],
+        "summary": "获取城市列表",
+        "operationId": "getCityList_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListCityVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/categories": {
+      "get": {
+        "tags": [
+          "分类前台接口"
+        ],
+        "summary": "获取一级分类列表",
+        "operationId": "getRootCategoryList_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListCategoryVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/categories/{id}": {
+      "get": {
+        "tags": [
+          "分类前台接口"
+        ],
+        "summary": "获取分类详情",
+        "operationId": "getCategoryById_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "分类 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/banners": {
+      "get": {
+        "tags": [
+          "Banner 前台接口"
+        ],
+        "summary": "获取 Banner 列表",
+        "operationId": "getBannerList",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "query",
+            "description": "城市ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListBannerVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/venues/page": {
+      "get": {
+        "tags": [
+          "场馆管理接口"
+        ],
+        "summary": "获取场馆分页列表",
+        "operationId": "getVenuePage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/VenuePageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseVenueVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/services/page": {
+      "get": {
+        "tags": [
+          "服务保障与选项管理接口"
+        ],
+        "summary": "获取服务保障分页列表",
+        "operationId": "getServicePage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ServiceGuaranteePageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseServiceGuaranteeVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/series/page": {
+      "get": {
+        "tags": [
+          "活动系列管理接口"
+        ],
+        "summary": "获取系列分页列表",
+        "operationId": "getSeriesPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/SeriesPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseSeriesVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/participants/page": {
+      "get": {
+        "tags": [
+          "参与方管理接口"
+        ],
+        "summary": "获取参与方分页列表",
+        "operationId": "getParticipantPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ParticipantPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseParticipantVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/notices/page": {
+      "get": {
+        "tags": [
+          "须知管理接口"
+        ],
+        "summary": "获取须知模板分页列表",
+        "operationId": "getNoticePage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NoticePageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseNoticeVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/page": {
+      "get": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "活动分页列表",
+        "operationId": "getEventPage_1",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EventPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseEventVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/cities/page": {
+      "get": {
+        "tags": [
+          "城市管理接口"
+        ],
+        "summary": "获取城市分页列表",
+        "operationId": "getCityPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CityPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseCityVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/categories/page": {
+      "get": {
+        "tags": [
+          "分类管理接口"
+        ],
+        "summary": "获取一级分类分页列表",
+        "operationId": "getCategoryPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CategoryPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseCategoryVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/banners/page": {
+      "get": {
+        "tags": [
+          "Banner 管理接口"
+        ],
+        "summary": "获取 Banner 分页列表",
+        "operationId": "getBannerPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BannerPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseBannerVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/services/{eventServiceId}": {
+      "delete": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "移除服务保障",
+        "operationId": "removeService",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "eventServiceId",
+            "in": "path",
+            "description": "活动服务 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/events/{id}/participants/{eventParticipantId}": {
+      "delete": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "移除参与方",
+        "operationId": "removeParticipant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "eventParticipantId",
+            "in": "path",
+            "description": "活动参与方 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "VenueUpdateRequest": {
+        "type": "object",
+        "description": "更新场馆请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "场馆名称"
+          },
+          "province": {
+            "type": "string",
+            "description": "省份"
+          },
+          "city": {
+            "type": "string",
+            "description": "城市"
+          },
+          "district": {
+            "type": "string",
+            "description": "区县"
+          },
+          "address": {
+            "type": "string",
+            "description": "地址"
+          }
+        }
+      },
+      "ApiResponseVoid": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {}
+        }
+      },
+      "ServiceGuaranteeUpdateRequest": {
+        "type": "object",
+        "description": "服务保障更新请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "服务名"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          }
+        }
+      },
+      "ServiceGuaranteeOptionUpdateRequest": {
+        "type": "object",
+        "description": "服务选项更新请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "选项名"
+          },
+          "description": {
+            "type": "string",
+            "description": "选项说明"
+          },
+          "isBooleanType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "选项类型: 0 否, 1 是"
+          }
+        }
+      },
+      "SeriesUpdateRequest": {
+        "type": "object",
+        "description": "系列更新请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "系列名称"
+          }
+        }
+      },
+      "ParticipantUpdateRequest": {
+        "type": "object",
+        "description": "更新参与方请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "参与方名称"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "头像 URL"
+          }
+        }
+      },
+      "NoticeUpdateRequest": {
+        "type": "object",
+        "description": "须知模板更新请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "须知名"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          }
+        }
+      },
+      "EventUpdateRequest": {
+        "type": "object",
+        "description": "活动更新请求",
+        "properties": {
+          "seriesId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "系列 ID"
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "分类 ID"
+          },
+          "venueId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场馆 ID"
+          },
+          "cityId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "城市 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "coverUrl": {
+            "type": "string",
+            "description": "封面图 URL"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "活动状态：0 草稿，1 已发布，2 已下线"
+          },
+          "recommendWeight": {
+            "type": "integer",
+            "format": "int32",
+            "description": "推荐权重（越高越靠前）"
+          }
+        }
+      },
+      "TicketTypeUpdateRequest": {
+        "type": "object",
+        "description": "票种更新请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "票种名称"
+          },
+          "salePrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "售价（分）"
+          },
+          "orderLimit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "单笔订单限购，0 表示不限"
+          },
+          "accountLimit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "单用户限购，0 表示不限"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "票种状态：0 取消，1 正常"
+          },
+          "saleStartAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "开售时间"
+          },
+          "saleEndAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "停售时间"
+          }
+        }
+      },
+      "TicketTypeInventoryAdjustRequest": {
+        "type": "object",
+        "description": "票种库存调整请求",
+        "properties": {
+          "adjustQty": {
+            "type": "integer",
+            "format": "int32",
+            "description": "调整数量"
+          }
+        },
+        "required": [
+          "adjustQty"
+        ]
+      },
+      "SessionUpdateRequest": {
+        "type": "object",
+        "description": "场次更新请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "场次名称"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "开始时间"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "结束时间"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "场次状态：0 取消，1 正常"
+          }
+        }
+      },
+      "EventParticipantSortRequest": {
+        "type": "object",
+        "description": "活动参与方排序请求",
+        "properties": {
+          "eventParticipantIds": {
+            "type": "array",
+            "description": "参与方 ID 排序列表",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "eventParticipantIds"
+        ]
+      },
+      "EventInfoCreateRequest": {
+        "type": "object",
+        "description": "活动信息保存请求",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "图文详情"
+          },
+          "purchaseNotice": {
+            "type": "array",
+            "description": "购票须知",
+            "items": {
+              "$ref": "#/components/schemas/NoticeItemVO"
+            }
+          },
+          "admissionNotice": {
+            "type": "array",
+            "description": "入场须知",
+            "items": {
+              "$ref": "#/components/schemas/NoticeItemVO"
+            }
+          }
+        }
+      },
+      "NoticeItemVO": {
+        "type": "object",
+        "description": "须知项信息",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "须知 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "须知名"
+          },
+          "description": {
+            "type": "string",
+            "description": "须知描述"
+          }
+        }
+      },
+      "CityUpdateRequest": {
+        "type": "object",
+        "description": "更新城市请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "城市名称"
+          },
+          "pinyin": {
+            "type": "string",
+            "description": "城市拼音全拼"
+          },
+          "firstLetter": {
+            "type": "string",
+            "description": "拼音首字母大写"
+          }
+        }
+      },
+      "CategoryUpdateRequest": {
+        "type": "object",
+        "description": "分类更新请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "分类名称"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          }
+        }
+      },
+      "BannerUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "cityId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "mobileImageUrl": {
+            "type": "string"
+          },
+          "jumpUrl": {
+            "type": "string"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "displayStartAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "displayEndAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "VenueCreateRequest": {
+        "type": "object",
+        "description": "创建场馆请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "场馆名称",
+            "minLength": 1
+          },
+          "province": {
+            "type": "string",
+            "description": "省份",
+            "minLength": 1
+          },
+          "city": {
+            "type": "string",
+            "description": "城市",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "description": "区县",
+            "minLength": 1
+          },
+          "address": {
+            "type": "string",
+            "description": "地址",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "address",
+          "city",
+          "district",
+          "name",
+          "province"
+        ]
+      },
+      "ApiResponseLong": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ServiceGuaranteeCreateRequest": {
+        "type": "object",
+        "description": "服务保障创建请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "服务名",
+            "minLength": 1
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ServiceGuaranteeOptionCreateRequest": {
+        "type": "object",
+        "description": "服务选项创建请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "选项名",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "description": "选项说明"
+          },
+          "isBooleanType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "选项类型: 0 否, 1 是"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "SeriesCreateRequest": {
+        "type": "object",
+        "description": "系列创建请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "系列名称",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ParticipantCreateRequest": {
+        "type": "object",
+        "description": "创建参与方请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "参与方名称",
+            "minLength": 1
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "头像 URL"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "NoticeCreateRequest": {
+        "type": "object",
+        "description": "须知模板创建请求",
+        "properties": {
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "须知类型：1-购票须知，2-入场须知"
+          },
+          "name": {
+            "type": "string",
+            "description": "须知名",
+            "minLength": 1
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          }
+        },
+        "required": [
+          "name",
+          "type"
+        ]
+      },
+      "EventCreateRequest": {
+        "type": "object",
+        "description": "活动创建请求",
+        "properties": {
+          "seriesId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "系列 ID"
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "分类 ID"
+          },
+          "venueId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场馆 ID"
+          },
+          "cityId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "城市 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "活动名称",
+            "minLength": 1
+          },
+          "coverUrl": {
+            "type": "string",
+            "description": "封面图 URL",
+            "minLength": 1
+          },
+          "recommendWeight": {
+            "type": "integer",
+            "format": "int32",
+            "description": "推荐权重（越高越靠前）"
+          }
+        },
+        "required": [
+          "categoryId",
+          "cityId",
+          "coverUrl",
+          "name",
+          "venueId"
+        ]
+      },
+      "TicketTypeCopyRequest": {
+        "type": "object",
+        "description": "票种复制请求",
+        "properties": {
+          "sourceSessionId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "源场次 ID"
+          },
+          "targetSessionIds": {
+            "type": "array",
+            "description": "目标场次 ID 列表",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "sourceSessionId",
+          "targetSessionIds"
+        ]
+      },
+      "TicketTypeCreateRequest": {
+        "type": "object",
+        "description": "票种创建请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "票种名称",
+            "minLength": 1
+          },
+          "salePrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "售价（分）"
+          },
+          "orderLimit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "单笔订单限购，0 表示不限"
+          },
+          "accountLimit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "单用户限购，0 表示不限"
+          },
+          "saleStartAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "开售时间"
+          },
+          "saleEndAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "停售时间"
+          },
+          "totalQty": {
+            "type": "integer",
+            "format": "int32",
+            "description": "总库存"
+          }
+        },
+        "required": [
+          "name",
+          "salePrice",
+          "totalQty"
+        ]
+      },
+      "SessionBatchCreateRequest": {
+        "type": "object",
+        "description": "场次批量创建请求",
+        "properties": {
+          "sessions": {
+            "type": "array",
+            "description": "场次列表",
+            "items": {
+              "$ref": "#/components/schemas/SessionItem"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "sessions"
+        ]
+      },
+      "SessionItem": {
+        "type": "object",
+        "description": "场次项",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "场次名称",
+            "minLength": 1
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "开始时间"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "结束时间"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "EventServiceBatchAddRequest": {
+        "type": "object",
+        "description": "活动服务保障批量添加请求",
+        "properties": {
+          "services": {
+            "type": "array",
+            "description": "服务列表",
+            "items": {
+              "$ref": "#/components/schemas/ServiceItem"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "services"
+        ]
+      },
+      "ServiceItem": {
+        "type": "object",
+        "description": "服务项",
+        "properties": {
+          "serviceGuaranteeId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "服务 ID"
+          },
+          "serviceGuaranteeOptionId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "服务选项 ID"
+          }
+        },
+        "required": [
+          "serviceGuaranteeId",
+          "serviceGuaranteeOptionId"
+        ]
+      },
+      "EventParticipantBatchAddRequest": {
+        "type": "object",
+        "description": "活动参与方批量添加请求",
+        "properties": {
+          "participantIds": {
+            "type": "array",
+            "description": "参与方 ID 列表",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "participantIds"
+        ]
+      },
+      "CityCreateRequest": {
+        "type": "object",
+        "description": "创建城市请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "城市名称",
+            "minLength": 1
+          },
+          "pinyin": {
+            "type": "string",
+            "description": "城市拼音全拼",
+            "minLength": 1
+          },
+          "firstLetter": {
+            "type": "string",
+            "description": "拼音首字母大写",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "firstLetter",
+          "name",
+          "pinyin"
+        ]
+      },
+      "CategoryCreateRequest": {
+        "type": "object",
+        "description": "分类创建请求",
+        "properties": {
+          "parentId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "父分类 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "分类名称",
+            "minLength": 1
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          }
+        },
+        "required": [
+          "name",
+          "parentId"
+        ]
+      },
+      "BannerCreateRequest": {
+        "type": "object",
+        "properties": {
+          "cityId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "imageUrl": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mobileImageUrl": {
+            "type": "string",
+            "minLength": 1
+          },
+          "jumpUrl": {
+            "type": "string",
+            "minLength": 1
+          },
+          "displayStartAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "displayEndAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "cityId",
+          "displayEndAt",
+          "displayStartAt",
+          "imageUrl",
+          "jumpUrl",
+          "mobileImageUrl",
+          "title"
+        ]
+      },
+      "FeaturedUpdateRequest": {
+        "type": "object",
+        "description": "热门状态更新请求",
+        "properties": {
+          "isFeatured": {
+            "type": "integer",
+            "format": "int32",
+            "description": "是否热门: 0-否, 1-是"
+          }
+        },
+        "required": [
+          "isFeatured"
+        ]
+      },
+      "ApiResponseVenueVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/VenueVO"
+          }
+        }
+      },
+      "VenueVO": {
+        "type": "object",
+        "description": "场馆 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场馆 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "场馆名称"
+          },
+          "province": {
+            "type": "string",
+            "description": "省份"
+          },
+          "city": {
+            "type": "string",
+            "description": "城市"
+          },
+          "district": {
+            "type": "string",
+            "description": "区县"
+          },
+          "address": {
+            "type": "string",
+            "description": "场馆地址"
+          }
+        }
+      },
+      "ApiResponseParticipantVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ParticipantVO"
+          }
+        }
+      },
+      "ParticipantVO": {
+        "type": "object",
+        "description": "参与方信息 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "参与方 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "参与方名称"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "头像 URL"
+          }
+        }
+      },
+      "ApiResponseEventDetailVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EventDetailVO"
+          }
+        }
+      },
+      "EventDetailVO": {
+        "type": "object",
+        "description": "活动信息 VO",
+        "properties": {
+          "seriesEvents": {
+            "type": "array",
+            "description": "同系列其他活动列表",
+            "items": {
+              "$ref": "#/components/schemas/SeriesEventVO"
+            }
+          },
+          "event": {
+            "$ref": "#/components/schemas/EventVO",
+            "description": "活动信息"
+          },
+          "info": {
+            "$ref": "#/components/schemas/EventInfoVO",
+            "description": "活动信息"
+          },
+          "participants": {
+            "type": "array",
+            "description": "参与方列表",
+            "items": {
+              "$ref": "#/components/schemas/EventParticipantVO"
+            }
+          },
+          "services": {
+            "type": "array",
+            "description": "服务保障列表",
+            "items": {
+              "$ref": "#/components/schemas/EventServiceGuaranteeVO"
+            }
+          },
+          "sessions": {
+            "type": "array",
+            "description": "场次列表",
+            "items": {
+              "$ref": "#/components/schemas/SessionVO"
+            }
+          }
+        }
+      },
+      "EventInfoVO": {
+        "type": "object",
+        "description": "活动信息信息 VO",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "图文详情"
+          },
+          "purchaseNotice": {
+            "type": "array",
+            "description": "购票须知",
+            "items": {
+              "$ref": "#/components/schemas/NoticeItemVO"
+            }
+          },
+          "admissionNotice": {
+            "type": "array",
+            "description": "入场须知",
+            "items": {
+              "$ref": "#/components/schemas/NoticeItemVO"
+            }
+          }
+        }
+      },
+      "EventParticipantVO": {
+        "type": "object",
+        "description": "活动参与方 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动参与方 ID"
+          },
+          "participant": {
+            "$ref": "#/components/schemas/ParticipantVO",
+            "description": "参与方信息"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          }
+        }
+      },
+      "EventServiceGuaranteeVO": {
+        "type": "object",
+        "description": "活动服务保障 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动服务 ID"
+          },
+          "serviceGuaranteeId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "服务保障 ID"
+          },
+          "serviceGuaranteeOptionId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "服务选项 ID"
+          },
+          "serviceGuarantee": {
+            "$ref": "#/components/schemas/ServiceGuaranteeVO",
+            "description": "服务信息"
+          },
+          "serviceGuaranteeOption": {
+            "$ref": "#/components/schemas/ServiceGuaranteeOptionVO",
+            "description": "服务选项信息"
+          }
+        }
+      },
+      "EventVO": {
+        "type": "object",
+        "description": "活动 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          },
+          "seriesId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "系列 ID"
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "分类 ID"
+          },
+          "categoryNameSnapshot": {
+            "type": "string",
+            "description": "分类名称快照"
+          },
+          "venueId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场馆 ID"
+          },
+          "venueNameSnapshot": {
+            "type": "string",
+            "description": "场馆名称快照"
+          },
+          "cityId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "城市 ID"
+          },
+          "cityNameSnapshot": {
+            "type": "string",
+            "description": "城市名称快照"
+          },
+          "name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "coverUrl": {
+            "type": "string",
+            "description": "活动封面图 URL"
+          },
+          "minPrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "最低票价(分)"
+          },
+          "maxPrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "最高票价(分)"
+          },
+          "firstSessionStartAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "最早场次开始时间"
+          },
+          "lastSessionEndAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "最晚场次结束时间"
+          },
+          "recommendWeight": {
+            "type": "integer",
+            "format": "int32",
+            "description": "推荐权重"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "活动状态"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "活动状态 Label"
+          }
+        }
+      },
+      "SeriesEventVO": {
+        "type": "object",
+        "description": "同系列活动简要信息 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "活动名称"
+          }
+        }
+      },
+      "ServiceGuaranteeOptionVO": {
+        "type": "object",
+        "description": "服务保障选项信息",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "选项 ID"
+          },
+          "serviceGuaranteeId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "服务 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "选项名"
+          },
+          "description": {
+            "type": "string",
+            "description": "选项说明"
+          },
+          "isBooleanType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "选项类型: 0 否, 1 是"
+          }
+        }
+      },
+      "ServiceGuaranteeVO": {
+        "type": "object",
+        "description": "服务保障信息",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "服务 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "服务名"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          },
+          "options": {
+            "type": "array",
+            "description": "服务选项列表",
+            "items": {
+              "$ref": "#/components/schemas/ServiceGuaranteeOptionVO"
+            }
+          }
+        }
+      },
+      "SessionVO": {
+        "type": "object",
+        "description": "场次 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场次 ID"
+          },
+          "eventId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "场次名称"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "场次开始时间"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "场次结束时间"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "场次状态"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "场次状态 Label"
+          },
+          "ticketTypes": {
+            "type": "array",
+            "description": "票种列表",
+            "items": {
+              "$ref": "#/components/schemas/TicketTypeVO"
+            }
+          }
+        }
+      },
+      "TicketInventoryVO": {
+        "type": "object",
+        "description": "票种库存 VO",
+        "properties": {
+          "ticketTypeId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "票种 ID"
+          },
+          "totalQty": {
+            "type": "integer",
+            "format": "int32",
+            "description": "总库存"
+          },
+          "lockedQty": {
+            "type": "integer",
+            "format": "int32",
+            "description": "锁定库存"
+          },
+          "soldQty": {
+            "type": "integer",
+            "format": "int32",
+            "description": "已售库存"
+          }
+        }
+      },
+      "TicketTypeVO": {
+        "type": "object",
+        "description": "票种 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "票种 ID"
+          },
+          "sessionId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场次 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "票种名称"
+          },
+          "price": {
+            "type": "integer",
+            "format": "int32",
+            "description": "票价（分）"
+          },
+          "orderLimit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "单笔订单限购，0 表示不限"
+          },
+          "accountLimit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "单用户限购，0 表示不限"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "票种状态：0 取消，1 正常"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "票种状态 Label"
+          },
+          "saleStartAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "开售时间"
+          },
+          "saleEndAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "停售时间"
+          },
+          "inventory": {
+            "$ref": "#/components/schemas/TicketInventoryVO",
+            "description": "库存信息"
+          }
+        }
+      },
+      "EventPageRequest": {
+        "type": "object",
+        "description": "活动分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "name": {
+            "type": "string",
+            "description": "活动名称关键词"
+          },
+          "cityId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "城市 ID"
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "分类 ID"
+          },
+          "timeType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "时间筛选：0 全部，1 今天，2 本周末，3 一个月内"
+          },
+          "minPrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "最低价格(分)"
+          },
+          "maxPrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "最高价格(分)"
+          },
+          "sortType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序方式：0 推荐排序（权重+更新时间），1 最近开场，2 最新上架"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseEventVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseEventVO"
+          }
+        }
+      },
+      "PageResponseEventVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/EventVO"
+            }
+          }
+        }
+      },
+      "ApiResponseCityListVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CityListVO"
+          }
+        }
+      },
+      "CityListVO": {
+        "type": "object",
+        "description": "城市列表 VO（分组）",
+        "properties": {
+          "featuredCities": {
+            "type": "array",
+            "description": "热门城市列表",
+            "items": {
+              "$ref": "#/components/schemas/CityVO"
+            }
+          },
+          "normalCities": {
+            "type": "array",
+            "description": "非热门城市列表",
+            "items": {
+              "$ref": "#/components/schemas/CityVO"
+            }
+          }
+        }
+      },
+      "CityVO": {
+        "type": "object",
+        "description": "城市信息 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "城市 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "城市名称"
+          },
+          "pinyin": {
+            "type": "string",
+            "description": "城市拼音全拼"
+          },
+          "firstLetter": {
+            "type": "string",
+            "description": "拼音首字母大写"
+          },
+          "isFeatured": {
+            "type": "integer",
+            "format": "int32",
+            "description": "是否热门: 0-否, 1-是"
+          }
+        }
+      },
+      "ApiResponseListCityVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CityVO"
+            }
+          }
+        }
+      },
+      "ApiResponseListCategoryVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryVO"
+            }
+          }
+        }
+      },
+      "CategoryVO": {
+        "type": "object",
+        "description": "分类信息",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "分类 ID"
+          },
+          "parentId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "父分类 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "分类名称"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          },
+          "children": {
+            "description": "子分类列表"
+          }
+        }
+      },
+      "ApiResponseCategoryVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CategoryVO"
+          }
+        }
+      },
+      "ApiResponseListBannerVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BannerVO"
+            }
+          }
+        }
+      },
+      "BannerVO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cityId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "mobileImageUrl": {
+            "type": "string"
+          },
+          "jumpUrl": {
+            "type": "string"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "displayStartAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "displayEndAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ApiResponseListVenueVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VenueVO"
+            }
+          }
+        }
+      },
+      "VenuePageRequest": {
+        "type": "object",
+        "description": "场馆分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "name": {
+            "type": "string",
+            "description": "场馆名称关键词"
+          },
+          "province": {
+            "type": "string",
+            "description": "省份"
+          },
+          "city": {
+            "type": "string",
+            "description": "城市"
+          },
+          "district": {
+            "type": "string",
+            "description": "区县"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseVenueVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseVenueVO"
+          }
+        }
+      },
+      "PageResponseVenueVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/VenueVO"
+            }
+          }
+        }
+      },
+      "ApiResponseListServiceGuaranteeVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceGuaranteeVO"
+            }
+          }
+        }
+      },
+      "ApiResponseServiceGuaranteeVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ServiceGuaranteeVO"
+          }
+        }
+      },
+      "ServiceGuaranteePageRequest": {
+        "type": "object",
+        "description": "服务保障分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "name": {
+            "type": "string",
+            "description": "服务名关键词"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseServiceGuaranteeVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseServiceGuaranteeVO"
+          }
+        }
+      },
+      "PageResponseServiceGuaranteeVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/ServiceGuaranteeVO"
+            }
+          }
+        }
+      },
+      "ApiResponseListSeriesVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeriesVO"
+            }
+          }
+        }
+      },
+      "SeriesVO": {
+        "type": "object",
+        "description": "活动系列信息",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "系列 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "系列名称"
+          }
+        }
+      },
+      "ApiResponseSeriesVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/SeriesVO"
+          }
+        }
+      },
+      "SeriesPageRequest": {
+        "type": "object",
+        "description": "系列分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "name": {
+            "type": "string",
+            "description": "系列名称关键词"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseSeriesVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseSeriesVO"
+          }
+        }
+      },
+      "PageResponseSeriesVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/SeriesVO"
+            }
+          }
+        }
+      },
+      "ApiResponseListParticipantVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParticipantVO"
+            }
+          }
+        }
+      },
+      "ParticipantPageRequest": {
+        "type": "object",
+        "description": "参与方分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "name": {
+            "type": "string",
+            "description": "参与方名称关键词"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseParticipantVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseParticipantVO"
+          }
+        }
+      },
+      "PageResponseParticipantVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/ParticipantVO"
+            }
+          }
+        }
+      },
+      "ApiResponseListNoticeVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoticeVO"
+            }
+          }
+        }
+      },
+      "NoticeVO": {
+        "type": "object",
+        "description": "须知模板信息",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "须知 ID"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "须知类型：1-购票须知，2-入场须知"
+          },
+          "name": {
+            "type": "string",
+            "description": "须知名"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          }
+        }
+      },
+      "ApiResponseNoticeVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/NoticeVO"
+          }
+        }
+      },
+      "NoticePageRequest": {
+        "type": "object",
+        "description": "须知模板分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "须知类型：1-购票须知，2-入场须知"
+          },
+          "name": {
+            "type": "string",
+            "description": "须知名关键词"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseNoticeVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseNoticeVO"
+          }
+        }
+      },
+      "PageResponseNoticeVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/NoticeVO"
+            }
+          }
+        }
+      },
+      "ApiResponseCityVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CityVO"
+          }
+        }
+      },
+      "CityPageRequest": {
+        "type": "object",
+        "description": "城市分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "name": {
+            "type": "string",
+            "description": "城市名称关键词"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseCityVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseCityVO"
+          }
+        }
+      },
+      "PageResponseCityVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/CityVO"
+            }
+          }
+        }
+      },
+      "CategoryPageRequest": {
+        "type": "object",
+        "description": "分类分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "name": {
+            "type": "string",
+            "description": "分类名称关键词"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseCategoryVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseCategoryVO"
+          }
+        }
+      },
+      "PageResponseCategoryVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/CategoryVO"
+            }
+          }
+        }
+      },
+      "ApiResponseBannerVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/BannerVO"
+          }
+        }
+      },
+      "BannerPageRequest": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "cityId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseBannerVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseBannerVO"
+          }
+        }
+      },
+      "PageResponseBannerVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/BannerVO"
+            }
+          }
+        }
+      }
+    }
+  }
+}

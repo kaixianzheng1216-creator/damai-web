@@ -1,0 +1,1052 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://192.168.10.1:18082",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/front/user/info": {
+      "get": {
+        "tags": [
+          "用户接口"
+        ],
+        "summary": "获取当前用户信息",
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseUserVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "用户接口"
+        ],
+        "summary": "更新用户信息",
+        "operationId": "updateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/user/{id}/status": {
+      "put": {
+        "tags": [
+          "用户管理接口"
+        ],
+        "summary": "更新用户状态",
+        "operationId": "updateUserStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/admin/{id}": {
+      "get": {
+        "tags": [
+          "管理员接口"
+        ],
+        "summary": "获取管理员详情",
+        "operationId": "getAdminById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAdminVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "管理员接口"
+        ],
+        "summary": "更新管理员信息",
+        "operationId": "updateAdmin",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/admin/{id}/status": {
+      "put": {
+        "tags": [
+          "管理员接口"
+        ],
+        "summary": "更新管理员状态",
+        "operationId": "updateAdminStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/passenger/warm-up/{userId}": {
+      "post": {
+        "tags": [
+          "购票人内部接口"
+        ],
+        "summary": "预热购票人缓存",
+        "operationId": "warmUpPassengerCache",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/passenger": {
+      "post": {
+        "tags": [
+          "购票人接口"
+        ],
+        "summary": "添加购票人信息",
+        "operationId": "createPassenger",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PassengerCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/admin": {
+      "post": {
+        "tags": [
+          "管理员接口"
+        ],
+        "summary": "创建管理员",
+        "operationId": "createAdmin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/passenger/batch": {
+      "get": {
+        "tags": [
+          "购票人内部接口"
+        ],
+        "summary": "批量获取购票人信息",
+        "operationId": "getPassengerByIds",
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "description": "身份信息 ID 列表",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListPassengerVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/passenger/page": {
+      "get": {
+        "tags": [
+          "购票人接口"
+        ],
+        "summary": "获取当前购票人分页列表",
+        "operationId": "getPassengerPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/PassengerPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponsePassengerVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/user/{id}": {
+      "get": {
+        "tags": [
+          "用户管理接口"
+        ],
+        "summary": "获取用户详情",
+        "operationId": "getUserById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseUserVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/user/page": {
+      "get": {
+        "tags": [
+          "用户管理接口"
+        ],
+        "summary": "获取用户分页列表",
+        "operationId": "getUserPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UserQueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseUserVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/admin/page": {
+      "get": {
+        "tags": [
+          "管理员接口"
+        ],
+        "summary": "获取管理员分页列表",
+        "operationId": "getAdminPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AdminQueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseAdminVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/admin/info": {
+      "get": {
+        "tags": [
+          "管理员接口"
+        ],
+        "summary": "获取当前管理员信息",
+        "operationId": "getCurrentAdmin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAdminVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/passenger/{id}": {
+      "delete": {
+        "tags": [
+          "购票人接口"
+        ],
+        "summary": "删除购票人信息",
+        "operationId": "deletePassenger",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "身份信息 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserUpdateRequest": {
+        "type": "object",
+        "description": "用户更新请求",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "手机号"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "头像 URL"
+          }
+        }
+      },
+      "ApiResponseVoid": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {}
+        }
+      },
+      "AdminUpdateRequest": {
+        "type": "object",
+        "description": "管理员更新请求",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "手机号"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "头像 URL"
+          }
+        }
+      },
+      "PassengerCreateRequest": {
+        "type": "object",
+        "description": "购票人创建请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "实名姓名",
+            "minLength": 1
+          },
+          "idType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "证件类型：1 身份证，2 护照，3 港澳通行证，4 台胞证"
+          },
+          "idNo": {
+            "type": "string",
+            "description": "证件号",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idNo",
+          "idType",
+          "name"
+        ]
+      },
+      "ApiResponseLong": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "AdminCreateRequest": {
+        "type": "object",
+        "description": "创建管理员请求",
+        "properties": {
+          "mobile": {
+            "type": "string",
+            "description": "手机号",
+            "minLength": 1
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          }
+        },
+        "required": [
+          "mobile"
+        ]
+      },
+      "ApiResponseListPassengerVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PassengerVO"
+            }
+          }
+        }
+      },
+      "PassengerVO": {
+        "type": "object",
+        "description": "购票人信息 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "ID"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户账号 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "实名姓名"
+          },
+          "idType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "证件类型：1 身份证，2 护照，3 港澳通行证，4 台胞证"
+          },
+          "idTypeLabel": {
+            "type": "string",
+            "description": "证件类型 Label"
+          },
+          "idNoMasked": {
+            "type": "string",
+            "description": "证件号脱敏"
+          }
+        }
+      },
+      "ApiResponseUserVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserVO"
+          }
+        }
+      },
+      "UserVO": {
+        "type": "object",
+        "description": "用户信息 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户 ID"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "手机号"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "头像 URL"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "账号状态：0 封禁，1 正常"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "账号状态 Label"
+          }
+        }
+      },
+      "PassengerPageRequest": {
+        "type": "object",
+        "description": "购票人分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "name": {
+            "type": "string",
+            "description": "姓名关键词"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponsePassengerVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponsePassengerVO"
+          }
+        }
+      },
+      "PageResponsePassengerVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/PassengerVO"
+            }
+          }
+        }
+      },
+      "UserQueryRequest": {
+        "type": "object",
+        "description": "用户查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "手机号"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "账号状态：0 封禁，1 正常"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseUserVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseUserVO"
+          }
+        }
+      },
+      "PageResponseUserVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/UserVO"
+            }
+          }
+        }
+      },
+      "AdminVO": {
+        "type": "object",
+        "description": "管理员信息",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "管理员ID"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "手机号"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "头像 URL"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "账号状态：0 封禁，1 正常"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "账号状态 Label"
+          }
+        }
+      },
+      "ApiResponseAdminVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AdminVO"
+          }
+        }
+      },
+      "AdminQueryRequest": {
+        "type": "object",
+        "description": "管理员查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "手机号"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "账号状态：0 封禁，1 正常"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseAdminVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseAdminVO"
+          }
+        }
+      },
+      "PageResponseAdminVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/AdminVO"
+            }
+          }
+        }
+      }
+    }
+  }
+}

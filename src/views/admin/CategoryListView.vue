@@ -50,27 +50,34 @@ const columns: ColumnDef<CategoryVO>[] = [
   {
     id: 'actions',
     header: '操作',
-    size: 120,
-    cell: ({ row }) => h('div', { class: 'flex items-center justify-end gap-1' }, [
-      h(Button, {
-        variant: 'ghost',
-        size: 'sm',
-        class: 'h-7 px-2 text-muted-foreground hover:text-foreground',
-        onClick: () => openEdit(row.original),
-      }, () => [
-        h('icon-lucide-pencil', { class: 'h-3.5 w-3.5' }),
-        h('span', { class: 'ml-1 text-xs' }, '编辑'),
+    size: 160,
+    cell: ({ row }) =>
+      h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'outline',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              openEdit(row.original)
+            },
+          },
+          () => '编辑',
+        ),
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'destructive',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              handleDelete(row.original)
+            },
+          },
+          () => '删除',
+        ),
       ]),
-      h(Button, {
-        variant: 'ghost',
-        size: 'sm',
-        class: 'h-7 px-2 text-muted-foreground hover:text-destructive',
-        onClick: () => handleDelete(row.original),
-      }, () => [
-        h('icon-lucide-trash2', { class: 'h-3.5 w-3.5' }),
-        h('span', { class: 'ml-1 text-xs' }, '删除'),
-      ]),
-    ]),
   },
 ]
 
@@ -158,8 +165,13 @@ const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: 
 const openConfirm = (title: string, description: string, onConfirm: () => void) => {
   confirmDialog.value = { open: true, title, description, onConfirm }
 }
-const closeConfirm = () => { confirmDialog.value.open = false }
-const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
 
 const handleDelete = (row: CategoryVO) => {
   openConfirm('确认删除', `确认删除分类「${row.name}」？`, () => deleteMutation.mutate(row.id))
@@ -214,6 +226,11 @@ const handleDelete = (row: CategoryVO) => {
     </DialogContent>
   </Dialog>
 
-  <ConfirmDialog :open="confirmDialog.open" :title="confirmDialog.title"
-    :description="confirmDialog.description" @close="closeConfirm" @confirm="handleConfirm" />
+  <ConfirmDialog
+    :open="confirmDialog.open"
+    :title="confirmDialog.title"
+    :description="confirmDialog.description"
+    @close="closeConfirm"
+    @confirm="handleConfirm"
+  />
 </template>

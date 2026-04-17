@@ -48,34 +48,45 @@ const columns: ColumnDef<ParticipantVO>[] = [
               class: 'h-8 w-8 rounded-full object-cover border border-border',
             })
           : null,
-        h('span', { class: 'text-sm text-muted-foreground truncate max-w-[200px]' }, avatarUrl || '-'),
+        h(
+          'span',
+          { class: 'text-sm text-muted-foreground truncate max-w-[200px]' },
+          avatarUrl || '-',
+        ),
       ])
     },
   },
   {
     id: 'actions',
     header: '操作',
-    size: 120,
-    cell: ({ row }) => h('div', { class: 'flex items-center justify-end gap-1' }, [
-      h(Button, {
-        variant: 'ghost',
-        size: 'sm',
-        class: 'h-7 px-2 text-muted-foreground hover:text-foreground',
-        onClick: () => openEdit(row.original),
-      }, () => [
-        h('icon-lucide-pencil', { class: 'h-3.5 w-3.5' }),
-        h('span', { class: 'ml-1 text-xs' }, '编辑'),
+    size: 160,
+    cell: ({ row }) =>
+      h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'outline',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              openEdit(row.original)
+            },
+          },
+          () => '编辑',
+        ),
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'destructive',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              handleDelete(row.original)
+            },
+          },
+          () => '删除',
+        ),
       ]),
-      h(Button, {
-        variant: 'ghost',
-        size: 'sm',
-        class: 'h-7 px-2 text-muted-foreground hover:text-destructive',
-        onClick: () => handleDelete(row.original),
-      }, () => [
-        h('icon-lucide-trash2', { class: 'h-3.5 w-3.5' }),
-        h('span', { class: 'ml-1 text-xs' }, '删除'),
-      ]),
-    ]),
   },
 ]
 

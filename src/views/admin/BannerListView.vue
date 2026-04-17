@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, h } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { type ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
@@ -16,18 +16,21 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { fetchAdminBanners, createBanner, updateBanner, deleteBanner } from '@/api/event/banner'
 import type { BannerVO, BannerCreateRequest, BannerUpdateRequest } from '@/api/event'
+import { formatDateTime, formatDateTimeLocalInput } from '@/utils/format'
 
 const queryClient = useQueryClient()
 
 const currentPage = ref(1)
 const pageSize = ref(10)
 const searchTitle = ref('')
+const searchCityId = ref('')
 
 const columns: ColumnDef<BannerVO>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
-    size: 180,
+    size: 100,
+    cell: ({ row }) => String(row.getValue('id')),
   },
   {
     accessorKey: 'title',
@@ -36,22 +39,58 @@ const columns: ColumnDef<BannerVO>[] = [
   {
     accessorKey: 'cityId',
     header: '城市ID',
-    size: 180,
+    size: 100,
+    cell: ({ row }) => String(row.getValue('cityId')),
   },
   {
     accessorKey: 'sortOrder',
     header: '排序',
     size: 80,
+    cell: ({ row }) => String(row.getValue('sortOrder') ?? ''),
   },
   {
     accessorKey: 'displayStartAt',
     header: '展示开始时间',
     size: 160,
+    cell: ({ row }) => formatDateTime(row.original.displayStartAt),
   },
   {
     accessorKey: 'displayEndAt',
     header: '展示结束时间',
     size: 160,
+    cell: ({ row }) => formatDateTime(row.original.displayEndAt),
+  },
+  {
+    id: 'actions',
+    header: '操作',
+    size: 160,
+    cell: ({ row }) =>
+      h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'outline',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              openEdit(row.original)
+            },
+          },
+          { default: () => '编辑' },
+        ),
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'destructive',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              handleDelete(row.original)
+            },
+          },
+          { default: () => '删除' },
+        ),
+      ]),
   },
 ]
 
@@ -60,6 +99,7 @@ const queryKey = computed(() => [
   currentPage.value,
   pageSize.value,
   searchTitle.value,
+  searchCityId.value,
 ])
 
 const { data, isLoading } = useQuery({
@@ -69,6 +109,7 @@ const { data, isLoading } = useQuery({
       page: currentPage.value,
       size: pageSize.value,
       title: searchTitle.value || undefined,
+      cityId: searchCityId.value || undefined,
     }),
 })
 
@@ -86,6 +127,7 @@ const form = reactive<BannerCreateRequest & { sortOrder?: number }>({
   cityId: '',
   title: '',
   imageUrl: '',
+  mobileImageUrl: '',
   jumpUrl: '',
   displayStartAt: '',
   displayEndAt: '',
@@ -98,6 +140,7 @@ const resetForm = () => {
   form.cityId = ''
   form.title = ''
   form.imageUrl = ''
+  form.mobileImageUrl = ''
   form.jumpUrl = ''
   form.displayStartAt = ''
   form.displayEndAt = ''
@@ -114,9 +157,10 @@ const openEdit = (row: BannerVO) => {
   form.cityId = row.cityId
   form.title = row.title
   form.imageUrl = row.imageUrl
+  form.mobileImageUrl = row.mobileImageUrl
   form.jumpUrl = row.jumpUrl
-  form.displayStartAt = row.displayStartAt
-  form.displayEndAt = row.displayEndAt
+  form.displayStartAt = formatDateTimeLocalInput(row.displayStartAt)
+  form.displayEndAt = formatDateTimeLocalInput(row.displayEndAt)
   form.sortOrder = row.sortOrder
   editingId.value = row.id
   showDialog.value = true
@@ -153,6 +197,7 @@ const handleSubmit = async () => {
         cityId: form.cityId || undefined,
         title: form.title || undefined,
         imageUrl: form.imageUrl || undefined,
+        mobileImageUrl: form.mobileImageUrl || undefined,
         jumpUrl: form.jumpUrl || undefined,
         displayStartAt: form.displayStartAt || undefined,
         displayEndAt: form.displayEndAt || undefined,
@@ -160,14 +205,25 @@ const handleSubmit = async () => {
       },
     })
   } else {
-    if (!form.cityId || !form.title || !form.imageUrl || !form.jumpUrl) return
+    if (
+      !form.cityId ||
+      !form.title ||
+      !form.imageUrl ||
+      !form.mobileImageUrl ||
+      !form.jumpUrl ||
+      !form.displayStartAt ||
+      !form.displayEndAt
+    )
+      return
     await createMutation.mutateAsync({
       cityId: form.cityId,
       title: form.title,
       imageUrl: form.imageUrl,
+      mobileImageUrl: form.mobileImageUrl,
       jumpUrl: form.jumpUrl,
       displayStartAt: form.displayStartAt,
       displayEndAt: form.displayEndAt,
+      sortOrder: form.sortOrder ?? 0,
     })
   }
 }
@@ -176,8 +232,13 @@ const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: 
 const openConfirm = (title: string, description: string, onConfirm: () => void) => {
   confirmDialog.value = { open: true, title, description, onConfirm }
 }
-const closeConfirm = () => { confirmDialog.value.open = false }
-const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
 
 const handleDelete = (row: BannerVO) => {
   openConfirm('确认删除', `确认删除 Banner「${row.title}」？`, () => deleteMutation.mutate(row.id))
@@ -218,35 +279,51 @@ const handleDelete = (row: BannerVO) => {
   </DataTableCrud>
 
   <Dialog :open="showDialog" @update:open="(v) => !v && (showDialog = false)">
-    <DialogContent class="max-w-lg">
+    <DialogContent class="max-w-2xl">
       <DialogHeader>
         <DialogTitle>{{ dialogTitle }}</DialogTitle>
       </DialogHeader>
 
       <div class="grid gap-4 py-4">
-        <div class="grid gap-2">
-          <label class="text-sm font-medium">标题 <span class="text-destructive">*</span></label>
-          <Input v-model="form.title" placeholder="请输入 Banner 标题" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="grid gap-2">
+            <label class="text-sm font-medium">标题 <span class="text-destructive">*</span></label>
+            <Input v-model="form.title" placeholder="请输入 Banner 标题" />
+          </div>
+          <div class="grid gap-2">
+            <label class="text-sm font-medium"
+              >城市ID <span class="text-destructive">*</span></label
+            >
+            <Input v-model="form.cityId" placeholder="请输入城市 ID" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="grid gap-2">
+            <label class="text-sm font-medium"
+              >PC 端图片 <span class="text-destructive">*</span></label
+            >
+            <ImageUpload v-model="form.imageUrl" />
+          </div>
+          <div class="grid gap-2">
+            <label class="text-sm font-medium"
+              >移动端图片 <span class="text-destructive">*</span></label
+            >
+            <ImageUpload v-model="form.mobileImageUrl" />
+          </div>
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">城市ID <span class="text-destructive">*</span></label>
-          <Input v-model="form.cityId" placeholder="请输入城市 ID" />
-        </div>
-        <div class="grid gap-2">
-          <label class="text-sm font-medium">图片 <span class="text-destructive">*</span></label>
-          <ImageUpload v-model="form.imageUrl" />
-        </div>
-        <div class="grid gap-2">
-          <label class="text-sm font-medium">跳转 URL <span class="text-destructive">*</span></label>
+          <label class="text-sm font-medium"
+            >跳转 URL <span class="text-destructive">*</span></label
+          >
           <Input v-model="form.jumpUrl" placeholder="请输入跳转链接" />
         </div>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid gap-4">
           <div class="grid gap-2">
             <label class="text-sm font-medium">展示开始时间</label>
             <input
               v-model="form.displayStartAt"
               type="datetime-local"
-              class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              class="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
           <div class="grid gap-2">
@@ -254,13 +331,13 @@ const handleDelete = (row: BannerVO) => {
             <input
               v-model="form.displayEndAt"
               type="datetime-local"
-              class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              class="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
-        </div>
-        <div v-if="editingId" class="grid gap-2">
-          <label class="text-sm font-medium">排序</label>
-          <Input v-model.number="form.sortOrder" type="number" placeholder="排序值" />
+          <div class="grid gap-2">
+            <label class="text-sm font-medium">排序</label>
+            <Input v-model.number="form.sortOrder" type="number" placeholder="排序值" />
+          </div>
         </div>
       </div>
 
@@ -276,6 +353,11 @@ const handleDelete = (row: BannerVO) => {
     </DialogContent>
   </Dialog>
 
-  <ConfirmDialog :open="confirmDialog.open" :title="confirmDialog.title"
-    :description="confirmDialog.description" @close="closeConfirm" @confirm="handleConfirm" />
+  <ConfirmDialog
+    :open="confirmDialog.open"
+    :title="confirmDialog.title"
+    :description="confirmDialog.description"
+    @close="closeConfirm"
+    @confirm="handleConfirm"
+  />
 </template>
