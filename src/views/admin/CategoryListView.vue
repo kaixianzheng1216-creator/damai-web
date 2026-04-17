@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, watch } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
@@ -14,7 +14,7 @@ import {
 } from '@/components/common/ui/dialog'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import {
-  fetchAdminCategories,
+  fetchAdminCategoriesPage,
   createCategory,
   updateCategory,
   deleteCategory,
@@ -81,12 +81,20 @@ const columns: ColumnDef<CategoryVO>[] = [
   },
 ]
 
+const currentPage = ref(1)
+const pageSize = ref(10)
+const searchName = ref('')
+
+const queryKey = computed(() => ['admin-categories', currentPage.value, pageSize.value, searchName.value])
+
 const { data, isLoading } = useQuery({
-  queryKey: ['admin-categories'],
-  queryFn: fetchAdminCategories,
+  queryKey,
+  queryFn: () => fetchAdminCategoriesPage({ page: currentPage.value, size: pageSize.value, name: searchName.value || undefined }),
 })
 
-const list = computed(() => data.value ?? [])
+const list = computed(() => data.value?.records ?? [])
+const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
+const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 
 const showDialog = ref(false)
 const editingId = ref<string | null>(null)
@@ -119,6 +127,8 @@ const openEdit = (row: CategoryVO) => {
 }
 
 const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-categories'] })
+
+watch(searchName, () => { currentPage.value = 1 })
 
 const createMutation = useMutation({
   mutationFn: (data: CategoryCreateRequest) => createCategory(data),
@@ -183,11 +193,23 @@ const handleDelete = (row: CategoryVO) => {
     :columns="columns"
     :data="list"
     :loading="isLoading"
+    :total-row="totalRow"
+    :total-pages="totalPages"
+    :current-page="currentPage"
+    :page-size="pageSize"
     title="分类管理"
     @create="openCreate"
     @edit="openEdit"
     @delete="handleDelete"
-  />
+    @update:current-page="currentPage = $event"
+    @update:page-size="pageSize = $event"
+  >
+    <template #toolbar>
+      <div class="flex items-center gap-2">
+        <Input v-model="searchName" placeholder="搜索分类名称" class="h-8 w-48" />
+      </div>
+    </template>
+  </DataTableCrud>
 
   <Dialog :open="showDialog" @update:open="(v) => !v && (showDialog = false)">
     <DialogContent class="max-w-md">

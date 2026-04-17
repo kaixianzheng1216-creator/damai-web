@@ -110,12 +110,14 @@ const handleLastPage = () => {
 
 <template>
   <div class="space-y-4">
-    <div class="flex items-center justify-between">
-      <h2 v-if="title" class="text-lg font-semibold text-foreground">
+    <div class="flex flex-wrap items-center gap-2">
+      <h2 v-if="title" class="shrink-0 text-lg font-semibold text-foreground">
         {{ title }}
       </h2>
-      <div class="flex items-center gap-2">
-        <slot name="toolbar">
+      <slot name="toolbar" />
+      <div class="hidden sm:block flex-1" />
+      <div class="ml-auto shrink-0">
+        <slot name="actions">
           <Button v-if="showCreateButton" size="sm" @click="emit('create')">
             <icon-lucide-plus class="mr-1.5 h-4 w-4" />
             新建
@@ -124,7 +126,7 @@ const handleLastPage = () => {
       </div>
     </div>
 
-    <div v-if="viewMode === 'table'" class="relative rounded-lg border border-border bg-card overflow-hidden">
+    <div v-if="viewMode === 'table'" class="relative rounded-lg border border-border bg-card overflow-x-auto">
       <div
         v-if="loading"
         class="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-sm"
@@ -230,7 +232,7 @@ const handleLastPage = () => {
             每页行数
           </Label>
           <Select
-            :model-value="pageSize"
+            :model-value="String(pageSize)"
             @update:model-value="(value) => {
               emit('update:pageSize', Number(value))
             }"

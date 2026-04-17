@@ -49,7 +49,7 @@ const columns: ColumnDef<AdminVO>[] = [
           class: 'h-6 px-2 text-xs',
           onClick: () => toggleStatus(row.original),
         },
-        () => (row.original.status === 0 ? '正常' : '封禁')
+        { default: () => (row.original.status === 0 ? '正常' : '封禁') }
       )
     },
   },
@@ -79,8 +79,8 @@ const { data, isLoading } = useQuery({
 })
 
 const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => data.value?.totalRow ?? 0)
-const totalPages = computed(() => data.value?.totalPage ?? 1)
+const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
+const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 
 const handleSearch = () => {
   currentPage.value = 1
@@ -198,10 +198,6 @@ const toggleStatus = (row: AdminVO) => {
           @keyup.enter="handleSearch"
         />
         <Button size="sm" variant="outline" @click="handleSearch">搜索</Button>
-        <Button size="sm" @click="openCreate">
-          <icon-lucide-plus class="mr-1.5 h-4 w-4" />
-          新建
-        </Button>
       </div>
     </template>
   </DataTableCrud>

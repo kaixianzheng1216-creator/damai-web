@@ -5,12 +5,17 @@ import type {
   ServiceGuaranteeUpdateRequest,
   ServiceOptionCreateRequest,
   ServiceOptionUpdateRequest,
+  ServiceGuaranteePageRequest,
+  PageResponseServiceGuaranteeVO,
 } from './types'
 
 // ─── Admin ───────────────────────────────────────────────
 
 export const fetchAdminServices = (): Promise<ServiceGuaranteeVO[]> =>
   request.get<ServiceGuaranteeVO[]>('/api/event/admin/services')
+
+export const fetchAdminServicesPage = (query?: ServiceGuaranteePageRequest): Promise<PageResponseServiceGuaranteeVO> =>
+  request.get<PageResponseServiceGuaranteeVO>('/api/event/admin/services/page', { params: query })
 
 export const createService = (
   data: ServiceGuaranteeCreateRequest,

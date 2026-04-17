@@ -3,12 +3,17 @@ import type {
   VenueVO,
   VenueCreateRequest,
   VenueUpdateRequest,
+  VenuePageRequest,
+  PageResponseVenueVO,
 } from './types'
 
 // ─── Admin ───────────────────────────────────────────────
 
 export const fetchAdminVenues = (): Promise<VenueVO[]> =>
   request.get<VenueVO[]>('/api/event/admin/venues')
+
+export const fetchAdminVenuesPage = (query?: VenuePageRequest): Promise<PageResponseVenueVO> =>
+  request.get<PageResponseVenueVO>('/api/event/admin/venues/page', { params: query })
 
 export const createVenue = (data: VenueCreateRequest): Promise<VenueVO> =>
   request.post<VenueVO>('/api/event/admin/venues', data)

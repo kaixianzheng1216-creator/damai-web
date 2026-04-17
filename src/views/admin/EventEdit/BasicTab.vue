@@ -16,6 +16,7 @@ import {
 import { fetchAdminCities } from '@/api/event/city'
 import { fetchAdminCategories } from '@/api/event/category'
 import { fetchAdminVenues } from '@/api/event/venue'
+import { fetchAdminSeries } from '@/api/event/series'
 import { createEvent, updateEvent } from '@/api/event/event'
 import type { EventCreateRequest, EventUpdateRequest } from '@/api/event'
 
@@ -50,6 +51,11 @@ const { data: venuesData } = useQuery({
   queryFn: fetchAdminVenues,
 })
 
+const { data: seriesData } = useQuery({
+  queryKey: ['admin-series'],
+  queryFn: fetchAdminSeries,
+})
+
 const basicForm = reactive<EventCreateRequest & Partial<EventUpdateRequest>>({
   categoryId: '',
   venueId: '',
@@ -57,6 +63,7 @@ const basicForm = reactive<EventCreateRequest & Partial<EventUpdateRequest>>({
   name: '',
   coverUrl: '',
   recommendWeight: 0,
+  seriesId: '',
 })
 
 const toArray = (data: any) => {
@@ -75,6 +82,7 @@ watch(() => props.eventData, (newData) => {
     name: newData.name,
     coverUrl: newData.coverUrl,
     recommendWeight: newData.recommendWeight || 0,
+    seriesId: newData.seriesId ? String(newData.seriesId) : '',
   })
 }, { immediate: true, deep: true })
 
@@ -125,6 +133,8 @@ const handleSaveBasic = async () => {
     isLoading.value = false
   }
 }
+
+defineExpose({ save: handleSaveBasic })
 </script>
 
 <template>
@@ -132,67 +142,83 @@ const handleSaveBasic = async () => {
     <CardHeader>
       <CardTitle>活动基本信息</CardTitle>
     </CardHeader>
-    <CardContent class="space-y-6">
-      <div class="flex justify-center">
-        <div class="w-full max-w-2xl">
-          <div class="space-y-2">
-            <Label>封面</Label>
-            <ImageUpload v-model="basicForm.coverUrl" />
+    <CardContent>
+      <div class="flex gap-8 items-start">
+
+        <!-- 左侧：封面（3:4 竖版） -->
+        <div class="shrink-0 w-[240px] space-y-2">
+          <Label>封面</Label>
+          <ImageUpload v-model="basicForm.coverUrl" aspect-class="aspect-[3/4]" />
+        </div>
+
+        <!-- 右侧：表单 -->
+        <div class="flex-1 min-w-0 space-y-4 pt-0.5">
+          <div class="grid grid-cols-2 gap-x-4 gap-y-4">
+            <div class="space-y-2">
+              <Label>活动名称 <span class="text-destructive">*</span></Label>
+              <Input v-model="basicForm.name" placeholder="请输入活动名称" />
+            </div>
+            <div class="space-y-2">
+              <Label>推荐权重</Label>
+              <Input v-model.number="basicForm.recommendWeight" type="number" placeholder="数字越大越靠前" />
+            </div>
+            <div class="space-y-2">
+              <Label>城市 <span class="text-destructive">*</span></Label>
+              <Select v-model="basicForm.cityId">
+                <SelectTrigger>
+                  <SelectValue placeholder="请选择城市" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="city in toArray(citiesData)" :key="city.id" :value="String(city.id)">
+                    {{ city.name }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="space-y-2">
+              <Label>分类 <span class="text-destructive">*</span></Label>
+              <Select v-model="basicForm.categoryId">
+                <SelectTrigger>
+                  <SelectValue placeholder="请选择分类" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="category in toArray(categoriesData)" :key="category.id" :value="String(category.id)">
+                    {{ category.name }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="space-y-2">
+              <Label>场馆 <span class="text-destructive">*</span></Label>
+              <Select v-model="basicForm.venueId">
+                <SelectTrigger>
+                  <SelectValue placeholder="请选择场馆" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="venue in toArray(venuesData)" :key="venue.id" :value="String(venue.id)">
+                    {{ venue.name }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="space-y-2">
+              <Label>系列（可选）</Label>
+              <Select v-model="basicForm.seriesId">
+                <SelectTrigger>
+                  <SelectValue placeholder="不属于任何系列" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">不属于任何系列</SelectItem>
+                  <SelectItem v-for="s in toArray(seriesData)" :key="s.id" :value="String(s.id)">
+                    {{ s.name }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
+
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="space-y-2">
-          <Label>活动名称 <span class="text-destructive">*</span></Label>
-          <Input v-model="basicForm.name" placeholder="请输入活动名称" />
-        </div>
-        <div class="space-y-2">
-          <Label>推荐权重</Label>
-          <Input v-model.number="basicForm.recommendWeight" type="number" placeholder="数字越大越靠前" />
-        </div>
-        <div class="space-y-2">
-          <Label>城市 <span class="text-destructive">*</span></Label>
-          <Select v-model="basicForm.cityId">
-            <SelectTrigger>
-              <SelectValue placeholder="请选择城市" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="city in toArray(citiesData)" :key="city.id" :value="String(city.id)">
-                {{ city.name }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div class="space-y-2">
-          <Label>分类 <span class="text-destructive">*</span></Label>
-          <Select v-model="basicForm.categoryId">
-            <SelectTrigger>
-              <SelectValue placeholder="请选择分类" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="category in toArray(categoriesData)" :key="category.id" :value="String(category.id)">
-                {{ category.name }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div class="space-y-2">
-          <Label>场馆 <span class="text-destructive">*</span></Label>
-          <Select v-model="basicForm.venueId">
-            <SelectTrigger>
-              <SelectValue placeholder="请选择场馆" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="venue in toArray(venuesData)" :key="venue.id" :value="String(venue.id)">
-                {{ venue.name }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <Button @click="handleSaveBasic" :disabled="isLoading">
-        {{ isLoading ? '保存中...' : (isEdit ? '更新' : '创建') }}
-      </Button>
     </CardContent>
   </Card>
 </template>

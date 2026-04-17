@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, watch } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { type ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
@@ -13,7 +13,7 @@ import {
   DialogFooter,
 } from '@/components/common/ui/dialog'
 import {
-  fetchAdminServices,
+  fetchAdminServicesPage,
   createService,
   updateService,
   deleteService,
@@ -102,12 +102,20 @@ const optionColumns: ColumnDef<ServiceGuaranteeOptionVO>[] = [
   },
 ]
 
+const currentPage = ref(1)
+const pageSize = ref(10)
+const searchName = ref('')
+
+const queryKey = computed(() => ['admin-services', currentPage.value, pageSize.value, searchName.value])
+
 const { data, isLoading } = useQuery({
-  queryKey: ['admin-services'],
-  queryFn: fetchAdminServices,
+  queryKey,
+  queryFn: () => fetchAdminServicesPage({ page: currentPage.value, size: pageSize.value, name: searchName.value || undefined }),
 })
 
-const list = computed(() => data.value ?? [])
+const list = computed(() => data.value?.records ?? [])
+const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
+const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 const selectedService = ref<ServiceGuaranteeVO | null>(null)
 const currentOptions = computed(() => selectedService.value?.options ?? [])
 
@@ -184,6 +192,8 @@ const openEditOption = (row: ServiceGuaranteeOptionVO) => {
 const invalidate = () => {
   queryClient.invalidateQueries({ queryKey: ['admin-services'] }).then(syncSelectedService)
 }
+
+watch(searchName, () => { currentPage.value = 1 })
 
 const createServiceMutation = useMutation({
   mutationFn: (data: ServiceGuaranteeCreateRequest) => createService(data),
@@ -292,11 +302,23 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
       :columns="serviceColumns"
       :data="list"
       :loading="isLoading"
+      :total-row="totalRow"
+      :total-pages="totalPages"
+      :current-page="currentPage"
+      :page-size="pageSize"
       title="服务保障管理"
       @create="openCreateService"
       @edit="openEditService"
       @delete="handleDeleteService"
-    />
+      @update:current-page="currentPage = $event"
+      @update:page-size="pageSize = $event"
+    >
+      <template #toolbar>
+        <div class="flex items-center gap-2">
+          <Input v-model="searchName" placeholder="搜索服务名称" class="h-8 w-48" />
+        </div>
+      </template>
+    </DataTableCrud>
 
     <div v-if="selectedService">
       <div class="mb-3 flex items-center gap-2">
@@ -315,6 +337,7 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
       <DataTableCrud
         :columns="optionColumns"
         :data="currentOptions"
+        :total-row="currentOptions.length"
         title="服务选项"
         @create="openCreateOption"
         @edit="openEditOption"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, watch } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { type ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
@@ -10,12 +10,22 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/common/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/common/ui/select'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import ImageUpload from '@/components/common/ImageUpload.vue'
+import DateTimePicker from '@/components/common/DateTimePicker.vue'
 import { fetchAdminBanners, createBanner, updateBanner, deleteBanner } from '@/api/event/banner'
-import type { BannerVO, BannerCreateRequest, BannerUpdateRequest } from '@/api/event'
+import { fetchAdminCities } from '@/api/event/city'
+import type { BannerVO, BannerCreateRequest, BannerUpdateRequest, CityVO } from '@/api/event'
 import { formatDateTime, formatDateTimeLocalInput } from '@/utils/format'
 
 const queryClient = useQueryClient()
@@ -24,6 +34,18 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const searchTitle = ref('')
 const searchCityId = ref('')
+
+const { data: citiesData } = useQuery({
+  queryKey: ['admin-cities'],
+  queryFn: fetchAdminCities,
+})
+
+const citiesMap = computed(() => {
+  const map = new Map<string, CityVO>()
+  const cities = citiesData.value ?? []
+  cities.forEach((city) => map.set(city.id, city))
+  return map
+})
 
 const columns: ColumnDef<BannerVO>[] = [
   {
@@ -38,9 +60,12 @@ const columns: ColumnDef<BannerVO>[] = [
   },
   {
     accessorKey: 'cityId',
-    header: '城市ID',
+    header: '城市',
     size: 100,
-    cell: ({ row }) => String(row.getValue('cityId')),
+    cell: ({ row }) => {
+      const cityId = String(row.getValue('cityId'))
+      return citiesMap.value.get(cityId)?.name ?? cityId
+    },
   },
   {
     accessorKey: 'sortOrder',
@@ -109,17 +134,17 @@ const { data, isLoading } = useQuery({
       page: currentPage.value,
       size: pageSize.value,
       title: searchTitle.value || undefined,
-      cityId: searchCityId.value || undefined,
+      cityId: (searchCityId.value && searchCityId.value !== 'all') ? searchCityId.value : undefined,
     }),
 })
 
 const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => data.value?.totalRow ?? 0)
-const totalPages = computed(() => data.value?.totalPage ?? 1)
+const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
+const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 
-const handleSearch = () => {
+watch([searchTitle, searchCityId], () => {
   currentPage.value = 1
-}
+})
 
 const showDialog = ref(false)
 const editingId = ref<string | null>(null)
@@ -263,17 +288,26 @@ const handleDelete = (row: BannerVO) => {
   >
     <template #toolbar>
       <div class="flex items-center gap-2">
+        <Select v-model="searchCityId">
+          <SelectTrigger class="h-8 w-32">
+            <SelectValue placeholder="全部城市" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">全部城市</SelectItem>
+            <SelectItem
+              v-for="city in citiesData ?? []"
+              :key="city.id"
+              :value="String(city.id)"
+            >
+              {{ city.name }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
         <Input
           v-model="searchTitle"
           placeholder="搜索标题"
           class="h-8 w-36"
-          @keyup.enter="handleSearch"
         />
-        <Button size="sm" variant="outline" @click="handleSearch">搜索</Button>
-        <Button size="sm" @click="openCreate">
-          <icon-lucide-plus class="mr-1.5 h-4 w-4" />
-          新建
-        </Button>
       </div>
     </template>
   </DataTableCrud>
@@ -282,6 +316,9 @@ const handleDelete = (row: BannerVO) => {
     <DialogContent class="max-w-2xl">
       <DialogHeader>
         <DialogTitle>{{ dialogTitle }}</DialogTitle>
+        <DialogDescription class="sr-only">
+          {{ editingId ? '编辑 Banner 信息' : '创建新的 Banner' }}
+        </DialogDescription>
       </DialogHeader>
 
       <div class="grid gap-4 py-4">
@@ -292,9 +329,22 @@ const handleDelete = (row: BannerVO) => {
           </div>
           <div class="grid gap-2">
             <label class="text-sm font-medium"
-              >城市ID <span class="text-destructive">*</span></label
+              >城市 <span class="text-destructive">*</span></label
             >
-            <Input v-model="form.cityId" placeholder="请输入城市 ID" />
+            <Select v-model="form.cityId">
+              <SelectTrigger>
+                <SelectValue placeholder="请选择城市" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="city in citiesData ?? []"
+                  :key="city.id"
+                  :value="String(city.id)"
+                >
+                  {{ city.name }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
@@ -320,19 +370,11 @@ const handleDelete = (row: BannerVO) => {
         <div class="grid gap-4">
           <div class="grid gap-2">
             <label class="text-sm font-medium">展示开始时间</label>
-            <input
-              v-model="form.displayStartAt"
-              type="datetime-local"
-              class="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            />
+            <DateTimePicker v-model="form.displayStartAt" placeholder="选择展示开始时间" />
           </div>
           <div class="grid gap-2">
             <label class="text-sm font-medium">展示结束时间</label>
-            <input
-              v-model="form.displayEndAt"
-              type="datetime-local"
-              class="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            />
+            <DateTimePicker v-model="form.displayEndAt" placeholder="选择展示结束时间" />
           </div>
           <div class="grid gap-2">
             <label class="text-sm font-medium">排序</label>

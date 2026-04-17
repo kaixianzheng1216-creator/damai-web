@@ -16,6 +16,7 @@ import type {
   EventParticipantBatchAddRequest,
   EventInfoCreateRequest,
   EventDetailResponse,
+  TicketTypeCopyRequest,
 } from './types'
 
 // ─── Front ───────────────────────────────────────────────
@@ -112,3 +113,6 @@ export const batchAddParticipants = (
   eventId: string,
   data: EventParticipantBatchAddRequest,
 ): Promise<void> => request.post<void>(`/api/event/admin/events/${eventId}/participants/batch`, data)
+
+export const copyTicketTypes = (eventId: string, data: TicketTypeCopyRequest): Promise<void> =>
+  request.post<void>(`/api/event/admin/events/${eventId}/ticket-types/copy`, data)

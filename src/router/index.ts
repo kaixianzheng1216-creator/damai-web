@@ -88,6 +88,12 @@ const router = createRouter({
           meta: { title: '活动管理' },
         },
         {
+          path: 'events/create',
+          name: 'admin-event-create',
+          component: () => import('@/views/admin/EventEditView.vue'),
+          meta: { title: '创建活动' },
+        },
+        {
           path: 'events/:id/edit',
           name: 'admin-event-edit',
           component: () => import('@/views/admin/EventEditView.vue'),
@@ -152,17 +158,15 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to, _from) => {
   const userStore = useUserStore()
 
   if (to.meta.requiresAdmin && !userStore.adminToken) {
-    next({ name: 'admin-login', query: { redirect: to.fullPath } })
+    return { name: 'admin-login', query: { redirect: to.fullPath } }
   } else if (to.meta.requiresAuth && !userStore.isLoggedIn) {
-    next({ name: 'login', query: { redirect: to.fullPath } })
+    return { name: 'login', query: { redirect: to.fullPath } }
   } else if (to.name === 'login' && userStore.isLoggedIn) {
-    next({ name: 'home' })
-  } else {
-    next()
+    return { name: 'home' }
   }
 })
 

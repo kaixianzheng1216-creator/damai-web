@@ -3,12 +3,17 @@ import type {
   SeriesEventVO,
   SeriesCreateRequest,
   SeriesUpdateRequest,
+  SeriesPageRequest,
+  PageResponseSeriesVO,
 } from './types'
 
 // ─── Admin ───────────────────────────────────────────────
 
 export const fetchAdminSeries = (): Promise<SeriesEventVO[]> =>
   request.get<SeriesEventVO[]>('/api/event/admin/series')
+
+export const fetchAdminSeriesPage = (query?: SeriesPageRequest): Promise<PageResponseSeriesVO> =>
+  request.get<PageResponseSeriesVO>('/api/event/admin/series/page', { params: query })
 
 export const createSeries = (data: SeriesCreateRequest): Promise<SeriesEventVO> =>
   request.post<SeriesEventVO>('/api/event/admin/series', data)

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { ref, reactive, computed, watch } from 'vue'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
-import { Button } from '@/components/common/ui/button'
 import { Input } from '@/components/common/ui/input'
 import { Label } from '@/components/common/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import { saveEventInfo } from '@/api/event/event'
+import { fetchAdminNotices } from '@/api/event/notice'
 import type { EventInfoCreateRequest } from '@/api/event'
+import RichTextEditor from '@/components/common/RichTextEditor.vue'
 
 interface Props {
   eventId: string
@@ -22,31 +23,49 @@ const emit = defineEmits<{
 
 const queryClient = useQueryClient()
 
-const infoForm = reactive<EventInfoCreateRequest>({
-  description: '',
-  purchaseNotice: [],
-  admissionNotice: [],
+// ─── Notice Templates ─────────────────────────────────────
+
+const { data: noticeTemplates } = useQuery({
+  queryKey: ['admin-notices'],
+  queryFn: fetchAdminNotices,
 })
 
-watch(() => props.eventInfo, (newEventInfo) => {
-  if (newEventInfo) {
-    Object.assign(infoForm, {
-      description: newEventInfo.description || '',
-      purchaseNotice: newEventInfo.purchaseNotice || [],
-      admissionNotice: newEventInfo.admissionNotice || [],
-    })
-  }
-}, { immediate: true })
+const purchaseTemplates = computed(() =>
+  (noticeTemplates.value ?? []).filter(n => n.type === 1).sort((a, b) => a.sortOrder - b.sortOrder)
+)
+const admissionTemplates = computed(() =>
+  (noticeTemplates.value ?? []).filter(n => n.type === 2).sort((a, b) => a.sortOrder - b.sortOrder)
+)
 
-const invalidateAll = () => {
-  queryClient.invalidateQueries({ queryKey: ['admin-event-detail', props.eventId] })
+// ─── Form State ───────────────────────────────────────────
+
+const description = ref('')
+const purchaseContent = reactive<Record<string, string>>({})
+const admissionContent = reactive<Record<string, string>>({})
+
+const populateFromEventInfo = () => {
+  if (!props.eventInfo || !noticeTemplates.value) return
+  description.value = props.eventInfo.description || ''
+
+  for (const notice of (props.eventInfo.purchaseNotice ?? [])) {
+    const tmpl = purchaseTemplates.value.find(t => t.name === notice.name)
+    if (tmpl) purchaseContent[tmpl.id] = notice.description
+  }
+  for (const notice of (props.eventInfo.admissionNotice ?? [])) {
+    const tmpl = admissionTemplates.value.find(t => t.name === notice.name)
+    if (tmpl) admissionContent[tmpl.id] = notice.description
+  }
 }
+
+watch([() => props.eventInfo, noticeTemplates], populateFromEventInfo, { immediate: true })
+
+// ─── Save ─────────────────────────────────────────────────
 
 const saveEventInfoMutation = useMutation({
   mutationFn: (data: EventInfoCreateRequest) => saveEventInfo(props.eventId, data),
   onSuccess: () => {
     toast.success('详情信息保存成功')
-    invalidateAll()
+    queryClient.invalidateQueries({ queryKey: ['admin-event-detail', props.eventId] })
     emit('updated')
   },
   onError: () => {
@@ -55,34 +74,22 @@ const saveEventInfoMutation = useMutation({
 })
 
 const handleSaveInfo = async () => {
-  await saveEventInfoMutation.mutateAsync(infoForm)
+  const purchaseNotice = purchaseTemplates.value
+    .filter(t => purchaseContent[t.id]?.trim())
+    .map(t => ({ name: t.name, description: purchaseContent[t.id]! }))
+
+  const admissionNotice = admissionTemplates.value
+    .filter(t => admissionContent[t.id]?.trim())
+    .map(t => ({ name: t.name, description: admissionContent[t.id]! }))
+
+  await saveEventInfoMutation.mutateAsync({
+    description: description.value,
+    purchaseNotice,
+    admissionNotice,
+  })
 }
 
-const addPurchaseNotice = () => {
-  if (!infoForm.purchaseNotice) {
-    infoForm.purchaseNotice = []
-  }
-  infoForm.purchaseNotice.push({ name: '', description: '' })
-}
-
-const removePurchaseNotice = (index: number) => {
-  if (infoForm.purchaseNotice) {
-    infoForm.purchaseNotice.splice(index, 1)
-  }
-}
-
-const addAdmissionNotice = () => {
-  if (!infoForm.admissionNotice) {
-    infoForm.admissionNotice = []
-  }
-  infoForm.admissionNotice.push({ name: '', description: '' })
-}
-
-const removeAdmissionNotice = (index: number) => {
-  if (infoForm.admissionNotice) {
-    infoForm.admissionNotice.splice(index, 1)
-  }
-}
+defineExpose({ save: handleSaveInfo })
 </script>
 
 <template>
@@ -90,53 +97,60 @@ const removeAdmissionNotice = (index: number) => {
     <CardHeader>
       <CardTitle>详情信息</CardTitle>
     </CardHeader>
-    <CardContent class="space-y-4">
+    <CardContent class="space-y-6 max-w-3xl">
+
+      <!-- 活动描述 -->
       <div class="space-y-2">
         <Label>活动描述</Label>
-        <Input v-model="infoForm.description" placeholder="请输入活动描述" />
+        <RichTextEditor v-model="description" placeholder="请输入活动描述" />
       </div>
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <Label>购票须知</Label>
-          <Button variant="outline" size="sm" @click="addPurchaseNotice">添加须知</Button>
+
+      <!-- 购票须知 -->
+      <div class="space-y-3">
+        <Label>购票须知</Label>
+        <div v-if="purchaseTemplates.length === 0" class="text-sm text-muted-foreground py-2">
+          暂无购票须知模板，请先在"须知模板"中添加
         </div>
-        <div v-if="infoForm.purchaseNotice && infoForm.purchaseNotice.length === 0" class="text-center py-2 text-muted-foreground text-sm">
-          暂无购票须知
-        </div>
-        <div v-else class="space-y-2">
-          <div v-for="(notice, index) in infoForm.purchaseNotice" :key="index" class="space-y-2 p-3 border rounded-lg">
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-medium">须知 {{ index + 1 }}</span>
-              <Button size="sm" @click="removePurchaseNotice(index)">删除</Button>
+        <div v-else class="space-y-3">
+          <div
+            v-for="tmpl in purchaseTemplates"
+            :key="tmpl.id"
+            class="rounded-lg border p-3 space-y-2"
+          >
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium">{{ tmpl.name }}</span>
             </div>
-            <Input v-model="notice.name" placeholder="标题" />
-            <Input v-model="notice.description" placeholder="描述" />
+            <Input
+              v-model="purchaseContent[tmpl.id]"
+              :placeholder="`填写「${tmpl.name}」的具体内容`"
+            />
           </div>
         </div>
       </div>
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <Label>入场须知</Label>
-          <Button variant="outline" size="sm" @click="addAdmissionNotice">添加须知</Button>
+
+      <!-- 入场须知 -->
+      <div class="space-y-3">
+        <Label>入场须知</Label>
+        <div v-if="admissionTemplates.length === 0" class="text-sm text-muted-foreground py-2">
+          暂无入场须知模板，请先在"须知模板"中添加
         </div>
-        <div v-if="infoForm.admissionNotice && infoForm.admissionNotice.length === 0" class="text-center py-2 text-muted-foreground text-sm">
-          暂无入场须知
-        </div>
-        <div v-else class="space-y-2">
-          <div v-for="(notice, index) in infoForm.admissionNotice" :key="index" class="space-y-2 p-3 border rounded-lg">
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-medium">须知 {{ index + 1 }}</span>
-              <Button size="sm" @click="removeAdmissionNotice(index)">删除</Button>
+        <div v-else class="space-y-3">
+          <div
+            v-for="tmpl in admissionTemplates"
+            :key="tmpl.id"
+            class="rounded-lg border p-3 space-y-2"
+          >
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium">{{ tmpl.name }}</span>
             </div>
-            <Input v-model="notice.name" placeholder="标题" />
-            <Input v-model="notice.description" placeholder="描述" />
+            <Input
+              v-model="admissionContent[tmpl.id]"
+              :placeholder="`填写「${tmpl.name}」的具体内容`"
+            />
           </div>
         </div>
       </div>
-      <Button @click="handleSaveInfo" :disabled="saveEventInfoMutation.isPending.value">
-        {{ saveEventInfoMutation.isPending.value ? '保存中...' : '保存' }}
-      </Button>
+
     </CardContent>
   </Card>
 </template>
-

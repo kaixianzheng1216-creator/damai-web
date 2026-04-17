@@ -4,6 +4,8 @@ import type {
   CityListVO,
   CityCreateRequest,
   CityUpdateRequest,
+  CityPageRequest,
+  PageResponseCityVO,
 } from './types'
 
 // ─── Front ───────────────────────────────────────────────
@@ -18,6 +20,9 @@ export const fetchCitiesList = (): Promise<CityVO[]> =>
 
 export const fetchAdminCities = (): Promise<CityVO[]> =>
   request.get<CityVO[]>('/api/event/admin/cities')
+
+export const fetchAdminCitiesPage = (query?: CityPageRequest): Promise<PageResponseCityVO> =>
+  request.get<PageResponseCityVO>('/api/event/admin/cities/page', { params: query })
 
 export const createCity = (data: CityCreateRequest): Promise<CityVO> =>
   request.post<CityVO>('/api/event/admin/cities', data)

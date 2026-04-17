@@ -3,12 +3,17 @@ import type {
   NoticeVO,
   NoticeCreateRequest,
   NoticeUpdateRequest,
+  NoticePageRequest,
+  PageResponseNoticeVO,
 } from './types'
 
 // ─── Admin ───────────────────────────────────────────────
 
 export const fetchAdminNotices = (): Promise<NoticeVO[]> =>
   request.get<NoticeVO[]>('/api/event/admin/notices')
+
+export const fetchAdminNoticesPage = (query?: NoticePageRequest): Promise<PageResponseNoticeVO> =>
+  request.get<PageResponseNoticeVO>('/api/event/admin/notices/page', { params: query })
 
 export const createNotice = (data: NoticeCreateRequest): Promise<NoticeVO> =>
   request.post<NoticeVO>('/api/event/admin/notices', data)

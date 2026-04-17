@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, watch } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/common/ui/dialog'
-import { fetchAdminSeries, createSeries, updateSeries, deleteSeries } from '@/api/event/series'
+import { fetchAdminSeriesPage, createSeries, updateSeries, deleteSeries } from '@/api/event/series'
 import type { SeriesEventVO, SeriesCreateRequest, SeriesUpdateRequest } from '@/api/event'
 
 const queryClient = useQueryClient()
@@ -63,12 +63,20 @@ const columns: ColumnDef<SeriesEventVO>[] = [
   },
 ]
 
+const currentPage = ref(1)
+const pageSize = ref(10)
+const searchName = ref('')
+
+const queryKey = computed(() => ['admin-series', currentPage.value, pageSize.value, searchName.value])
+
 const { data, isLoading } = useQuery({
-  queryKey: ['admin-series'],
-  queryFn: fetchAdminSeries,
+  queryKey,
+  queryFn: () => fetchAdminSeriesPage({ page: currentPage.value, size: pageSize.value, name: searchName.value || undefined }),
 })
 
-const list = computed(() => data.value ?? [])
+const list = computed(() => data.value?.records ?? [])
+const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
+const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 
 const showDialog = ref(false)
 const editingId = ref<string | null>(null)
@@ -95,6 +103,8 @@ const openEdit = (row: SeriesEventVO) => {
 }
 
 const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-series'] })
+
+watch(searchName, () => { currentPage.value = 1 })
 
 const createMutation = useMutation({
   mutationFn: (data: SeriesCreateRequest) => createSeries(data),
@@ -139,11 +149,23 @@ const handleDelete = (row: SeriesEventVO) => {
     :columns="columns"
     :data="list"
     :loading="isLoading"
+    :total-row="totalRow"
+    :total-pages="totalPages"
+    :current-page="currentPage"
+    :page-size="pageSize"
     title="系列管理"
     @create="openCreate"
     @edit="openEdit"
     @delete="handleDelete"
-  />
+    @update:current-page="currentPage = $event"
+    @update:page-size="pageSize = $event"
+  >
+    <template #toolbar>
+      <div class="flex items-center gap-2">
+        <Input v-model="searchName" placeholder="搜索系列名称" class="h-8 w-48" />
+      </div>
+    </template>
+  </DataTableCrud>
 
   <Dialog :open="showDialog" @update:open="(v) => !v && (showDialog = false)">
     <DialogContent class="max-w-md">

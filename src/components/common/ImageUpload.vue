@@ -6,9 +6,11 @@ import { uploadFile } from '@/api/file/index'
 
 interface Props {
   modelValue?: string
+  aspectClass?: string
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+const resolvedAspect = () => props.aspectClass ?? 'aspect-video'
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
@@ -82,7 +84,7 @@ const handleDragLeave = (e: DragEvent) => {
   <div class="space-y-2">
     <div
       v-if="modelValue"
-      class="relative group aspect-video w-full overflow-hidden rounded-lg border bg-muted"
+      :class="['relative group w-full overflow-hidden rounded-lg border bg-muted', resolvedAspect()]"
     >
       <img :src="modelValue" alt="Preview" class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105" />
       <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -100,8 +102,9 @@ const handleDragLeave = (e: DragEvent) => {
       class="flex flex-col gap-2"
     >
       <div
-        class="flex aspect-video w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 transition-all duration-300"
         :class="[
+          'flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 transition-all duration-300',
+          resolvedAspect(),
           isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25',
         ]"
         @click="triggerUpload"

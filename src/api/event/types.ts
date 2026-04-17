@@ -424,6 +424,67 @@ export interface ServiceOptionUpdateRequest {
 
 // ─── Home (Frontend Display) ─────────────────────────────
 
+// ─── Series Page ─────────────────────────────────────────
+export interface SeriesPageRequest {
+  page?: number
+  size?: number
+  name?: string
+}
+export type PageResponseSeriesVO = PaginatedResponse<SeriesEventVO>
+
+// ─── Category Page ───────────────────────────────────────
+export interface CategoryPageRequest {
+  page?: number
+  size?: number
+  name?: string
+}
+export type PageResponseCategoryVO = PaginatedResponse<CategoryVO>
+
+// ─── City Page ───────────────────────────────────────────
+export interface CityPageRequest {
+  page?: number
+  size?: number
+  name?: string
+}
+export type PageResponseCityVO = PaginatedResponse<CityVO>
+
+// ─── Notice Page ─────────────────────────────────────────
+export interface NoticePageRequest {
+  page?: number
+  size?: number
+  type?: number
+  name?: string
+}
+export type PageResponseNoticeVO = PaginatedResponse<NoticeVO>
+
+// ─── Participant Page ─────────────────────────────────────
+export interface ParticipantPageRequest {
+  page?: number
+  size?: number
+  name?: string
+}
+export type PageResponseParticipantVO = PaginatedResponse<ParticipantVO>
+
+// ─── ServiceGuarantee Page ────────────────────────────────
+export interface ServiceGuaranteePageRequest {
+  page?: number
+  size?: number
+  name?: string
+}
+export type PageResponseServiceGuaranteeVO = PaginatedResponse<ServiceGuaranteeVO>
+
+// ─── Venue Page ───────────────────────────────────────────
+export interface VenuePageRequest {
+  page?: number
+  size?: number
+  name?: string
+  province?: string
+  city?: string
+  district?: string
+}
+export type PageResponseVenueVO = PaginatedResponse<VenueVO>
+
+// ─── Home (Frontend Display) ─────────────────────────────
 export type HomeBannerItem = BannerVO
 
 export interface HomeCategoryItem {
@@ -443,4 +504,9 @@ export interface HomeEventCardItem {
   priceText: string
   saleStatus?: string
   categoryName: string
+}
+
+export interface TicketTypeCopyRequest {
+  sourceSessionId: string
+  targetSessionIds: string[]
 }

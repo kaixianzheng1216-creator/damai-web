@@ -35,12 +35,13 @@ const emit = defineEmits<{
 
 const queryClient = useQueryClient()
 
+const showServiceDialog = ref(false)
+
 const { data: servicesData } = useQuery({
   queryKey: ['admin-services'],
   queryFn: fetchAdminServices,
+  enabled: showServiceDialog,
 })
-
-const showServiceDialog = ref(false)
 
 interface SelectedService {
   serviceId: string
@@ -167,7 +168,7 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
               {{ service.serviceGuaranteeOption.name }}
             </div>
           </div>
-          <Button size="sm" @click="handleRemoveService(service)">移除</Button>
+          <Button variant="ghost" size="sm" class="text-muted-foreground hover:text-destructive" @click="handleRemoveService(service)">移除</Button>
         </div>
       </div>
     </CardContent>

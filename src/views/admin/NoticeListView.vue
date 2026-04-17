@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, watch } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { type ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/common/ui/select'
-import { fetchAdminNotices, createNotice, updateNotice, deleteNotice } from '@/api/event/notice'
+import { fetchAdminNoticesPage, createNotice, updateNotice, deleteNotice } from '@/api/event/notice'
 import type { NoticeVO, NoticeCreateRequest, NoticeUpdateRequest } from '@/api/event'
 
 const queryClient = useQueryClient()
@@ -63,12 +63,26 @@ const columns: ColumnDef<NoticeVO>[] = [
   },
 ]
 
+const currentPage = ref(1)
+const pageSize = ref(10)
+const searchName = ref('')
+const searchType = ref('')
+
+const queryKey = computed(() => ['admin-notices', currentPage.value, pageSize.value, searchName.value, searchType.value])
+
 const { data, isLoading } = useQuery({
-  queryKey: ['admin-notices'],
-  queryFn: fetchAdminNotices,
+  queryKey,
+  queryFn: () => fetchAdminNoticesPage({
+    page: currentPage.value,
+    size: pageSize.value,
+    name: searchName.value || undefined,
+    type: (searchType.value && searchType.value !== 'all') ? Number(searchType.value) : undefined,
+  }),
 })
 
-const list = computed(() => data.value ?? [])
+const list = computed(() => data.value?.records ?? [])
+const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
+const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 
 const showDialog = ref(false)
 const editingId = ref<string | null>(null)
@@ -105,6 +119,8 @@ const openEdit = (row: NoticeVO) => {
 }
 
 const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-notices'] })
+
+watch([searchName, searchType], () => { currentPage.value = 1 })
 
 const createMutation = useMutation({
   mutationFn: (data: NoticeCreateRequest) => createNotice(data),
@@ -156,11 +172,33 @@ const handleDelete = (row: NoticeVO) => {
     :columns="columns"
     :data="list"
     :loading="isLoading"
+    :total-row="totalRow"
+    :total-pages="totalPages"
+    :current-page="currentPage"
+    :page-size="pageSize"
     title="须知管理"
     @create="openCreate"
     @edit="openEdit"
     @delete="handleDelete"
-  />
+    @update:current-page="currentPage = $event"
+    @update:page-size="pageSize = $event"
+  >
+    <template #toolbar>
+      <div class="flex items-center gap-2">
+        <Select v-model="searchType">
+          <SelectTrigger class="h-8 w-28">
+            <SelectValue placeholder="全部类型" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">全部类型</SelectItem>
+            <SelectItem value="1">购票须知</SelectItem>
+            <SelectItem value="2">入场须知</SelectItem>
+          </SelectContent>
+        </Select>
+        <Input v-model="searchName" placeholder="搜索须知名称" class="h-8 w-40" />
+      </div>
+    </template>
+  </DataTableCrud>
 
   <Dialog :open="showDialog" @update:open="(v) => !v && (showDialog = false)">
     <DialogContent class="max-w-md">
