@@ -1,4 +1,3 @@
-import { computed, ref, watch } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { logout } from '@/api/account'
@@ -31,8 +30,7 @@ export const useHeaderState = () => {
   })
 
   const hotCities = computed<string[]>(
-    () =>
-      cityOptionsQuery.data.value?.featuredCities.map((c: CityVO) => c.name as string) ?? [],
+    () => cityOptionsQuery.data.value?.featuredCities.map((c: CityVO) => c.name as string) ?? [],
   )
   const otherCities = computed<string[]>(
     () => cityOptionsQuery.data.value?.normalCities.map((c: CityVO) => c.name as string) ?? [],
