@@ -152,7 +152,7 @@ defineExpose({ save: handleSaveBasic })
     <CardContent>
       <div class="flex gap-8 items-start">
         <!-- 左侧：封面（3:4 竖版） -->
-        <div class="shrink-0 w-[240px] space-y-2">
+        <div class="shrink-0 w-60 space-y-2">
           <Label>封面</Label>
           <ImageUpload v-model="basicForm.coverUrl" aspect-class="aspect-[3/4]" />
         </div>

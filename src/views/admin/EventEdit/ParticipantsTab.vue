@@ -187,7 +187,7 @@ const handleConfirm = () => {
       </div>
 
       <!-- List -->
-      <div class="min-h-[200px] max-h-[50vh] overflow-y-auto pr-1">
+      <div class="min-h-50 max-h-[50vh] overflow-y-auto pr-1">
         <div
           v-if="isFetching"
           class="flex items-center justify-center py-12 text-muted-foreground text-sm"
