@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import type { ColumnDef, SortingState } from '@tanstack/vue-table'
-import {
-  FlexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useVueTable,
-} from '@tanstack/vue-table'
+import { FlexRender, getCoreRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
 import { Button } from '@/components/common/ui/button'
 import { Label } from '@/components/common/ui/label'
 import {
@@ -37,6 +32,7 @@ interface Props<TData> {
   totalRow?: number
   showCreateButton?: boolean
   viewMode?: 'table' | 'card'
+  showPagination?: boolean
 }
 
 const props = withDefaults(defineProps<Props<any>>(), {
@@ -47,6 +43,7 @@ const props = withDefaults(defineProps<Props<any>>(), {
   totalRow: 0,
   showCreateButton: true,
   viewMode: 'table',
+  showPagination: true,
 })
 
 const emit = defineEmits<{
@@ -71,7 +68,8 @@ const table = useVueTable({
   getSortedRowModel: getSortedRowModel(),
   manualPagination: true,
   onSortingChange: (updaterOrValue) => {
-    sorting.value = typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue
+    sorting.value =
+      typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue
   },
   state: {
     get pagination() {
@@ -109,8 +107,8 @@ const handleLastPage = () => {
 </script>
 
 <template>
-  <div class="space-y-4">
-    <div class="flex flex-wrap items-center gap-2">
+  <div class="space-y-6 w-full min-w-0">
+    <div class="flex flex-wrap items-center gap-4 min-w-0">
       <h2 v-if="title" class="shrink-0 text-lg font-semibold text-foreground">
         {{ title }}
       </h2>
@@ -126,7 +124,10 @@ const handleLastPage = () => {
       </div>
     </div>
 
-    <div v-if="viewMode === 'table'" class="relative rounded-lg border border-border bg-card overflow-x-auto">
+    <div
+      v-if="viewMode === 'table'"
+      class="relative rounded-lg border border-border bg-card overflow-x-auto w-full"
+    >
       <div
         v-if="loading"
         class="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-sm"
@@ -137,7 +138,11 @@ const handleLastPage = () => {
       <Table>
         <TableHeader class="bg-muted sticky top-0 z-10">
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-            <TableHead v-for="header in headerGroup.headers" :key="header.id" :col-span="header.colSpan">
+            <TableHead
+              v-for="header in headerGroup.headers"
+              :key="header.id"
+              :col-span="header.colSpan"
+            >
               <div
                 v-if="!header.isPlaceholder && header.column.getCanSort()"
                 class="flex items-center cursor-pointer select-none"
@@ -200,9 +205,16 @@ const handleLastPage = () => {
             <Card v-for="row in table.getRowModel().rows" :key="row.id">
               <CardContent class="pt-6">
                 <div class="space-y-2">
-                  <div v-for="cell in row.getVisibleCells()" :key="cell.id" class="flex items-center gap-2">
+                  <div
+                    v-for="cell in row.getVisibleCells()"
+                    :key="cell.id"
+                    class="flex items-center gap-2"
+                  >
                     <span class="text-muted-foreground text-sm">
-                      <FlexRender :render="cell.column.columnDef.header" :props="cell.getContext()" />:
+                      <FlexRender
+                        :render="cell.column.columnDef.header"
+                        :props="cell.getContext()"
+                      />:
                     </span>
                     <span class="text-sm">
                       <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
@@ -222,20 +234,20 @@ const handleLastPage = () => {
       </div>
     </div>
 
-    <div class="flex items-center justify-between">
+    <div v-if="showPagination" class="flex items-center justify-between">
       <div class="text-muted-foreground hidden flex-1 text-sm lg:flex">
         共 {{ totalRow }} 条记录
       </div>
       <div class="flex w-full items-center gap-8 lg:w-fit">
         <div class="hidden items-center gap-2 lg:flex">
-          <Label for="rows-per-page" class="text-sm font-medium">
-            每页行数
-          </Label>
+          <Label for="rows-per-page" class="text-sm font-medium"> 每页行数 </Label>
           <Select
             :model-value="String(pageSize)"
-            @update:model-value="(value) => {
-              emit('update:pageSize', Number(value))
-            }"
+            @update:model-value="
+              (value) => {
+                emit('update:pageSize', Number(value))
+              }
+            "
           >
             <SelectTrigger id="rows-per-page" size="sm" class="w-20">
               <SelectValue :placeholder="`${pageSize}`" />

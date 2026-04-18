@@ -47,16 +47,17 @@ watch(participantSearchQuery, () => {
 
 const { data: pageData, isFetching } = useQuery({
   queryKey: ['admin-participants-page', participantSearchQuery, currentPage],
-  queryFn: () => fetchAdminParticipantsPage({
-    page: currentPage.value,
-    size: pageSize,
-    name: participantSearchQuery.value || undefined,
-  }),
+  queryFn: () =>
+    fetchAdminParticipantsPage({
+      page: currentPage.value,
+      size: pageSize,
+      name: participantSearchQuery.value || undefined,
+    }),
   enabled: showParticipantDialog,
 })
 
 const openParticipantDialog = () => {
-  selectedParticipantIds.value = props.eventParticipants.map(p => p.participant.id)
+  selectedParticipantIds.value = props.eventParticipants.map((p) => p.participant.id)
   participantSearchQuery.value = ''
   currentPage.value = 1
   showParticipantDialog.value = true
@@ -97,11 +98,11 @@ const removeParticipantMutation = useMutation({
 
 const handleAddParticipants = async () => {
   const newParticipantIds = selectedParticipantIds.value.filter(
-    id => !props.eventParticipants.some(p => p.participant.id === id),
+    (id) => !props.eventParticipants.some((p) => p.participant.id === id),
   )
   if (newParticipantIds.length > 0) {
     await batchAddParticipantsMutation.mutateAsync({
-      participantIds: newParticipantIds.map(id => parseInt(id)),
+      participantIds: newParticipantIds.map((id) => parseInt(id)),
     })
   } else {
     showParticipantDialog.value = false
@@ -127,8 +128,13 @@ const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: 
 const openConfirm = (title: string, description: string, onConfirm: () => void) => {
   confirmDialog.value = { open: true, title, description, onConfirm }
 }
-const closeConfirm = () => { confirmDialog.value.open = false }
-const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
 </script>
 
 <template>
@@ -150,7 +156,10 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
           class="flex items-center justify-between p-3 border rounded-lg"
         >
           <div class="flex items-center gap-3">
-            <img :src="participant.participant.avatarUrl" class="w-8 h-8 rounded-full object-cover" />
+            <img
+              :src="participant.participant.avatarUrl"
+              class="w-8 h-8 rounded-full object-cover"
+            />
             <div class="font-medium">{{ participant.participant.name }}</div>
           </div>
           <Button
@@ -179,7 +188,10 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
 
       <!-- List -->
       <div class="min-h-[200px] max-h-[50vh] overflow-y-auto pr-1">
-        <div v-if="isFetching" class="flex items-center justify-center py-12 text-muted-foreground text-sm">
+        <div
+          v-if="isFetching"
+          class="flex items-center justify-center py-12 text-muted-foreground text-sm"
+        >
           加载中...
         </div>
         <div
@@ -212,13 +224,8 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
         class="flex items-center justify-between pt-3 border-t text-sm text-muted-foreground"
       >
         <span>共 {{ pageData.totalRow }} 条</span>
-        <div class="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            :disabled="currentPage <= 1"
-            @click="currentPage--"
-          >
+        <div class="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" :disabled="currentPage <= 1" @click="currentPage--">
             上一页
           </Button>
           <span>{{ currentPage }} / {{ pageData.totalPage }}</span>
@@ -235,7 +242,10 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
 
       <DialogFooter class="pt-4">
         <Button variant="outline" @click="showParticipantDialog = false">取消</Button>
-        <Button :disabled="batchAddParticipantsMutation.isPending.value" @click="handleAddParticipants">
+        <Button
+          :disabled="batchAddParticipantsMutation.isPending.value"
+          @click="handleAddParticipants"
+        >
           {{ batchAddParticipantsMutation.isPending.value ? '添加中...' : '添加' }}
         </Button>
       </DialogFooter>

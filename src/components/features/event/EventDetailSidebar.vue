@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <aside class="border border-border bg-background p-4 xl:p-5">
+  <aside class="self-start border border-border bg-background p-4 xl:p-5">
     <p class="text-base font-semibold text-foreground">服务保障</p>
 
     <div class="mt-4 space-y-4">

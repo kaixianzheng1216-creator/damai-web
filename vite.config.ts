@@ -4,6 +4,7 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
@@ -12,7 +13,6 @@ import IconsResolver from 'unplugin-icons/resolver'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
-  const isMock = env.VITE_USE_MOCK === 'true'
 
   return {
     resolve: {
@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
       vue(),
       tailwindcss(),
       vueDevTools(),
+      basicSsl(),
       AutoImport({
         imports: [
           'vue',
@@ -44,14 +45,14 @@ export default defineConfig(({ mode }) => {
       Icons({ autoInstall: true }),
     ],
     server: {
-      proxy: isMock
-        ? {}
-        : {
-            [env.VITE_API_BASE_URL]: {
-              target: env.VITE_API_TARGET_URL,
-              changeOrigin: true,
-            },
-          },
+      host: true,
+      https: true,
+      proxy: {
+        [env.VITE_API_BASE_URL]: {
+          target: env.VITE_API_TARGET_URL,
+          changeOrigin: true,
+        },
+      },
     },
   }
 })

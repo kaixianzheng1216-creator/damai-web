@@ -5,16 +5,8 @@ import { useAuthSession } from '@/composables/common/useAuthSession'
 import { useCountdown } from '@/composables/common'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/common/ui/field'
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from '@/components/common/ui/input-otp'
+import { Field, FieldGroup, FieldLabel } from '@/components/common/ui/field'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/common/ui/input-otp'
 import AuthPageShell from '@/components/features/auth/AuthPageShell.vue'
 
 const router = useRouter()
@@ -123,14 +115,11 @@ const handleLogin = async () => {
           <FieldLabel for="code">
             {{ AUTH_COPY.codeLabel }}
           </FieldLabel>
-          <div class="flex gap-2">
-            <InputOTP
-              id="code"
-              v-model="form.code"
-              :maxlength="6"
-              :disabled="isLoading"
-            >
-              <InputOTPGroup class="gap-2.5 *:data-[slot=input-otp-slot]:rounded-md *:data-[slot=input-otp-slot]:border">
+          <div class="flex flex-wrap gap-2">
+            <InputOTP id="code" v-model="form.code" :maxlength="6" :disabled="isLoading">
+              <InputOTPGroup
+                class="gap-2.5 *:data-[slot=input-otp-slot]:rounded-md *:data-[slot=input-otp-slot]:border"
+              >
                 <InputOTPSlot :index="0" />
                 <InputOTPSlot :index="1" />
                 <InputOTPSlot :index="2" />
@@ -142,7 +131,7 @@ const handleLogin = async () => {
             <Button
               type="button"
               variant="outline"
-              class="shrink-0"
+              class="shrink-0 flex-1"
               :disabled="isSendingCode || isCountdownRunning"
               @click="handleSendCode"
             >
@@ -150,8 +139,6 @@ const handleLogin = async () => {
             </Button>
           </div>
         </Field>
-
-        <p class="text-xs text-muted-foreground">{{ AUTH_COPY.loginTestHint }}</p>
 
         <div v-if="errorMsg" class="text-sm font-medium text-destructive">
           {{ errorMsg }}

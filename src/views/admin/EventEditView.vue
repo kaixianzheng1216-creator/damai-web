@@ -4,12 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import { Button } from '@/components/common/ui/button'
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/common/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui/tabs'
 import { fetchEventById, publishEvent, offlineEvent } from '@/api/event/event'
 import type { EventServiceGuaranteeVO, EventParticipantVO } from '@/api/event'
 
@@ -34,8 +29,12 @@ const { data: eventDetailData } = useQuery({
 })
 
 const eventData = computed(() => eventDetailData.value?.event)
-const eventServices = computed(() => (eventDetailData.value?.services ?? []) as unknown as EventServiceGuaranteeVO[])
-const eventParticipants = computed(() => (eventDetailData.value?.participants ?? []) as unknown as EventParticipantVO[])
+const eventServices = computed(
+  () => (eventDetailData.value?.services ?? []) as unknown as EventServiceGuaranteeVO[],
+)
+const eventParticipants = computed(
+  () => (eventDetailData.value?.participants ?? []) as unknown as EventParticipantVO[],
+)
 const eventInfo = computed(() => eventDetailData.value?.info)
 const sessionsData = computed(() => eventDetailData.value?.sessions)
 
@@ -107,17 +106,17 @@ const invalidateTab = () => {
         <h2 class="text-lg font-semibold text-foreground">
           {{ isEdit ? '编辑活动' : '创建活动' }}
         </h2>
-        <p class="text-sm text-muted-foreground mt-1">
-          管理活动的基本信息、场次和票种
-        </p>
+        <p class="text-sm text-muted-foreground mt-1">管理活动的基本信息、场次和票种</p>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <span
           v-if="isEdit && eventData"
           class="text-sm px-2.5 py-0.5 rounded-full border font-medium"
-          :class="eventData.status === 1
-            ? 'text-green-700 border-green-300 bg-green-50'
-            : 'text-muted-foreground border-border bg-muted/40'"
+          :class="
+            eventData.status === 1
+              ? 'text-green-700 border-green-300 bg-green-50'
+              : 'text-muted-foreground border-border bg-muted/40'
+          "
         >
           {{ eventData.statusLabel }}
         </span>
@@ -194,14 +193,13 @@ const invalidateTab = () => {
   </div>
 
   <!-- Fixed Bottom Action Bar -->
-  <div class="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+  <div
+    class="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+  >
     <div class="flex items-center justify-end gap-3 px-6 py-3">
       <Button variant="outline" @click="router.push('/admin/events')">取消</Button>
-      <Button
-        :disabled="isSaving"
-        @click="handleSaveChanges"
-      >
-        {{ isSaving ? '保存中...' : (isEdit ? '保存更改' : '创建活动') }}
+      <Button :disabled="isSaving" @click="handleSaveChanges">
+        {{ isSaving ? '保存中...' : isEdit ? '保存更改' : '创建活动' }}
       </Button>
       <Button
         v-if="isEdit && eventData?.status === 0"

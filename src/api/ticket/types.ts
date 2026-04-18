@@ -7,6 +7,8 @@ export interface TicketPageRequest {
   sortOrder?: string
   userId?: string
   orderId?: string
+  eventId?: string
+  sessionId?: string
   status?: number
   validSize?: number
   validPage?: number

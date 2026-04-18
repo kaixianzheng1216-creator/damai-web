@@ -71,7 +71,7 @@ const handleUpdateSlot = (index: number, value: unknown) => {
         </div>
 
         <div
-          v-if="insufficientPassengerCount"
+          v-if="insufficientPassengerCount && passengers.length > 0"
           class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700"
         >
           当前仅有 {{ passengers.length }} 位购票人，无法完成

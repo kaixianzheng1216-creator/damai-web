@@ -91,15 +91,21 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const searchName = ref('')
 
-const queryKey = computed(() => ['admin-venues', currentPage.value, pageSize.value, searchName.value])
+const queryKey = computed(() => [
+  'admin-venues',
+  currentPage.value,
+  pageSize.value,
+  searchName.value,
+])
 
 const { data, isLoading } = useQuery({
   queryKey,
-  queryFn: () => fetchAdminVenuesPage({
-    page: currentPage.value,
-    size: pageSize.value,
-    name: searchName.value || undefined,
-  }),
+  queryFn: () =>
+    fetchAdminVenuesPage({
+      page: currentPage.value,
+      size: pageSize.value,
+      name: searchName.value || undefined,
+    }),
 })
 
 const list = computed(() => data.value?.records ?? [])
@@ -144,7 +150,9 @@ const openEdit = (row: VenueVO) => {
 
 const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-venues'] })
 
-watch(searchName, () => { currentPage.value = 1 })
+watch(searchName, () => {
+  currentPage.value = 1
+})
 
 const createMutation = useMutation({
   mutationFn: (data: VenueCreateRequest) => createVenue(data),
@@ -219,7 +227,7 @@ const handleDelete = (row: VenueVO) => {
     @update:page-size="pageSize = $event"
   >
     <template #toolbar>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <Input v-model="searchName" placeholder="搜索场馆名称" class="h-8 w-48" />
       </div>
     </template>

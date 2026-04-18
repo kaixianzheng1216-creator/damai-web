@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/common/ui/select'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { fetchAdminNoticesPage, createNotice, updateNotice, deleteNotice } from '@/api/event/notice'
 import type { NoticeVO, NoticeCreateRequest, NoticeUpdateRequest } from '@/api/event'
 
@@ -48,7 +49,7 @@ const columns: ColumnDef<NoticeVO>[] = [
             type === 1 ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
           }`,
         },
-        noticeTypeMap[type] ?? type
+        noticeTypeMap[type] ?? type,
       )
     },
   },
@@ -61,6 +62,38 @@ const columns: ColumnDef<NoticeVO>[] = [
     header: '排序',
     size: 100,
   },
+  {
+    id: 'actions',
+    header: '操作',
+    size: 160,
+    cell: ({ row }) =>
+      h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'outline',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              openEdit(row.original)
+            },
+          },
+          () => '编辑',
+        ),
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'destructive',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              handleDelete(row.original)
+            },
+          },
+          () => '删除',
+        ),
+      ]),
+  },
 ]
 
 const currentPage = ref(1)
@@ -68,16 +101,23 @@ const pageSize = ref(10)
 const searchName = ref('')
 const searchType = ref('')
 
-const queryKey = computed(() => ['admin-notices', currentPage.value, pageSize.value, searchName.value, searchType.value])
+const queryKey = computed(() => [
+  'admin-notices',
+  currentPage.value,
+  pageSize.value,
+  searchName.value,
+  searchType.value,
+])
 
 const { data, isLoading } = useQuery({
   queryKey,
-  queryFn: () => fetchAdminNoticesPage({
-    page: currentPage.value,
-    size: pageSize.value,
-    name: searchName.value || undefined,
-    type: (searchType.value && searchType.value !== 'all') ? Number(searchType.value) : undefined,
-  }),
+  queryFn: () =>
+    fetchAdminNoticesPage({
+      page: currentPage.value,
+      size: pageSize.value,
+      name: searchName.value || undefined,
+      type: searchType.value && searchType.value !== 'all' ? Number(searchType.value) : undefined,
+    }),
 })
 
 const list = computed(() => data.value?.records ?? [])
@@ -120,7 +160,9 @@ const openEdit = (row: NoticeVO) => {
 
 const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-notices'] })
 
-watch([searchName, searchType], () => { currentPage.value = 1 })
+watch([searchName, searchType], () => {
+  currentPage.value = 1
+})
 
 const createMutation = useMutation({
   mutationFn: (data: NoticeCreateRequest) => createNotice(data),
@@ -162,8 +204,20 @@ const handleSubmit = async () => {
   }
 }
 
+const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
+const openConfirm = (title: string, description: string, onConfirm: () => void) => {
+  confirmDialog.value = { open: true, title, description, onConfirm }
+}
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
+
 const handleDelete = (row: NoticeVO) => {
-  deleteMutation.mutate(row.id)
+  openConfirm('确认删除', `确认删除须知「${row.name}」？`, () => deleteMutation.mutate(row.id))
 }
 </script>
 
@@ -184,7 +238,7 @@ const handleDelete = (row: NoticeVO) => {
     @update:page-size="pageSize = $event"
   >
     <template #toolbar>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <Select v-model="searchType">
           <SelectTrigger class="h-8 w-28">
             <SelectValue placeholder="全部类型" />
@@ -248,4 +302,12 @@ const handleDelete = (row: NoticeVO) => {
       </DialogFooter>
     </DialogContent>
   </Dialog>
+
+  <ConfirmDialog
+    :open="confirmDialog.open"
+    :title="confirmDialog.title"
+    :description="confirmDialog.description"
+    @close="closeConfirm"
+    @confirm="handleConfirm"
+  />
 </template>

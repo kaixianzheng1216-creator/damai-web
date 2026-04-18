@@ -22,8 +22,6 @@ const emit = defineEmits<{
   sendCode: []
   submit: []
 }>()
-
-const isDev = import.meta.env.DEV
 </script>
 
 <template>
@@ -52,7 +50,6 @@ const isDev = import.meta.env.DEV
             </Button>
           </div>
         </div>
-        <p v-if="isDev" class="text-xs text-muted-foreground">测试验证码：123456</p>
         <p v-if="mobileError" class="text-sm text-destructive">{{ mobileError }}</p>
       </div>
       <DialogFooter>

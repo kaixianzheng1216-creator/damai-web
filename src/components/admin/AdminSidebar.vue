@@ -88,6 +88,16 @@ const navItems: NavItem[] = [
     icon: IconShieldCheck,
   },
   {
+    title: '电子票管理',
+    url: '/admin/tickets',
+    icon: IconTicket,
+  },
+  {
+    title: '用户管理',
+    url: '/admin/users',
+    icon: IconUsers,
+  },
+  {
     title: '管理员管理',
     url: '/admin/admins',
     icon: IconUsers,
@@ -107,13 +117,10 @@ const isActive = (url: string) => {
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton
-            as-child
-            class="data-[slot=sidebar-menu-button]:!p-1.5"
-          >
+          <SidebarMenuButton as-child class="data-[slot=sidebar-menu-button]:!p-1.5">
             <RouterLink to="/admin">
-              <IconTicket class="!size-5" />
-              <span class="text-base font-semibold">大麦后台</span>
+              <icon-lucide-ticket class="!size-5 rotate-[-10deg] text-primary" />
+              <span class="text-base font-black text-primary">Damai</span>
             </RouterLink>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -124,10 +131,7 @@ const isActive = (url: string) => {
         <SidebarGroupContent class="flex flex-col gap-2">
           <SidebarMenu>
             <SidebarMenuItem v-for="item in navItems" :key="item.title">
-              <SidebarMenuButton
-                as-child
-                :is-active="isActive(item.url)"
-              >
+              <SidebarMenuButton as-child :is-active="isActive(item.url)">
                 <RouterLink :to="item.url">
                   <component :is="item.icon" />
                   <span>{{ item.title }}</span>

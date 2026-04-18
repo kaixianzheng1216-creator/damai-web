@@ -142,6 +142,24 @@ const router = createRouter({
           meta: { title: '服务保障' },
         },
         {
+          path: 'tickets',
+          name: 'admin-tickets',
+          component: () => import('@/views/admin/TicketListView.vue'),
+          meta: { title: '电子票管理' },
+        },
+        {
+          path: 'tickets',
+          name: 'admin-tickets',
+          component: () => import('@/views/admin/TicketListView.vue'),
+          meta: { title: '电子票管理' },
+        },
+        {
+          path: 'users',
+          name: 'admin-users',
+          component: () => import('@/views/admin/UserListView.vue'),
+          meta: { title: '用户管理' },
+        },
+        {
           path: 'admins',
           name: 'admin-admins',
           component: () => import('@/views/admin/AdminListView.vue'),

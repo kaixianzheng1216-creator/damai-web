@@ -134,7 +134,7 @@ const { data, isLoading } = useQuery({
       page: currentPage.value,
       size: pageSize.value,
       title: searchTitle.value || undefined,
-      cityId: (searchCityId.value && searchCityId.value !== 'all') ? searchCityId.value : undefined,
+      cityId: searchCityId.value && searchCityId.value !== 'all' ? searchCityId.value : undefined,
     }),
 })
 
@@ -287,27 +287,19 @@ const handleDelete = (row: BannerVO) => {
     @update:page-size="pageSize = $event"
   >
     <template #toolbar>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <Select v-model="searchCityId">
           <SelectTrigger class="h-8 w-32">
             <SelectValue placeholder="全部城市" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">全部城市</SelectItem>
-            <SelectItem
-              v-for="city in citiesData ?? []"
-              :key="city.id"
-              :value="String(city.id)"
-            >
+            <SelectItem v-for="city in citiesData ?? []" :key="city.id" :value="String(city.id)">
               {{ city.name }}
             </SelectItem>
           </SelectContent>
         </Select>
-        <Input
-          v-model="searchTitle"
-          placeholder="搜索标题"
-          class="h-8 w-36"
-        />
+        <Input v-model="searchTitle" placeholder="搜索标题" class="h-8 w-36" />
       </div>
     </template>
   </DataTableCrud>
@@ -328,9 +320,7 @@ const handleDelete = (row: BannerVO) => {
             <Input v-model="form.title" placeholder="请输入 Banner 标题" />
           </div>
           <div class="grid gap-2">
-            <label class="text-sm font-medium"
-              >城市 <span class="text-destructive">*</span></label
-            >
+            <label class="text-sm font-medium">城市 <span class="text-destructive">*</span></label>
             <Select v-model="form.cityId">
               <SelectTrigger>
                 <SelectValue placeholder="请选择城市" />

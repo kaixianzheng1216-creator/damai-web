@@ -4,16 +4,8 @@ import { useRouter } from 'vue-router'
 import { z } from 'zod'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/common/ui/field'
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from '@/components/common/ui/input-otp'
+import { Field, FieldGroup, FieldLabel } from '@/components/common/ui/field'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/common/ui/input-otp'
 import { sendVerifyCode, login } from '@/api/account'
 import { ADMIN_AUTH_COPY } from '@/constants/admin'
 import { AUTH_COPY } from '@/constants/auth'
@@ -40,7 +32,11 @@ const schema = z.object({
   code: z.string().length(6, AUTH_COPY.codeRequired),
 })
 
-const { countdown, isRunning: isCountdownRunning, start: startCountdown } = useCountdown(PROFILE_CONFIG.SMS_VERIFICATION_COUNTDOWN)
+const {
+  countdown,
+  isRunning: isCountdownRunning,
+  start: startCountdown,
+} = useCountdown(PROFILE_CONFIG.SMS_VERIFICATION_COUNTDOWN)
 
 const countdownText = computed(() =>
   countdown.value > 0 ? `${countdown.value}s 后重试` : ADMIN_AUTH_COPY.sendCodeButton,
@@ -100,10 +96,7 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <AuthPageShell
-    :title="ADMIN_AUTH_COPY.title"
-    :description="ADMIN_AUTH_COPY.subtitle"
-  >
+  <AuthPageShell :title="ADMIN_AUTH_COPY.title" :description="ADMIN_AUTH_COPY.subtitle">
     <form @submit.prevent="handleLogin">
       <FieldGroup class="gap-4">
         <Field>
@@ -120,14 +113,11 @@ const handleLogin = async () => {
 
         <Field>
           <FieldLabel for="admin-code">验证码</FieldLabel>
-          <div class="flex gap-2">
-            <InputOTP
-              id="admin-code"
-              v-model="form.code"
-              :maxlength="6"
-              :disabled="isLoading"
-            >
-              <InputOTPGroup class="gap-2.5 *:data-[slot=input-otp-slot]:rounded-md *:data-[slot=input-otp-slot]:border">
+          <div class="flex flex-wrap gap-2">
+            <InputOTP id="admin-code" v-model="form.code" :maxlength="6" :disabled="isLoading">
+              <InputOTPGroup
+                class="gap-2.5 *:data-[slot=input-otp-slot]:rounded-md *:data-[slot=input-otp-slot]:border"
+              >
                 <InputOTPSlot :index="0" />
                 <InputOTPSlot :index="1" />
                 <InputOTPSlot :index="2" />
@@ -139,7 +129,7 @@ const handleLogin = async () => {
             <Button
               type="button"
               variant="outline"
-              class="shrink-0"
+              class="shrink-0 flex-1"
               :disabled="isSendingCode || isCountdownRunning"
               @click="handleSendCode"
             >
@@ -147,8 +137,6 @@ const handleLogin = async () => {
             </Button>
           </div>
         </Field>
-
-        <p class="text-xs text-muted-foreground">{{ ADMIN_AUTH_COPY.testCredentials }}</p>
 
         <div v-if="errorMsg" class="text-sm font-medium text-destructive">
           {{ errorMsg }}

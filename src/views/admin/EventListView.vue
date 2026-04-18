@@ -40,7 +40,6 @@ const { data: categoriesData } = useQuery({
   queryFn: fetchAdminCategories,
 })
 
-
 const columns: ColumnDef<EventVO>[] = [
   {
     accessorKey: 'id',
@@ -74,9 +73,7 @@ const columns: ColumnDef<EventVO>[] = [
     header: '状态',
     size: 100,
     cell: ({ row }) => {
-      const variant =
-        row.original.status === 1 ? 'default' : row.original.status === 2 ? 'secondary' : 'outline'
-      return h(Badge, { variant }, { default: () => row.original.statusLabel })
+      return h(Badge, { variant: 'outline' }, { default: () => row.original.statusLabel })
     },
   },
   {
@@ -89,7 +86,7 @@ const columns: ColumnDef<EventVO>[] = [
   },
   {
     id: 'actions',
-    header: '',
+    header: '操作',
     size: 280,
     cell: ({ row }) => {
       return h(
@@ -101,7 +98,10 @@ const columns: ColumnDef<EventVO>[] = [
             {
               variant: 'outline',
               size: 'sm',
-              onClick: (e: Event) => { e.stopPropagation(); openEdit(row.original) },
+              onClick: (e: Event) => {
+                e.stopPropagation()
+                openEdit(row.original)
+              },
             },
             () => '编辑',
           ),
@@ -111,7 +111,10 @@ const columns: ColumnDef<EventVO>[] = [
                 {
                   variant: 'outline',
                   size: 'sm',
-                  onClick: (e: Event) => { e.stopPropagation(); handlePublish(row.original) },
+                  onClick: (e: Event) => {
+                    e.stopPropagation()
+                    handlePublish(row.original)
+                  },
                 },
                 () => '发布',
               )
@@ -122,7 +125,10 @@ const columns: ColumnDef<EventVO>[] = [
                 {
                   variant: 'outline',
                   size: 'sm',
-                  onClick: (e: Event) => { e.stopPropagation(); handleOffline(row.original) },
+                  onClick: (e: Event) => {
+                    e.stopPropagation()
+                    handleOffline(row.original)
+                  },
                 },
                 () => '下线',
               )
@@ -133,7 +139,10 @@ const columns: ColumnDef<EventVO>[] = [
                 {
                   variant: 'outline',
                   size: 'sm',
-                  onClick: (e: Event) => { e.stopPropagation(); handlePublish(row.original) },
+                  onClick: (e: Event) => {
+                    e.stopPropagation()
+                    handlePublish(row.original)
+                  },
                 },
                 () => '上线',
               )
@@ -143,31 +152,45 @@ const columns: ColumnDef<EventVO>[] = [
             {
               variant: 'destructive',
               size: 'sm',
-              onClick: (e: Event) => { e.stopPropagation(); handleDelete(row.original) },
+              onClick: (e: Event) => {
+                e.stopPropagation()
+                handleDelete(row.original)
+              },
             },
             () => '删除',
           ),
-        ].filter(Boolean)
+        ].filter(Boolean),
       )
     },
   },
 ]
 
-const queryKey = computed(() => ['admin-events', currentPage.value, searchName.value, searchCityId.value, searchCategoryId.value])
+const queryKey = computed(() => [
+  'admin-events',
+  currentPage.value,
+  searchName.value,
+  searchCityId.value,
+  searchCategoryId.value,
+])
 
 const { data, isLoading } = useQuery({
   queryKey,
   queryFn: () =>
     fetchAdminEventPage({
       name: searchName.value || undefined,
-      cityId: (searchCityId.value && searchCityId.value !== 'all') ? searchCityId.value : undefined,
-      categoryId: (searchCategoryId.value && searchCategoryId.value !== 'all') ? searchCategoryId.value : undefined,
+      cityId: searchCityId.value && searchCityId.value !== 'all' ? searchCityId.value : undefined,
+      categoryId:
+        searchCategoryId.value && searchCategoryId.value !== 'all'
+          ? searchCategoryId.value
+          : undefined,
       page: currentPage.value,
       size: pageSize.value,
     }),
 })
 
-watch([searchName, searchCityId, searchCategoryId], () => { currentPage.value = 1 })
+watch([searchName, searchCityId, searchCategoryId], () => {
+  currentPage.value = 1
+})
 
 const list = computed(() => data.value?.records ?? [])
 const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
@@ -182,7 +205,6 @@ const openCreate = () => {
 const openEdit = (row: EventVO) => {
   router.push(`/admin/events/${row.id}/edit`)
 }
-
 
 const deleteMutation = useMutation({
   mutationFn: (id: string) => deleteEvent(id),
@@ -215,9 +237,13 @@ const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: 
 const openConfirm = (title: string, description: string, onConfirm: () => void) => {
   confirmDialog.value = { open: true, title, description, onConfirm }
 }
-const closeConfirm = () => { confirmDialog.value.open = false }
-const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
-
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
 </script>
 
 <template>
@@ -235,7 +261,7 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
     @update:page-size="pageSize = $event"
   >
     <template #toolbar>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <Select v-model="searchCityId">
           <SelectTrigger class="h-8 w-28">
             <SelectValue placeholder="全部城市" />
@@ -263,7 +289,11 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
     </template>
   </DataTableCrud>
 
-  <ConfirmDialog :open="confirmDialog.open" :title="confirmDialog.title"
-    :description="confirmDialog.description" @close="closeConfirm" @confirm="handleConfirm" />
-
+  <ConfirmDialog
+    :open="confirmDialog.open"
+    :title="confirmDialog.title"
+    :description="confirmDialog.description"
+    @close="closeConfirm"
+    @confirm="handleConfirm"
+  />
 </template>

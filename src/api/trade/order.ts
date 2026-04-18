@@ -12,6 +12,16 @@ export const fetchMyOrderPage = (
   return request.get<PageResponseTicketOrderVO>('/api/order/front/ticket-orders/my', { params })
 }
 
+export const fetchUserPurchaseCounts = (
+  ticketTypeIds: string[],
+): Promise<Record<string, number>> => {
+  const qs = new URLSearchParams()
+  ticketTypeIds.forEach((id) => qs.append('ticketTypeIds', id))
+  return request.get<Record<string, number>>(
+    `/api/order/front/ticket-orders/purchase-counts?${qs.toString()}`,
+  )
+}
+
 export const fetchOrderById = (id: string): Promise<TicketOrderVO> => {
   return request.get<TicketOrderVO>(`/api/order/front/ticket-orders/${id}`)
 }

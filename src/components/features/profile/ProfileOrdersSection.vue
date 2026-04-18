@@ -50,7 +50,11 @@ const columns: ColumnDef<OrderItem>[] = [
     header: '状态',
     size: 120,
     cell: ({ row }) => {
-      return h(Badge, { class: getOrderStatusBadgeClass(row.original.status) }, () => row.original.statusLabel)
+      return h(
+        Badge,
+        { class: getOrderStatusBadgeClass(row.original.status) },
+        () => row.original.statusLabel,
+      )
     },
   },
   {
@@ -137,6 +141,7 @@ const columns: ColumnDef<OrderItem>[] = [
       :total-pages="orderTotalPages"
       :page-size="orderPageSize || 10"
       :total-row="orderTotalRow || 0"
+      :show-create-button="false"
       @update:current-page="emit('update:orderPage', $event)"
       @update:page-size="emit('update:orderPageSize', $event)"
       @row-click="handleOrderClick"

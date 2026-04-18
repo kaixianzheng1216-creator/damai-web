@@ -17,6 +17,16 @@ export interface UserUpdateRequest {
   avatarUrl?: string
 }
 
+export interface UserPageRequest {
+  page?: number
+  size?: number
+  username?: string
+  mobile?: string
+  status?: number
+}
+
+export type PageResponseUserVO = PaginatedResponse<UserVO>
+
 // ─── Passenger ───────────────────────────────────────────
 
 export interface PassengerVO {

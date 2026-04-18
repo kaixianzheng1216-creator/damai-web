@@ -102,6 +102,13 @@ const goBack = () => {
                 <p class="font-medium text-foreground">{{ ticket.orderNo }}</p>
               </div>
 
+              <div class="border-t border-border pt-4">
+                <p class="text-sm text-muted-foreground">Token</p>
+                <p class="font-medium text-foreground break-all font-mono text-sm">
+                  {{ ticket.qrCodeToken }}
+                </p>
+              </div>
+
               <div v-if="ticket.usedAt">
                 <p class="text-sm text-muted-foreground">使用时间</p>
                 <p class="font-medium text-foreground">{{ formatDateTime(ticket.usedAt) }}</p>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { formatPrice, formatDateTime } from '@/utils/format'
 import type { EventDetailVO, TicketTypeVO, SeriesEventVO } from '@/api/event'
-import { TICKET_TYPE_STATUS } from '@/constants'
 import {
   NumberField,
   NumberFieldContent,
@@ -16,6 +15,10 @@ defineProps<{
   selectedTicketTypeId: string | null
   ticketQuantity: number
   selectedTicketTypeLimit: number
+  selectedTicketTypeAccountLimit: number
+  isSelectedTicketTypeOnSale: boolean
+  isTicketTypeOnSale: (ticketType: TicketTypeVO) => boolean
+  isUserAccountLimitReached: boolean
   maxTicketQuantity: number
   totalPrice: string
   isCreatingOrder: boolean
@@ -52,7 +55,9 @@ const emit = defineEmits<{
 
       <div class="mt-5 space-y-3">
         <p class="text-sm text-foreground">
-          时间：{{ detail.event.firstSessionStartAt ? formatDateTime(detail.event.firstSessionStartAt) : '' }}
+          时间：{{
+            detail.event.firstSessionStartAt ? formatDateTime(detail.event.firstSessionStartAt) : ''
+          }}
         </p>
         <p class="text-sm text-foreground">
           场馆：{{ detail.event.cityNameSnapshot }} | {{ detail.event.venueNameSnapshot }}
@@ -111,7 +116,7 @@ const emit = defineEmits<{
               v-for="ticketType in availableTicketTypes"
               :key="ticketType.id"
               type="button"
-              :disabled="ticketType.status !== TICKET_TYPE_STATUS.ON_SALE"
+              :disabled="!isTicketTypeOnSale(ticketType)"
               :class="
                 cn(
                   'rounded-sm border px-3 py-1 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50',
@@ -123,11 +128,15 @@ const emit = defineEmits<{
               @click="emit('update:selectedTicketTypeId', ticketType.id)"
             >
               {{ ticketType.name }} ({{ formatPrice(ticketType.price) }})
-              <span v-if="ticketType.status !== TICKET_TYPE_STATUS.ON_SALE" class="ml-1">不可售</span>
+              <span v-if="!isTicketTypeOnSale(ticketType)" class="ml-1">不可售</span>
             </button>
           </div>
           <p class="mt-2 text-sm text-muted-foreground">
-            当前票档单笔限购 {{ selectedTicketTypeLimit }} 张。
+            当前票档单笔限购 {{ selectedTicketTypeLimit }} 张
+            <span v-if="selectedTicketTypeAccountLimit > 0">
+              ，单用户限购 {{ selectedTicketTypeAccountLimit }} 张
+            </span>
+            。
           </p>
         </div>
 
@@ -147,7 +156,7 @@ const emit = defineEmits<{
             </NumberFieldContent>
           </NumberField>
           <p class="mt-2 text-sm text-muted-foreground">
-            数量上限会随票档限购与可用购票人数自动调整。
+            数量上限会随票档限购与单用户限购自动调整。
           </p>
         </div>
 
@@ -169,11 +178,16 @@ const emit = defineEmits<{
         <div class="pt-2">
           <Button
             class="w-full md:min-w-[124px] md:w-auto"
-            :disabled="isCreatingOrder || !selectedTicketType"
+            :disabled="
+              isCreatingOrder ||
+              !selectedTicketType ||
+              !isSelectedTicketTypeOnSale ||
+              isUserAccountLimitReached
+            "
             @click="emit('buy-now')"
           >
             <icon-lucide-loader2 v-if="isCreatingOrder" class="mr-2 h-4 w-4 animate-spin" />
-            立即购票
+            {{ isUserAccountLimitReached ? '已达限购上限' : '立即购票' }}
           </Button>
           <p class="mt-2 text-sm text-muted-foreground">
             下单前需先选择实名购票人，可为不同票张分别绑定。

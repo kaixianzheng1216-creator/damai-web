@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/common/ui/dialog'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import {
   fetchAdminServicesPage,
   createService,
@@ -37,35 +38,59 @@ const serviceColumns: ColumnDef<ServiceGuaranteeVO>[] = [
     accessorKey: 'id',
     header: 'ID',
     size: 180,
-    cell: ({ row }) => {
-      return h(
-        'button',
-        {
-          class: 'font-mono text-xs text-primary hover:underline text-left',
-          onClick: () => selectService(row.original),
-        },
-        row.original.id
-      )
-    },
   },
   {
     accessorKey: 'name',
     header: '服务名称',
-    cell: ({ row }) => {
-      return h(
-        'button',
-        {
-          class: 'font-medium hover:text-primary text-left',
-          onClick: () => selectService(row.original),
-        },
-        row.original.name
-      )
-    },
   },
   {
     accessorKey: 'sortOrder',
     header: '排序',
     size: 100,
+  },
+  {
+    id: 'actions',
+    header: '操作',
+    size: 240,
+    cell: ({ row }) =>
+      h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'outline',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              openManageOptions(row.original)
+            },
+          },
+          () => '管理选项',
+        ),
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'outline',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              openEditService(row.original)
+            },
+          },
+          () => '编辑',
+        ),
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'destructive',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              handleDeleteService(row.original)
+            },
+          },
+          () => '删除',
+        ),
+      ]),
   },
 ]
 
@@ -73,11 +98,12 @@ const optionColumns: ColumnDef<ServiceGuaranteeOptionVO>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
-    size: 180,
+    size: 120,
   },
   {
     accessorKey: 'name',
     header: '选项名称',
+    size: 150,
   },
   {
     accessorKey: 'description',
@@ -96,9 +122,41 @@ const optionColumns: ColumnDef<ServiceGuaranteeOptionVO>[] = [
             isBoolean ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
           }`,
         },
-        isBoolean ? '是' : '否'
+        isBoolean ? '是' : '否',
       )
     },
+  },
+  {
+    id: 'actions',
+    header: '操作',
+    size: 160,
+    cell: ({ row }) =>
+      h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'outline',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              openEditOption(row.original)
+            },
+          },
+          () => '编辑',
+        ),
+        h(
+          Button,
+          {
+            size: 'sm',
+            variant: 'destructive',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              handleDeleteOption(row.original)
+            },
+          },
+          () => '删除',
+        ),
+      ]),
   },
 ]
 
@@ -106,11 +164,21 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const searchName = ref('')
 
-const queryKey = computed(() => ['admin-services', currentPage.value, pageSize.value, searchName.value])
+const queryKey = computed(() => [
+  'admin-services',
+  currentPage.value,
+  pageSize.value,
+  searchName.value,
+])
 
 const { data, isLoading } = useQuery({
   queryKey,
-  queryFn: () => fetchAdminServicesPage({ page: currentPage.value, size: pageSize.value, name: searchName.value || undefined }),
+  queryFn: () =>
+    fetchAdminServicesPage({
+      page: currentPage.value,
+      size: pageSize.value,
+      name: searchName.value || undefined,
+    }),
 })
 
 const list = computed(() => data.value?.records ?? [])
@@ -118,11 +186,6 @@ const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
 const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 const selectedService = ref<ServiceGuaranteeVO | null>(null)
 const currentOptions = computed(() => selectedService.value?.options ?? [])
-
-const selectService = (row: ServiceGuaranteeVO) => {
-  const fresh = list.value.find((s) => s.id === row.id)
-  selectedService.value = fresh ?? row
-}
 
 const syncSelectedService = () => {
   if (!selectedService.value) return
@@ -159,6 +222,14 @@ const openEditService = (row: ServiceGuaranteeVO) => {
   showServiceDialog.value = true
 }
 
+const showOptionsDialog = ref(false)
+
+const openManageOptions = (row: ServiceGuaranteeVO) => {
+  const fresh = list.value.find((s) => s.id === row.id)
+  selectedService.value = fresh ?? row
+  showOptionsDialog.value = true
+}
+
 const showOptionDialog = ref(false)
 const editingOptionId = ref<string | null>(null)
 const optionForm = reactive<ServiceOptionCreateRequest & ServiceOptionUpdateRequest>({
@@ -193,7 +264,9 @@ const invalidate = () => {
   queryClient.invalidateQueries({ queryKey: ['admin-services'] }).then(syncSelectedService)
 }
 
-watch(searchName, () => { currentPage.value = 1 })
+watch(searchName, () => {
+  currentPage.value = 1
+})
 
 const createServiceMutation = useMutation({
   mutationFn: (data: ServiceGuaranteeCreateRequest) => createService(data),
@@ -215,9 +288,6 @@ const updateServiceMutation = useMutation({
 const deleteServiceMutation = useMutation({
   mutationFn: (id: string) => deleteService(id),
   onSuccess: () => {
-    if (selectedService.value?.id === deleteServiceMutation.variables?.valueOf()) {
-      selectedService.value = null
-    }
     invalidate()
   },
 })
@@ -264,9 +334,22 @@ const handleServiceSubmit = async () => {
   }
 }
 
+const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
+const openConfirm = (title: string, description: string, onConfirm: () => void) => {
+  confirmDialog.value = { open: true, title, description, onConfirm }
+}
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
+
 const handleDeleteService = (row: ServiceGuaranteeVO) => {
-  if (selectedService.value?.id === row.id) selectedService.value = null
-  deleteServiceMutation.mutate(row.id)
+  openConfirm('确认删除', `确认删除服务保障「${row.name}」？`, () => {
+    deleteServiceMutation.mutate(row.id)
+  })
 }
 
 const handleOptionSubmit = async () => {
@@ -292,12 +375,14 @@ const handleOptionSubmit = async () => {
 
 const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
   if (!selectedService.value) return
-  deleteOptionMutation.mutate({ serviceId: selectedService.value.id, optionId: row.id })
+  openConfirm('确认删除', `确认删除选项「${row.name}」？`, () => {
+    deleteOptionMutation.mutate({ serviceId: selectedService.value!.id, optionId: row.id })
+  })
 }
 </script>
 
 <template>
-  <div class="space-y-8">
+  <div>
     <DataTableCrud
       :columns="serviceColumns"
       :data="list"
@@ -314,42 +399,11 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
       @update:page-size="pageSize = $event"
     >
       <template #toolbar>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <Input v-model="searchName" placeholder="搜索服务名称" class="h-8 w-48" />
         </div>
       </template>
     </DataTableCrud>
-
-    <div v-if="selectedService">
-      <div class="mb-3 flex items-center gap-2">
-        <div class="h-4 w-1 rounded bg-primary" />
-        <h3 class="text-sm font-medium text-muted-foreground">
-          「{{ selectedService.name }}」的选项
-        </h3>
-        <button
-          class="ml-auto text-xs text-muted-foreground hover:text-foreground"
-          @click="selectedService = null"
-        >
-          <icon-lucide-x class="h-4 w-4" />
-        </button>
-      </div>
-
-      <DataTableCrud
-        :columns="optionColumns"
-        :data="currentOptions"
-        :total-row="currentOptions.length"
-        title="服务选项"
-        @create="openCreateOption"
-        @edit="openEditOption"
-        @delete="handleDeleteOption"
-      />
-    </div>
-    <div
-      v-else
-      class="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground"
-    >
-      点击服务保障 ID 或名称查看其选项
-    </div>
   </div>
 
   <Dialog :open="showServiceDialog" @update:open="(v) => !v && (showServiceDialog = false)">
@@ -384,6 +438,27 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
           保存
         </Button>
       </DialogFooter>
+    </DialogContent>
+  </Dialog>
+
+  <Dialog :open="showOptionsDialog" @update:open="(v) => !v && (showOptionsDialog = false)">
+    <DialogContent class="sm:max-w-none" style="max-width: 1100px; width: 95vw">
+      <DialogHeader>
+        <DialogTitle>「{{ selectedService?.name }}」的选项</DialogTitle>
+      </DialogHeader>
+
+      <div class="py-4">
+        <DataTableCrud
+          :columns="optionColumns"
+          :data="currentOptions"
+          :total-row="currentOptions.length"
+          :show-pagination="false"
+          title="服务选项"
+          @create="openCreateOption"
+          @edit="openEditOption"
+          @delete="handleDeleteOption"
+        />
+      </div>
     </DialogContent>
   </Dialog>
 
@@ -434,4 +509,12 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
       </DialogFooter>
     </DialogContent>
   </Dialog>
+
+  <ConfirmDialog
+    :open="confirmDialog.open"
+    :title="confirmDialog.title"
+    :description="confirmDialog.description"
+    @close="closeConfirm"
+    @confirm="handleConfirm"
+  />
 </template>

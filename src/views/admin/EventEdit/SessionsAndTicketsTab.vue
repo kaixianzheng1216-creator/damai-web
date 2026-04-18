@@ -65,8 +65,13 @@ const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: 
 const openConfirm = (title: string, description: string, onConfirm: () => void) => {
   confirmDialog.value = { open: true, title, description, onConfirm }
 }
-const closeConfirm = () => { confirmDialog.value.open = false }
-const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
 
 // ─── Session ──────────────────────────────────────────────
 
@@ -78,12 +83,6 @@ const sessionForm = reactive<SessionItem & Partial<SessionUpdateRequest>>({
   startAt: '',
   endAt: '',
 })
-
-const resetSessionForm = () => {
-  sessionForm.name = ''
-  sessionForm.startAt = ''
-  sessionForm.endAt = ''
-}
 
 const batchSessionRows = ref<Array<{ name: string; startAt: string; endAt: string }>>([
   { name: '', startAt: '', endAt: '' },
@@ -158,7 +157,10 @@ const handleSaveSession = async () => {
       toast.error('请填写场次名称')
       return
     }
-    await updateSessionMutation.mutateAsync({ sessionId: editingSessionId.value, data: sessionForm })
+    await updateSessionMutation.mutateAsync({
+      sessionId: editingSessionId.value,
+      data: sessionForm,
+    })
   } else {
     const validRows = batchSessionRows.value.filter((r) => r.name)
     if (validRows.length === 0) {
@@ -170,7 +172,9 @@ const handleSaveSession = async () => {
 }
 
 const handleDeleteSession = (session: SessionVO) => {
-  openConfirm('确认删除', `确认删除场次「${session.name}」？`, () => deleteSessionMutation.mutate(session.id))
+  openConfirm('确认删除', `确认删除场次「${session.name}」？`, () =>
+    deleteSessionMutation.mutate(session.id),
+  )
 }
 
 // ─── Ticket Type ──────────────────────────────────────────
@@ -269,8 +273,13 @@ const deleteTicketTypeMutation = useMutation({
 })
 
 const adjustInventoryMutation = useMutation({
-  mutationFn: ({ ticketTypeId, data }: { ticketTypeId: string; data: TicketTypeInventoryAdjustRequest }) =>
-    adjustTicketTypeInventory(props.eventId, ticketTypeId, data),
+  mutationFn: ({
+    ticketTypeId,
+    data,
+  }: {
+    ticketTypeId: string
+    data: TicketTypeInventoryAdjustRequest
+  }) => adjustTicketTypeInventory(props.eventId, ticketTypeId, data),
   onSuccess: () => {
     toast.success('库存调整成功')
     showInventoryDialog.value = false
@@ -292,14 +301,19 @@ const handleSaveTicketType = async () => {
     return
   }
   if (editingTicketTypeId.value) {
-    await updateTicketTypeMutation.mutateAsync({ ticketTypeId: editingTicketTypeId.value, data: ticketTypeForm })
+    await updateTicketTypeMutation.mutateAsync({
+      ticketTypeId: editingTicketTypeId.value,
+      data: ticketTypeForm,
+    })
   } else {
     await createTicketTypeMutation.mutateAsync(ticketTypeForm as TicketTypeCreateRequest)
   }
 }
 
 const handleDeleteTicketType = (ticketType: TicketTypeVO) => {
-  openConfirm('确认删除', `确认删除票种「${ticketType.name}」？`, () => deleteTicketTypeMutation.mutate(ticketType.id))
+  openConfirm('确认删除', `确认删除票种「${ticketType.name}」？`, () =>
+    deleteTicketTypeMutation.mutate(ticketType.id),
+  )
 }
 
 const handleAdjustInventory = async () => {
@@ -335,8 +349,13 @@ const toggleCopyTarget = (sessionId: string) => {
 }
 
 const copyTicketTypesMutation = useMutation({
-  mutationFn: ({ sourceSessionId, targetSessionIds }: { sourceSessionId: string; targetSessionIds: string[] }) =>
-    copyTicketTypes(props.eventId, { sourceSessionId, targetSessionIds }),
+  mutationFn: ({
+    sourceSessionId,
+    targetSessionIds,
+  }: {
+    sourceSessionId: string
+    targetSessionIds: string[]
+  }) => copyTicketTypes(props.eventId, { sourceSessionId, targetSessionIds }),
   onSuccess: () => {
     toast.success('票种复制成功')
     showCopyDialog.value = false
@@ -382,7 +401,10 @@ const getAvailableQty = (tt: TicketTypeVO) => {
     </div>
 
     <!-- Empty -->
-    <div v-if="!sessions || sessions.length === 0" class="text-center py-10 text-muted-foreground border rounded-lg">
+    <div
+      v-if="!sessions || sessions.length === 0"
+      class="text-center py-10 text-muted-foreground border rounded-lg"
+    >
       暂无场次，点击右上角添加
     </div>
 
@@ -408,11 +430,15 @@ const getAvailableQty = (tt: TicketTypeVO) => {
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                  <Button variant="ghost" size="sm" class="h-8 w-8 p-0 text-muted-foreground">···</Button>
+                  <Button variant="ghost" size="sm" class="h-8 w-8 p-0 text-muted-foreground"
+                    >···</Button
+                  >
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem @click="openSessionEdit(session)">编辑场次</DropdownMenuItem>
-                  <DropdownMenuItem @click="openCopyDialog(session)">复制票种到其他场次</DropdownMenuItem>
+                  <DropdownMenuItem @click="openCopyDialog(session)"
+                    >复制票种到其他场次</DropdownMenuItem
+                  >
                   <DropdownMenuItem
                     class="text-destructive focus:text-destructive"
                     @click="handleDeleteSession(session)"
@@ -441,12 +467,15 @@ const getAvailableQty = (tt: TicketTypeVO) => {
               <div>
                 <div class="font-medium text-sm">{{ tt.name }}</div>
                 <div class="text-xs text-muted-foreground mt-0.5">
-                  {{ formatPrice(getTicketTypePrice(tt)) }} · 库存 {{ getTotalQty(tt) }} · 可用 {{ getAvailableQty(tt) }}
+                  {{ formatPrice(getTicketTypePrice(tt)) }} · 库存 {{ getTotalQty(tt) }} · 可用
+                  {{ getAvailableQty(tt) }}
                 </div>
               </div>
               <div class="flex gap-2">
                 <Button variant="outline" size="sm" @click="openTicketTypeEdit(tt)">编辑</Button>
-                <Button variant="outline" size="sm" @click="openInventoryAdjust(tt)">调整库存</Button>
+                <Button variant="outline" size="sm" @click="openInventoryAdjust(tt)"
+                  >调整库存</Button
+                >
                 <Button
                   variant="outline"
                   size="sm"
@@ -540,16 +569,28 @@ const getAvailableQty = (tt: TicketTypeVO) => {
         </div>
         <div class="grid gap-2">
           <Label>售价（分） <span class="text-destructive">*</span></Label>
-          <Input v-model.number="ticketTypeForm.salePrice" type="number" placeholder="请输入售价（单位：分）" />
+          <Input
+            v-model.number="ticketTypeForm.salePrice"
+            type="number"
+            placeholder="请输入售价（单位：分）"
+          />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="grid gap-2">
             <Label>每单限购</Label>
-            <Input v-model.number="ticketTypeForm.orderLimit" type="number" placeholder="每单限购数量" />
+            <Input
+              v-model.number="ticketTypeForm.orderLimit"
+              type="number"
+              placeholder="每单限购数量"
+            />
           </div>
           <div class="grid gap-2">
             <Label>每人限购</Label>
-            <Input v-model.number="ticketTypeForm.accountLimit" type="number" placeholder="每人限购数量" />
+            <Input
+              v-model.number="ticketTypeForm.accountLimit"
+              type="number"
+              placeholder="每人限购数量"
+            />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
@@ -564,7 +605,11 @@ const getAvailableQty = (tt: TicketTypeVO) => {
         </div>
         <div v-if="!editingTicketTypeId" class="grid gap-2">
           <Label>总库存 <span class="text-destructive">*</span></Label>
-          <Input v-model.number="ticketTypeForm.totalQty" type="number" placeholder="请输入总库存" />
+          <Input
+            v-model.number="ticketTypeForm.totalQty"
+            type="number"
+            placeholder="请输入总库存"
+          />
         </div>
       </div>
       <DialogFooter>
@@ -607,7 +652,7 @@ const getAvailableQty = (tt: TicketTypeVO) => {
           <Label>选择目标场次</Label>
           <div class="space-y-2">
             <div
-              v-for="session in sessions?.filter(s => s.id !== copySourceSession?.id)"
+              v-for="session in sessions?.filter((s) => s.id !== copySourceSession?.id)"
               :key="session.id"
               class="flex items-center gap-2 cursor-pointer"
               @click="toggleCopyTarget(session.id)"

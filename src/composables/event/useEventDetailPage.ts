@@ -1,9 +1,10 @@
 import { computed, ref, watch } from 'vue'
+import dayjs from 'dayjs'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchPassengerPage } from '@/api/account'
 import { fetchEventDetailById } from '@/api/event'
-import { createTicketOrder } from '@/api/trade'
+import { createTicketOrder, fetchUserPurchaseCounts } from '@/api/trade'
 import type { DetailTabKey } from '@/constants'
 import { EVENT_CONFIG, TICKET_TYPE_STATUS } from '@/constants'
 import type { PassengerItem } from '@/api/account'
@@ -12,6 +13,16 @@ import type { SessionVO, TicketTypeVO, SeriesEventVO } from '@/api/event'
 import { useUserStore } from '@/stores/user'
 import { formatPrice } from '@/utils/format'
 import { mapPassengerToPassengerItem } from '@/utils/mappers'
+
+const isTicketTypeOnSale = (ticketType: TicketTypeVO): boolean => {
+  if (ticketType.status !== TICKET_TYPE_STATUS.ON_SALE) {
+    return false
+  }
+  const now = dayjs()
+  const saleStart = dayjs(ticketType.saleStartAt)
+  const saleEnd = dayjs(ticketType.saleEndAt)
+  return now.isAfter(saleStart) && now.isBefore(saleEnd)
+}
 
 interface PassengerSlot {
   index: number
@@ -87,15 +98,41 @@ export const useEventDetailPage = () => {
   const selectedTicketTypeLimit = computed(
     () => selectedTicketType.value?.orderLimit ?? EVENT_CONFIG.DEFAULT_ORDER_LIMIT,
   )
-  const maxTicketQuantity = computed(() =>
-    Math.max(
-      1,
-      Math.min(
-        selectedTicketTypeLimit.value,
-        passengers.value.length || selectedTicketTypeLimit.value,
-      ),
-    ),
+  const selectedTicketTypeAccountLimit = computed(() => selectedTicketType.value?.accountLimit ?? 0)
+  const isSelectedTicketTypeOnSale = computed(() =>
+    selectedTicketType.value ? isTicketTypeOnSale(selectedTicketType.value) : false,
   )
+
+  const ticketTypeIds = computed(() => availableTicketTypes.value.map((t) => t.id))
+
+  const purchaseCountsQuery = useQuery({
+    queryKey: computed(() => ['purchase-counts', ticketTypeIds.value]),
+    queryFn: () => fetchUserPurchaseCounts(ticketTypeIds.value),
+    enabled: computed(() => userStore.isLoggedIn && ticketTypeIds.value.length > 0),
+  })
+
+  const userPurchasedCount = computed(() => {
+    if (!selectedTicketTypeId.value || !purchaseCountsQuery.data.value) return 0
+    return purchaseCountsQuery.data.value[selectedTicketTypeId.value] ?? 0
+  })
+
+  const isUserAccountLimitReached = computed(() => {
+    const limit = selectedTicketTypeAccountLimit.value
+    return limit > 0 && userPurchasedCount.value >= limit
+  })
+
+  const maxTicketQuantity = computed(() => {
+    const inventory = selectedTicketType.value?.inventory
+    const availableQty = inventory
+      ? inventory.totalQty - inventory.lockedQty - inventory.soldQty
+      : selectedTicketTypeLimit.value
+    const accountLimit = selectedTicketTypeAccountLimit.value
+    const userRemaining =
+      accountLimit > 0
+        ? Math.max(0, accountLimit - userPurchasedCount.value)
+        : selectedTicketTypeLimit.value
+    return Math.max(1, Math.min(selectedTicketTypeLimit.value, availableQty, userRemaining))
+  })
   const totalPrice = computed(() =>
     selectedTicketType.value
       ? formatPrice(selectedTicketType.value.price * ticketQuantity.value)
@@ -158,12 +195,11 @@ export const useEventDetailPage = () => {
     availableTicketTypes,
     (ticketTypes) => {
       const currentTicketType = ticketTypes.find((item) => item.id === selectedTicketTypeId.value)
-      if (currentTicketType && currentTicketType.status === TICKET_TYPE_STATUS.ON_SALE) {
+      if (currentTicketType && isTicketTypeOnSale(currentTicketType)) {
         return
       }
 
-      selectedTicketTypeId.value =
-        ticketTypes.find((item) => item.status === TICKET_TYPE_STATUS.ON_SALE)?.id ?? null
+      selectedTicketTypeId.value = ticketTypes.find((item) => isTicketTypeOnSale(item))?.id ?? null
     },
     { immediate: true },
   )
@@ -294,6 +330,10 @@ export const useEventDetailPage = () => {
     availableTicketTypes,
     selectedTicketType,
     selectedTicketTypeLimit,
+    selectedTicketTypeAccountLimit,
+    isSelectedTicketTypeOnSale,
+    isTicketTypeOnSale,
+    isUserAccountLimitReached,
     maxTicketQuantity,
     totalPrice,
     passengerSlots,

@@ -20,6 +20,10 @@ const {
   availableTicketTypes,
   selectedTicketType,
   selectedTicketTypeLimit,
+  selectedTicketTypeAccountLimit,
+  isSelectedTicketTypeOnSale,
+  isTicketTypeOnSale,
+  isUserAccountLimitReached,
   maxTicketQuantity,
   totalPrice,
   passengerSlots,
@@ -61,7 +65,7 @@ const sanitizedDescription = computed(() =>
 
     <div
       v-else
-      class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px] xl:grid-cols-[minmax(0,1fr)_260px]"
+      class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_240px] xl:grid-cols-[minmax(0,1fr)_260px]"
     >
       <section class="border border-border bg-background">
         <EventDetailHero
@@ -70,6 +74,10 @@ const sanitizedDescription = computed(() =>
           :selected-ticket-type-id="selectedTicketTypeId"
           :ticket-quantity="ticketQuantity"
           :selected-ticket-type-limit="selectedTicketTypeLimit"
+          :selected-ticket-type-account-limit="selectedTicketTypeAccountLimit"
+          :is-selected-ticket-type-on-sale="isSelectedTicketTypeOnSale"
+          :is-ticket-type-on-sale="isTicketTypeOnSale"
+          :is-user-account-limit-reached="isUserAccountLimitReached"
           :max-ticket-quantity="maxTicketQuantity"
           :total-price="totalPrice"
           :is-creating-order="isCreatingOrder"
@@ -89,7 +97,7 @@ const sanitizedDescription = computed(() =>
               v-for="item in DETAIL_TABS"
               :key="item.value"
               :value="item.value"
-              class="rounded-none border-0 border-b-2 border-transparent px-8 py-4 text-sm data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              class="rounded-none border-0 border-b-2 border-transparent px-4 py-4 text-sm md:px-8 data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             >
               {{ item.label }}
             </TabsTrigger>
@@ -120,7 +128,7 @@ const sanitizedDescription = computed(() =>
         </div>
       </section>
 
-      <EventDetailSidebar :services="detail.services" />
+      <EventDetailSidebar class="hidden lg:block" :services="detail.services" />
     </div>
 
     <EventPassengerDialog

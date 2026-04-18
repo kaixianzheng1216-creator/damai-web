@@ -13,15 +13,9 @@ const formatPriceText = (priceText: string) => priceText.replace(/\s*元$/, '\u0
     <div class="relative mb-2 aspect-[3/4] flex-shrink-0 overflow-hidden rounded-lg md:mb-3">
       <img
         :src="event.coverImageUrl"
-        :alt="`${event.seriesName} ${event.eventName}`"
+        :alt="event.seriesName"
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
-      <div
-        v-if="event.saleStatus"
-        class="absolute right-2 top-2 rounded bg-black/60 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm"
-      >
-        {{ event.saleStatus }}
-      </div>
     </div>
 
     <div class="min-w-0 flex-1 px-0.5">
@@ -31,11 +25,12 @@ const formatPriceText = (priceText: string) => priceText.replace(/\s*元$/, '\u0
         {{ event.seriesName }}
       </h3>
       <div class="flex flex-col gap-1">
-        <div class="truncate text-sm text-muted-foreground">{{ event.eventName }}</div>
         <div class="truncate text-sm text-muted-foreground">{{ event.venueName }}</div>
         <div class="truncate text-sm text-muted-foreground">{{ event.dateText }}</div>
       </div>
-      <div class="mt-auto whitespace-nowrap pt-2 text-base font-bold leading-none text-primary md:pt-4 md:text-xl">
+      <div
+        class="mt-auto whitespace-nowrap pt-2 text-base font-bold leading-none text-primary md:pt-4 md:text-xl"
+      >
         {{ formatPriceText(event.priceText) }}
       </div>
     </div>

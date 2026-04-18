@@ -14,11 +14,14 @@ export const mapPassengerToPassengerItem = (passenger: PassengerVO): PassengerIt
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr)
+  const year = date.getFullYear()
   const month = date.getMonth() + 1
   const day = date.getDate()
   const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
   const weekday = weekdays[date.getDay()]
-  return `${month}月${day}日 ${weekday}`
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  return `${year}.${month}.${day} ${weekday} ${hours}:${minutes}`
 }
 
 export const convertEventVOToCardItem = (event: EventVO): HomeEventCardItem => ({
@@ -36,13 +39,15 @@ export const convertEventVOToCardItem = (event: EventVO): HomeEventCardItem => (
 export const convertCategoryVOToHomeItem = (category: CategoryVO): HomeCategoryItem => {
   const iconMap: Record<string, string> = {
     演唱会: 'Music',
-    话剧歌剧: 'Theater',
-    展览休闲: 'GalleryVertical',
-    体育比赛: 'Trophy',
+    话剧歌剧: 'Clapperboard',
+    体育: 'Trophy',
     儿童亲子: 'Baby',
-    曲艺杂谈: 'Mic2',
-    舞蹈芭蕾: 'Dancer',
-    音乐剧: 'Music2',
+    展览休闲: 'Landmark',
+    音乐会: 'Piano',
+    曲苑杂坛: 'Mic',
+    舞蹈芭蕾: 'PersonStanding',
+    二次元: 'Gamepad2',
+    旅游展览: 'Compass',
   }
 
   return {

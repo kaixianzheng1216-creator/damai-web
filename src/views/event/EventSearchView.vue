@@ -87,7 +87,6 @@ const {
               {{ item.label }}
             </button>
           </div>
-
         </div>
 
         <div
@@ -121,13 +120,13 @@ const {
 
         <Pagination
           v-slot="{ page }"
-          :total="searchQuery.data.value?.totalRow ?? 0"
+          :total="Number(searchQuery.data.value?.totalRow ?? 0)"
           :items-per-page="queryParams.size ?? 10"
           :sibling-count="1"
           :default-page="queryParams.page ?? 1"
           :page="queryParams.page ?? 1"
           @update:page="handlePageChange"
-          class="justify-center border-t border-border py-5"
+          class="justify-end border-t border-border py-5"
         >
           <PaginationContent v-slot="{ items }">
             <PaginationPrevious />

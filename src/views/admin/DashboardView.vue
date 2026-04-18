@@ -2,7 +2,19 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { IconCalendar, IconUsers, IconMapPin, IconTags, IconBuilding, IconPhoto, IconUserCircle, IconStack, IconFileText, IconShieldCheck } from '@tabler/icons-vue'
+import {
+  IconCalendar,
+  IconUsers,
+  IconMapPin,
+  IconTags,
+  IconBuilding,
+  IconPhoto,
+  IconUserCircle,
+  IconStack,
+  IconFileText,
+  IconShieldCheck,
+  IconTicket,
+} from '@tabler/icons-vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -19,6 +31,8 @@ const quickActionItems = [
   { key: 'participants', label: '参与方管理', icon: IconUserCircle, path: '/admin/participants' },
   { key: 'notices', label: '须知模板', icon: IconFileText, path: '/admin/notices' },
   { key: 'services', label: '服务保障', icon: IconShieldCheck, path: '/admin/services' },
+  { key: 'tickets', label: '电子票管理', icon: IconTicket, path: '/admin/tickets' },
+  { key: 'users', label: '用户管理', icon: IconUsers, path: '/admin/users' },
   { key: 'admins', label: '管理员管理', icon: IconUsers, path: '/admin/admins' },
 ]
 

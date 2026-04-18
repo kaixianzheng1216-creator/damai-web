@@ -5,6 +5,7 @@ import { type ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
+import { Badge } from '@/components/common/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,15 @@ const columns: ColumnDef<AdminVO>[] = [
     size: 180,
   },
   {
+    accessorKey: 'avatarUrl',
+    header: '头像',
+    size: 80,
+    cell: ({ row }) =>
+      row.original.avatarUrl
+        ? h('img', { src: row.original.avatarUrl, class: 'h-8 w-8 rounded-full object-cover' })
+        : null,
+  },
+  {
     accessorKey: 'username',
     header: '用户名',
   },
@@ -39,23 +49,45 @@ const columns: ColumnDef<AdminVO>[] = [
   {
     accessorKey: 'status',
     header: '状态',
-    size: 120,
-    cell: ({ row }) => {
-      return h(
-        Button,
-        {
-          size: 'sm',
-          variant: row.original.status === 0 ? 'default' : 'destructive',
-          class: 'h-6 px-2 text-xs',
-          onClick: () => toggleStatus(row.original),
-        },
-        { default: () => (row.original.status === 0 ? '正常' : '封禁') }
-      )
-    },
+    size: 100,
+    cell: ({ row }) =>
+      h(
+        Badge,
+        { variant: 'outline' },
+        { default: () => (row.original.status === 1 ? '正常' : '封禁') },
+      ),
   },
   {
-    accessorKey: 'createdAt',
-    header: '创建时间',
+    id: 'actions',
+    header: '操作',
+    size: 160,
+    cell: ({ row }) =>
+      h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          Button,
+          {
+            variant: 'outline',
+            size: 'sm',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              openEdit(row.original)
+            },
+          },
+          () => '编辑',
+        ),
+        h(
+          Button,
+          {
+            variant: row.original.status === 1 ? 'destructive' : 'default',
+            size: 'sm',
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              toggleStatus(row.original)
+            },
+          },
+          () => (row.original.status === 1 ? '封禁' : '解封'),
+        ),
+      ]),
   },
 ]
 
@@ -158,11 +190,10 @@ const handleSubmit = async () => {
   }
 }
 
-const handleDelete = (_row: AdminVO) => {
-}
+const handleDelete = (_row: AdminVO) => {}
 
 const toggleStatus = (row: AdminVO) => {
-  const newStatus = row.status === 0 ? 1 : 0
+  const newStatus = row.status === 1 ? 0 : 1
   statusMutation.mutate({ id: row.id, status: newStatus })
 }
 </script>
@@ -184,20 +215,19 @@ const toggleStatus = (row: AdminVO) => {
     @update:page-size="pageSize = $event"
   >
     <template #toolbar>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <Input
           v-model="searchUsername"
           placeholder="搜索用户名"
           class="h-8 w-36"
-          @keyup.enter="handleSearch"
+          @input="handleSearch"
         />
         <Input
           v-model="searchMobile"
           placeholder="搜索手机号"
           class="h-8 w-36"
-          @keyup.enter="handleSearch"
+          @input="handleSearch"
         />
-        <Button size="sm" variant="outline" @click="handleSearch">搜索</Button>
       </div>
     </template>
   </DataTableCrud>

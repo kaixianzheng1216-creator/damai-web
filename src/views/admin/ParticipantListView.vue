@@ -31,30 +31,31 @@ const columns: ColumnDef<ParticipantVO>[] = [
     cell: ({ row }) => String(row.getValue('id')),
   },
   {
+    id: 'avatar',
+    header: '头像',
+    size: 100,
+    cell: ({ row }) => {
+      const avatarUrl = row.original.avatarUrl
+      return avatarUrl
+        ? h('img', {
+            src: avatarUrl,
+            alt: row.original.name,
+            class: 'h-10 w-10 rounded-full object-cover border border-border',
+          })
+        : h(
+            'div',
+            {
+              class:
+                'h-10 w-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground',
+            },
+            '暂无',
+          )
+    },
+  },
+  {
     accessorKey: 'name',
     header: '名称',
     cell: ({ row }) => String(row.getValue('name')),
-  },
-  {
-    accessorKey: 'avatarUrl',
-    header: '头像URL',
-    cell: ({ row }) => {
-      const avatarUrl = row.getValue('avatarUrl') as string
-      return h('div', { class: 'flex items-center gap-2' }, [
-        avatarUrl
-          ? h('img', {
-              src: avatarUrl,
-              alt: row.original.name,
-              class: 'h-8 w-8 rounded-full object-cover border border-border',
-            })
-          : null,
-        h(
-          'span',
-          { class: 'text-sm text-muted-foreground truncate max-w-[200px]' },
-          avatarUrl || '-',
-        ),
-      ])
-    },
   },
   {
     id: 'actions',
@@ -94,11 +95,21 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const searchName = ref('')
 
-const queryKey = computed(() => ['admin-participants', currentPage.value, pageSize.value, searchName.value])
+const queryKey = computed(() => [
+  'admin-participants',
+  currentPage.value,
+  pageSize.value,
+  searchName.value,
+])
 
 const { data, isLoading } = useQuery({
   queryKey,
-  queryFn: () => fetchAdminParticipantsPage({ page: currentPage.value, size: pageSize.value, name: searchName.value || undefined }),
+  queryFn: () =>
+    fetchAdminParticipantsPage({
+      page: currentPage.value,
+      size: pageSize.value,
+      name: searchName.value || undefined,
+    }),
 })
 
 const list = computed(() => data.value?.records ?? [])
@@ -134,7 +145,9 @@ const openEdit = (row: ParticipantVO) => {
 
 const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-participants'] })
 
-watch(searchName, () => { currentPage.value = 1 })
+watch(searchName, () => {
+  currentPage.value = 1
+})
 
 const createMutation = useMutation({
   mutationFn: (data: ParticipantCreateRequest) => createParticipant(data),
@@ -198,7 +211,7 @@ const handleDelete = (row: ParticipantVO) => {
     @update:page-size="pageSize = $event"
   >
     <template #toolbar>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <Input v-model="searchName" placeholder="搜索参与方名称" class="h-8 w-48" />
       </div>
     </template>

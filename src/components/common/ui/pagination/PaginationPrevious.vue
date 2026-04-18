@@ -1,21 +1,26 @@
 <script setup lang="ts">
-import type { PaginationPrevProps } from "reka-ui"
-import type { HTMLAttributes } from "vue"
+import type { PaginationPrevProps } from 'reka-ui'
+import type { HTMLAttributes } from 'vue'
 import type { ButtonVariants } from '@/components/common/ui/button'
-import { reactiveOmit } from "@vueuse/core"
-import { ChevronLeftIcon } from "lucide-vue-next"
-import { PaginationPrev, useForwardProps } from "reka-ui"
+import { reactiveOmit } from '@vueuse/core'
+import { ChevronLeftIcon } from 'lucide-vue-next'
+import { PaginationPrev, useForwardProps } from 'reka-ui'
 import { cn } from '@/utils'
 import { buttonVariants } from '@/components/common/ui/button'
 
-const props = withDefaults(defineProps<PaginationPrevProps & {
-  size?: ButtonVariants["size"]
-  class?: HTMLAttributes["class"]
-}>(), {
-  size: "default",
-})
+const props = withDefaults(
+  defineProps<
+    PaginationPrevProps & {
+      size?: ButtonVariants['size']
+      class?: HTMLAttributes['class']
+    }
+  >(),
+  {
+    size: 'default',
+  },
+)
 
-const delegatedProps = reactiveOmit(props, "class", "size")
+const delegatedProps = reactiveOmit(props, 'class', 'size')
 const forwarded = useForwardProps(delegatedProps)
 </script>
 
@@ -27,7 +32,6 @@ const forwarded = useForwardProps(delegatedProps)
   >
     <slot>
       <ChevronLeftIcon />
-      <span class="hidden sm:block">Previous</span>
     </slot>
   </PaginationPrev>
 </template>

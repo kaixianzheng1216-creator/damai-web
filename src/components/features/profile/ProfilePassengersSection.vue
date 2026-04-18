@@ -19,7 +19,7 @@ defineProps<{
 
 const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 1024)
-const viewMode = computed(() => isMobile.value ? 'card' : 'table')
+const viewMode = computed(() => (isMobile.value ? 'card' : 'table'))
 
 const emit = defineEmits<{
   create: []
@@ -62,7 +62,7 @@ const columns: ColumnDef<PassengerItem>[] = [
             class: 'h-7 px-2',
             onClick: () => emit('edit', row.original),
           },
-          () => '编辑'
+          () => '编辑',
         ),
         h(
           Button,
@@ -72,7 +72,7 @@ const columns: ColumnDef<PassengerItem>[] = [
             class: 'h-7 px-2',
             onClick: () => emit('delete', row.original.id),
           },
-          () => '删除'
+          () => '删除',
         ),
       ])
     },
@@ -94,18 +94,12 @@ const columns: ColumnDef<PassengerItem>[] = [
     @update:page-size="emit('update:passengerPageSize', $event)"
   >
     <template #toolbar>
-      <div class="flex items-center gap-2">
-        <Input
-          :model-value="passengerKeyword"
-          class="h-8 w-40"
-          placeholder="搜索姓名"
-          @update:model-value="emit('update:passengerKeyword', String($event))"
-        />
-        <Button size="sm" @click="emit('create')">
-          <icon-lucide-plus class="mr-1.5 h-4 w-4" />
-          新建购票人
-        </Button>
-      </div>
+      <Input
+        :model-value="passengerKeyword"
+        class="h-8 w-40"
+        placeholder="搜索姓名"
+        @update:model-value="emit('update:passengerKeyword', String($event))"
+      />
     </template>
 
     <template #cardTemplate="{ data }">
@@ -124,12 +118,7 @@ const columns: ColumnDef<PassengerItem>[] = [
               <span class="text-sm">{{ passenger.certNo }}</span>
             </div>
             <div class="flex items-center gap-2 pt-1">
-              <Button
-                size="sm"
-                variant="outline"
-                class="h-7 px-2"
-                @click="emit('edit', passenger)"
-              >
+              <Button size="sm" variant="outline" class="h-7 px-2" @click="emit('edit', passenger)">
                 编辑
               </Button>
               <Button
