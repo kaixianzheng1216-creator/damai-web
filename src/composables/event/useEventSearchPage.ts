@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchEventPage, fetchCitiesList, fetchCategories } from '@/api/event'
@@ -27,6 +27,9 @@ export const useEventSearchPage = () => {
     queryKey: ['search-categories'],
     queryFn: fetchCategories,
   })
+
+  // 选中的一级分类
+  const selectedParentCategoryId = ref<string | undefined>()
 
   const queryParams = computed<EventPageRequest>(() => ({
     name:
@@ -70,12 +73,73 @@ export const useEventSearchPage = () => {
     ]
   })
 
-  const categoryOptions = computed(() => {
+  // 一级分类选项
+  const parentCategoryOptions = computed(() => {
     const categories = categoriesQuery.data.value ?? []
-    return [
+    const options: { label: string; value: string | undefined }[] = [
       { label: '全部', value: undefined },
-      ...categories.map((category: CategoryVO) => ({ label: category.name, value: category.id })),
     ]
+
+    categories.forEach((cat) => {
+      if (cat.parentId === '0' || cat.parentId === 0) {
+        options.push({ label: cat.name, value: cat.id })
+      }
+    })
+
+    return options
+  })
+
+  // 二级分类选项（基于选中的一级分类）
+  const childCategoryOptions = computed(() => {
+    const categories = categoriesQuery.data.value ?? []
+    const options: { label: string; value: string | undefined }[] = []
+
+    if (!selectedParentCategoryId.value) {
+      return options
+    }
+
+    // 第一个选项是"全部"，值为一级分类ID（查该一级分类下所有子分类）
+    options.push({ label: '全部', value: selectedParentCategoryId.value })
+
+    const parentCategory = categories.find((cat) => cat.id === selectedParentCategoryId.value)
+
+    if (parentCategory?.children && parentCategory.children.length > 0) {
+      parentCategory.children.forEach((child: CategoryVO) => {
+        options.push({ label: child.name, value: child.id })
+      })
+    }
+
+    return options
+  })
+
+  // 同步 URL 中的 categoryId 到 selectedParentCategoryId
+  const syncCategoryFromUrl = () => {
+    const categoryId = queryParams.value.categoryId
+    if (!categoryId) {
+      selectedParentCategoryId.value = undefined
+      return
+    }
+
+    const categories = categoriesQuery.data.value ?? []
+    const category = categories.find((cat) => cat.id === categoryId)
+
+    if (category) {
+      if (category.parentId === '0' || category.parentId === 0) {
+        // 选中的是一级分类
+        selectedParentCategoryId.value = categoryId
+      } else {
+        // 选中的是二级分类，找到它的父分类
+        const parent = categories.find((cat) =>
+          cat.children?.some((child: CategoryVO) => child.id === categoryId),
+        )
+        selectedParentCategoryId.value = parent?.id
+      }
+    }
+  }
+
+  // 当分类数据加载完成或 URL 变化时同步
+  watch([categoriesQuery.data, () => route.query.categoryId], syncCategoryFromUrl, {
+    immediate: true,
   })
 
   const timeOptions = computed(() => TIME_OPTIONS)
@@ -137,7 +201,9 @@ export const useEventSearchPage = () => {
     totalPages,
     sortOptions,
     cityOptions,
-    categoryOptions,
+    parentCategoryOptions,
+    childCategoryOptions,
+    selectedParentCategoryId,
     timeOptions,
     visiblePages,
     handleFilterChange,

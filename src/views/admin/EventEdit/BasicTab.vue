@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { Input } from '@/components/common/ui/input'
@@ -55,6 +55,32 @@ const { data: seriesData } = useQuery({
   queryFn: fetchAdminSeries,
 })
 
+// 构建分类列表 - 只显示子分类
+const categoryOptions = computed(() => {
+  const categories = toArray(categoriesData.value)
+  const options: { id: string; name: string; parentName?: string }[] = []
+
+  for (const cat of categories) {
+    if (!cat) continue
+    if (String(cat.parentId) === '0') {
+      const children = cat.children
+      if (children && Array.isArray(children)) {
+        for (const child of children) {
+          if (child && child.id) {
+            options.push({
+              id: String(child.id),
+              name: `${cat.name} - ${child.name}`,
+              parentName: cat.name,
+            })
+          }
+        }
+      }
+    }
+  }
+
+  return options
+})
+
 const basicForm = reactive<EventCreateRequest & Partial<EventUpdateRequest>>({
   categoryId: '',
   venueId: '',
@@ -68,13 +94,21 @@ const basicForm = reactive<EventCreateRequest & Partial<EventUpdateRequest>>({
 const toArray = (data: any) => {
   if (!data) return []
   if (Array.isArray(data)) return data
-  return Object.values(data)
+  // 如果是Proxy对象，直接提取values
+  try {
+    return Object.values(data)
+  } catch {
+    return []
+  }
 }
 
 watch(
   () => props.eventData,
   (newData) => {
     if (!newData) return
+
+    console.log('eventData:', newData)
+    console.log('eventData.categoryId:', newData.categoryId, 'type:', typeof newData.categoryId)
 
     Object.assign(basicForm, {
       categoryId: String(newData.categoryId || ''),
@@ -197,9 +231,9 @@ defineExpose({ save: handleSaveBasic })
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
-                    v-for="category in toArray(categoriesData)"
+                    v-for="category in categoryOptions"
                     :key="category.id"
-                    :value="String(category.id)"
+                    :value="category.id"
                   >
                     {{ category.name }}
                   </SelectItem>

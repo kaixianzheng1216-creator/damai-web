@@ -34,11 +34,14 @@ const editor = useEditor({
   },
 })
 
-watch(() => props.modelValue, (val) => {
-  if (editor.value && val !== editor.value.getHTML()) {
-    editor.value.commands.setContent(val ?? '', false)
-  }
-})
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (editor.value && val !== editor.value.getHTML()) {
+      editor.value.commands.setContent(val ?? '', false)
+    }
+  },
+)
 
 // ─── Heading dropdown ─────────────────────────────────────
 
@@ -46,17 +49,23 @@ const showHeadingMenu = ref(false)
 
 const headingOptions = [
   { label: '正文', action: () => editor.value?.chain().focus().setParagraph().run() },
-  { label: '标题 2', action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run() },
-  { label: '标题 3', action: () => editor.value?.chain().focus().toggleHeading({ level: 3 }).run() },
+  {
+    label: '标题 1',
+    action: () => editor.value?.chain().focus().toggleHeading({ level: 3 }).run(),
+  },
+  {
+    label: '标题 2',
+    action: () => editor.value?.chain().focus().toggleHeading({ level: 4 }).run(),
+  },
 ]
 
 const currentHeadingLabel = () => {
-  if (editor.value?.isActive('heading', { level: 2 })) return '标题 2'
-  if (editor.value?.isActive('heading', { level: 3 })) return '标题 3'
+  if (editor.value?.isActive('heading', { level: 4 })) return '标题 2'
+  if (editor.value?.isActive('heading', { level: 3 })) return '标题 1'
   return '正文'
 }
 
-const applyHeading = (option: typeof headingOptions[0]) => {
+const applyHeading = (option: (typeof headingOptions)[0]) => {
   option.action()
   showHeadingMenu.value = false
 }
@@ -70,15 +79,25 @@ const clearFormatting = () => {
 
 <template>
   <div class="rounded-md border border-input bg-background shadow-sm overflow-hidden">
-
     <!-- Toolbar -->
     <div class="flex items-center gap-px border-b px-1.5 py-1 bg-muted/30 flex-wrap">
-
       <!-- Undo / Redo -->
-      <button type="button" class="tb" :disabled="!editor?.can().undo()" title="撤销" @click="editor?.chain().focus().undo().run()">
+      <button
+        type="button"
+        class="tb"
+        :disabled="!editor?.can().undo()"
+        title="撤销"
+        @click="editor?.chain().focus().undo().run()"
+      >
         <icon-lucide-undo-2 class="h-4 w-4" />
       </button>
-      <button type="button" class="tb" :disabled="!editor?.can().redo()" title="重做" @click="editor?.chain().focus().redo().run()">
+      <button
+        type="button"
+        class="tb"
+        :disabled="!editor?.can().redo()"
+        title="重做"
+        @click="editor?.chain().focus().redo().run()"
+      >
         <icon-lucide-redo-2 class="h-4 w-4" />
       </button>
 
@@ -114,17 +133,35 @@ const clearFormatting = () => {
       <div class="tb-sep" />
 
       <!-- Bold -->
-      <button type="button" class="tb font-bold" :class="{ 'tb-on': editor?.isActive('bold') }" title="粗体" @click="editor?.chain().focus().toggleBold().run()">
+      <button
+        type="button"
+        class="tb font-bold"
+        :class="{ 'tb-on': editor?.isActive('bold') }"
+        title="粗体"
+        @click="editor?.chain().focus().toggleBold().run()"
+      >
         B
       </button>
 
       <div class="tb-sep" />
 
       <!-- Lists -->
-      <button type="button" class="tb" :class="{ 'tb-on': editor?.isActive('bulletList') }" title="无序列表" @click="editor?.chain().focus().toggleBulletList().run()">
+      <button
+        type="button"
+        class="tb"
+        :class="{ 'tb-on': editor?.isActive('bulletList') }"
+        title="无序列表"
+        @click="editor?.chain().focus().toggleBulletList().run()"
+      >
         <icon-lucide-list class="h-4 w-4" />
       </button>
-      <button type="button" class="tb" :class="{ 'tb-on': editor?.isActive('orderedList') }" title="有序列表" @click="editor?.chain().focus().toggleOrderedList().run()">
+      <button
+        type="button"
+        class="tb"
+        :class="{ 'tb-on': editor?.isActive('orderedList') }"
+        title="有序列表"
+        @click="editor?.chain().focus().toggleOrderedList().run()"
+      >
         <icon-lucide-list-ordered class="h-4 w-4" />
       </button>
 
@@ -152,7 +189,9 @@ const clearFormatting = () => {
   border-radius: 4px;
   font-size: 0.875rem;
   color: #6b7280;
-  transition: background-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
   cursor: pointer;
   border: none;
   background: transparent;
@@ -187,12 +226,37 @@ const clearFormatting = () => {
   outline: none;
   text-align: left;
 }
-.tiptap-editor h2 { font-size: 1.25rem; font-weight: 700; margin: 0.875rem 0 0.4rem; }
-.tiptap-editor h3 { font-size: 1.05rem; font-weight: 600; margin: 0.75rem 0 0.35rem; }
-.tiptap-editor p  { margin: 0.25rem 0; }
-.tiptap-editor ul { list-style: disc; padding-left: 1.25rem; margin: 0.5rem 0; }
-.tiptap-editor ol { list-style: decimal; padding-left: 1.25rem; margin: 0.5rem 0; }
-.tiptap-editor li + li { margin-top: 0.2rem; }
+.tiptap-editor h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0.875rem 0 0.4rem;
+}
+.tiptap-editor h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.35rem;
+}
+.tiptap-editor h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0.7rem 0 0.3rem;
+}
+.tiptap-editor p {
+  margin: 0.25rem 0;
+}
+.tiptap-editor ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+.tiptap-editor ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+.tiptap-editor li + li {
+  margin-top: 0.2rem;
+}
 .tiptap-editor p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   color: #9ca3af;

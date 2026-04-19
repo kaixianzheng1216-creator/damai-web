@@ -25,8 +25,14 @@ const formatPriceText = (priceText: string) => priceText.replace(/\s*元$/, '\u0
         {{ event.seriesName }}
       </h3>
       <div class="flex flex-col gap-1">
-        <div class="truncate text-sm text-muted-foreground">{{ event.venueName }}</div>
-        <div class="truncate text-sm text-muted-foreground">{{ event.dateText }}</div>
+        <div class="flex items-center gap-1 truncate text-sm text-muted-foreground">
+          <icon-lucide-map-pin class="h-3 w-3 shrink-0" />
+          <span class="truncate">{{ event.venueName }}</span>
+        </div>
+        <div class="flex items-center gap-1 truncate text-sm text-muted-foreground">
+          <icon-lucide-calendar class="h-3 w-3 shrink-0" />
+          <span class="truncate">{{ event.dateText }}</span>
+        </div>
       </div>
       <div
         class="mt-auto whitespace-nowrap pt-2 text-base font-bold leading-none text-primary md:pt-4 md:text-xl"

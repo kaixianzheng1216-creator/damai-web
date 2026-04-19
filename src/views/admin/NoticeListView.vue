@@ -5,6 +5,7 @@ import { type ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
+import { Badge } from '@/components/common/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -43,13 +44,9 @@ const columns: ColumnDef<NoticeVO>[] = [
     cell: ({ row }) => {
       const type = row.original.type
       return h(
-        'span',
-        {
-          class: `inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-            type === 1 ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
-          }`,
-        },
-        noticeTypeMap[type] ?? type,
+        Badge,
+        { class: 'bg-transparent text-foreground border border-border' },
+        () => noticeTypeMap[type] ?? type,
       )
     },
   },

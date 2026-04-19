@@ -45,6 +45,7 @@ const detail = computed(() => detailQuery.data.value ?? null)
 const isLoading = computed(() => detailQuery.isLoading.value)
 const isError = computed(() => detailQuery.isError.value)
 const isCreatingOrder = computed(() => createOrderMutation.isPending.value)
+
 const sanitizedDescription = computed(() =>
   detail.value?.info.description ? DOMPurify.sanitize(detail.value.info.description) : '',
 )
@@ -106,8 +107,12 @@ const sanitizedDescription = computed(() =>
 
         <div class="p-6">
           <template v-if="activeTab === 'detail'">
-            <h2 class="text-xl font-medium text-foreground">演出介绍</h2>
-            <div v-if="sanitizedDescription" class="mt-5" v-html="sanitizedDescription"></div>
+            <h2 class="text-xl font-medium text-foreground">活动描述</h2>
+            <div
+              v-if="sanitizedDescription"
+              class="mt-5 rich-text-content"
+              v-html="sanitizedDescription"
+            ></div>
           </template>
 
           <template v-else>
@@ -148,3 +153,46 @@ const sanitizedDescription = computed(() =>
     />
   </div>
 </template>
+
+<style>
+/* 富文本内容样式 - 与 RichTextEditor 保持一致 */
+.rich-text-content {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  text-align: left;
+}
+.rich-text-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0.875rem 0 0.4rem;
+}
+.rich-text-content h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.35rem;
+}
+.rich-text-content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0.7rem 0 0.3rem;
+}
+.rich-text-content p {
+  margin: 0.25rem 0;
+}
+.rich-text-content ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+.rich-text-content ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+.rich-text-content li + li {
+  margin-top: 0.2rem;
+}
+.rich-text-content strong {
+  font-weight: 700;
+}
+</style>

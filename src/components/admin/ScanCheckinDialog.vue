@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, watch } from 'vue'
 import { BrowserQRCodeReader, type IScannerControls } from '@zxing/browser'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
 import { checkinTicket } from '@/api/ticket/ticket'
 
-defineProps<{ open: boolean }>()
+const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 
 const videoRef = ref<HTMLVideoElement>()
@@ -76,9 +76,24 @@ const startScanner = async () => {
 }
 
 const handleOpen = (val: boolean) => {
-  if (!val) stopScanner()
+  if (!val) {
+    stopScanner()
+  }
   emit('update:open', val)
 }
+
+// 监听对话框打开状态，打开时自动启动摄像头
+watch(
+  () => props.open,
+  (newVal) => {
+    if (newVal) {
+      // 等待下一帧确保video元素已渲染
+      setTimeout(() => {
+        startScanner()
+      }, 100)
+    }
+  },
+)
 
 onUnmounted(stopScanner)
 </script>
@@ -112,11 +127,6 @@ onUnmounted(stopScanner)
             </div>
           </div>
         </div>
-
-        <Button class="w-full" variant="outline" @click="startScanner">
-          <icon-lucide-camera class="mr-2 h-4 w-4" />
-          启动摄像头
-        </Button>
 
         <!-- 结果提示 -->
         <div

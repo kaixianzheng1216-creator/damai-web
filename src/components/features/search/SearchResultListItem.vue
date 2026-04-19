@@ -21,15 +21,36 @@ defineProps<{
         {{ item.name }}
       </h3>
       <p class="mt-2 text-sm text-muted-foreground">{{ item.categoryNameSnapshot }}</p>
-      <p class="mt-2 text-sm text-muted-foreground">
+      <p class="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
+        <icon-lucide-map-pin class="h-3.5 w-3.5 shrink-0" />
         {{ item.cityNameSnapshot }} | {{ item.venueNameSnapshot }}
       </p>
-      <p class="mt-2 text-sm text-muted-foreground">
-        {{ item.firstSessionStartAt ? formatDateTime(item.firstSessionStartAt) : '' }}
+      <p class="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
+        <icon-lucide-calendar class="h-3.5 w-3.5 shrink-0" />
+        <span
+          v-if="
+            item.firstSessionStartAt &&
+            item.lastSessionEndAt &&
+            item.firstSessionStartAt !== item.lastSessionEndAt
+          "
+        >
+          {{ formatDateTime(item.firstSessionStartAt) }} —
+          {{ formatDateTime(item.lastSessionEndAt) }}
+        </span>
+        <span v-else-if="item.firstSessionStartAt">
+          {{ formatDateTime(item.firstSessionStartAt) }}
+        </span>
       </p>
       <div class="mt-12 flex items-center gap-4">
-        <span class="text-2xl font-semibold text-primary">{{ item.minPrice != null ? formatPrice(item.minPrice) : '' }} 起</span>
-        <span class="text-sm text-muted-foreground">{{ item.statusLabel }}</span>
+        <span
+          v-if="item.minPrice != null && item.maxPrice != null && item.minPrice !== item.maxPrice"
+          class="text-2xl font-semibold text-primary"
+        >
+          {{ formatPrice(item.minPrice) }} — {{ formatPrice(item.maxPrice) }}
+        </span>
+        <span v-else-if="item.minPrice != null" class="text-2xl font-semibold text-primary">
+          {{ formatPrice(item.minPrice) }} 起
+        </span>
       </div>
     </div>
   </RouterLink>

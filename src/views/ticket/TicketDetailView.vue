@@ -79,21 +79,31 @@ const goBack = () => {
                 </div>
                 <div>
                   <p class="text-sm text-muted-foreground">场次</p>
-                  <p class="font-medium text-foreground">
+                  <p class="font-medium text-foreground flex items-center gap-1">
+                    <icon-lucide-calendar class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                     {{ formatDateTime(ticket.sessionStartAtSnapshot) }}
                   </p>
                 </div>
                 <div>
                   <p class="text-sm text-muted-foreground">场馆</p>
-                  <p class="font-medium text-foreground">{{ ticket.venueNameSnapshot }}</p>
+                  <p class="font-medium text-foreground flex items-center gap-1">
+                    <icon-lucide-building-2 class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    {{ ticket.venueNameSnapshot }}
+                  </p>
                 </div>
                 <div>
                   <p class="text-sm text-muted-foreground">场馆地址</p>
-                  <p class="font-medium text-foreground">{{ ticket.venueAddressSnapshot }}</p>
+                  <p class="font-medium text-foreground flex items-center gap-1">
+                    <icon-lucide-map-pin class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    {{ ticket.venueAddressSnapshot }}
+                  </p>
                 </div>
                 <div>
                   <p class="text-sm text-muted-foreground">购票人</p>
-                  <p class="font-medium text-foreground">{{ ticket.passengerNameSnapshot }}</p>
+                  <p class="font-medium text-foreground flex items-center gap-1">
+                    <icon-lucide-user class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    {{ ticket.passengerNameSnapshot }}
+                  </p>
                 </div>
               </div>
 

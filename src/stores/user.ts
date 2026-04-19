@@ -20,10 +20,10 @@ export interface AdminInfo {
 
 export const useUserStore = defineStore('user', () => {
   const token = useStorage<string | null>('token', null)
-  const userInfo = ref<UserInfo | null>(null)
+  const userInfo = useStorage<UserInfo | null>('user-info', null)
 
   const adminToken = useStorage<string | null>('admin-token', null)
-  const adminInfo = ref<AdminInfo | null>(null)
+  const adminInfo = useStorage<AdminInfo | null>('admin-info', null)
 
   const isLoggedIn = computed(() => !!token.value)
   const userToken = computed(() => token.value)

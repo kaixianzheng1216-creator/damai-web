@@ -61,10 +61,16 @@ const goToPayment = () => {
               <CardHeader class="bg-muted/50 border-b border-border pb-4">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <CardTitle class="text-xl">{{ order.eventNameSnapshot || '订单详情' }}</CardTitle>
-                    <p class="mt-1 text-sm text-muted-foreground">订单号：{{ order.orderNo || order.id }}</p>
+                    <CardTitle class="text-xl">{{
+                      order.eventNameSnapshot || '订单详情'
+                    }}</CardTitle>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                      订单号：{{ order.orderNo || order.id }}
+                    </p>
                   </div>
-                  <Badge :class="getOrderStatusBadgeClass(order.status)">{{ order.statusLabel }}</Badge>
+                  <Badge :class="getOrderStatusBadgeClass(order.status)">{{
+                    order.statusLabel
+                  }}</Badge>
                 </div>
               </CardHeader>
               <CardContent class="pt-6">
@@ -76,17 +82,26 @@ const goToPayment = () => {
                     </div>
                     <div v-if="order.sessionStartAtSnapshot">
                       <p class="text-sm text-muted-foreground">场次</p>
-                      <p class="font-medium text-foreground">
+                      <p class="font-medium text-foreground flex items-center gap-1">
+                        <icon-lucide-calendar class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                         {{ formatDateTime(order.sessionStartAtSnapshot) }}
                       </p>
                     </div>
                     <div v-if="order.venueNameSnapshot">
                       <p class="text-sm text-muted-foreground">场馆</p>
-                      <p class="font-medium text-foreground">{{ order.venueNameSnapshot }}</p>
+                      <p class="font-medium text-foreground flex items-center gap-1">
+                        <icon-lucide-building-2
+                          class="h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                        />
+                        {{ order.venueNameSnapshot }}
+                      </p>
                     </div>
                     <div v-if="order.venueAddressSnapshot">
                       <p class="text-sm text-muted-foreground">场馆地址</p>
-                      <p class="font-medium text-foreground">{{ order.venueAddressSnapshot }}</p>
+                      <p class="font-medium text-foreground flex items-center gap-1">
+                        <icon-lucide-map-pin class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        {{ order.venueAddressSnapshot }}
+                      </p>
                     </div>
                     <div v-if="order.ticketTypeNameSnapshot">
                       <p class="text-sm text-muted-foreground">票种</p>
@@ -102,14 +117,18 @@ const goToPayment = () => {
                     </div>
                     <div v-if="order.totalAmount !== undefined">
                       <p class="text-sm text-muted-foreground">订单金额</p>
-                      <p class="font-medium text-primary text-lg">{{ formatPrice(order.totalAmount) }}</p>
+                      <p class="font-medium text-primary text-lg">
+                        {{ formatPrice(order.totalAmount) }}
+                      </p>
                     </div>
                   </div>
 
                   <div class="border-t border-border pt-4 space-y-4">
                     <div>
                       <p class="text-sm text-muted-foreground">创建时间</p>
-                      <p class="font-medium text-foreground">{{ formatDateTime(order.createAt) }}</p>
+                      <p class="font-medium text-foreground">
+                        {{ formatDateTime(order.createAt) }}
+                      </p>
                     </div>
                     <div v-if="order.payTime">
                       <p class="text-sm text-muted-foreground">支付时间</p>
@@ -117,7 +136,9 @@ const goToPayment = () => {
                     </div>
                     <div v-if="order.cancelTime">
                       <p class="text-sm text-muted-foreground">取消时间</p>
-                      <p class="font-medium text-foreground">{{ formatDateTime(order.cancelTime) }}</p>
+                      <p class="font-medium text-foreground">
+                        {{ formatDateTime(order.cancelTime) }}
+                      </p>
                     </div>
                   </div>
                 </div>

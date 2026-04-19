@@ -14,7 +14,9 @@ const {
   searchQuery,
   sortOptions,
   cityOptions,
-  categoryOptions,
+  parentCategoryOptions,
+  childCategoryOptions,
+  selectedParentCategoryId,
   timeOptions,
   handleFilterChange,
   handleSortChange,
@@ -39,7 +41,20 @@ const {
 
         <SearchFilterGroup
           label="分类"
-          :options="categoryOptions"
+          :options="parentCategoryOptions"
+          :active-value="selectedParentCategoryId"
+          @change="
+            (v) => {
+              selectedParentCategoryId = v
+              handleFilterChange('categoryId', v)
+            }
+          "
+        />
+
+        <SearchFilterGroup
+          v-if="selectedParentCategoryId"
+          label="子分类"
+          :options="childCategoryOptions"
           :active-value="queryParams.categoryId"
           @change="handleFilterChange('categoryId', $event)"
         />

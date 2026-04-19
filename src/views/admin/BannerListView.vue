@@ -342,13 +342,13 @@ const handleDelete = (row: BannerVO) => {
             <label class="text-sm font-medium"
               >PC 端图片 <span class="text-destructive">*</span></label
             >
-            <ImageUpload v-model="form.imageUrl" />
+            <ImageUpload v-model="form.imageUrl" aspect-class="aspect-[5/2]" />
           </div>
           <div class="grid gap-2">
             <label class="text-sm font-medium"
               >移动端图片 <span class="text-destructive">*</span></label
             >
-            <ImageUpload v-model="form.mobileImageUrl" />
+            <ImageUpload v-model="form.mobileImageUrl" aspect-class="aspect-video" />
           </div>
         </div>
         <div class="grid gap-2">

@@ -5,6 +5,7 @@ import { type ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
+import { Badge } from '@/components/common/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -115,13 +116,7 @@ const optionColumns: ColumnDef<ServiceGuaranteeOptionVO>[] = [
     size: 100,
     cell: ({ row }) => {
       const isBoolean = row.original.isBooleanType === 1
-      return h(
-        'span',
-        {
-          class: `inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-            isBoolean ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
-          }`,
-        },
+      return h(Badge, { class: 'bg-transparent text-foreground border border-border' }, () =>
         isBoolean ? '是' : '否',
       )
     },

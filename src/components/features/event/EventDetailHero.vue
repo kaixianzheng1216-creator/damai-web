@@ -54,13 +54,15 @@ const emit = defineEmits<{
       </h1>
 
       <div class="mt-5 space-y-3">
-        <p class="text-sm text-foreground">
-          时间：{{
+        <p class="flex items-center gap-1.5 text-sm text-foreground">
+          <icon-lucide-calendar class="h-4 w-4 shrink-0 text-muted-foreground" />
+          {{
             detail.event.firstSessionStartAt ? formatDateTime(detail.event.firstSessionStartAt) : ''
           }}
         </p>
-        <p class="text-sm text-foreground">
-          场馆：{{ detail.event.cityNameSnapshot }} | {{ detail.event.venueNameSnapshot }}
+        <p class="flex items-center gap-1.5 text-sm text-foreground">
+          <icon-lucide-map-pin class="h-4 w-4 shrink-0 text-muted-foreground" />
+          {{ detail.event.cityNameSnapshot }} | {{ detail.event.venueNameSnapshot }}
         </p>
       </div>
 
@@ -155,9 +157,6 @@ const emit = defineEmits<{
               <NumberFieldIncrement />
             </NumberFieldContent>
           </NumberField>
-          <p class="mt-2 text-sm text-muted-foreground">
-            数量上限会随票档限购与单用户限购自动调整。
-          </p>
         </div>
 
         <div class="rounded-xl border border-border bg-muted/20 p-4">
@@ -189,9 +188,6 @@ const emit = defineEmits<{
             <icon-lucide-loader2 v-if="isCreatingOrder" class="mr-2 h-4 w-4 animate-spin" />
             {{ isUserAccountLimitReached ? '已达限购上限' : '立即购票' }}
           </Button>
-          <p class="mt-2 text-sm text-muted-foreground">
-            下单前需先选择实名购票人，可为不同票张分别绑定。
-          </p>
         </div>
       </div>
     </div>
