@@ -36,9 +36,8 @@ const handleFile = async (file: File) => {
   try {
     const url = await uploadFile(file)
     emit('update:modelValue', url)
-  } catch (err) {
+  } catch {
     toast.error('上传失败')
-    console.error('上传失败', err)
   } finally {
     isUploading.value = false
   }
@@ -117,7 +116,7 @@ const handleDragLeave = (e: DragEvent) => {
         @dragleave="handleDragLeave"
       >
         <div class="flex flex-col items-center gap-2 text-center">
-          <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <div class="flex-center h-12 w-12 rounded-full bg-primary/10">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

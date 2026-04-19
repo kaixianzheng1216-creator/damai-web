@@ -14,6 +14,7 @@ const manualToken = ref('')
 const isSubmitting = ref(false)
 const lastScannedToken = ref('')
 const result = ref<{ type: 'success' | 'error'; message: string } | null>(null)
+const scanCompleted = ref(false)
 
 let controls: IScannerControls | null = null
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -21,13 +22,16 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 const stopScanner = () => {
   controls?.stop()
   controls = null
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+    debounceTimer = null
+  }
 }
 
 const showResult = (type: 'success' | 'error', message: string) => {
   result.value = { type, message }
-  setTimeout(() => {
-    result.value = null
-  }, 3000)
+  stopScanner()
+  scanCompleted.value = true
 }
 
 const submit = async (token: string) => {
@@ -64,6 +68,7 @@ const startScanner = async () => {
   if (!videoRef.value) return
   stopScanner()
   result.value = null
+  scanCompleted.value = false
 
   try {
     const reader = new BrowserQRCodeReader()
@@ -73,6 +78,14 @@ const startScanner = async () => {
   } catch {
     showResult('error', '摄像头启动失败，请检查权限或使用手动输入')
   }
+}
+
+const resetAndRestart = () => {
+  result.value = null
+  scanCompleted.value = false
+  setTimeout(() => {
+    startScanner()
+  }, 100)
 }
 
 const handleOpen = (val: boolean) => {
@@ -87,6 +100,8 @@ watch(
   () => props.open,
   (newVal) => {
     if (newVal) {
+      result.value = null
+      scanCompleted.value = false
       // 等待下一帧确保video元素已渲染
       setTimeout(() => {
         startScanner()
@@ -107,10 +122,13 @@ onUnmounted(stopScanner)
 
       <div class="space-y-4">
         <!-- 摄像头区域 -->
-        <div class="relative overflow-hidden rounded-lg bg-black aspect-square">
+        <div
+          v-if="!scanCompleted"
+          class="relative overflow-hidden rounded-lg bg-black aspect-square"
+        >
           <video ref="videoRef" class="h-full w-full object-cover" autoplay muted playsinline />
           <!-- 扫描框 -->
-          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="absolute inset-0 flex-center pointer-events-none">
             <div class="w-2/3 aspect-square border-2 border-white/70 rounded-lg relative">
               <span
                 class="absolute -top-px -left-px w-5 h-5 border-t-2 border-l-2 border-primary rounded-tl-lg"
@@ -128,7 +146,7 @@ onUnmounted(stopScanner)
           </div>
         </div>
 
-        <!-- 结果提示 -->
+        <!-- 结果提示 (扫描完成时持久显示) -->
         <div
           v-if="result"
           :class="[
@@ -143,8 +161,16 @@ onUnmounted(stopScanner)
           {{ result.message }}
         </div>
 
-        <!-- 手动输入 -->
-        <div>
+        <!-- 继续扫描按钮 (仅在扫描完成后显示) -->
+        <div v-if="scanCompleted" class="flex gap-2">
+          <Button class="flex-1" @click="resetAndRestart">
+            <icon-lucide-refresh-cw class="mr-1 h-4 w-4" />
+            继续扫描
+          </Button>
+        </div>
+
+        <!-- 手动输入 (仅在未扫描完成时显示) -->
+        <div v-if="!scanCompleted">
           <p class="mb-2 text-sm text-muted-foreground">手动输入 Token</p>
           <div class="flex gap-2">
             <Input

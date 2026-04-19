@@ -97,8 +97,8 @@ export const useHeaderState = () => {
   const handleLogout = async () => {
     try {
       await logout()
-    } catch (error) {
-      console.error(error)
+    } catch {
+      // 忽略登出错误，继续清除本地状态
     } finally {
       userStore.clearUserInfo()
       await router.push('/')

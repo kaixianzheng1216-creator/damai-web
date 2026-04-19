@@ -134,7 +134,10 @@ export const useEventDetailPage = () => {
   })
   const totalPrice = computed(() =>
     selectedTicketType.value
-      ? formatPrice(selectedTicketType.value.price * ticketQuantity.value)
+      ? formatPrice(
+          (selectedTicketType.value.salePrice ?? selectedTicketType.value.price ?? 0) *
+            ticketQuantity.value,
+        )
       : '¥0.00',
   )
   const selectedPassengers = computed<PassengerItem[]>(() =>

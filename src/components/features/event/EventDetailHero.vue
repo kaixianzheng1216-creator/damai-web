@@ -44,6 +44,7 @@ const emit = defineEmits<{
       <img
         :src="detail.event.coverUrl"
         :alt="detail.event.name"
+        loading="lazy"
         class="h-full w-full object-cover"
       />
     </div>
@@ -159,7 +160,7 @@ const emit = defineEmits<{
           </NumberField>
         </div>
 
-        <div class="rounded-xl border border-border bg-muted/20 p-4">
+        <div class="section-card-muted">
           <div class="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p class="text-sm text-muted-foreground">当前合计</p>

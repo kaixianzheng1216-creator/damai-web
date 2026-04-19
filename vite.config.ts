@@ -14,36 +14,41 @@ import IconsResolver from 'unplugin-icons/resolver'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
 
+  const plugins = [
+    vue(),
+    tailwindcss(),
+    AutoImport({
+      imports: [
+        'vue',
+        'vue-router',
+        'pinia',
+        '@vueuse/core',
+        { '@tanstack/vue-query': ['useQuery', 'useMutation', 'useQueryClient'] },
+        { zod: ['z'], clsx: ['clsx'], 'tailwind-merge': ['twMerge'] },
+      ],
+      dirs: ['src/utils', 'src/composables', 'src/api', 'src/stores'],
+      dts: 'src/types/auto-imports.d.ts',
+      vueTemplate: true,
+    }),
+    Components({
+      resolvers: [IconsResolver({ prefix: 'icon' })],
+      dts: 'src/types/components.d.ts',
+    }),
+    Icons({ autoInstall: true }),
+  ]
+
+  if (mode === 'development') {
+    plugins.push(vueDevTools() as any)
+    plugins.push(basicSsl() as any)
+  }
+
   return {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
-    plugins: [
-      vue(),
-      tailwindcss(),
-      vueDevTools(),
-      basicSsl(),
-      AutoImport({
-        imports: [
-          'vue',
-          'vue-router',
-          'pinia',
-          '@vueuse/core',
-          { '@tanstack/vue-query': ['useQuery', 'useMutation', 'useQueryClient'] },
-          { zod: ['z'], clsx: ['clsx'], 'tailwind-merge': ['twMerge'] },
-        ],
-        dirs: ['src/utils', 'src/composables', 'src/api', 'src/stores'],
-        dts: 'src/types/auto-imports.d.ts',
-        vueTemplate: true,
-      }),
-      Components({
-        resolvers: [IconsResolver({ prefix: 'icon' })],
-        dts: 'src/types/components.d.ts',
-      }),
-      Icons({ autoInstall: true }),
-    ],
+    plugins,
     server: {
       host: true,
       proxy: {

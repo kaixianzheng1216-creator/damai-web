@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { useAdminStore } from '@/stores/admin'
 import {
   IconCalendar,
   IconUsers,
@@ -17,9 +17,9 @@ import {
 } from '@tabler/icons-vue'
 
 const router = useRouter()
-const userStore = useUserStore()
+const adminStore = useAdminStore()
 
-const adminName = computed(() => userStore.adminInfo?.username ?? '管理员')
+const adminName = computed(() => adminStore.adminInfo?.username ?? '管理员')
 
 const quickActionItems = [
   { key: 'banners', label: 'Banner 管理', icon: IconPhoto, path: '/admin/banners' },

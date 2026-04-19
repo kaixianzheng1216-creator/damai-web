@@ -44,6 +44,12 @@ export interface PassengerCreateRequest {
   idNo: string
 }
 
+export interface PassengerUpdateRequest {
+  name: string
+  idType: number
+  idNo: string
+}
+
 export interface PassengerPageRequest {
   page?: number
   size?: number

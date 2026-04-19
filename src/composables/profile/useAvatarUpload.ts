@@ -32,8 +32,7 @@ export const useAvatarUpload = () => {
           userStore.userToken,
         )
       }
-    } catch (e) {
-      console.error(e)
+    } catch {
       toast.error('头像上传失败，请重试')
     } finally {
       uploading.value = false

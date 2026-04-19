@@ -438,7 +438,7 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
   </Dialog>
 
   <Dialog :open="showOptionsDialog" @update:open="(v) => !v && (showOptionsDialog = false)">
-    <DialogContent class="sm:max-w-none" style="max-width: 1100px; width: 95vw">
+    <DialogContent class="sm:max-w-none w-[95vw] max-w-[1100px]">
       <DialogHeader>
         <DialogTitle>「{{ selectedService?.name }}」的选项</DialogTitle>
       </DialogHeader>

@@ -1,11 +1,11 @@
 import type { LoginResponse } from '@/api/account'
-import { useUserStore } from '@/stores/user'
+import { useAdminStore } from '@/stores/admin'
 
 export const useAdminAuth = () => {
-  const userStore = useUserStore()
+  const adminStore = useAdminStore()
 
   const saveAdminSession = (auth: LoginResponse) => {
-    userStore.setAdminInfo(
+    adminStore.setAdminInfo(
       {
         id: String(auth.user.id),
         username: auth.user.username,

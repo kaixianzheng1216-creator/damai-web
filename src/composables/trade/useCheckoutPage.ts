@@ -2,8 +2,15 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useNow } from '@vueuse/core'
+import { toast } from 'vue3-toastify'
 import type { PaymentVO } from '@/api/trade'
-import { ORDER_STATUS, PAYMENT_CHANNELS, PAYMENT_METHODS, TIME_UNITS } from '@/constants'
+import {
+  ORDER_STATUS,
+  PAYMENT_CHANNELS,
+  PAYMENT_METHODS,
+  TIME_UNITS,
+  CHECKOUT_CONFIG,
+} from '@/constants'
 import { fetchOrderById, fetchOrderStatus, createPayment, cancelTicketOrder } from '@/api/trade'
 
 export const useCheckoutPage = () => {
@@ -33,33 +40,18 @@ export const useCheckoutPage = () => {
     queryKey: ['order-status', orderId],
     queryFn: () => fetchOrderStatus(orderId.value),
     enabled: computed(() => !!orderId.value),
-    refetchInterval: 2000,
+    refetchInterval: CHECKOUT_CONFIG.STATUS_REFETCH_INTERVAL_MS,
+    refetchIntervalInBackground: false,
   })
 
-  const createPaymentMutation = useMutation({
-    mutationFn: () =>
-      createPayment(orderId.value, {
-        channel: selectedChannel.value,
-        payMethod: selectedMethod.value,
-      }),
-    onSuccess: async (data) => {
-      paymentData.value = data
-      showQrCodeDialog.value = true
-      await queryClient.invalidateQueries({ queryKey: ['order-status', orderId] })
-      await queryClient.invalidateQueries({ queryKey: ['ticket-order', orderId] })
-    },
-  })
+  const currentStatus = computed((): number => status.value?.status ?? order.value?.status ?? 0)
+  const statusLabel = computed((): string => order.value?.statusLabel ?? '待支付')
 
-  const cancelTicketOrderMutation = useMutation({
-    mutationFn: () => cancelTicketOrder(orderId.value),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['order-status', orderId] })
-      await queryClient.invalidateQueries({ queryKey: ['ticket-order', orderId] })
-    },
-  })
-
-  const currentStatus = computed(() => status.value?.status ?? order.value?.status ?? 0)
-  const statusLabel = computed(() => order.value?.statusLabel ?? '待支付')
+  const isPending = computed((): boolean => currentStatus.value === ORDER_STATUS.PENDING)
+  const isPaid = computed((): boolean => currentStatus.value === ORDER_STATUS.PAID)
+  const isCancelled = computed((): boolean => currentStatus.value === ORDER_STATUS.CANCELLED)
+  const isClosed = computed((): boolean => currentStatus.value === ORDER_STATUS.CLOSED)
+  const isRefunded = computed((): boolean => currentStatus.value === ORDER_STATUS.REFUNDED)
 
   const remainSeconds = computed(() => {
     if (!order.value?.expireAt) return 0
@@ -77,12 +69,6 @@ export const useCheckoutPage = () => {
     const seconds = String(remainSeconds.value % TIME_UNITS.SECONDS_PER_MINUTE).padStart(2, '0')
     return `${minutes}:${seconds}`
   })
-
-  const isPending = computed(() => currentStatus.value === ORDER_STATUS.PENDING)
-  const isPaid = computed(() => currentStatus.value === ORDER_STATUS.PAID)
-  const isCancelled = computed(() => currentStatus.value === ORDER_STATUS.CANCELLED)
-  const isClosed = computed(() => currentStatus.value === ORDER_STATUS.CLOSED)
-  const isRefunded = computed(() => currentStatus.value === ORDER_STATUS.REFUNDED)
 
   const qrCodeBase64 = computed(
     () => paymentData.value?.qrCodeBase64 || order.value?.payments?.[0]?.qrCodeBase64 || '',
@@ -102,6 +88,34 @@ export const useCheckoutPage = () => {
       showQrCodeDialog.value = false
       goOrders()
     }
+  })
+
+  const createPaymentMutation = useMutation({
+    mutationFn: () =>
+      createPayment(orderId.value, {
+        channel: selectedChannel.value,
+        payMethod: selectedMethod.value,
+      }),
+    onSuccess: async (data) => {
+      paymentData.value = data
+      showQrCodeDialog.value = true
+      await queryClient.invalidateQueries({ queryKey: ['order-status', orderId] })
+      await queryClient.invalidateQueries({ queryKey: ['ticket-order', orderId] })
+    },
+    onError: () => {
+      toast.error('创建支付失败，请重试')
+    },
+  })
+
+  const cancelTicketOrderMutation = useMutation({
+    mutationFn: () => cancelTicketOrder(orderId.value),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['order-status', orderId] })
+      await queryClient.invalidateQueries({ queryKey: ['ticket-order', orderId] })
+    },
+    onError: () => {
+      toast.error('取消订单失败，请重试')
+    },
   })
 
   const refreshStatus = () => {
@@ -124,24 +138,19 @@ export const useCheckoutPage = () => {
     order,
     isLoading,
     isError,
-    orderId,
     selectedChannel,
     selectedMethod,
     showQrCodeDialog,
-    paymentData,
     createPaymentMutation,
     cancelTicketOrderMutation,
-    currentStatus,
     statusLabel,
     remainText,
     isPending,
     isPaid,
     isCancelled,
     isClosed,
-    isRefunded,
     qrCodeBase64,
     tradeNo,
-    refreshStatus,
     goOrders,
     goDetail,
   }

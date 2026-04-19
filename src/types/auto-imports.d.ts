@@ -44,6 +44,8 @@ declare global {
   const fetchHomeData: typeof import('../api/home').fetchHomeData
   const formatDateTime: typeof import('../utils/format').formatDateTime
   const formatDateTimeLocalInput: typeof import('../utils/format').formatDateTimeLocalInput
+  const formatDateTimeWithWeekday: typeof import('../utils/format').formatDateTimeWithWeekday
+  const formatDateTimeWithoutWeekday: typeof import('../utils/format').formatDateTimeWithoutWeekday
   const formatPrice: typeof import('../utils/format').formatPrice
   const getActivePinia: typeof import('pinia').getActivePinia
   const getCurrentInstance: typeof import('vue').getCurrentInstance
@@ -144,6 +146,7 @@ declare global {
   const until: typeof import('@vueuse/core').until
   const uploadFormData: typeof import('../api/request').uploadFormData
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
+  const useAdminStore: typeof import('../stores/admin').useAdminStore
   const useAnimate: typeof import('@vueuse/core').useAnimate
   const useArrayDifference: typeof import('@vueuse/core').useArrayDifference
   const useArrayEvery: typeof import('@vueuse/core').useArrayEvery
@@ -361,7 +364,10 @@ declare global {
   export type { RequestConfig, PaginatedResponse } from '../api/types'
   import('../api/types')
   // @ts-ignore
-  export type { UserInfo, AdminInfo } from '../stores/user'
+  export type { AdminInfo } from '../stores/admin'
+  import('../stores/admin')
+  // @ts-ignore
+  export type { UserInfo } from '../stores/user'
   import('../stores/user')
 }
 
@@ -421,6 +427,12 @@ declare module 'vue' {
     readonly formatDateTime: UnwrapRef<(typeof import('../utils/format'))['formatDateTime']>
     readonly formatDateTimeLocalInput: UnwrapRef<
       (typeof import('../utils/format'))['formatDateTimeLocalInput']
+    >
+    readonly formatDateTimeWithWeekday: UnwrapRef<
+      (typeof import('../utils/format'))['formatDateTimeWithWeekday']
+    >
+    readonly formatDateTimeWithoutWeekday: UnwrapRef<
+      (typeof import('../utils/format'))['formatDateTimeWithoutWeekday']
     >
     readonly formatPrice: UnwrapRef<(typeof import('../utils/format'))['formatPrice']>
     readonly getActivePinia: UnwrapRef<(typeof import('pinia'))['getActivePinia']>
@@ -528,6 +540,7 @@ declare module 'vue' {
     readonly until: UnwrapRef<(typeof import('@vueuse/core'))['until']>
     readonly uploadFormData: UnwrapRef<(typeof import('../api/request'))['uploadFormData']>
     readonly useActiveElement: UnwrapRef<(typeof import('@vueuse/core'))['useActiveElement']>
+    readonly useAdminStore: UnwrapRef<(typeof import('../stores/admin'))['useAdminStore']>
     readonly useAnimate: UnwrapRef<(typeof import('@vueuse/core'))['useAnimate']>
     readonly useArrayDifference: UnwrapRef<(typeof import('@vueuse/core'))['useArrayDifference']>
     readonly useArrayEvery: UnwrapRef<(typeof import('@vueuse/core'))['useArrayEvery']>

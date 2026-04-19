@@ -60,8 +60,7 @@ const handleSendCode = async () => {
     isSendingCode.value = true
     await sendVerifyCode({ mobile: form.mobile, accountType: 'admin' })
     startCountdown()
-  } catch (error) {
-    console.error(error)
+  } catch {
     errorMsg.value = AUTH_COPY.sendCodeFailed
   } finally {
     isSendingCode.value = false
@@ -86,8 +85,7 @@ const handleLogin = async () => {
     })
     saveAdminSession(response)
     await router.push('/admin')
-  } catch (error) {
-    console.error(error)
+  } catch {
     errorMsg.value = AUTH_COPY.loginFailed
   } finally {
     isLoading.value = false

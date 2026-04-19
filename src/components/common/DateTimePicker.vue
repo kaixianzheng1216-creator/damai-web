@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef, computed, watch } from 'vue'
+import { ref, shallowRef, computed, watch } from 'vue'
 import { CalendarDate } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
 import { Calendar } from '@/components/common/ui/calendar'
@@ -74,7 +74,13 @@ const onDateSelect = (val: DateValue | undefined) => {
 const clampHour = (v: string) => pad(Math.max(0, Math.min(23, parseInt(v) || 0)))
 const clampMinute = (v: string) => pad(Math.max(0, Math.min(59, parseInt(v) || 0)))
 
-const onTimeChange = () => {
+const onHourChange = () => {
+  hour.value = clampHour(hour.value)
+  if (calDate.value) emit('update:modelValue', buildValue(calDate.value, hour.value, minute.value))
+}
+
+const onMinuteChange = () => {
+  minute.value = clampMinute(minute.value)
   if (calDate.value) emit('update:modelValue', buildValue(calDate.value, hour.value, minute.value))
 }
 </script>
@@ -106,10 +112,7 @@ const onTimeChange = () => {
           min="0"
           max="23"
           class="w-16 rounded border border-input bg-background px-2 py-1 text-sm text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-ring"
-          @change="
-            hour = clampHour(hour)
-            onTimeChange()
-          "
+          @change="onHourChange"
         />
         <span class="text-muted-foreground font-medium">:</span>
         <input
@@ -118,10 +121,7 @@ const onTimeChange = () => {
           min="0"
           max="59"
           class="w-16 rounded border border-input bg-background px-2 py-1 text-sm text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-ring"
-          @change="
-            minute = clampMinute(minute)
-            onTimeChange()
-          "
+          @change="onMinuteChange"
         />
         <Button size="sm" class="ml-auto h-7 px-3" @click="open = false">确定</Button>
       </div>

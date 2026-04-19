@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { useAdminStore } from '@/stores/admin'
 import { IconLogout, IconUserCircle } from '@tabler/icons-vue'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar'
@@ -9,13 +9,13 @@ import { Button } from '@/components/common/ui/button'
 import { SidebarMenu, SidebarMenuItem } from '@/components/common/ui/sidebar'
 
 const router = useRouter()
-const userStore = useUserStore()
+const adminStore = useAdminStore()
 
-const adminName = computed(() => userStore.adminInfo?.username ?? '')
-const adminAvatarUrl = computed(() => userStore.adminInfo?.avatarUrl)
+const adminName = computed(() => adminStore.adminInfo?.username ?? '')
+const adminAvatarUrl = computed(() => adminStore.adminInfo?.avatarUrl)
 
 const handleLogout = async () => {
-  userStore.clearAdminInfo()
+  adminStore.clearAdminInfo()
   await router.push('/admin/login')
 }
 </script>

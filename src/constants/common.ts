@@ -12,3 +12,7 @@ export const TIME_UNITS = {
   SECONDS_PER_MINUTE: 60,
   SECONDS_PER_HOUR: 60 * 60,
 } as const
+
+export const REQUEST_CONFIG = {
+  DEFAULT_TIMEOUT_MS: 10000,
+} as const

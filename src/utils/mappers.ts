@@ -1,6 +1,6 @@
 import type { PassengerItem, PassengerVO } from '@/api/account'
 import type { EventVO, CategoryVO, HomeEventCardItem, HomeCategoryItem } from '@/api/event'
-import { formatPrice } from '@/utils/format'
+import { formatPrice, formatDateTimeWithWeekday } from '@/utils/format'
 
 export const mapPassengerToPassengerItem = (passenger: PassengerVO): PassengerItem => ({
   id: passenger.id,
@@ -9,25 +9,13 @@ export const mapPassengerToPassengerItem = (passenger: PassengerVO): PassengerIt
   certNo: passenger.idNoMasked,
 })
 
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
-  const year = date.getFullYear()
-  const month = date.getMonth() + 1
-  const day = date.getDate()
-  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-  const weekday = weekdays[date.getDay()]
-  const hours = date.getHours().toString().padStart(2, '0')
-  const minutes = date.getMinutes().toString().padStart(2, '0')
-  return `${year}.${month}.${day} ${weekday} ${hours}:${minutes}`
-}
-
 export const convertEventVOToCardItem = (event: EventVO): HomeEventCardItem => ({
   id: event.id,
   seriesName: event.name,
   eventName: event.name,
   coverImageUrl: event.coverUrl,
   venueName: event.venueNameSnapshot ?? '',
-  dateText: event.firstSessionStartAt ? formatDate(event.firstSessionStartAt) : '',
+  dateText: event.firstSessionStartAt ? formatDateTimeWithWeekday(event.firstSessionStartAt) : '',
   priceText: event.minPrice != null ? formatPrice(event.minPrice) : '',
   saleStatus: event.statusLabel,
   categoryName: event.categoryNameSnapshot ?? '',

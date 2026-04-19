@@ -1,3 +1,7 @@
+import { defineStore } from 'pinia'
+import { useStorage } from '@vueuse/core'
+import { computed } from 'vue'
+
 export interface UserInfo {
   id: string
   username: string
@@ -9,21 +13,9 @@ export interface UserInfo {
   token?: string
 }
 
-export interface AdminInfo {
-  id: string
-  username: string
-  mobile: string
-  avatarUrl: string
-  status: number
-  statusLabel: string
-}
-
 export const useUserStore = defineStore('user', () => {
   const token = useStorage<string | null>('token', null)
   const userInfo = useStorage<UserInfo | null>('user-info', null)
-
-  const adminToken = useStorage<string | null>('admin-token', null)
-  const adminInfo = useStorage<AdminInfo | null>('admin-info', null)
 
   const isLoggedIn = computed(() => !!token.value)
   const userToken = computed(() => token.value)
@@ -39,26 +31,12 @@ export const useUserStore = defineStore('user', () => {
     token.value = null
   }
 
-  const setAdminInfo = (data: AdminInfo, newToken: string) => {
-    adminInfo.value = data
-    adminToken.value = newToken
-  }
-
-  const clearAdminInfo = () => {
-    adminInfo.value = null
-    adminToken.value = null
-  }
-
   return {
     userInfo,
     token,
-    adminInfo,
-    adminToken,
     isLoggedIn,
     userToken,
     setUserInfo,
     clearUserInfo,
-    setAdminInfo,
-    clearAdminInfo,
   }
 })

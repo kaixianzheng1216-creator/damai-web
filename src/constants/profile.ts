@@ -21,7 +21,7 @@ export const HEADER_PROFILE_MENU_ITEMS: Array<{ section: ProfileSectionKey; labe
   { section: 'passengers', label: '常用购票人' },
 ]
 
-export const PASSENGER_CERT_TYPES = ['身份证', '护照'] as const
+export const PASSENGER_CERT_TYPES = ['身份证'] as const
 
 export const PROFILE_DIALOG_COPY = {
   deletePassengerTitle: '删除确认',

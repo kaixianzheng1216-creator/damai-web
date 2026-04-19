@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { sendVerifyCode, login } from '@/api/account'
-import { AUTH_COPY, PROFILE_CONFIG } from '@/constants'
+import { AUTH_COPY, PROFILE_CONFIG, VALIDATION_PATTERNS } from '@/constants'
 import { useAuthSession } from '@/composables/common/useAuthSession'
 import { useCountdown } from '@/composables/common'
 import { Input } from '@/components/common/ui/input'
@@ -22,8 +22,8 @@ const form = reactive({
 })
 
 const schema = z.object({
-  mobile: z.string().regex(/^1[3-9]\d{9}$/, AUTH_COPY.mobileRequired),
-  code: z.string().regex(/^\d{6}$/, AUTH_COPY.codeRequired),
+  mobile: z.string().regex(VALIDATION_PATTERNS.MOBILE, AUTH_COPY.mobileRequired),
+  code: z.string().regex(VALIDATION_PATTERNS.CODE, AUTH_COPY.codeRequired),
 })
 
 const {
@@ -40,7 +40,7 @@ const handleSendCode = async () => {
   errorMsg.value = ''
   const mobileCheck = z
     .string()
-    .regex(/^1[3-9]\d{9}$/, AUTH_COPY.mobileRequired)
+    .regex(VALIDATION_PATTERNS.MOBILE, AUTH_COPY.mobileRequired)
     .safeParse(form.mobile)
   if (!mobileCheck.success) {
     errorMsg.value = mobileCheck.error.issues[0]?.message || AUTH_COPY.mobileFormatError
@@ -55,8 +55,7 @@ const handleSendCode = async () => {
     isSendingCode.value = true
     await sendVerifyCode({ mobile: form.mobile, accountType: 'user' })
     startCountdown()
-  } catch (error) {
-    console.error(error)
+  } catch {
     errorMsg.value = AUTH_COPY.sendCodeFailed
   } finally {
     isSendingCode.value = false
@@ -84,8 +83,7 @@ const handleLogin = async () => {
     const redirect = router.currentRoute.value.query.redirect
     const redirectPath = typeof redirect === 'string' ? redirect : '/'
     await router.push(redirectPath)
-  } catch (error) {
-    console.error(error)
+  } catch {
     errorMsg.value = AUTH_COPY.loginFailed
   } finally {
     isLoading.value = false

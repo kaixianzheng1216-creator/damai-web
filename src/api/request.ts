@@ -1,8 +1,10 @@
-import axios from 'axios'
+import axios, { type AxiosInstance } from 'axios'
 import { toast } from 'vue3-toastify'
 import { useUserStore } from '@/stores/user'
+import { useAdminStore } from '@/stores/admin'
 import router from '@/router'
 import dayjs from 'dayjs'
+import { REQUEST_CONFIG } from '@/constants'
 
 const AUTH_FAIL_CODE = '10002'
 
@@ -27,20 +29,50 @@ function transformDateTimeFields(obj: any): any {
   return result
 }
 
-const service = axios.create({
+// 转换分页响应中的数字字段
+function transformPaginatedFields(obj: any): any {
+  if (obj === null || obj === undefined) return obj
+  if (typeof obj !== 'object') return obj
+
+  if (Array.isArray(obj)) {
+    return obj.map(transformPaginatedFields)
+  }
+
+  const result: any = {}
+  for (const [key, value] of Object.entries(obj)) {
+    // 转换分页相关的数字字段
+    if (
+      (key === 'pageNumber' || key === 'pageSize' || key === 'totalRow' || key === 'totalPage') &&
+      typeof value === 'string'
+    ) {
+      result[key] = Number(value)
+    } else {
+      result[key] = transformPaginatedFields(value)
+    }
+  }
+  return result
+}
+
+const service: AxiosInstance = axios.create({
   baseURL: '',
-  timeout: 10000,
+  timeout: REQUEST_CONFIG.DEFAULT_TIMEOUT_MS,
 })
 
 service.interceptors.request.use((config: any) => {
   const userStore = useUserStore()
+  const adminStore = useAdminStore()
   const url = config.url || ''
 
   if (url.includes('/admin/')) {
-    if (userStore.adminToken)
-      config.headers['Authorization-Admin'] = `Bearer ${userStore.adminToken}`
+    if (adminStore.adminToken) {
+      config.headers = config.headers || {}
+      config.headers['Authorization-Admin'] = `Bearer ${adminStore.adminToken}`
+    }
   } else if (url.includes('/front/')) {
-    if (userStore.token) config.headers['Authorization-User'] = `Bearer ${userStore.token}`
+    if (userStore.token) {
+      config.headers = config.headers || {}
+      config.headers['Authorization-User'] = `Bearer ${userStore.token}`
+    }
   }
 
   // 转换请求数据中的日期时间字段
@@ -55,14 +87,19 @@ service.interceptors.response.use(
   (res: any) => {
     const { data, config } = res
 
-    if (data.code === '0' || data.code === 0) return config.rawResponse ? data : data.data
+    if (data.code === '0' || data.code === 0) {
+      const responseData = (config as any).rawResponse ? data : data.data
+      // 转换分页响应中的数字字段
+      return transformPaginatedFields(responseData)
+    }
 
     if (String(data.code) === AUTH_FAIL_CODE) {
       const userStore = useUserStore()
+      const adminStore = useAdminStore()
       const url = config.url || ''
 
       if (url.includes('/admin/')) {
-        userStore.clearAdminInfo()
+        adminStore.clearAdminInfo()
         router.push({
           name: 'admin-login',
           query: { redirect: router.currentRoute.value.fullPath },
@@ -71,16 +108,15 @@ service.interceptors.response.use(
         userStore.clearUserInfo()
         router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } })
       }
-    } else if (config.showError !== false) {
+    } else if ((config as any).showError !== false) {
       toast.error(data.message || '操作失败')
     }
 
     return Promise.reject(data)
   },
-  (err) => {
+  () => {
     toast.error('服务异常')
-
-    return Promise.reject(err)
+    return Promise.reject(new Error('服务异常'))
   },
 )
 

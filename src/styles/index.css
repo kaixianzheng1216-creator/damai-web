@@ -4,12 +4,20 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  .flex-center {
+    @apply flex items-center justify-center;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+
+  .text-muted-sm {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .section-card {
+    @apply rounded-xl border border-border p-4;
+  }
+
+  .section-card-muted {
+    @apply rounded-xl border border-border bg-muted/20 p-4;
   }
 }
 

@@ -85,7 +85,7 @@ const selectedMethodStr = computed({
                 <p class="font-medium text-foreground">{{ order.venueNameSnapshot }}</p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">场馆地址</p>
+                <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.venueAddress }}</p>
                 <p class="font-medium text-foreground">{{ order.venueAddressSnapshot }}</p>
               </div>
               <div>
@@ -95,7 +95,7 @@ const selectedMethodStr = computed({
                 </p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">单价</p>
+                <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.unitPrice }}</p>
                 <p class="font-medium text-foreground">{{ formatPrice(order.unitPrice ?? 0) }}</p>
               </div>
               <div>
@@ -103,21 +103,21 @@ const selectedMethodStr = computed({
                 <p class="font-medium text-foreground">{{ order.orderNo }}</p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">场次</p>
+                <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.session }}</p>
                 <p class="font-medium text-foreground">{{ order.sessionNameSnapshot }}</p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">时间</p>
+                <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.time }}</p>
                 <p class="font-medium text-foreground">
                   {{ formatDateTime(order.sessionStartAtSnapshot ?? '') }}
                 </p>
               </div>
               <div v-if="isPaid && order.payTime">
-                <p class="text-sm text-muted-foreground">支付时间</p>
+                <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.payTime }}</p>
                 <p class="font-medium text-foreground">{{ formatDateTime(order.payTime) }}</p>
               </div>
               <div v-if="isCancelled && order.cancelTime">
-                <p class="text-sm text-muted-foreground">取消时间</p>
+                <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.cancelTime }}</p>
                 <p class="font-medium text-foreground">{{ formatDateTime(order.cancelTime) }}</p>
               </div>
             </div>
@@ -165,7 +165,9 @@ const selectedMethodStr = computed({
             <IconWechatPay v-else-if="channel.value === PAYMENT_CHANNELS.WECHAT" class="h-8 w-8" />
             <icon-lucide-credit-card v-else class="h-8 w-8" />
             <span class="text-sm font-medium text-foreground">{{ channel.label }}</span>
-            <span v-if="channel.disabled" class="text-xs text-muted-foreground">暂未开放</span>
+            <span v-if="channel.disabled" class="text-xs text-muted-foreground">{{
+              PAYMENT_COPY.notAvailable
+            }}</span>
           </button>
         </div>
 
@@ -198,9 +200,9 @@ const selectedMethodStr = computed({
             >
               {{ method.label }}
             </Label>
-            <span v-if="method.disabled" class="text-xs text-muted-foreground ml-auto"
-              >暂未开放</span
-            >
+            <span v-if="method.disabled" class="text-xs text-muted-foreground ml-auto">{{
+              PAYMENT_COPY.notAvailable
+            }}</span>
           </div>
         </RadioGroup>
 
@@ -215,7 +217,7 @@ const selectedMethodStr = computed({
               class="mr-2 h-4 w-4 animate-spin"
             />
             <icon-lucide-qr-code v-else class="mr-2 h-4 w-4" />
-            扫码支付
+            {{ PAYMENT_COPY.qrPay }}
           </Button>
           <Button
             v-if="isPending"
@@ -228,23 +230,38 @@ const selectedMethodStr = computed({
               v-if="cancelTicketOrderMutation.isPending.value"
               class="mr-2 h-4 w-4 animate-spin"
             />
-            取消订单
+            {{ PAYMENT_COPY.cancelOrder }}
           </Button>
           <Button v-else variant="outline" class="w-full" disabled>
             <icon-lucide-check-circle class="mr-2 h-4 w-4" />
-            {{ isPaid ? '已支付' : isCancelled ? '已取消' : isClosed ? '已关闭' : '已退款' }}
+            {{
+              isPaid
+                ? PAYMENT_COPY.paid
+                : isCancelled
+                  ? PAYMENT_COPY.cancelled
+                  : isClosed
+                    ? PAYMENT_COPY.closed
+                    : PAYMENT_COPY.refunded
+            }}
           </Button>
-          <Button variant="outline" class="w-full" @click="goOrders"> 返回订单列表 </Button>
+          <Button variant="outline" class="w-full" @click="goOrders">
+            {{ PAYMENT_COPY.backToOrders }}
+          </Button>
         </div>
       </aside>
 
       <Dialog :open="showQrCodeDialog" @update:open="(val) => (showQrCodeDialog = val)">
         <DialogContent class="max-w-sm">
           <DialogHeader>
-            <DialogTitle>扫码支付</DialogTitle>
+            <DialogTitle>{{ PAYMENT_COPY.scanQrPay }}</DialogTitle>
             <DialogDescription>
               请使用
-              {{ selectedChannel === PAYMENT_CHANNELS.ALIPAY ? '支付宝' : '微信' }} 扫码完成支付
+              {{
+                selectedChannel === PAYMENT_CHANNELS.ALIPAY
+                  ? PAYMENT_COPY.alipay
+                  : PAYMENT_COPY.wechat
+              }}
+              扫码完成支付
             </DialogDescription>
           </DialogHeader>
           <div class="py-2">
@@ -260,11 +277,13 @@ const selectedMethodStr = computed({
             </div>
             <div v-else class="text-center py-8">
               <icon-lucide-loader2 class="mx-auto h-8 w-8 animate-spin text-primary" />
-              <p class="mt-2 text-sm text-muted-foreground">正在生成二维码...</p>
+              <p class="mt-2 text-sm text-muted-foreground">{{ PAYMENT_COPY.generatingQrCode }}</p>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" @click="showQrCodeDialog = false">关闭</Button>
+            <Button variant="outline" @click="showQrCodeDialog = false">{{
+              PAYMENT_COPY.close
+            }}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

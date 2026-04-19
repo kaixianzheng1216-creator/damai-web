@@ -40,10 +40,7 @@ const goBack = () => {
           <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
         </div>
 
-        <div
-          v-else-if="isError"
-          class="rounded-xl border border-border bg-background p-8 text-center"
-        >
+        <div v-else-if="isError" class="section-card text-center p-8">
           <icon-lucide-alert-circle class="h-12 w-12 mx-auto text-destructive mb-4" />
           <p class="text-destructive">电子票加载失败，请稍后重试</p>
           <Button variant="outline" @click="goBack" class="mt-4"> 返回 </Button>
@@ -62,7 +59,7 @@ const goBack = () => {
             </div>
 
             <div v-if="ticket.qrCodeBase64" class="mb-6 flex justify-center">
-              <div class="rounded-xl border border-border p-6 bg-white">
+              <div class="section-card bg-white">
                 <img :src="ticket.qrCodeBase64" alt="电子票二维码" class="w-48 h-48" />
               </div>
             </div>
@@ -114,7 +111,7 @@ const goBack = () => {
 
               <div class="border-t border-border pt-4">
                 <p class="text-sm text-muted-foreground">Token</p>
-                <p class="font-medium text-foreground break-all font-mono text-sm">
+                <p class="font-medium text-foreground break-all">
                   {{ ticket.qrCodeToken }}
                 </p>
               </div>

@@ -417,7 +417,7 @@ const handleDeleteChild = (row: CategoryVO) => {
   </Dialog>
 
   <Dialog :open="showChildrenDialog" @update:open="(v) => !v && (showChildrenDialog = false)">
-    <DialogContent class="sm:max-w-none" style="max-width: 900px; width: 95vw">
+    <DialogContent class="sm:max-w-none w-[95vw] max-w-[900px]">
       <DialogHeader>
         <DialogTitle>「{{ selectedParent?.name }}」的子分类</DialogTitle>
       </DialogHeader>

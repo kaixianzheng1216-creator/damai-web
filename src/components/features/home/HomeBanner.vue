@@ -40,7 +40,12 @@ watch(api, (newApi) => {
         <RouterLink :to="banner.jumpUrl || '#'" class="block h-full w-full">
           <picture>
             <source :srcset="banner.mobileImageUrl || banner.imageUrl" media="(max-width: 767px)" />
-            <img :src="banner.imageUrl" :alt="banner.title" class="h-full w-full object-cover" />
+            <img
+              :src="banner.imageUrl"
+              :alt="banner.title"
+              loading="lazy"
+              class="h-full w-full object-cover"
+            />
           </picture>
         </RouterLink>
       </CarouselItem>

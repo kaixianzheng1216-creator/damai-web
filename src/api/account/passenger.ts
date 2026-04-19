@@ -1,5 +1,10 @@
 import { request } from '@/api/request'
-import type { PassengerCreateRequest, PassengerPageRequest, PageResponsePassengerVO } from './types'
+import type {
+  PassengerCreateRequest,
+  PassengerUpdateRequest,
+  PassengerPageRequest,
+  PageResponsePassengerVO,
+} from './types'
 
 // ─── Front ───────────────────────────────────────────────
 
@@ -10,6 +15,9 @@ export const fetchPassengerPage = (
 
 export const createPassenger = (data: PassengerCreateRequest): Promise<string> =>
   request.post<string>('/api/account/front/passenger', data)
+
+export const updatePassenger = (id: string, data: PassengerUpdateRequest): Promise<void> =>
+  request.put<void>(`/api/account/front/passenger/${id}`, data)
 
 export const deletePassenger = (id: string): Promise<void> =>
   request.del<void>(`/api/account/front/passenger/${id}`)
