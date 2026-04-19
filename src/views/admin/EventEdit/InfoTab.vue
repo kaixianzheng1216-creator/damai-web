@@ -7,18 +7,19 @@ import { Label } from '@/components/common/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import { saveEventInfo } from '@/api/event/event'
 import { fetchAdminNotices } from '@/api/event/notice'
-import type { EventInfoCreateRequest } from '@/api/event'
+import type { EventInfoCreateRequest, EventInfoVO } from '@/api/event'
+import { NOTICE_TYPE } from '@/constants'
 import RichTextEditor from '@/components/common/RichTextEditor.vue'
 
 interface Props {
   eventId: string
-  eventInfo?: any
+  eventInfo?: EventInfoVO
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  (e: 'updated'): void
+  updated: []
 }>()
 
 const queryClient = useQueryClient()
@@ -32,12 +33,12 @@ const { data: noticeTemplates } = useQuery({
 
 const purchaseTemplates = computed(() =>
   (noticeTemplates.value ?? [])
-    .filter((n) => n.type === 1)
+    .filter((n) => n.type === NOTICE_TYPE.PURCHASE)
     .sort((a, b) => a.sortOrder - b.sortOrder),
 )
 const admissionTemplates = computed(() =>
   (noticeTemplates.value ?? [])
-    .filter((n) => n.type === 2)
+    .filter((n) => n.type === NOTICE_TYPE.ADMISSION)
     .sort((a, b) => a.sortOrder - b.sortOrder),
 )
 

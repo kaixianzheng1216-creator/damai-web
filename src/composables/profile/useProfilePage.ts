@@ -7,7 +7,6 @@ import { useProfileSection } from './useProfileSection'
 import { usePassengerManagement } from './usePassengerManagement'
 import { useOrderList } from './useOrderList'
 import { useTicketList } from './useTicketList'
-
 import { useAvatarUpload } from './useAvatarUpload'
 
 export const useProfilePage = () => {

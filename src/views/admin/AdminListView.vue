@@ -16,6 +16,7 @@ import {
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { fetchAdminPage, createAdmin, updateAdmin, updateAdminStatus } from '@/api/account/admin'
 import type { AdminVO, AdminCreateRequest, AdminUpdateRequest } from '@/api/account'
+import { USER_STATUS } from '@/constants'
 
 const queryClient = useQueryClient()
 const currentPage = ref(1)
@@ -54,7 +55,7 @@ const columns: ColumnDef<AdminVO>[] = [
       h(
         Badge,
         { variant: 'outline' },
-        { default: () => (row.original.status === 1 ? '正常' : '封禁') },
+        { default: () => (row.original.status === USER_STATUS.NORMAL ? '正常' : '封禁') },
       ),
   },
   {
@@ -78,14 +79,14 @@ const columns: ColumnDef<AdminVO>[] = [
         h(
           Button,
           {
-            variant: row.original.status === 1 ? 'destructive' : 'default',
+            variant: row.original.status === USER_STATUS.NORMAL ? 'destructive' : 'default',
             size: 'sm',
             onClick: (e: Event) => {
               e.stopPropagation()
               toggleStatus(row.original)
             },
           },
-          () => (row.original.status === 1 ? '封禁' : '解封'),
+          () => (row.original.status === USER_STATUS.NORMAL ? '封禁' : '解封'),
         ),
       ]),
   },
@@ -193,7 +194,7 @@ const handleSubmit = async () => {
 const handleDelete = (_row: AdminVO) => {}
 
 const toggleStatus = (row: AdminVO) => {
-  const newStatus = row.status === 1 ? 0 : 1
+  const newStatus = row.status === USER_STATUS.NORMAL ? USER_STATUS.BANNED : USER_STATUS.NORMAL
   statusMutation.mutate({ id: row.id, status: newStatus })
 }
 </script>

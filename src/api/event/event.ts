@@ -15,7 +15,6 @@ import type {
   EventServiceBatchAddRequest,
   EventParticipantBatchAddRequest,
   EventInfoCreateRequest,
-  EventDetailResponse,
   TicketTypeCopyRequest,
 } from './types'
 
@@ -34,8 +33,8 @@ export const fetchAdminEventPage = (
 ): Promise<AdminPageResponseEventVO> =>
   request.get<AdminPageResponseEventVO>('/api/event/admin/events/page', { params })
 
-export const fetchEventById = (id: string): Promise<EventDetailResponse> =>
-  request.get<EventDetailResponse>(`/api/event/admin/events/${id}`)
+export const fetchEventById = (id: string): Promise<EventDetailVO> =>
+  request.get<EventDetailVO>(`/api/event/admin/events/${id}`)
 
 export const createEvent = (data: EventCreateRequest): Promise<string> =>
   request.post<string>('/api/event/admin/events', data)

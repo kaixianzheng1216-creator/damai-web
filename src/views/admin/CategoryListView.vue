@@ -52,7 +52,7 @@ const columns: ColumnDef<CategoryVO>[] = [
     header: '操作',
     size: 240,
     cell: ({ row }) => {
-      const isRootCategory = Number(row.original.parentId) === 0
+      const isRootCategory = row.original.parentId === '0'
       return h(
         'div',
         { class: 'flex items-center gap-2' },

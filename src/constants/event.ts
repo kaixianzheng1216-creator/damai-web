@@ -14,3 +14,24 @@ export const TICKET_TYPE_STATUS = {
   ON_SALE: 1,
   OFF_SALE: 0,
 } as const
+
+export const EVENT_STATUS = {
+  DRAFT: 0,
+  PUBLISHED: 1,
+  OFFLINE: 2,
+} as const
+
+export const NOTICE_TYPE = {
+  PURCHASE: 1,
+  ADMISSION: 2,
+} as const
+
+export const NOTICE_TYPE_LABEL: Record<number, string> = {
+  [NOTICE_TYPE.PURCHASE]: '购票须知',
+  [NOTICE_TYPE.ADMISSION]: '入场须知',
+} as const
+
+export const BOOLEAN_TYPE = {
+  YES: 1,
+  NO: 0,
+} as const

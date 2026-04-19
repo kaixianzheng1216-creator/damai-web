@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { shallowRef, computed, watch } from 'vue'
 import { CalendarDate } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
 import { Calendar } from '@/components/common/ui/calendar'
@@ -40,7 +40,7 @@ const parse = (val?: string) => {
   }
 }
 
-const calDate = ref<CalendarDate | undefined>(parse(props.modelValue).date)
+const calDate = shallowRef<CalendarDate | undefined>(parse(props.modelValue).date)
 const hour = ref(parse(props.modelValue).hour)
 const minute = ref(parse(props.modelValue).minute)
 
@@ -56,6 +56,10 @@ watch(
 
 const buildValue = (d: CalendarDate, h: string, m: string) =>
   `${d.year}-${pad(d.month)}-${pad(d.day)}T${h}:${m}`
+
+const calDateModel = computed<DateValue | undefined>(
+  () => calDate.value as unknown as DateValue | undefined,
+)
 
 const displayText = computed(() => {
   if (!calDate.value) return ''
@@ -89,7 +93,7 @@ const onTimeChange = () => {
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0" align="start">
       <Calendar
-        :model-value="calDate"
+        :model-value="calDateModel"
         layout="month-and-year"
         locale="zh-CN"
         @update:model-value="onDateSelect"

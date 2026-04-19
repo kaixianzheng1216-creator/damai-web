@@ -8,6 +8,7 @@ import { Button } from '@/components/common/ui/button'
 import { Badge } from '@/components/common/ui/badge'
 import { fetchAdminUserPage, updateAdminUserStatus } from '@/api/account/user'
 import type { UserVO } from '@/api/account'
+import { USER_STATUS } from '@/constants'
 
 const queryClient = useQueryClient()
 const currentPage = ref(1)
@@ -46,7 +47,7 @@ const columns: ColumnDef<UserVO>[] = [
       h(
         Badge,
         { variant: 'outline' },
-        { default: () => (row.original.status === 1 ? '正常' : '封禁') },
+        { default: () => (row.original.status === USER_STATUS.NORMAL ? '正常' : '封禁') },
       ),
   },
   {
@@ -57,14 +58,14 @@ const columns: ColumnDef<UserVO>[] = [
       h(
         Button,
         {
-          variant: row.original.status === 1 ? 'destructive' : 'default',
+          variant: row.original.status === USER_STATUS.NORMAL ? 'destructive' : 'default',
           size: 'sm',
           onClick: (e: Event) => {
             e.stopPropagation()
             toggleStatus(row.original)
           },
         },
-        () => (row.original.status === 1 ? '封禁' : '解封'),
+        () => (row.original.status === USER_STATUS.NORMAL ? '封禁' : '解封'),
       ),
   },
 ]
@@ -104,7 +105,7 @@ const statusMutation = useMutation({
 })
 
 const toggleStatus = (row: UserVO) => {
-  const newStatus = row.status === 1 ? 0 : 1
+  const newStatus = row.status === USER_STATUS.NORMAL ? USER_STATUS.BANNED : USER_STATUS.NORMAL
   statusMutation.mutate({ id: row.id, status: newStatus })
 }
 </script>

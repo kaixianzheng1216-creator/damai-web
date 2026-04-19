@@ -23,13 +23,11 @@ import {
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { fetchAdminNoticesPage, createNotice, updateNotice, deleteNotice } from '@/api/event/notice'
 import type { NoticeVO, NoticeCreateRequest, NoticeUpdateRequest } from '@/api/event'
+import { NOTICE_TYPE_LABEL } from '@/constants'
 
 const queryClient = useQueryClient()
 
-const noticeTypeMap: Record<number, string> = {
-  1: '购票须知',
-  2: '入场须知',
-}
+const noticeTypeMap = NOTICE_TYPE_LABEL
 
 const columns: ColumnDef<NoticeVO>[] = [
   {

@@ -7,3 +7,8 @@ export const ADMIN_AUTH_COPY = {
   sendCodeButton: '获取验证码',
   testCredentials: import.meta.env.DEV ? '测试账号：13800000001 / 000000' : '',
 }
+
+export const USER_STATUS = {
+  NORMAL: 1,
+  BANNED: 0,
+} as const

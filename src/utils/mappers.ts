@@ -1,8 +1,5 @@
-import type { PassengerItem } from '@/api/account'
-import type { PassengerVO } from '@/api/account'
-import type { EventVO } from '@/api/event'
-import type { CategoryVO } from '@/api/event'
-import type { HomeEventCardItem, HomeCategoryItem } from '@/api/event'
+import type { PassengerItem, PassengerVO } from '@/api/account'
+import type { EventVO, CategoryVO, HomeEventCardItem, HomeCategoryItem } from '@/api/event'
 import { formatPrice } from '@/utils/format'
 
 export const mapPassengerToPassengerItem = (passenger: PassengerVO): PassengerItem => ({

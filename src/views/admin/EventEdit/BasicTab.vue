@@ -17,19 +17,19 @@ import { fetchAdminCategories } from '@/api/event/category'
 import { fetchAdminVenues } from '@/api/event/venue'
 import { fetchAdminSeries } from '@/api/event/series'
 import { createEvent, updateEvent } from '@/api/event/event'
-import type { EventCreateRequest, EventUpdateRequest } from '@/api/event'
+import type { EventCreateRequest, EventUpdateRequest, EventVO } from '@/api/event'
 
 interface Props {
   eventId?: string
   isEdit: boolean
-  eventData?: any
+  eventData?: EventVO
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  (e: 'created', eventId: string): void
-  (e: 'updated'): void
+  created: [eventId: string]
+  updated: []
 }>()
 
 const queryClient = useQueryClient()
@@ -91,12 +91,11 @@ const basicForm = reactive<EventCreateRequest & Partial<EventUpdateRequest>>({
   seriesId: 'none',
 })
 
-const toArray = (data: any) => {
-  if (!data) return []
+const toArray = (data: unknown): any[] => {
+  if (!data || typeof data !== 'object') return []
   if (Array.isArray(data)) return data
-  // 如果是Proxy对象，直接提取values
   try {
-    return Object.values(data)
+    return Object.values(data as Record<string, unknown>)
   } catch {
     return []
   }
@@ -106,9 +105,6 @@ watch(
   () => props.eventData,
   (newData) => {
     if (!newData) return
-
-    console.log('eventData:', newData)
-    console.log('eventData.categoryId:', newData.categoryId, 'type:', typeof newData.categoryId)
 
     Object.assign(basicForm, {
       categoryId: String(newData.categoryId || ''),
@@ -163,7 +159,7 @@ const handleSaveBasic = async () => {
   try {
     const submitData = {
       ...basicForm,
-      seriesId: basicForm.seriesId === 'none' ? null : basicForm.seriesId,
+      seriesId: basicForm.seriesId === 'none' ? undefined : basicForm.seriesId,
     }
     if (props.isEdit && props.eventId) {
       await updateMutation.mutateAsync({ id: props.eventId, data: submitData })

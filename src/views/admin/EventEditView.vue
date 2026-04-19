@@ -6,7 +6,7 @@ import { toast } from 'vue3-toastify'
 import { Button } from '@/components/common/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui/tabs'
 import { fetchEventById, publishEvent, offlineEvent } from '@/api/event/event'
-import type { EventServiceGuaranteeVO, EventParticipantVO } from '@/api/event'
+import { EVENT_STATUS } from '@/constants'
 
 import BasicTab from './EventEdit/BasicTab.vue'
 import SessionsAndTicketsTab from './EventEdit/SessionsAndTicketsTab.vue'
@@ -29,12 +29,8 @@ const { data: eventDetailData } = useQuery({
 })
 
 const eventData = computed(() => eventDetailData.value?.event)
-const eventServices = computed(
-  () => (eventDetailData.value?.services ?? []) as unknown as EventServiceGuaranteeVO[],
-)
-const eventParticipants = computed(
-  () => (eventDetailData.value?.participants ?? []) as unknown as EventParticipantVO[],
-)
+const eventServices = computed(() => eventDetailData.value?.services ?? [])
+const eventParticipants = computed(() => eventDetailData.value?.participants ?? [])
 const eventInfo = computed(() => eventDetailData.value?.info)
 const sessionsData = computed(() => eventDetailData.value?.sessions)
 
@@ -113,7 +109,7 @@ const invalidateTab = () => {
           v-if="isEdit && eventData"
           class="text-sm px-2.5 py-0.5 rounded-full border font-medium"
           :class="
-            eventData.status === 1
+            eventData.status === EVENT_STATUS.PUBLISHED
               ? 'text-green-700 border-green-300 bg-green-50'
               : 'text-muted-foreground border-border bg-muted/40'
           "
@@ -121,7 +117,7 @@ const invalidateTab = () => {
           {{ eventData.statusLabel }}
         </span>
         <Button
-          v-if="isEdit && eventData?.status === 1"
+          v-if="isEdit && eventData?.status === EVENT_STATUS.PUBLISHED"
           variant="outline"
           size="sm"
           class="text-muted-foreground hover:text-destructive hover:border-destructive/40"
@@ -202,7 +198,7 @@ const invalidateTab = () => {
         {{ isSaving ? '保存中...' : isEdit ? '保存更改' : '创建活动' }}
       </Button>
       <Button
-        v-if="isEdit && eventData?.status === 0"
+        v-if="isEdit && eventData?.status === EVENT_STATUS.DRAFT"
         @click="publishMutation.mutate()"
         :disabled="publishMutation.isPending.value"
       >

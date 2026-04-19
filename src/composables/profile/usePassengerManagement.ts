@@ -4,8 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { fetchPassengerPage, createPassenger, deletePassenger } from '@/api/account'
 import { PASSENGER_CERT_TYPES } from '@/constants'
 import { mapPassengerToPassengerItem } from '@/utils/mappers'
-import type { PassengerItem, PassengerFormData } from '@/api/account'
-import type { PageResponsePassengerVO } from '@/api/account'
+import type { PassengerItem, PassengerFormData, PageResponsePassengerVO } from '@/api/account'
 
 const passengerSchema = z.object({
   name: z.string().trim().min(1, '请输入姓名'),

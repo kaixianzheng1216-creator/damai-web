@@ -17,6 +17,7 @@ import {
 import { fetchAdminTicketPage } from '@/api/ticket/ticket'
 import { formatDateTime } from '@/utils/format'
 import type { TicketVO } from '@/api/ticket/types'
+import { TICKET_STATUS } from '@/constants'
 
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -29,10 +30,10 @@ const showScanDialog = ref(false)
 
 const STATUS_OPTIONS = [
   { label: '全部', value: 'all' },
-  { label: '未使用', value: '0' },
-  { label: '已使用', value: '1' },
-  { label: '已作废', value: '2' },
-  { label: '已退票', value: '3' },
+  { label: '未使用', value: String(TICKET_STATUS.UNUSED) },
+  { label: '已使用', value: String(TICKET_STATUS.USED) },
+  { label: '已作废', value: String(TICKET_STATUS.VOIDED) },
+  { label: '已退票', value: String(TICKET_STATUS.REFUNDED) },
 ]
 
 const columns: ColumnDef<TicketVO>[] = [

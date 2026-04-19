@@ -81,7 +81,7 @@ export const useEventSearchPage = () => {
     ]
 
     categories.forEach((cat) => {
-      if (cat.parentId === '0' || cat.parentId === 0) {
+      if (cat.parentId === '0') {
         options.push({ label: cat.name, value: cat.id })
       }
     })
@@ -124,7 +124,7 @@ export const useEventSearchPage = () => {
     const category = categories.find((cat) => cat.id === categoryId)
 
     if (category) {
-      if (category.parentId === '0' || category.parentId === 0) {
+      if (category.parentId === '0') {
         // 选中的是一级分类
         selectedParentCategoryId.value = categoryId
       } else {

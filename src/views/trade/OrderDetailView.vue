@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { fetchOrderById } from '@/api/trade'
 import { formatPrice, formatDateTime } from '@/utils/format'
 import { getOrderStatusBadgeClass } from '@/utils/statusMappers'
+import { ORDER_STATUS } from '@/constants'
 import { Badge } from '@/components/common/ui/badge'
 import { Button } from '@/components/common/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
@@ -145,7 +146,7 @@ const goToPayment = () => {
               </CardContent>
             </Card>
 
-            <div v-if="order.status === 0" class="flex justify-center">
+            <div v-if="order.status === ORDER_STATUS.PENDING" class="flex justify-center">
               <Button size="lg" @click="goToPayment">
                 <icon-lucide-credit-card class="h-4 w-4 mr-2" />
                 立即支付

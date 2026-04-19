@@ -20,6 +20,7 @@ import { fetchAdminCities } from '@/api/event/city'
 import { fetchAdminCategories } from '@/api/event/category'
 import { formatPrice } from '@/utils/format'
 import type { EventVO } from '@/api/event'
+import { EVENT_STATUS } from '@/constants'
 
 const router = useRouter()
 const queryClient = useQueryClient()
@@ -105,7 +106,7 @@ const columns: ColumnDef<EventVO>[] = [
             },
             () => '编辑',
           ),
-          row.original.status === 0
+          row.original.status === EVENT_STATUS.DRAFT
             ? h(
                 Button,
                 {
@@ -119,7 +120,7 @@ const columns: ColumnDef<EventVO>[] = [
                 () => '发布',
               )
             : null,
-          row.original.status === 1
+          row.original.status === EVENT_STATUS.PUBLISHED
             ? h(
                 Button,
                 {
@@ -133,7 +134,7 @@ const columns: ColumnDef<EventVO>[] = [
                 () => '下线',
               )
             : null,
-          row.original.status === 2
+          row.original.status === EVENT_STATUS.OFFLINE
             ? h(
                 Button,
                 {

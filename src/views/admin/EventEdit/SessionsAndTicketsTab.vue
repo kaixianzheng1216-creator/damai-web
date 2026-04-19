@@ -50,7 +50,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  (e: 'updated'): void
+  updated: []
 }>()
 
 const queryClient = useQueryClient()

@@ -31,6 +31,7 @@ import type {
   ServiceOptionCreateRequest,
   ServiceOptionUpdateRequest,
 } from '@/api/event'
+import { BOOLEAN_TYPE } from '@/constants'
 
 const queryClient = useQueryClient()
 
@@ -115,7 +116,7 @@ const optionColumns: ColumnDef<ServiceGuaranteeOptionVO>[] = [
     header: '布尔类型',
     size: 100,
     cell: ({ row }) => {
-      const isBoolean = row.original.isBooleanType === 1
+      const isBoolean = row.original.isBooleanType === BOOLEAN_TYPE.YES
       return h(Badge, { class: 'bg-transparent text-foreground border border-border' }, () =>
         isBoolean ? '是' : '否',
       )
@@ -238,7 +239,7 @@ const optionDialogTitle = computed(() => (editingOptionId.value ? '编辑选项'
 const resetOptionForm = () => {
   optionForm.name = ''
   optionForm.description = ''
-  optionForm.isBooleanType = 0
+  optionForm.isBooleanType = BOOLEAN_TYPE.NO
 }
 
 const openCreateOption = () => {
@@ -479,16 +480,21 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
           <button
             type="button"
             class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
-            :class="optionForm.isBooleanType === 1 ? 'bg-primary' : 'bg-muted'"
-            @click="optionForm.isBooleanType = optionForm.isBooleanType === 1 ? 0 : 1"
+            :class="optionForm.isBooleanType === BOOLEAN_TYPE.YES ? 'bg-primary' : 'bg-muted'"
+            @click="
+              optionForm.isBooleanType =
+                optionForm.isBooleanType === BOOLEAN_TYPE.YES ? BOOLEAN_TYPE.NO : BOOLEAN_TYPE.YES
+            "
           >
             <span
               class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200"
-              :class="optionForm.isBooleanType === 1 ? 'translate-x-4' : 'translate-x-0'"
+              :class="
+                optionForm.isBooleanType === BOOLEAN_TYPE.YES ? 'translate-x-4' : 'translate-x-0'
+              "
             />
           </button>
           <span class="text-sm text-muted-foreground">
-            {{ optionForm.isBooleanType === 1 ? '是' : '否' }}
+            {{ optionForm.isBooleanType === BOOLEAN_TYPE.YES ? '是' : '否' }}
           </span>
         </div>
       </div>

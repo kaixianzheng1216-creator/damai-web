@@ -45,7 +45,7 @@ const {
           :active-value="selectedParentCategoryId"
           @change="
             (v) => {
-              selectedParentCategoryId = v
+              selectedParentCategoryId = v as string | undefined
               handleFilterChange('categoryId', v)
             }
           "

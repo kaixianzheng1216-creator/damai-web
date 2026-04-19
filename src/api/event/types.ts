@@ -138,7 +138,7 @@ export interface EventInfoCreateRequest {
   admissionNotice?: NoticeItemVO[]
 }
 
-export interface EventDetailVO {
+export type EventDetailVO = {
   event: EventVO
   info: EventInfoVO
   participants: EventParticipantVO[]
@@ -146,9 +146,6 @@ export interface EventDetailVO {
   sessions: SessionVO[]
   seriesEvents: SeriesEventVO[]
 }
-
-/** @deprecated Use EventDetailVO — admin and front share the same response structure */
-export type EventDetailResponse = EventDetailVO
 
 // ─── Session & TicketType ────────────────────────────────
 
