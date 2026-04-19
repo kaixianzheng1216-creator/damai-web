@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, h, watch } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import type { ColumnDef } from '@tanstack/vue-table'
+import { type ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/common/ui/dialog'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { fetchAdminSeriesPage, createSeries, updateSeries, deleteSeries } from '@/api/event/series'
 import type { SeriesEventVO, SeriesCreateRequest, SeriesUpdateRequest } from '@/api/event'
 
@@ -151,8 +152,20 @@ const handleSubmit = async () => {
   }
 }
 
+const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
+const openConfirm = (title: string, description: string, onConfirm: () => void) => {
+  confirmDialog.value = { open: true, title, description, onConfirm }
+}
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
+
 const handleDelete = (row: SeriesEventVO) => {
-  deleteMutation.mutate(row.id)
+  openConfirm('确认删除', `确认删除系列「${row.name}」？`, () => deleteMutation.mutate(row.id))
 }
 </script>
 
@@ -205,4 +218,12 @@ const handleDelete = (row: SeriesEventVO) => {
       </DialogFooter>
     </DialogContent>
   </Dialog>
+
+  <ConfirmDialog
+    :open="confirmDialog.open"
+    :title="confirmDialog.title"
+    :description="confirmDialog.description"
+    @close="closeConfirm"
+    @confirm="handleConfirm"
+  />
 </template>
