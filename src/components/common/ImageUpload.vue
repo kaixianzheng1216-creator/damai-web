@@ -84,23 +84,27 @@ const handleDragLeave = (e: DragEvent) => {
   <div class="space-y-2">
     <div
       v-if="modelValue"
-      :class="['relative group w-full overflow-hidden rounded-lg border bg-muted', resolvedAspect()]"
+      :class="[
+        'relative group w-full overflow-hidden rounded-lg border bg-muted',
+        resolvedAspect(),
+      ]"
     >
-      <img :src="modelValue" alt="Preview" class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105" />
-      <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-      <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <Button variant="outline" size="sm" @click.stop="triggerUpload">
-          更换
-        </Button>
-        <Button variant="destructive" size="sm" @click.stop="clearImage">
-          移除
-        </Button>
+      <img
+        :src="modelValue"
+        alt="Preview"
+        class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
+      />
+      <div
+        class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      />
+      <div
+        class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      >
+        <Button variant="outline" size="sm" @click.stop="triggerUpload"> 更换 </Button>
+        <Button variant="destructive" size="sm" @click.stop="clearImage"> 移除 </Button>
       </div>
     </div>
-    <div
-      v-else
-      class="flex flex-col gap-2"
-    >
+    <div v-else class="flex flex-col gap-2">
       <div
         :class="[
           'flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 transition-all duration-300',
@@ -113,9 +117,7 @@ const handleDragLeave = (e: DragEvent) => {
         @dragleave="handleDragLeave"
       >
         <div class="flex flex-col items-center gap-2 text-center">
-          <div
-            class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10"
-          >
+          <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -135,7 +137,7 @@ const handleDragLeave = (e: DragEvent) => {
           </div>
           <div class="space-y-1">
             <p class="text-sm font-medium text-foreground">
-              {{ isUploading ? '上传中...' : (isDragging ? '松开上传图片' : '点击或拖拽上传') }}
+              {{ isUploading ? '上传中...' : isDragging ? '松开上传图片' : '点击或拖拽上传' }}
             </p>
             <p class="text-xs text-muted-foreground">支持 JPG、PNG、GIF 格式</p>
           </div>

@@ -72,11 +72,15 @@ const ticketTypesData = computed(() => {
   return session?.ticketTypes
 })
 
-watch(() => props.sessions, (newSessions) => {
-  if (newSessions && newSessions.length > 0 && !selectedSessionId.value) {
-    selectedSessionId.value = newSessions[0]!.id
-  }
-}, { immediate: true })
+watch(
+  () => props.sessions,
+  (newSessions) => {
+    if (newSessions && newSessions.length > 0 && !selectedSessionId.value) {
+      selectedSessionId.value = newSessions[0]!.id
+    }
+  },
+  { immediate: true },
+)
 
 const resetTicketTypeForm = () => {
   ticketTypeForm.name = ''
@@ -121,7 +125,9 @@ const invalidateAll = () => {
 
 const createTicketTypeMutation = useMutation({
   mutationFn: (data: TicketTypeCreateRequest) =>
-    selectedSessionId.value ? createTicketType(props.eventId, selectedSessionId.value, data) : Promise.reject(new Error('No session ID')),
+    selectedSessionId.value
+      ? createTicketType(props.eventId, selectedSessionId.value, data)
+      : Promise.reject(new Error('No session ID')),
   onSuccess: () => {
     toast.success('票种创建成功')
     showTicketTypeDialog.value = false
@@ -160,8 +166,13 @@ const deleteTicketTypeMutation = useMutation({
 })
 
 const adjustInventoryMutation = useMutation({
-  mutationFn: ({ ticketTypeId, data }: { ticketTypeId: string; data: TicketTypeInventoryAdjustRequest }) =>
-    adjustTicketTypeInventory(props.eventId, ticketTypeId, data),
+  mutationFn: ({
+    ticketTypeId,
+    data,
+  }: {
+    ticketTypeId: string
+    data: TicketTypeInventoryAdjustRequest
+  }) => adjustTicketTypeInventory(props.eventId, ticketTypeId, data),
   onSuccess: () => {
     toast.success('库存调整成功')
     showInventoryDialog.value = false
@@ -184,22 +195,32 @@ const handleSaveTicketType = async () => {
   }
 
   if (editingTicketTypeId.value) {
-    await updateTicketTypeMutation.mutateAsync({ ticketTypeId: editingTicketTypeId.value, data: ticketTypeForm })
+    await updateTicketTypeMutation.mutateAsync({
+      ticketTypeId: editingTicketTypeId.value,
+      data: ticketTypeForm,
+    })
   } else {
     await createTicketTypeMutation.mutateAsync(ticketTypeForm as TicketTypeCreateRequest)
   }
 }
 
 const handleDeleteTicketType = (ticketType: TicketTypeVO) => {
-  openConfirm('确认删除', `确认删除票种「${ticketType.name}」？`, () => deleteTicketTypeMutation.mutate(ticketType.id))
+  openConfirm('确认删除', `确认删除票种「${ticketType.name}」？`, () =>
+    deleteTicketTypeMutation.mutate(ticketType.id),
+  )
 }
 
 const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
 const openConfirm = (title: string, description: string, onConfirm: () => void) => {
   confirmDialog.value = { open: true, title, description, onConfirm }
 }
-const closeConfirm = () => { confirmDialog.value.open = false }
-const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
 
 const handleAdjustInventory = async () => {
   if (!inventoryTicketTypeId.value || adjustQty.value === 0) {
@@ -243,7 +264,10 @@ const getAvailableQty = (ticketType: TicketTypeVO) => {
     <CardContent class="space-y-4">
       <div class="space-y-2">
         <Label>选择场次</Label>
-        <Select :model-value="selectedSessionId" @update:model-value="(v) => (selectedSessionId = v as string | null)">
+        <Select
+          :model-value="selectedSessionId"
+          @update:model-value="(v) => (selectedSessionId = v as string | null)"
+        >
           <SelectTrigger>
             <SelectValue placeholder="请选择场次" />
           </SelectTrigger>
@@ -254,20 +278,32 @@ const getAvailableQty = (ticketType: TicketTypeVO) => {
           </SelectContent>
         </Select>
       </div>
-      <div v-if="!ticketTypesData || ticketTypesData.length === 0" class="text-center py-4 text-muted-foreground">
+      <div
+        v-if="!ticketTypesData || ticketTypesData.length === 0"
+        class="text-center py-4 text-muted-foreground"
+      >
         暂无票种
       </div>
       <div v-else class="space-y-3">
-        <div v-for="ticketType in ticketTypesData" :key="ticketType.id" class="flex items-center justify-between p-3 border rounded-lg">
+        <div
+          v-for="ticketType in ticketTypesData"
+          :key="ticketType.id"
+          class="flex items-center justify-between p-3 border rounded-lg"
+        >
           <div>
             <div class="font-medium">{{ ticketType.name }}</div>
             <div class="text-sm text-muted-foreground">
-              {{ formatPrice(getTicketTypePrice(ticketType)) }} | 库存: {{ getTotalQty(ticketType) }} | 可用: {{ getAvailableQty(ticketType) }}
+              {{ formatPrice(getTicketTypePrice(ticketType)) }} | 库存:
+              {{ getTotalQty(ticketType) }} | 可用: {{ getAvailableQty(ticketType) }}
             </div>
           </div>
           <div class="flex gap-2">
-            <Button variant="outline" size="sm" @click="openInventoryAdjust(ticketType)">调整库存</Button>
-            <Button variant="outline" size="sm" @click="openTicketTypeEdit(ticketType)">编辑</Button>
+            <Button variant="outline" size="sm" @click="openInventoryAdjust(ticketType)"
+              >调整库存</Button
+            >
+            <Button variant="outline" size="sm" @click="openTicketTypeEdit(ticketType)"
+              >编辑</Button
+            >
             <Button size="sm" @click="handleDeleteTicketType(ticketType)">删除</Button>
           </div>
         </div>
@@ -287,16 +323,28 @@ const getAvailableQty = (ticketType: TicketTypeVO) => {
         </div>
         <div class="grid gap-2">
           <Label>售价（分） <span class="text-destructive">*</span></Label>
-          <Input v-model.number="ticketTypeForm.salePrice" type="number" placeholder="请输入售价（单位：分）" />
+          <Input
+            v-model.number="ticketTypeForm.salePrice"
+            type="number"
+            placeholder="请输入售价（单位：分）"
+          />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="grid gap-2">
             <Label>每单限购</Label>
-            <Input v-model.number="ticketTypeForm.orderLimit" type="number" placeholder="每单限购数量" />
+            <Input
+              v-model.number="ticketTypeForm.orderLimit"
+              type="number"
+              placeholder="每单限购数量"
+            />
           </div>
           <div class="grid gap-2">
             <Label>每人限购</Label>
-            <Input v-model.number="ticketTypeForm.accountLimit" type="number" placeholder="每人限购数量" />
+            <Input
+              v-model.number="ticketTypeForm.accountLimit"
+              type="number"
+              placeholder="每人限购数量"
+            />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
@@ -311,7 +359,11 @@ const getAvailableQty = (ticketType: TicketTypeVO) => {
         </div>
         <div v-if="!editingTicketTypeId" class="grid gap-2">
           <Label>总库存 <span class="text-destructive">*</span></Label>
-          <Input v-model.number="ticketTypeForm.totalQty" type="number" placeholder="请输入总库存" />
+          <Input
+            v-model.number="ticketTypeForm.totalQty"
+            type="number"
+            placeholder="请输入总库存"
+          />
         </div>
       </div>
       <DialogFooter>
@@ -339,7 +391,11 @@ const getAvailableQty = (ticketType: TicketTypeVO) => {
     </DialogContent>
   </Dialog>
 
-  <ConfirmDialog :open="confirmDialog.open" :title="confirmDialog.title"
-    :description="confirmDialog.description" @close="closeConfirm" @confirm="handleConfirm" />
+  <ConfirmDialog
+    :open="confirmDialog.open"
+    :title="confirmDialog.title"
+    :description="confirmDialog.description"
+    @close="closeConfirm"
+    @confirm="handleConfirm"
+  />
 </template>
-

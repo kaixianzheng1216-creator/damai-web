@@ -31,10 +31,14 @@ const { data: noticeTemplates } = useQuery({
 })
 
 const purchaseTemplates = computed(() =>
-  (noticeTemplates.value ?? []).filter(n => n.type === 1).sort((a, b) => a.sortOrder - b.sortOrder)
+  (noticeTemplates.value ?? [])
+    .filter((n) => n.type === 1)
+    .sort((a, b) => a.sortOrder - b.sortOrder),
 )
 const admissionTemplates = computed(() =>
-  (noticeTemplates.value ?? []).filter(n => n.type === 2).sort((a, b) => a.sortOrder - b.sortOrder)
+  (noticeTemplates.value ?? [])
+    .filter((n) => n.type === 2)
+    .sort((a, b) => a.sortOrder - b.sortOrder),
 )
 
 // ─── Form State ───────────────────────────────────────────
@@ -47,12 +51,12 @@ const populateFromEventInfo = () => {
   if (!props.eventInfo || !noticeTemplates.value) return
   description.value = props.eventInfo.description || ''
 
-  for (const notice of (props.eventInfo.purchaseNotice ?? [])) {
-    const tmpl = purchaseTemplates.value.find(t => t.name === notice.name)
+  for (const notice of props.eventInfo.purchaseNotice ?? []) {
+    const tmpl = purchaseTemplates.value.find((t) => t.name === notice.name)
     if (tmpl) purchaseContent[tmpl.id] = notice.description
   }
-  for (const notice of (props.eventInfo.admissionNotice ?? [])) {
-    const tmpl = admissionTemplates.value.find(t => t.name === notice.name)
+  for (const notice of props.eventInfo.admissionNotice ?? []) {
+    const tmpl = admissionTemplates.value.find((t) => t.name === notice.name)
     if (tmpl) admissionContent[tmpl.id] = notice.description
   }
 }
@@ -75,12 +79,12 @@ const saveEventInfoMutation = useMutation({
 
 const handleSaveInfo = async () => {
   const purchaseNotice = purchaseTemplates.value
-    .filter(t => purchaseContent[t.id]?.trim())
-    .map(t => ({ name: t.name, description: purchaseContent[t.id]! }))
+    .filter((t) => purchaseContent[t.id]?.trim())
+    .map((t) => ({ name: t.name, description: purchaseContent[t.id]! }))
 
   const admissionNotice = admissionTemplates.value
-    .filter(t => admissionContent[t.id]?.trim())
-    .map(t => ({ name: t.name, description: admissionContent[t.id]! }))
+    .filter((t) => admissionContent[t.id]?.trim())
+    .map((t) => ({ name: t.name, description: admissionContent[t.id]! }))
 
   await saveEventInfoMutation.mutateAsync({
     description: description.value,
@@ -98,7 +102,6 @@ defineExpose({ save: handleSaveInfo })
       <CardTitle>详情信息</CardTitle>
     </CardHeader>
     <CardContent class="space-y-6 max-w-3xl">
-
       <!-- 活动描述 -->
       <div class="space-y-2">
         <Label>活动描述</Label>
@@ -150,7 +153,6 @@ defineExpose({ save: handleSaveInfo })
           </div>
         </div>
       </div>
-
     </CardContent>
   </Card>
 </template>

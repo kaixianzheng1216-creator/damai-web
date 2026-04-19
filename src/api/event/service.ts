@@ -14,17 +14,19 @@ import type {
 export const fetchAdminServices = (): Promise<ServiceGuaranteeVO[]> =>
   request.get<ServiceGuaranteeVO[]>('/api/event/admin/services')
 
-export const fetchAdminServicesPage = (query?: ServiceGuaranteePageRequest): Promise<PageResponseServiceGuaranteeVO> =>
+export const fetchAdminServicesPage = (
+  query?: ServiceGuaranteePageRequest,
+): Promise<PageResponseServiceGuaranteeVO> =>
   request.get<PageResponseServiceGuaranteeVO>('/api/event/admin/services/page', { params: query })
 
-export const createService = (
-  data: ServiceGuaranteeCreateRequest,
-): Promise<ServiceGuaranteeVO> => request.post<ServiceGuaranteeVO>('/api/event/admin/services', data)
+export const createService = (data: ServiceGuaranteeCreateRequest): Promise<ServiceGuaranteeVO> =>
+  request.post<ServiceGuaranteeVO>('/api/event/admin/services', data)
 
 export const updateService = (
   id: string,
   data: ServiceGuaranteeUpdateRequest,
-): Promise<ServiceGuaranteeVO> => request.put<ServiceGuaranteeVO>(`/api/event/admin/services/${id}`, data)
+): Promise<ServiceGuaranteeVO> =>
+  request.put<ServiceGuaranteeVO>(`/api/event/admin/services/${id}`, data)
 
 export const deleteService = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/services/${id}`)
@@ -38,7 +40,8 @@ export const updateServiceOption = (
   serviceId: string,
   optionId: string,
   data: ServiceOptionUpdateRequest,
-): Promise<void> => request.put<void>(`/api/event/admin/services/${serviceId}/options/${optionId}`, data)
+): Promise<void> =>
+  request.put<void>(`/api/event/admin/services/${serviceId}/options/${optionId}`, data)
 
 export const deleteServiceOption = (serviceId: string, optionId: string): Promise<void> =>
   request.del<void>(`/api/event/admin/services/${serviceId}/options/${optionId}`)

@@ -27,9 +27,12 @@ const parse = (val?: string) => {
   if (!val) return { date: undefined as CalendarDate | undefined, hour: '00', minute: '00' }
   const [datePart = '', timePart = ''] = val.split('T')
   const parts = datePart.split('-').map(Number)
-  const y = parts[0], m = parts[1], d = parts[2]
+  const y = parts[0],
+    m = parts[1],
+    d = parts[2]
   const [h = '00', min = '00'] = timePart.split(':')
-  if (!y || !m || !d) return { date: undefined as CalendarDate | undefined, hour: '00', minute: '00' }
+  if (!y || !m || !d)
+    return { date: undefined as CalendarDate | undefined, hour: '00', minute: '00' }
   return {
     date: new CalendarDate(y, m, d),
     hour: pad(parseInt(h) || 0),
@@ -41,12 +44,15 @@ const calDate = ref<CalendarDate | undefined>(parse(props.modelValue).date)
 const hour = ref(parse(props.modelValue).hour)
 const minute = ref(parse(props.modelValue).minute)
 
-watch(() => props.modelValue, (val) => {
-  const p = parse(val)
-  calDate.value = p.date
-  hour.value = p.hour
-  minute.value = p.minute
-})
+watch(
+  () => props.modelValue,
+  (val) => {
+    const p = parse(val)
+    calDate.value = p.date
+    hour.value = p.hour
+    minute.value = p.minute
+  },
+)
 
 const buildValue = (d: CalendarDate, h: string, m: string) =>
   `${d.year}-${pad(d.month)}-${pad(d.day)}T${h}:${m}`
@@ -96,7 +102,10 @@ const onTimeChange = () => {
           min="0"
           max="23"
           class="w-16 rounded border border-input bg-background px-2 py-1 text-sm text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-ring"
-          @change="hour = clampHour(hour); onTimeChange()"
+          @change="
+            hour = clampHour(hour)
+            onTimeChange()
+          "
         />
         <span class="text-muted-foreground font-medium">:</span>
         <input
@@ -105,7 +114,10 @@ const onTimeChange = () => {
           min="0"
           max="59"
           class="w-16 rounded border border-input bg-background px-2 py-1 text-sm text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-ring"
-          @change="minute = clampMinute(minute); onTimeChange()"
+          @change="
+            minute = clampMinute(minute)
+            onTimeChange()
+          "
         />
         <Button size="sm" class="ml-auto h-7 px-3" @click="open = false">确定</Button>
       </div>

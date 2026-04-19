@@ -21,10 +21,13 @@ const checkOverflow = () => {
   overflows.value = el.scrollHeight > el.clientHeight + 2
 }
 
-watch(() => props.options, async () => {
-  await nextTick()
-  checkOverflow()
-})
+watch(
+  () => props.options,
+  async () => {
+    await nextTick()
+    checkOverflow()
+  },
+)
 
 useResizeObserver(listRef, checkOverflow)
 </script>

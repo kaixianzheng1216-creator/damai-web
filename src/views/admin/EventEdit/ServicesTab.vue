@@ -5,10 +5,7 @@ import { toast } from 'vue3-toastify'
 import { Button } from '@/components/common/ui/button'
 import { Label } from '@/components/common/ui/label'
 import { Checkbox } from '@/components/common/ui/checkbox'
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from '@/components/common/ui/radio-group'
+import { RadioGroup, RadioGroupItem } from '@/components/common/ui/radio-group'
 import {
   Dialog,
   DialogContent,
@@ -20,7 +17,11 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import { fetchAdminServices } from '@/api/event/service'
 import { batchAddServices, removeService } from '@/api/event/event'
-import type { EventServiceGuaranteeVO, EventServiceBatchAddRequest, ServiceGuaranteeVO } from '@/api/event'
+import type {
+  EventServiceGuaranteeVO,
+  EventServiceBatchAddRequest,
+  ServiceGuaranteeVO,
+} from '@/api/event'
 
 interface Props {
   eventId: string
@@ -51,7 +52,7 @@ interface SelectedService {
 const selectedServices = ref<SelectedService[]>([])
 
 const openServiceDialog = () => {
-  selectedServices.value = props.eventServices.map(s => ({
+  selectedServices.value = props.eventServices.map((s) => ({
     serviceId: s.serviceGuarantee.id,
     optionId: s.serviceGuaranteeOption.id,
   }))
@@ -93,13 +94,13 @@ const removeServiceMutation = useMutation({
 })
 
 const handleSaveServices = async () => {
-  const hasMissingOption = selectedServices.value.some(s => !s.optionId)
+  const hasMissingOption = selectedServices.value.some((s) => !s.optionId)
   if (hasMissingOption) {
     toast.error('请为每个选中的服务保障选择一个选项')
     return
   }
 
-  const services = selectedServices.value.map(item => ({
+  const services = selectedServices.value.map((item) => ({
     serviceGuaranteeId: parseInt(item.serviceId),
     serviceGuaranteeOptionId: parseInt(item.optionId),
   }))
@@ -107,7 +108,7 @@ const handleSaveServices = async () => {
 }
 
 const toggleService = (service: ServiceGuaranteeVO) => {
-  const index = selectedServices.value.findIndex(s => s.serviceId === service.id)
+  const index = selectedServices.value.findIndex((s) => s.serviceId === service.id)
   if (index > -1) {
     selectedServices.value.splice(index, 1)
   } else {
@@ -122,30 +123,37 @@ const toggleService = (service: ServiceGuaranteeVO) => {
 }
 
 const isServiceSelected = (serviceId: string) => {
-  return selectedServices.value.some(s => s.serviceId === serviceId)
+  return selectedServices.value.some((s) => s.serviceId === serviceId)
 }
 
 const getSelectedOption = (serviceId: string) => {
-  return selectedServices.value.find(s => s.serviceId === serviceId)?.optionId
+  return selectedServices.value.find((s) => s.serviceId === serviceId)?.optionId
 }
 
 const setSelectedOption = (serviceId: string, optionId: string) => {
-  const service = selectedServices.value.find(s => s.serviceId === serviceId)
+  const service = selectedServices.value.find((s) => s.serviceId === serviceId)
   if (service) {
     service.optionId = optionId
   }
 }
 
 const handleRemoveService = (eventService: EventServiceGuaranteeVO) => {
-  openConfirm('确认移除', `确认移除服务保障「${eventService.serviceGuarantee.name}」？`, () => removeServiceMutation.mutate(eventService.id))
+  openConfirm('确认移除', `确认移除服务保障「${eventService.serviceGuarantee.name}」？`, () =>
+    removeServiceMutation.mutate(eventService.id),
+  )
 }
 
 const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
 const openConfirm = (title: string, description: string, onConfirm: () => void) => {
   confirmDialog.value = { open: true, title, description, onConfirm }
 }
-const closeConfirm = () => { confirmDialog.value.open = false }
-const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
 </script>
 
 <template>
@@ -161,14 +169,24 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
         暂无服务保障
       </div>
       <div v-else class="space-y-3">
-        <div v-for="service in eventServices" :key="service.id" class="flex items-center justify-between p-3 border rounded-lg">
+        <div
+          v-for="service in eventServices"
+          :key="service.id"
+          class="flex items-center justify-between p-3 border rounded-lg"
+        >
           <div>
             <div class="font-medium">{{ service.serviceGuarantee.name }}</div>
             <div v-if="service.serviceGuaranteeOption" class="text-sm text-muted-foreground">
               {{ service.serviceGuaranteeOption.name }}
             </div>
           </div>
-          <Button variant="ghost" size="sm" class="text-muted-foreground hover:text-destructive" @click="handleRemoveService(service)">移除</Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="text-muted-foreground hover:text-destructive"
+            @click="handleRemoveService(service)"
+            >移除</Button
+          >
         </div>
       </div>
     </CardContent>
@@ -180,7 +198,10 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
         <DialogTitle class="text-lg font-semibold">选择服务保障</DialogTitle>
       </DialogHeader>
       <div class="max-h-[60vh] overflow-y-auto pr-1">
-        <div v-if="!servicesData || servicesData.length === 0" class="text-center py-12 text-muted-foreground">
+        <div
+          v-if="!servicesData || servicesData.length === 0"
+          class="text-center py-12 text-muted-foreground"
+        >
           暂无可用服务保障
         </div>
         <div v-else class="space-y-4">
@@ -205,7 +226,10 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
                       class="flex items-center gap-2 p-3 border rounded-lg"
                       :class="!isServiceSelected(service.id) ? 'opacity-50' : ''"
                     >
-                      <RadioGroupItem :value="option.id" :id="`option-${service.id}-${option.id}`" />
+                      <RadioGroupItem
+                        :value="option.id"
+                        :id="`option-${service.id}-${option.id}`"
+                      />
                       <Label :for="`option-${service.id}-${option.id}`">{{ option.name }}</Label>
                     </div>
                   </RadioGroup>
@@ -224,6 +248,11 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
     </DialogContent>
   </Dialog>
 
-  <ConfirmDialog :open="confirmDialog.open" :title="confirmDialog.title"
-    :description="confirmDialog.description" @close="closeConfirm" @confirm="handleConfirm" />
+  <ConfirmDialog
+    :open="confirmDialog.open"
+    :title="confirmDialog.title"
+    :description="confirmDialog.description"
+    @close="closeConfirm"
+    @confirm="handleConfirm"
+  />
 </template>

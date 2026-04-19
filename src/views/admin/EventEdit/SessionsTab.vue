@@ -110,22 +110,32 @@ const handleSaveSession = async () => {
   }
 
   if (editingSessionId.value) {
-    await updateSessionMutation.mutateAsync({ sessionId: editingSessionId.value, data: sessionForm })
+    await updateSessionMutation.mutateAsync({
+      sessionId: editingSessionId.value,
+      data: sessionForm,
+    })
   } else {
     await batchAddSessionsMutation.mutateAsync([sessionForm])
   }
 }
 
 const handleDeleteSession = (session: SessionVO) => {
-  openConfirm('确认删除', `确认删除场次「${session.name}」？`, () => deleteSessionMutation.mutate(session.id))
+  openConfirm('确认删除', `确认删除场次「${session.name}」？`, () =>
+    deleteSessionMutation.mutate(session.id),
+  )
 }
 
 const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
 const openConfirm = (title: string, description: string, onConfirm: () => void) => {
   confirmDialog.value = { open: true, title, description, onConfirm }
 }
-const closeConfirm = () => { confirmDialog.value.open = false }
-const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
+const closeConfirm = () => {
+  confirmDialog.value.open = false
+}
+const handleConfirm = () => {
+  confirmDialog.value.onConfirm()
+  closeConfirm()
+}
 </script>
 
 <template>
@@ -141,7 +151,11 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
         暂无场次
       </div>
       <div v-else class="space-y-3">
-        <div v-for="session in sessions" :key="session.id" class="flex items-center justify-between p-3 border rounded-lg">
+        <div
+          v-for="session in sessions"
+          :key="session.id"
+          class="flex items-center justify-between p-3 border rounded-lg"
+        >
           <div>
             <div class="font-medium">{{ session.name }}</div>
             <div class="text-sm text-muted-foreground">
@@ -185,7 +199,11 @@ const handleConfirm = () => { confirmDialog.value.onConfirm(); closeConfirm() }
     </DialogContent>
   </Dialog>
 
-  <ConfirmDialog :open="confirmDialog.open" :title="confirmDialog.title"
-    :description="confirmDialog.description" @close="closeConfirm" @confirm="handleConfirm" />
+  <ConfirmDialog
+    :open="confirmDialog.open"
+    :title="confirmDialog.title"
+    :description="confirmDialog.description"
+    @close="closeConfirm"
+    @confirm="handleConfirm"
+  />
 </template>
-

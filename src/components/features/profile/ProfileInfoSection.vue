@@ -80,7 +80,10 @@ const handleAvatarChange = (event: Event) => {
 
           <div>
             <Label class="mb-2"><span class="text-primary">*</span> 性别</Label>
-            <RadioGroup v-model="form.gender" class="flex h-10 items-center gap-6 rounded-md border border-input px-3">
+            <RadioGroup
+              v-model="form.gender"
+              class="flex h-10 items-center gap-6 rounded-md border border-input px-3"
+            >
               <div class="flex items-center gap-1.5">
                 <RadioGroupItem id="gender-male" value="male" />
                 <Label for="gender-male" class="text-sm font-normal">男</Label>

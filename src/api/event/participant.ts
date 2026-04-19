@@ -12,7 +12,9 @@ import type {
 export const fetchAdminParticipants = (): Promise<ParticipantVO[]> =>
   request.get<ParticipantVO[]>('/api/event/admin/participants')
 
-export const fetchAdminParticipantsPage = (query?: ParticipantPageRequest): Promise<PageResponseParticipantVO> =>
+export const fetchAdminParticipantsPage = (
+  query?: ParticipantPageRequest,
+): Promise<PageResponseParticipantVO> =>
   request.get<PageResponseParticipantVO>('/api/event/admin/participants/page', { params: query })
 
 export const createParticipant = (data: ParticipantCreateRequest): Promise<ParticipantVO> =>

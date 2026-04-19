@@ -1,13 +1,11 @@
 import { request } from '@/api/request'
-import type {
-  PassengerCreateRequest,
-  PassengerPageRequest,
-  PageResponsePassengerVO,
-} from './types'
+import type { PassengerCreateRequest, PassengerPageRequest, PageResponsePassengerVO } from './types'
 
 // ─── Front ───────────────────────────────────────────────
 
-export const fetchPassengerPage = (params: PassengerPageRequest): Promise<PageResponsePassengerVO> =>
+export const fetchPassengerPage = (
+  params: PassengerPageRequest,
+): Promise<PageResponsePassengerVO> =>
   request.get<PageResponsePassengerVO>('/api/account/front/passenger/page', { params })
 
 export const createPassenger = (data: PassengerCreateRequest): Promise<string> =>

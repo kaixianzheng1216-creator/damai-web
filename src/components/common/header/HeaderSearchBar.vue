@@ -19,7 +19,9 @@ const handleSubmit = () => {
     @submit.prevent="handleSubmit"
   >
     <div class="relative w-full">
-      <icon-lucide-search class="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <icon-lucide-search
+        class="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+      />
       <Input
         :model-value="modelValue"
         type="search"

@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/common/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/ui/popover'
 import { Separator } from '@/components/common/ui/separator'
 
 defineProps<{

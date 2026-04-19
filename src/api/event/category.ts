@@ -17,7 +17,9 @@ export const fetchCategories = (): Promise<CategoryVO[]> =>
 export const fetchAdminCategories = (): Promise<CategoryVO[]> =>
   request.get<CategoryVO[]>('/api/event/admin/categories')
 
-export const fetchAdminCategoriesPage = (query?: CategoryPageRequest): Promise<PageResponseCategoryVO> =>
+export const fetchAdminCategoriesPage = (
+  query?: CategoryPageRequest,
+): Promise<PageResponseCategoryVO> =>
   request.get<PageResponseCategoryVO>('/api/event/admin/categories/page', { params: query })
 
 export const createCategory = (data: CategoryCreateRequest): Promise<CategoryVO> =>

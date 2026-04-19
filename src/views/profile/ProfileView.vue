@@ -97,75 +97,77 @@ const profileCenterQuery = computed(() => ({
             @open-section="openSection"
           />
 
-          <section class="rounded-2xl border border-border bg-background p-4 md:p-5 lg:p-6 shadow-sm">
-          <div
-            v-if="profileCenterQuery.isLoading"
-            class="flex min-h-[320px] items-center justify-center"
+          <section
+            class="rounded-2xl border border-border bg-background p-4 md:p-5 lg:p-6 shadow-sm"
           >
-            <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
-          </div>
-
-          <template v-else>
             <div
-              class="mb-4 md:mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4"
+              v-if="profileCenterQuery.isLoading"
+              class="flex min-h-[320px] items-center justify-center"
             >
-              <h1 class="text-lg md:text-xl font-semibold text-foreground">{{ currentTitle }}</h1>
+              <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
             </div>
 
-            <ProfileInfoSection
-              v-if="activeSection === 'info'"
-              v-model:form="infoForm"
-              :display-avatar="displayAvatar"
-              :years="years"
-              :months="months"
-              :days="days"
-              @save="saveInfo"
-              @avatar-selected="updateAvatar"
-            />
+            <template v-else>
+              <div
+                class="mb-4 md:mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4"
+              >
+                <h1 class="text-lg md:text-xl font-semibold text-foreground">{{ currentTitle }}</h1>
+              </div>
 
-            <ProfilePassengersSection
-              v-else-if="activeSection === 'passengers'"
-              :passengers="passengerList"
-              :passenger-page="passengerPage"
-              :passenger-page-size="passengerPageSize"
-              :passenger-total-pages="passengerTotalPages"
-              :passenger-total-row="passengerTotalRow"
-              :passenger-keyword="passengerKeyword"
-              @create="openCreatePassengerModal"
-              @edit="openEditPassengerModal"
-              @delete="openDeletePassengerModal"
-              @update:passenger-page="updatePassengerPage"
-              @update:passenger-page-size="updatePassengerPageSize"
-              @update:passenger-keyword="updatePassengerKeyword"
-            />
+              <ProfileInfoSection
+                v-if="activeSection === 'info'"
+                v-model:form="infoForm"
+                :display-avatar="displayAvatar"
+                :years="years"
+                :months="months"
+                :days="days"
+                @save="saveInfo"
+                @avatar-selected="updateAvatar"
+              />
 
-            <ProfileOrdersSection
-              v-else-if="activeSection === 'orders'"
-              :order-filter="orderFilter"
-              :order-keyword="orderKeyword"
-              :paginated-orders="paginatedOrders"
-              :order-page="orderPage"
-              :order-page-size="orderPageSize"
-              :order-total-pages="orderTotalPages"
-              :order-total-row="orderTotalRow"
-              @update:order-filter="orderFilter = $event"
-              @update:order-keyword="orderKeyword = $event"
-              @update:order-page="updateOrderPage"
-              @update:order-page-size="updateOrderPageSize"
-            />
+              <ProfilePassengersSection
+                v-else-if="activeSection === 'passengers'"
+                :passengers="passengerList"
+                :passenger-page="passengerPage"
+                :passenger-page-size="passengerPageSize"
+                :passenger-total-pages="passengerTotalPages"
+                :passenger-total-row="passengerTotalRow"
+                :passenger-keyword="passengerKeyword"
+                @create="openCreatePassengerModal"
+                @edit="openEditPassengerModal"
+                @delete="openDeletePassengerModal"
+                @update:passenger-page="updatePassengerPage"
+                @update:passenger-page-size="updatePassengerPageSize"
+                @update:passenger-keyword="updatePassengerKeyword"
+              />
 
-            <ProfileTicketsSection
-              v-else-if="activeSection === 'tickets'"
-              :paginated-tickets="paginatedTickets"
-              :ticket-page="ticketPage"
-              :ticket-page-size="ticketPageSize"
-              :ticket-total-pages="ticketTotalPages"
-              :ticket-total-row="ticketTotalRow"
-              @update:ticket-page="updateTicketPage"
-              @update:ticket-page-size="updateTicketPageSize"
-            />
-          </template>
-        </section>
+              <ProfileOrdersSection
+                v-else-if="activeSection === 'orders'"
+                :order-filter="orderFilter"
+                :order-keyword="orderKeyword"
+                :paginated-orders="paginatedOrders"
+                :order-page="orderPage"
+                :order-page-size="orderPageSize"
+                :order-total-pages="orderTotalPages"
+                :order-total-row="orderTotalRow"
+                @update:order-filter="orderFilter = $event"
+                @update:order-keyword="orderKeyword = $event"
+                @update:order-page="updateOrderPage"
+                @update:order-page-size="updateOrderPageSize"
+              />
+
+              <ProfileTicketsSection
+                v-else-if="activeSection === 'tickets'"
+                :paginated-tickets="paginatedTickets"
+                :ticket-page="ticketPage"
+                :ticket-page-size="ticketPageSize"
+                :ticket-total-pages="ticketTotalPages"
+                :ticket-total-row="ticketTotalRow"
+                @update:ticket-page="updateTicketPage"
+                @update:ticket-page-size="updateTicketPageSize"
+              />
+            </template>
+          </section>
         </div>
       </div>
     </div>

@@ -13,7 +13,9 @@ const getIcon = (name: string) => {
 
 <template>
   <div class="rounded-xl border border-border/50 bg-background px-2 py-3 shadow-sm md:p-6">
-    <div class="flex gap-1 overflow-x-auto scrollbar-hide md:grid md:grid-cols-10 md:gap-6 md:overflow-visible">
+    <div
+      class="flex gap-1 overflow-x-auto scrollbar-hide md:grid md:grid-cols-10 md:gap-6 md:overflow-visible"
+    >
       <RouterLink
         v-for="category in categories"
         :key="category.id"
