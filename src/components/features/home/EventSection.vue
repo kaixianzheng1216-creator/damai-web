@@ -14,7 +14,7 @@ defineProps<{
       <h2 class="text-xl font-bold text-foreground md:text-2xl">{{ title }}</h2>
       <RouterLink
         :to="linkUrl"
-        class="flex items-center text-sm text-muted-foreground transition-colors hover:text-primary"
+        class="flex items-center text-muted-sm transition-colors hover:text-primary"
       >
         查看全部
         <icon-lucide-chevron-right class="ml-1 h-4 w-4" />

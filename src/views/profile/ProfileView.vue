@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ProfilePassengerDialog from '@/components/features/profile/ProfilePassengerDialog.vue'
 import ProfilePassengersSection from '@/components/features/profile/ProfilePassengersSection.vue'
-import ProfileConfirmDialog from '@/components/features/profile/ProfileConfirmDialog.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import ProfileInfoSection from '@/components/features/profile/ProfileInfoSection.vue'
 import ProfileOrdersSection from '@/components/features/profile/ProfileOrdersSection.vue'
 import ProfileTicketsSection from '@/components/features/profile/ProfileTicketsSection.vue'
@@ -22,7 +22,6 @@ const {
   passengerKeyword,
   showPassengerModal,
   showDeletePassengerModal,
-  editingPassengerId,
   passengerError,
   passengerForm,
   orderFilter,
@@ -58,7 +57,6 @@ const {
   openSection,
   saveInfo,
   openCreatePassengerModal,
-  openEditPassengerModal,
   closePassengerModal,
   submitPassenger,
   openDeletePassengerModal,
@@ -134,7 +132,6 @@ const profileCenterQuery = computed(() => ({
                 :passenger-total-row="passengerTotalRow"
                 :passenger-keyword="passengerKeyword"
                 @create="openCreatePassengerModal"
-                @edit="openEditPassengerModal"
                 @delete="openDeletePassengerModal"
                 @update:passenger-page="updatePassengerPage"
                 @update:passenger-page-size="updatePassengerPageSize"
@@ -175,13 +172,12 @@ const profileCenterQuery = computed(() => ({
     <ProfilePassengerDialog
       v-model:form="passengerForm"
       :open="showPassengerModal"
-      :editing-passenger-id="editingPassengerId"
       :passenger-error="passengerError"
       @close="closePassengerModal"
       @submit="submitPassenger"
     />
 
-    <ProfileConfirmDialog
+    <ConfirmDialog
       :open="showDeletePassengerModal"
       :title="PROFILE_DIALOG_COPY.deletePassengerTitle"
       :description="PROFILE_DIALOG_COPY.deletePassengerDescription"

@@ -102,7 +102,7 @@ const invalidateTab = () => {
         <h2 class="text-lg font-semibold text-foreground">
           {{ isEdit ? '编辑活动' : '创建活动' }}
         </h2>
-        <p class="text-sm text-muted-foreground mt-1">管理活动的基本信息、场次和票种</p>
+        <p class="text-muted-sm mt-1">管理活动的基本信息、场次和票种</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <span

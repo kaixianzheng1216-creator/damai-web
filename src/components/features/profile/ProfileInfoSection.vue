@@ -46,7 +46,7 @@ const handleAvatarChange = (event: Event) => {
 <template>
   <div class="space-y-6">
     <div class="grid gap-6 lg:grid-cols-[220px_1fr]">
-      <div class="rounded-xl border border-border bg-muted/20 p-4">
+      <div class="section-card-muted">
         <div class="flex flex-col items-center gap-3">
           <img
             :src="displayAvatar"
@@ -71,7 +71,7 @@ const handleAvatarChange = (event: Event) => {
         </div>
       </div>
 
-      <div class="rounded-xl border border-border p-4">
+      <div class="section-card">
         <div class="grid gap-4 md:grid-cols-2">
           <div>
             <Label class="mb-2"><span class="text-primary">*</span> 昵称</Label>

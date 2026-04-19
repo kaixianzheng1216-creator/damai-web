@@ -23,7 +23,6 @@ const viewMode = computed(() => (isMobile.value ? 'card' : 'table'))
 
 const emit = defineEmits<{
   create: []
-  edit: [passenger: PassengerItem]
   delete: [passengerId: string]
   'update:passengerPage': [page: number]
   'update:passengerKeyword': [value: string]
@@ -54,16 +53,6 @@ const columns: ColumnDef<PassengerItem>[] = [
     size: 150,
     cell: ({ row }) => {
       return h('div', { class: 'flex items-center gap-2' }, [
-        h(
-          Button,
-          {
-            size: 'sm',
-            variant: 'outline',
-            class: 'h-7 px-2',
-            onClick: () => emit('edit', row.original),
-          },
-          () => '编辑',
-        ),
         h(
           Button,
           {
@@ -118,9 +107,6 @@ const columns: ColumnDef<PassengerItem>[] = [
               <span class="text-sm">{{ passenger.certNo }}</span>
             </div>
             <div class="flex items-center gap-2 pt-1">
-              <Button size="sm" variant="outline" class="h-7 px-2" @click="emit('edit', passenger)">
-                编辑
-              </Button>
               <Button
                 size="sm"
                 variant="destructive"

@@ -1,9 +1,10 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { fetchMyOrderPage } from '@/api/trade'
 import { ORDER_PAGE_SIZE, ORDER_STATUS_BY_FILTER, type OrderFilterKey } from '@/constants'
 import { formatPrice, formatDateTime } from '@/utils/format'
 import { mapOrderStatus } from '@/utils/statusMappers'
+import { usePagination } from '@/composables/common'
 import type { OrderItem, OrderStatus } from '@/api/account'
 import type { TicketOrderVO } from '@/api/trade'
 
@@ -22,8 +23,20 @@ const mapTicketOrderToOrderItem = (order: TicketOrderVO): OrderItem => ({
 export const useOrderList = () => {
   const orderFilter = ref<OrderFilter>('all')
   const orderKeyword = ref('')
-  const orderPage = ref(1)
-  const orderPageSize = ref(ORDER_PAGE_SIZE)
+
+  const {
+    page: orderPage,
+    pageSize: orderPageSize,
+    updatePage: updateOrderPage,
+    updatePageSize: updateOrderPageSize,
+    getPaginationParams,
+    getRecords,
+    getTotalPages,
+    getTotalRow,
+  } = usePagination({
+    initialPageSize: ORDER_PAGE_SIZE,
+    resetTriggers: [orderFilter, orderKeyword],
+  })
 
   // 计算要传递给后端的 status 参数
   const requestStatus = computed(() => {
@@ -34,14 +47,14 @@ export const useOrderList = () => {
     queryKey: ['my-order-page', orderPage, orderPageSize, requestStatus],
     queryFn: () =>
       fetchMyOrderPage({
-        page: orderPage.value,
-        size: orderPageSize.value,
+        ...getPaginationParams(),
         status: requestStatus.value,
       }),
   })
 
   const orderList = computed<OrderItem[]>(
-    () => myOrderPageQuery.data.value?.records.map(mapTicketOrderToOrderItem) ?? [],
+    () =>
+      getRecords<TicketOrderVO>(myOrderPageQuery.data).value.map(mapTicketOrderToOrderItem) ?? [],
   )
 
   // 只对关键词进行前端过滤（后端暂不支持关键词搜索）
@@ -58,34 +71,9 @@ export const useOrderList = () => {
     )
   })
 
-  const orderTotalPages = computed(() => myOrderPageQuery.data.value?.totalPage ?? 1)
-
-  const orderTotalRow = computed(() => {
-    return myOrderPageQuery.data.value?.totalRow ?? 0
-  })
-
+  const orderTotalPages = getTotalPages(myOrderPageQuery.data)
+  const orderTotalRow = getTotalRow(myOrderPageQuery.data)
   const paginatedOrders = computed(() => filteredOrders.value)
-
-  watch([orderFilter, orderKeyword], () => {
-    orderPage.value = 1
-  })
-
-  const updateOrderPage = (page: number) => {
-    if (page < 1) {
-      return
-    }
-
-    orderPage.value = page
-  }
-
-  const updateOrderPageSize = (pageSize: number) => {
-    if (pageSize < 1) {
-      return
-    }
-
-    orderPageSize.value = pageSize
-    orderPage.value = 1
-  }
 
   return {
     orderFilter,

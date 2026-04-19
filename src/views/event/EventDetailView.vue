@@ -53,14 +53,11 @@ const sanitizedDescription = computed(() =>
 
 <template>
   <div class="container mx-auto px-4 py-6 md:px-6">
-    <div v-if="isLoading" class="flex min-h-[520px] items-center justify-center">
+    <div v-if="isLoading" class="flex min-h-[520px] flex-center">
       <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
     </div>
 
-    <div
-      v-else-if="isError || !detail"
-      class="flex min-h-[520px] items-center justify-center text-destructive"
-    >
+    <div v-else-if="isError || !detail" class="flex min-h-[520px] flex-center text-destructive">
       详情加载失败，请稍后重试
     </div>
 
@@ -125,7 +122,7 @@ const sanitizedDescription = computed(() =>
                 :key="index"
                 class="border-b border-border pb-5 last:border-b-0"
               >
-                <p class="text-sm text-muted-foreground">{{ item.name }}</p>
+                <p class="text-muted-sm">{{ item.name }}</p>
                 <p class="mt-2 text-base leading-8 text-foreground">{{ item.description }}</p>
               </div>
             </div>

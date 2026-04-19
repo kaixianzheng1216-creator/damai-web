@@ -5,9 +5,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div
-    class="min-h-screen flex flex-col items-center justify-center bg-background px-4 pb-14 md:pb-0"
-  >
+  <div class="min-h-screen flex flex-col flex-center bg-background px-4 pb-14 md:pb-0">
     <div class="text-center space-y-6 max-w-md">
       <div class="relative">
         <p class="text-[8rem] font-black text-primary/10 leading-none select-none">404</p>
@@ -15,7 +13,7 @@ const router = useRouter()
 
       <div class="space-y-2">
         <h1 class="text-2xl font-bold text-foreground">页面不存在</h1>
-        <p class="text-muted-foreground text-sm">您访问的页面已被移除或不存在，请返回继续浏览。</p>
+        <p class="text-muted-sm">您访问的页面已被移除或不存在，请返回继续浏览。</p>
       </div>
 
       <div class="flex flex-col sm:flex-row gap-3 justify-center">

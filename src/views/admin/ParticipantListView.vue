@@ -45,8 +45,7 @@ const columns: ColumnDef<ParticipantVO>[] = [
         : h(
             'div',
             {
-              class:
-                'h-10 w-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground',
+              class: 'h-10 w-10 rounded-full bg-muted flex-center text-muted-foreground',
             },
             '暂无',
           )

@@ -18,7 +18,6 @@ import type { PassengerFormData } from '@/api/account'
 
 defineProps<{
   open: boolean
-  editingPassengerId: string | null
   passengerError: string
 }>()
 
@@ -34,7 +33,7 @@ const emit = defineEmits<{
   <Dialog :open="open" @update:open="(val) => !val && emit('close')">
     <DialogContent class="max-w-md">
       <DialogHeader>
-        <DialogTitle>{{ editingPassengerId ? '编辑购票人' : '新建购票人' }}</DialogTitle>
+        <DialogTitle>新建购票人</DialogTitle>
       </DialogHeader>
       <div class="space-y-4">
         <div>

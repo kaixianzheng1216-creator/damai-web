@@ -104,23 +104,20 @@ const {
           </div>
         </div>
 
-        <div
-          v-if="searchQuery.isLoading.value"
-          class="flex min-h-[420px] items-center justify-center"
-        >
+        <div v-if="searchQuery.isLoading.value" class="flex min-h-[420px] flex-center">
           <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
         </div>
 
         <div
           v-else-if="searchQuery.isError.value"
-          class="flex min-h-[420px] items-center justify-center text-destructive"
+          class="flex min-h-[420px] flex-center text-destructive"
         >
           加载失败，请稍后重试
         </div>
 
         <div
           v-else-if="!searchQuery.data.value?.records.length"
-          class="flex min-h-[420px] items-center justify-center text-muted-foreground"
+          class="flex min-h-[420px] flex-center text-muted-foreground"
         >
           没有找到符合条件的演出
         </div>

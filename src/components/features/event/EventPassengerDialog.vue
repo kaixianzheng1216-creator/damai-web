@@ -63,10 +63,7 @@ const handleUpdateSlot = (index: number, value: unknown) => {
           @update:model-value="emit('update:passengerKeyword', String($event))"
         />
 
-        <div
-          v-if="!passengers.length"
-          class="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground"
-        >
+        <div v-if="!passengers.length" class="section-card-muted text-muted-sm">
           暂无可用购票人，请先到个人中心添加常用购票人。
         </div>
 
@@ -78,11 +75,7 @@ const handleUpdateSlot = (index: number, value: unknown) => {
           {{ passengerSlots.length }} 张票的实名绑定，请先到个人中心补充购票人。
         </div>
 
-        <div
-          v-for="slot in passengerSlots"
-          :key="slot.index"
-          class="rounded-xl border border-border p-4"
-        >
+        <div v-for="slot in passengerSlots" :key="slot.index" class="section-card">
           <p class="text-sm font-medium text-foreground">{{ slot.label }}</p>
           <div class="mt-3">
             <Select

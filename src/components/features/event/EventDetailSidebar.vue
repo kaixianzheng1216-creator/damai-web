@@ -7,12 +7,12 @@ defineProps<{
 </script>
 
 <template>
-  <aside class="self-start border border-border bg-background p-4 xl:p-5">
+  <aside class="self-start section-card xl:p-5">
     <p class="text-base font-semibold text-foreground">服务保障</p>
 
     <div class="mt-4 space-y-4">
       <div v-for="item in services" :key="item.id">
-        <p class="text-sm text-muted-foreground">{{ item.serviceGuarantee.name }}</p>
+        <p class="text-muted-sm">{{ item.serviceGuarantee.name }}</p>
         <p class="mt-1 text-sm leading-7 text-foreground">
           {{ item.serviceGuaranteeOption.name }}
         </p>

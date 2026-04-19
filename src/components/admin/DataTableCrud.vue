@@ -130,7 +130,7 @@ const handleLastPage = () => {
     >
       <div
         v-if="loading"
-        class="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-sm"
+        class="absolute inset-0 z-10 flex-center bg-background/60 backdrop-blur-sm"
       >
         <icon-lucide-loader2 class="h-6 w-6 animate-spin text-primary" />
       </div>
@@ -183,7 +183,7 @@ const handleLastPage = () => {
             <TableCell :colspan="table.getAllColumns().length" class="py-16 text-center">
               <div class="flex flex-col items-center gap-2">
                 <icon-lucide-inbox class="h-10 w-10 opacity-30" />
-                <span class="text-sm text-muted-foreground">暂无数据</span>
+                <span class="text-muted-sm">暂无数据</span>
               </div>
             </TableCell>
           </TableRow>
@@ -194,7 +194,7 @@ const handleLastPage = () => {
     <div v-else-if="viewMode === 'card'" class="relative space-y-4">
       <div
         v-if="loading"
-        class="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-sm"
+        class="absolute inset-0 z-10 flex-center bg-background/60 backdrop-blur-sm"
       >
         <icon-lucide-loader2 class="h-6 w-6 animate-spin text-primary" />
       </div>
@@ -226,7 +226,7 @@ const handleLastPage = () => {
           </div>
         </slot>
       </template>
-      <div v-else-if="!loading" class="flex min-h-[320px] items-center justify-center">
+      <div v-else-if="!loading" class="flex min-h-[320px] flex-center">
         <div class="text-center text-muted-foreground">
           <icon-lucide-inbox class="mx-auto h-12 w-12 mb-2" />
           <p>暂无数据</p>

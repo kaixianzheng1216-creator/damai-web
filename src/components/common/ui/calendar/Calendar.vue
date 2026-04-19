@@ -159,19 +159,19 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
         :year="ReuseYearTemplate"
       >
         <template v-if="layout === 'month-and-year'">
-          <div class="flex items-center justify-center gap-1">
+          <div class="flex-center gap-1">
             <ReuseMonthTemplate :date="date" />
             <ReuseYearTemplate :date="date" />
           </div>
         </template>
         <template v-else-if="layout === 'month-only'">
-          <div class="flex items-center justify-center gap-1">
+          <div class="flex-center gap-1">
             <ReuseMonthTemplate :date="date" />
             {{ formatter.custom(toDate(date), { year: 'numeric' }) }}
           </div>
         </template>
         <template v-else-if="layout === 'year-only'">
-          <div class="flex items-center justify-center gap-1">
+          <div class="flex-center gap-1">
             {{ formatter.custom(toDate(date), { month: 'short' }) }}
             <ReuseYearTemplate :date="date" />
           </div>

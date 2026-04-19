@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-background px-4">
+  <div class="min-h-screen flex-center bg-background px-4">
     <div class="w-full max-w-[400px] space-y-6">
       <div class="flex flex-col items-center space-y-2 text-center">
         <RouterLink to="/" class="flex items-center space-x-2 mb-2">
