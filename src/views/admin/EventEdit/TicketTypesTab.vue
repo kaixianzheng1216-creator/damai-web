@@ -35,6 +35,7 @@ import type {
   TicketTypeUpdateRequest,
   TicketTypeInventoryAdjustRequest,
 } from '@/api/event'
+import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 
 interface Props {
   eventId: string
@@ -48,6 +49,8 @@ const emit = defineEmits<{
 }>()
 
 const queryClient = useQueryClient()
+
+const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
 
 const selectedSessionId = ref<string | null>(null)
 const showTicketTypeDialog = ref(false)
@@ -208,18 +211,6 @@ const handleDeleteTicketType = (ticketType: TicketTypeVO) => {
   openConfirm('确认删除', `确认删除票种「${ticketType.name}」？`, () =>
     deleteTicketTypeMutation.mutate(ticketType.id),
   )
-}
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
 }
 
 const handleAdjustInventory = async () => {

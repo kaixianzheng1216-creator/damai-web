@@ -9,6 +9,7 @@ import TicketTypeDialog from './TicketTypeDialog.vue'
 import InventoryAdjustDialog from './InventoryAdjustDialog.vue'
 import TicketTypeCopyDialog from './TicketTypeCopyDialog.vue'
 import type { SessionVO, TicketTypeVO } from '@/api/event'
+import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 
 interface Props {
   eventId: string
@@ -29,17 +30,7 @@ const invalidateAll = () => {
 
 // ─── Confirm Dialog ───────────────────────────────────────
 
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
-}
+const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
 
 // ─── Dialog State ─────────────────────────────────────────
 

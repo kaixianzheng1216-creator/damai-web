@@ -21,9 +21,12 @@ import { fetchAdminCategories } from '@/api/event/category'
 import { formatPrice } from '@/utils/format'
 import type { EventVO } from '@/api/event'
 import { EVENT_STATUS } from '@/constants'
+import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 
 const router = useRouter()
 const queryClient = useQueryClient()
+
+const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
 
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -232,18 +235,6 @@ const handlePublish = (row: EventVO) => {
 
 const handleOffline = (row: EventVO) => {
   openConfirm('确认下线', `确认下线活动「${row.name}」？`, () => offlineMutation.mutate(row.id))
-}
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
 }
 </script>
 

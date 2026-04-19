@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui
 import { batchAddSessions, updateSession, deleteSession } from '@/api/event/event'
 import { formatDateTime, formatDateTimeLocalInput } from '@/utils/format'
 import type { SessionVO, SessionItem, SessionUpdateRequest } from '@/api/event'
+import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 
 interface Props {
   eventId: string
@@ -30,6 +31,8 @@ const emit = defineEmits<{
 }>()
 
 const queryClient = useQueryClient()
+
+const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
 
 const showSessionDialog = ref(false)
 const editingSessionId = ref<string | null>(null)
@@ -123,18 +126,6 @@ const handleDeleteSession = (session: SessionVO) => {
   openConfirm('确认删除', `确认删除场次「${session.name}」？`, () =>
     deleteSessionMutation.mutate(session.id),
   )
-}
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
 }
 </script>
 

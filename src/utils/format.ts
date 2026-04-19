@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
 
 export const formatPrice = (price: number): string => {
   return `¥${(price / 100).toFixed(2)}`
@@ -7,8 +8,7 @@ export const formatPrice = (price: number): string => {
 export const formatDateTimeWithWeekday = (dateTime: string | Date): string => {
   if (!dateTime) return ''
   const date = dayjs(dateTime)
-  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-  const weekday = weekdays[date.day()]
+  const weekday = date.locale('zh-cn').format('ddd')
   return `${date.year()}.${date.month() + 1}.${date.date()} ${weekday} ${date.format('HH:mm')}`
 }
 
