@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://192.168.10.1:18082",
+      "url": "http://26.166.16.133:18082",
       "description": "Generated server url"
     }
   ],
@@ -916,28 +916,34 @@
           "id": {
             "type": "integer",
             "format": "int64",
-            "description": "管理员ID"
+            "description": "管理员ID",
+            "refType": null
           },
           "username": {
             "type": "string",
-            "description": "用户名"
+            "description": "用户名",
+            "refType": null
           },
           "mobile": {
             "type": "string",
-            "description": "手机号"
+            "description": "手机号",
+            "refType": null
           },
           "avatarUrl": {
             "type": "string",
-            "description": "头像 URL"
+            "description": "头像 URL",
+            "refType": null
           },
           "status": {
             "type": "integer",
             "format": "int32",
-            "description": "账号状态：0 封禁，1 正常"
+            "description": "账号状态：0 封禁，1 正常",
+            "refType": null
           },
           "statusLabel": {
             "type": "string",
-            "description": "账号状态 Label"
+            "description": "账号状态 Label",
+            "refType": null
           }
         }
       },
@@ -962,41 +968,50 @@
           "page": {
             "type": "integer",
             "format": "int64",
-            "description": "当前页码"
+            "description": "当前页码",
+            "refType": null
           },
           "size": {
             "type": "integer",
             "format": "int64",
-            "description": "每页大小"
+            "description": "每页大小",
+            "refType": null
           },
           "sortField": {
             "type": "string",
-            "description": "排序字段"
+            "description": "排序字段",
+            "refType": null
           },
           "sortOrder": {
             "type": "string",
-            "description": "排序方向"
+            "description": "排序方向",
+            "refType": null
           },
           "username": {
             "type": "string",
-            "description": "用户名"
+            "description": "用户名",
+            "refType": null
           },
           "mobile": {
             "type": "string",
-            "description": "手机号"
+            "description": "手机号",
+            "refType": null
           },
           "status": {
             "type": "integer",
             "format": "int32",
-            "description": "账号状态：0 封禁，1 正常"
+            "description": "账号状态：0 封禁，1 正常",
+            "refType": null
           },
           "validPage": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "refType": null
           },
           "validSize": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "refType": null
           }
         }
       },
@@ -1021,29 +1036,34 @@
           "pageNumber": {
             "type": "integer",
             "format": "int64",
-            "description": "当前页码"
+            "description": "当前页码",
+            "refType": null
           },
           "pageSize": {
             "type": "integer",
             "format": "int64",
-            "description": "每页大小"
+            "description": "每页大小",
+            "refType": null
           },
           "totalRow": {
             "type": "integer",
             "format": "int64",
-            "description": "总数量"
+            "description": "总数量",
+            "refType": null
           },
           "totalPage": {
             "type": "integer",
             "format": "int64",
-            "description": "总页数"
+            "description": "总页数",
+            "refType": null
           },
           "records": {
             "type": "array",
             "description": "数据列表",
             "items": {
               "$ref": "#/components/schemas/AdminVO"
-            }
+            },
+            "refType": "AdminVO"
           }
         }
       }

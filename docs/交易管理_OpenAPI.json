@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://192.168.10.1:18084",
+      "url": "http://26.166.16.133:18084",
       "description": "Generated server url"
     }
   ],
@@ -274,6 +274,42 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponseOrderStatusVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/ticket-orders/purchase-counts": {
+      "get": {
+        "tags": [
+          "订单前台接口"
+        ],
+        "summary": "查询当前用户各票档已购数量",
+        "operationId": "getUserPurchaseCounts",
+        "parameters": [
+          {
+            "name": "ticketTypeIds",
+            "in": "query",
+            "description": "票档 ID 列表",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseMapLongInteger"
                 }
               }
             }
@@ -840,6 +876,24 @@
           }
         }
       },
+      "ApiResponseMapLongInteger": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      },
       "TicketOrderPageRequest": {
         "type": "object",
         "description": "订单分页查询请求",
@@ -872,11 +926,11 @@
             "format": "int32",
             "description": "订单状态"
           },
-          "validPage": {
+          "validSize": {
             "type": "integer",
             "format": "int64"
           },
-          "validSize": {
+          "validPage": {
             "type": "integer",
             "format": "int64"
           }

@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://192.168.10.1:18083",
+      "url": "http://26.166.16.133:18083",
       "description": "Generated server url"
     }
   ],
@@ -1552,6 +1552,68 @@
         }
       }
     },
+    "/front/user-follows/participants": {
+      "post": {
+        "tags": [
+          "用户关注前台接口"
+        ],
+        "summary": "关注艺人",
+        "operationId": "followParticipant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserFollowParticipantRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/user-follows/events": {
+      "post": {
+        "tags": [
+          "用户关注前台接口"
+        ],
+        "summary": "关注活动",
+        "operationId": "followEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserFollowEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/venues": {
       "get": {
         "tags": [
@@ -2308,6 +2370,162 @@
         }
       }
     },
+    "/front/user-follows/participants/{participantId}/check": {
+      "get": {
+        "tags": [
+          "用户关注前台接口"
+        ],
+        "summary": "检查是否已关注艺人",
+        "operationId": "isFollowedParticipant",
+        "parameters": [
+          {
+            "name": "participantId",
+            "in": "path",
+            "description": "艺人 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBoolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/user-follows/participants/page": {
+      "get": {
+        "tags": [
+          "用户关注前台接口"
+        ],
+        "summary": "获取我关注的艺人分页列表",
+        "operationId": "getFollowedParticipantPage",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseUserFollowParticipantVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/user-follows/events/{eventId}/check": {
+      "get": {
+        "tags": [
+          "用户关注前台接口"
+        ],
+        "summary": "检查是否已关注活动",
+        "operationId": "isFollowedEvent",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBoolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/user-follows/events/page": {
+      "get": {
+        "tags": [
+          "用户关注前台接口"
+        ],
+        "summary": "获取我关注的活动分页列表",
+        "operationId": "getFollowedEventPage",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseUserFollowEventVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/front/participants/{id}": {
       "get": {
         "tags": [
@@ -2334,6 +2552,47 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponseParticipantVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/participants/{id}/events": {
+      "get": {
+        "tags": [
+          "参与方前台接口"
+        ],
+        "summary": "分页获取参与方参与的活动列表",
+        "operationId": "getParticipantEventPage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "参与方 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ParticipantEventPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseEventVO"
                 }
               }
             }
@@ -2813,6 +3072,72 @@
         }
       }
     },
+    "/front/user-follows/participants/{participantId}": {
+      "delete": {
+        "tags": [
+          "用户关注前台接口"
+        ],
+        "summary": "取消关注艺人",
+        "operationId": "unfollowParticipant",
+        "parameters": [
+          {
+            "name": "participantId",
+            "in": "path",
+            "description": "艺人 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/user-follows/events/{eventId}": {
+      "delete": {
+        "tags": [
+          "用户关注前台接口"
+        ],
+        "summary": "取消关注活动",
+        "operationId": "unfollowEvent",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/events/{id}/services/{eventServiceId}": {
       "delete": {
         "tags": [
@@ -3262,6 +3587,34 @@
             "format": "date-time"
           }
         }
+      },
+      "UserFollowParticipantRequest": {
+        "type": "object",
+        "description": "关注艺人请求",
+        "properties": {
+          "participantId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "艺人 ID"
+          }
+        },
+        "required": [
+          "participantId"
+        ]
+      },
+      "UserFollowEventRequest": {
+        "type": "object",
+        "description": "关注活动请求",
+        "properties": {
+          "eventId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          }
+        },
+        "required": [
+          "eventId"
+        ]
       },
       "VenueCreateRequest": {
         "type": "object",
@@ -3781,7 +4134,7 @@
           }
         }
       },
-      "ApiResponseParticipantVO": {
+      "ApiResponseBoolean": {
         "type": "object",
         "properties": {
           "code": {
@@ -3791,7 +4144,54 @@
             "type": "string"
           },
           "data": {
-            "$ref": "#/components/schemas/ParticipantVO"
+            "type": "boolean"
+          }
+        }
+      },
+      "ApiResponsePageResponseUserFollowParticipantVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseUserFollowParticipantVO"
+          }
+        }
+      },
+      "PageResponseUserFollowParticipantVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/UserFollowParticipantVO"
+            }
           }
         }
       },
@@ -3811,6 +4211,318 @@
           "avatarUrl": {
             "type": "string",
             "description": "头像 URL"
+          },
+          "followCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关注数"
+          }
+        }
+      },
+      "UserFollowParticipantVO": {
+        "type": "object",
+        "description": "用户关注艺人 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关注记录 ID"
+          },
+          "participantId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "艺人 ID"
+          },
+          "participant": {
+            "$ref": "#/components/schemas/ParticipantVO",
+            "description": "艺人信息"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "关注时间"
+          }
+        }
+      },
+      "ApiResponsePageResponseUserFollowEventVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseUserFollowEventVO"
+          }
+        }
+      },
+      "EventParticipantVO": {
+        "type": "object",
+        "description": "活动参与方 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动参与方 ID"
+          },
+          "participant": {
+            "$ref": "#/components/schemas/ParticipantVO",
+            "description": "参与方信息"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          }
+        }
+      },
+      "EventVO": {
+        "type": "object",
+        "description": "活动 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          },
+          "seriesId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "系列 ID"
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "分类 ID"
+          },
+          "categoryNameSnapshot": {
+            "type": "string",
+            "description": "分类名称快照"
+          },
+          "venueId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场馆 ID"
+          },
+          "venueNameSnapshot": {
+            "type": "string",
+            "description": "场馆名称快照"
+          },
+          "cityId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "城市 ID"
+          },
+          "cityNameSnapshot": {
+            "type": "string",
+            "description": "城市名称快照"
+          },
+          "name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "coverUrl": {
+            "type": "string",
+            "description": "活动封面图 URL"
+          },
+          "minPrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "最低票价(分)"
+          },
+          "maxPrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "最高票价(分)"
+          },
+          "firstSessionStartAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "最早场次开始时间"
+          },
+          "lastSessionEndAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "最晚场次结束时间"
+          },
+          "recommendWeight": {
+            "type": "integer",
+            "format": "int32",
+            "description": "推荐权重"
+          },
+          "followCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关注数"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "活动状态"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "活动状态 Label"
+          },
+          "participants": {
+            "type": "array",
+            "description": "参与方列表",
+            "items": {
+              "$ref": "#/components/schemas/EventParticipantVO"
+            }
+          }
+        }
+      },
+      "PageResponseUserFollowEventVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/UserFollowEventVO"
+            }
+          }
+        }
+      },
+      "UserFollowEventVO": {
+        "type": "object",
+        "description": "用户关注活动 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关注记录 ID"
+          },
+          "eventId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          },
+          "event": {
+            "$ref": "#/components/schemas/EventVO",
+            "description": "活动信息"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "关注时间"
+          }
+        }
+      },
+      "ApiResponseParticipantVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ParticipantVO"
+          }
+        }
+      },
+      "ParticipantEventPageRequest": {
+        "type": "object",
+        "description": "参与方活动分页查询请求",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "sortField": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "排序方向"
+          },
+          "validSize": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validPage": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponsePageResponseEventVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseEventVO"
+          }
+        }
+      },
+      "PageResponseEventVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/EventVO"
+            }
           }
         }
       },
@@ -3894,26 +4606,6 @@
           }
         }
       },
-      "EventParticipantVO": {
-        "type": "object",
-        "description": "活动参与方 VO",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64",
-            "description": "活动参与方 ID"
-          },
-          "participant": {
-            "$ref": "#/components/schemas/ParticipantVO",
-            "description": "参与方信息"
-          },
-          "sortOrder": {
-            "type": "integer",
-            "format": "int32",
-            "description": "排序值"
-          }
-        }
-      },
       "EventServiceGuaranteeVO": {
         "type": "object",
         "description": "活动服务保障 VO",
@@ -3940,91 +4632,6 @@
           "serviceGuaranteeOption": {
             "$ref": "#/components/schemas/ServiceGuaranteeOptionVO",
             "description": "服务选项信息"
-          }
-        }
-      },
-      "EventVO": {
-        "type": "object",
-        "description": "活动 VO",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64",
-            "description": "活动 ID"
-          },
-          "seriesId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "系列 ID"
-          },
-          "categoryId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "分类 ID"
-          },
-          "categoryNameSnapshot": {
-            "type": "string",
-            "description": "分类名称快照"
-          },
-          "venueId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "场馆 ID"
-          },
-          "venueNameSnapshot": {
-            "type": "string",
-            "description": "场馆名称快照"
-          },
-          "cityId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "城市 ID"
-          },
-          "cityNameSnapshot": {
-            "type": "string",
-            "description": "城市名称快照"
-          },
-          "name": {
-            "type": "string",
-            "description": "活动名称"
-          },
-          "coverUrl": {
-            "type": "string",
-            "description": "活动封面图 URL"
-          },
-          "minPrice": {
-            "type": "integer",
-            "format": "int32",
-            "description": "最低票价(分)"
-          },
-          "maxPrice": {
-            "type": "integer",
-            "format": "int32",
-            "description": "最高票价(分)"
-          },
-          "firstSessionStartAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "最早场次开始时间"
-          },
-          "lastSessionEndAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "最晚场次结束时间"
-          },
-          "recommendWeight": {
-            "type": "integer",
-            "format": "int32",
-            "description": "推荐权重"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "description": "活动状态"
-          },
-          "statusLabel": {
-            "type": "string",
-            "description": "活动状态 Label"
           }
         }
       },
@@ -4253,7 +4860,7 @@
           },
           "name": {
             "type": "string",
-            "description": "活动名称关键词"
+            "description": "活动、场馆、艺人关键词"
           },
           "cityId": {
             "type": "integer",
@@ -4283,62 +4890,20 @@
           "sortType": {
             "type": "integer",
             "format": "int32",
-            "description": "排序方式：0 推荐排序（权重+更新时间），1 最近开场，2 最新上架"
+            "description": "排序方式：0 推荐排序，1 最近开场，2 最新上架"
           },
-          "validPage": {
+          "status": {
             "type": "integer",
-            "format": "int64"
+            "format": "int32",
+            "description": "活动状态：0 草稿，1 已发布，2 已下线"
           },
           "validSize": {
             "type": "integer",
             "format": "int64"
-          }
-        }
-      },
-      "ApiResponsePageResponseEventVO": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
           },
-          "message": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/PageResponseEventVO"
-          }
-        }
-      },
-      "PageResponseEventVO": {
-        "type": "object",
-        "description": "分页响应基类",
-        "properties": {
-          "pageNumber": {
+          "validPage": {
             "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "totalRow": {
-            "type": "integer",
-            "format": "int64",
-            "description": "总数量"
-          },
-          "totalPage": {
-            "type": "integer",
-            "format": "int64",
-            "description": "总页数"
-          },
-          "records": {
-            "type": "array",
-            "description": "数据列表",
-            "items": {
-              "$ref": "#/components/schemas/EventVO"
-            }
+            "format": "int64"
           }
         }
       },
@@ -4589,11 +5154,11 @@
             "type": "string",
             "description": "区县"
           },
-          "validPage": {
+          "validSize": {
             "type": "integer",
             "format": "int64"
           },
-          "validSize": {
+          "validPage": {
             "type": "integer",
             "format": "int64"
           }
@@ -4703,11 +5268,11 @@
             "type": "string",
             "description": "服务名关键词"
           },
-          "validPage": {
+          "validSize": {
             "type": "integer",
             "format": "int64"
           },
-          "validSize": {
+          "validPage": {
             "type": "integer",
             "format": "int64"
           }
@@ -4832,11 +5397,11 @@
             "type": "string",
             "description": "系列名称关键词"
           },
-          "validPage": {
+          "validSize": {
             "type": "integer",
             "format": "int64"
           },
-          "validSize": {
+          "validPage": {
             "type": "integer",
             "format": "int64"
           }
@@ -4932,11 +5497,11 @@
             "type": "string",
             "description": "参与方名称关键词"
           },
-          "validPage": {
+          "validSize": {
             "type": "integer",
             "format": "int64"
           },
-          "validSize": {
+          "validPage": {
             "type": "integer",
             "format": "int64"
           }
@@ -5076,11 +5641,11 @@
             "type": "string",
             "description": "须知名关键词"
           },
-          "validPage": {
+          "validSize": {
             "type": "integer",
             "format": "int64"
           },
-          "validSize": {
+          "validPage": {
             "type": "integer",
             "format": "int64"
           }
@@ -5173,11 +5738,11 @@
             "type": "string",
             "description": "城市名称关键词"
           },
-          "validPage": {
+          "validSize": {
             "type": "integer",
             "format": "int64"
           },
-          "validSize": {
+          "validPage": {
             "type": "integer",
             "format": "int64"
           }
@@ -5256,11 +5821,11 @@
             "type": "string",
             "description": "分类名称关键词"
           },
-          "validPage": {
+          "validSize": {
             "type": "integer",
             "format": "int64"
           },
-          "validSize": {
+          "validPage": {
             "type": "integer",
             "format": "int64"
           }
@@ -5355,11 +5920,11 @@
           "title": {
             "type": "string"
           },
-          "validPage": {
+          "validSize": {
             "type": "integer",
             "format": "int64"
           },
-          "validSize": {
+          "validPage": {
             "type": "integer",
             "format": "int64"
           }

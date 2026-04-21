@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://192.168.10.1:18085",
+      "url": "http://26.166.16.133:18085",
       "description": "Generated server url"
     }
   ],
@@ -149,6 +149,37 @@
         ],
         "summary": "我的电子票分页列表",
         "operationId": "getMyTicketPage",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TicketPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseTicketVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/tickets/page": {
+      "get": {
+        "tags": [
+          "电子票管理接口"
+        ],
+        "summary": "电子票分页列表",
+        "operationId": "getTicketPage",
         "parameters": [
           {
             "name": "request",
@@ -356,6 +387,16 @@
             "type": "integer",
             "format": "int64",
             "description": "订单 ID"
+          },
+          "eventId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "活动 ID"
+          },
+          "sessionId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场次 ID"
           },
           "status": {
             "type": "integer",
