@@ -176,7 +176,6 @@ declare module 'vue' {
     PopoverAnchor: typeof import('./../components/common/ui/popover/PopoverAnchor.vue')['default']
     PopoverContent: typeof import('./../components/common/ui/popover/PopoverContent.vue')['default']
     PopoverTrigger: typeof import('./../components/common/ui/popover/PopoverTrigger.vue')['default']
-    ProfileConfirmDialog: typeof import('./../components/features/profile/ProfileConfirmDialog.vue')['default']
     ProfileFollowedEventsSection: typeof import('./../components/features/profile/ProfileFollowedEventsSection.vue')['default']
     ProfileFollowedParticipantsSection: typeof import('./../components/features/profile/ProfileFollowedParticipantsSection.vue')['default']
     ProfileIdentityDialog: typeof import('./../components/features/profile/ProfileIdentityDialog.vue')['default']
