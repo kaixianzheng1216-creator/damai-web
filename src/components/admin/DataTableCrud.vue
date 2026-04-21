@@ -226,7 +226,7 @@ const handleLastPage = () => {
           </div>
         </slot>
       </template>
-      <div v-else-if="!loading" class="flex min-h-[320px] flex-center">
+      <div v-else-if="!loading" class="flex min-h-80 flex-center">
         <div class="text-center text-muted-foreground">
           <icon-lucide-inbox class="mx-auto h-12 w-12 mb-2" />
           <p>暂无数据</p>

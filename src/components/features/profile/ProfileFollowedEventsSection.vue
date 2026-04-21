@@ -74,6 +74,7 @@ const columns: ColumnDef<UserFollowEventVO>[] = [
     accessorKey: 'createAt',
     header: '关注时间',
     size: 180,
+    cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '-'),
   },
   {
     id: 'actions',
@@ -85,7 +86,10 @@ const columns: ColumnDef<UserFollowEventVO>[] = [
         {
           variant: 'outline',
           size: 'sm',
-          onClick: () => emit('toggle-follow', row.original.eventId),
+          onClick: (e: Event) => {
+            e.stopPropagation()
+            emit('toggle-follow', row.original.eventId)
+          },
         },
         () => '取消关注',
       ),

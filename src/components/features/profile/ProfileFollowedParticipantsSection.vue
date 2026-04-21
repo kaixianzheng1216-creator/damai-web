@@ -8,6 +8,7 @@ import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar'
 import { Card, CardHeader, CardTitle } from '@/components/common/ui/card'
 import { Button } from '@/components/common/ui/button'
+import { formatDateTime } from '@/utils/format'
 
 defineProps<{
   paginatedParticipants: UserFollowParticipantVO[]
@@ -81,6 +82,7 @@ const columns: ColumnDef<UserFollowParticipantVO>[] = [
     accessorKey: 'createAt',
     header: '关注时间',
     size: 180,
+    cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '-'),
   },
   {
     id: 'actions',
@@ -92,7 +94,10 @@ const columns: ColumnDef<UserFollowParticipantVO>[] = [
         {
           variant: 'outline',
           size: 'sm',
-          onClick: () => emit('toggle-follow', row.original.participantId),
+          onClick: (e: Event) => {
+            e.stopPropagation()
+            emit('toggle-follow', row.original.participantId)
+          },
         },
         () => '取消关注',
       ),
@@ -122,8 +127,8 @@ const columns: ColumnDef<UserFollowParticipantVO>[] = [
           class="cursor-pointer hover:border-primary/50 transition-colors"
           @click="handleCardClick(item)"
         >
-          <CardHeader v-if="item.participant" class="pb-3">
-            <div class="flex items-start justify-between gap-2">
+          <CardHeader v-if="item.participant" class="py-3">
+            <div class="flex items-center justify-between gap-2 w-full">
               <div class="flex items-center gap-3">
                 <Avatar class="h-12 w-12">
                   <AvatarImage :src="item.participant.avatarUrl" :alt="item.participant.name" />

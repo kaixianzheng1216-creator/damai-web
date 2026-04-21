@@ -52,7 +52,7 @@ const columns: ColumnDef<PassengerItem>[] = [
           Button,
           {
             size: 'sm',
-            variant: 'destructive',
+            variant: 'outline',
             class: 'h-7 px-2',
             onClick: () => emit('delete', row.original.id),
           },
@@ -89,8 +89,16 @@ const columns: ColumnDef<PassengerItem>[] = [
     <template #cardTemplate="{ data }">
       <div class="space-y-4">
         <Card v-for="passenger in data" :key="passenger.id">
-          <CardHeader class="pb-1.5">
+          <CardHeader class="py-1.5 flex flex-row items-center justify-between">
             <CardTitle class="text-base">{{ passenger.name }}</CardTitle>
+            <Button
+              size="sm"
+              variant="destructive"
+              class="h-7 px-2 shrink-0"
+              @click="emit('delete', passenger.id)"
+            >
+              删除
+            </Button>
           </CardHeader>
           <CardContent class="space-y-1">
             <div class="flex items-center gap-2">
@@ -100,16 +108,6 @@ const columns: ColumnDef<PassengerItem>[] = [
             <div class="flex items-center gap-2">
               <span class="text-muted-foreground text-sm">证件号:</span>
               <span class="text-sm">{{ passenger.certNo }}</span>
-            </div>
-            <div class="flex items-center gap-2 pt-1">
-              <Button
-                size="sm"
-                variant="destructive"
-                class="h-7 px-2"
-                @click="emit('delete', passenger.id)"
-              >
-                删除
-              </Button>
             </div>
           </CardContent>
         </Card>
