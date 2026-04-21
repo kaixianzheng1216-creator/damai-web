@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { h, computed } from 'vue'
+import { h } from 'vue'
 import { useRouter } from 'vue-router'
-import { useWindowSize } from '@vueuse/core'
 import { type ColumnDef } from '@tanstack/vue-table'
 import type { OrderItem } from '@/api/account'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
@@ -13,9 +12,7 @@ import { ORDER_FILTER_OPTIONS, type OrderFilterKey } from '@/constants'
 import { getOrderStatusBadgeClass } from '@/utils/statusMappers'
 
 const router = useRouter()
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 1024)
-const viewMode = computed(() => (isMobile.value ? 'card' : 'table'))
+const { viewMode } = useViewMode()
 
 const handleOrderClick = (order: OrderItem) => {
   router.push(`/checkout/${order.id}`)

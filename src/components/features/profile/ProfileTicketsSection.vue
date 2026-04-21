@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { h, computed } from 'vue'
+import { h } from 'vue'
 import { useRouter } from 'vue-router'
-import { useWindowSize } from '@vueuse/core'
 import { type ColumnDef } from '@tanstack/vue-table'
 import type { TicketVO } from '@/api/ticket'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
@@ -24,9 +23,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 1024)
-const viewMode = computed(() => (isMobile.value ? 'card' : 'table'))
+const { viewMode } = useViewMode()
 
 const viewTicketDetail = (ticketId: string) => {
   router.push(`/ticket/${ticketId}`)

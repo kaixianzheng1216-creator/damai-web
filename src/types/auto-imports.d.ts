@@ -362,6 +362,9 @@ declare global {
   } from 'vue'
   import('vue')
   // @ts-ignore
+  export type { ViewMode } from '../composables/useViewMode'
+  import('../composables/useViewMode')
+  // @ts-ignore
   export type { RequestConfig, PaginatedResponse } from '../api/types'
   import('../api/types')
   // @ts-ignore

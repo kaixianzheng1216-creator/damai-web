@@ -2,7 +2,6 @@
 import { h } from 'vue'
 import { useRouter } from 'vue-router'
 import { type ColumnDef } from '@tanstack/vue-table'
-import { useViewMode } from '@/composables/useViewMode'
 import type { UserFollowParticipantVO } from '@/api/event'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar'
@@ -29,10 +28,6 @@ const { viewMode } = useViewMode()
 
 const viewParticipantDetail = (participantId: string) => {
   router.push(`/participant/${participantId}`)
-}
-
-const handleCardClick = (item: UserFollowParticipantVO) => {
-  viewParticipantDetail(item.participantId)
 }
 
 const handleUnfollowClick = (participantId: string) => {
@@ -123,7 +118,6 @@ const columns: ColumnDef<UserFollowParticipantVO>[] = [
           v-for="item in data"
           :key="item.id"
           class="cursor-pointer hover:border-primary/50 transition-colors"
-          @click="handleCardClick(item)"
         >
           <CardHeader v-if="item.participant" class="py-3">
             <div class="flex items-center justify-between gap-2 w-full">

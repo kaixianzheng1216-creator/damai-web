@@ -2,7 +2,6 @@
 import { h } from 'vue'
 import { useRouter } from 'vue-router'
 import { type ColumnDef } from '@tanstack/vue-table'
-import { useViewMode } from '@/composables/useViewMode'
 import type { UserFollowEventVO } from '@/api/event'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
@@ -28,12 +27,6 @@ const { viewMode } = useViewMode()
 
 const viewEventDetail = (eventId: string) => {
   router.push(`/detail/${eventId}`)
-}
-
-const handleCardClick = (item: UserFollowEventVO) => {
-  if (item.event) {
-    viewEventDetail(item.event.id)
-  }
 }
 
 const handleUnfollowClick = (eventId: string) => {
@@ -112,7 +105,6 @@ const columns: ColumnDef<UserFollowEventVO>[] = [
           v-for="item in data"
           :key="item.id"
           class="cursor-pointer hover:border-primary/50 transition-colors"
-          @click="handleCardClick(item)"
         >
           <CardHeader v-if="item.event" class="pb-3">
             <div class="flex items-start justify-between gap-2">

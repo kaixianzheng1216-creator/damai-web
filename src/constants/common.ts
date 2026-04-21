@@ -1,5 +1,6 @@
 export const COMMON_CONFIG = {
   DEFAULT_CITY: '北京',
+  TABLET_BREAKPOINT: 1024,
 } as const
 
 export const AVATAR_PLACEHOLDERS = {

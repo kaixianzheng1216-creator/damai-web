@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ColumnDef, SortingState } from '@tanstack/vue-table'
 import { FlexRender, getCoreRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
+import type { ViewMode } from '@/composables/useViewMode'
 import { Button } from '@/components/common/ui/button'
 import { Label } from '@/components/common/ui/label'
 import {
@@ -31,7 +32,7 @@ interface Props<TData> {
   pageSize?: number
   totalRow?: number
   showCreateButton?: boolean
-  viewMode?: 'table' | 'card'
+  viewMode?: ViewMode
   showPagination?: boolean
 }
 

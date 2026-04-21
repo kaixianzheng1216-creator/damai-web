@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { h } from 'vue'
 import { type ColumnDef } from '@tanstack/vue-table'
-import { useViewMode } from '@/composables/useViewMode'
 import type { PassengerItem } from '@/api/account'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
