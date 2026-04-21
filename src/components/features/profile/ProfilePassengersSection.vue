@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { h, computed } from 'vue'
+import { h } from 'vue'
 import { type ColumnDef } from '@tanstack/vue-table'
-import { useWindowSize } from '@vueuse/core'
+import { useViewMode } from '@/composables/useViewMode'
 import type { PassengerItem } from '@/api/account'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
@@ -17,9 +17,7 @@ defineProps<{
   passengerTotalRow?: number
 }>()
 
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 1024)
-const viewMode = computed(() => (isMobile.value ? 'card' : 'table'))
+const { viewMode } = useViewMode()
 
 const emit = defineEmits<{
   create: []
@@ -52,7 +50,7 @@ const columns: ColumnDef<PassengerItem>[] = [
           Button,
           {
             size: 'sm',
-            variant: 'outline',
+            variant: 'destructive',
             class: 'h-7 px-2',
             onClick: () => emit('delete', row.original.id),
           },

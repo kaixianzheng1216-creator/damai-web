@@ -22,14 +22,11 @@ export const PROFILE_SECTIONS: ProfileSectionOption[] = [
   { key: 'passengers', label: '常用购票人', group: 'account', icon: 'users' },
 ]
 
-export const HEADER_PROFILE_MENU_ITEMS: Array<{ section: ProfileSectionKey; label: string }> = [
-  { section: 'orders', label: '订单管理' },
-  { section: 'tickets', label: '我的电子票' },
-  { section: 'followed-events', label: '我的收藏' },
-  { section: 'followed-participants', label: '我的关注' },
-  { section: 'info', label: '个人信息' },
-  { section: 'passengers', label: '常用购票人' },
-]
+export const HEADER_PROFILE_MENU_ITEMS: Array<{ section: ProfileSectionKey; label: string }> =
+  PROFILE_SECTIONS.map(({ key, label }) => ({
+    section: key,
+    label,
+  }))
 
 export const PASSENGER_CERT_TYPES = ['身份证'] as const
 

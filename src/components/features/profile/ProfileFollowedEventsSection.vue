@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { h, computed } from 'vue'
+import { h } from 'vue'
 import { useRouter } from 'vue-router'
-import { useWindowSize } from '@vueuse/core'
 import { type ColumnDef } from '@tanstack/vue-table'
+import { useViewMode } from '@/composables/useViewMode'
 import type { UserFollowEventVO } from '@/api/event'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
@@ -24,9 +24,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 1024)
-const viewMode = computed(() => (isMobile.value ? 'card' : 'table'))
+const { viewMode } = useViewMode()
 
 const viewEventDetail = (eventId: string) => {
   router.push(`/detail/${eventId}`)
@@ -58,10 +56,7 @@ const columns: ColumnDef<UserFollowEventVO>[] = [
     accessorKey: 'event.firstSessionStartAt',
     header: '时间',
     size: 180,
-    cell: ({ row }) =>
-      row.original.event?.firstSessionStartAt
-        ? formatDateTime(row.original.event.firstSessionStartAt)
-        : '-',
+    cell: ({ row }) => formatDateTime(row.original.event?.firstSessionStartAt, '-'),
   },
   {
     accessorKey: 'event.minPrice',
@@ -74,7 +69,7 @@ const columns: ColumnDef<UserFollowEventVO>[] = [
     accessorKey: 'createAt',
     header: '关注时间',
     size: 180,
-    cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '-'),
+    cell: ({ row }) => formatDateTime(row.original.createAt, '-'),
   },
   {
     id: 'actions',
@@ -88,7 +83,7 @@ const columns: ColumnDef<UserFollowEventVO>[] = [
           size: 'sm',
           onClick: (e: Event) => {
             e.stopPropagation()
-            emit('toggle-follow', row.original.eventId)
+            handleUnfollowClick(row.original.eventId)
           },
         },
         () => '取消关注',

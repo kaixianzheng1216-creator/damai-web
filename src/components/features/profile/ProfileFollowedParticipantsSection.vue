@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { h, computed } from 'vue'
+import { h } from 'vue'
 import { useRouter } from 'vue-router'
-import { useWindowSize } from '@vueuse/core'
 import { type ColumnDef } from '@tanstack/vue-table'
+import { useViewMode } from '@/composables/useViewMode'
 import type { UserFollowParticipantVO } from '@/api/event'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar'
@@ -25,9 +25,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 1024)
-const viewMode = computed(() => (isMobile.value ? 'card' : 'table'))
+const { viewMode } = useViewMode()
 
 const viewParticipantDetail = (participantId: string) => {
   router.push(`/participant/${participantId}`)
@@ -82,7 +80,7 @@ const columns: ColumnDef<UserFollowParticipantVO>[] = [
     accessorKey: 'createAt',
     header: '关注时间',
     size: 180,
-    cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '-'),
+    cell: ({ row }) => formatDateTime(row.original.createAt, '-'),
   },
   {
     id: 'actions',
@@ -96,7 +94,7 @@ const columns: ColumnDef<UserFollowParticipantVO>[] = [
           size: 'sm',
           onClick: (e: Event) => {
             e.stopPropagation()
-            emit('toggle-follow', row.original.participantId)
+            handleUnfollowClick(row.original.participantId)
           },
         },
         () => '取消关注',
