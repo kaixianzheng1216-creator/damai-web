@@ -8,6 +8,8 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
 } from '@/components/common/ui/number-field'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar'
+import { Button } from '@/components/common/ui/button'
 
 defineProps<{
   detail: EventDetailVO
@@ -25,6 +27,8 @@ defineProps<{
   availableTicketTypes: TicketTypeVO[]
   selectedTicketType?: TicketTypeVO
   seriesEvents: SeriesEventVO[]
+  isFollowed?: boolean
+  isFollowLoading?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -33,6 +37,7 @@ const emit = defineEmits<{
   'update:selectedTicketTypeId': [value: string | null]
   'update:ticketQuantity': [value: number]
   'buy-now': []
+  'toggle-follow': []
 }>()
 </script>
 
@@ -50,9 +55,21 @@ const emit = defineEmits<{
     </div>
 
     <div class="min-w-0">
-      <h1 class="text-xl font-medium leading-tight text-foreground xl:text-[28px]">
-        {{ detail.event.name }}
-      </h1>
+      <div class="flex items-start justify-between gap-4">
+        <h1 class="flex-1 text-xl font-medium leading-tight text-foreground xl:text-[28px]">
+          {{ detail.event.name }}
+        </h1>
+        <Button
+          :variant="isFollowed ? 'default' : 'outline'"
+          size="sm"
+          :disabled="isFollowLoading"
+          @click="emit('toggle-follow')"
+        >
+          <icon-lucide-heart v-if="isFollowed" class="mr-1 h-4 w-4 fill-current" />
+          <icon-lucide-heart v-else class="mr-1 h-4 w-4" />
+          {{ isFollowed ? '已关注' : '关注' }}
+        </Button>
+      </div>
 
       <div class="mt-5 space-y-3">
         <p class="flex items-center gap-1.5 text-sm text-foreground">
@@ -65,6 +82,29 @@ const emit = defineEmits<{
           <icon-lucide-map-pin class="h-4 w-4 shrink-0 text-muted-foreground" />
           {{ detail.event.cityNameSnapshot }} | {{ detail.event.venueNameSnapshot }}
         </p>
+        <div
+          v-if="detail.participants && detail.participants.length > 0"
+          class="flex items-center gap-2"
+        >
+          <icon-lucide-users class="h-4 w-4 shrink-0 text-muted-foreground" />
+          <div class="flex items-center gap-3">
+            <RouterLink
+              v-for="participant in detail.participants"
+              :key="participant.id"
+              :to="`/participant/${participant.participant.id}`"
+              class="flex items-center gap-1.5 transition-colors hover:text-primary"
+            >
+              <Avatar class="h-7 w-7">
+                <AvatarImage
+                  :src="participant.participant.avatarUrl"
+                  :alt="participant.participant.name"
+                />
+                <AvatarFallback>{{ participant.participant.name.charAt(0) }}</AvatarFallback>
+              </Avatar>
+              <span class="text-sm text-foreground">{{ participant.participant.name }}</span>
+            </RouterLink>
+          </div>
+        </div>
       </div>
 
       <div class="mt-6 space-y-5">

@@ -28,6 +28,12 @@ const router = createRouter({
           meta: { title: '活动详情' },
         },
         {
+          path: 'participant/:id',
+          name: 'participant-detail',
+          component: () => import('@/views/participant/ParticipantDetailView.vue'),
+          meta: { title: '参与方详情' },
+        },
+        {
           path: 'checkout/:id',
           name: 'checkout',
           component: () => import('@/views/trade/CheckoutView.vue'),

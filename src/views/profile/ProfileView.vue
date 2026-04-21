@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import ProfilePassengerDialog from '@/components/features/profile/ProfilePassengerDialog.vue'
 import ProfilePassengersSection from '@/components/features/profile/ProfilePassengersSection.vue'
+import ProfileFollowedEventsSection from '@/components/features/profile/ProfileFollowedEventsSection.vue'
+import ProfileFollowedParticipantsSection from '@/components/features/profile/ProfileFollowedParticipantsSection.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import ProfileInfoSection from '@/components/features/profile/ProfileInfoSection.vue'
 import ProfileOrdersSection from '@/components/features/profile/ProfileOrdersSection.vue'
@@ -63,6 +65,7 @@ const {
   closeDeletePassengerModal,
   confirmDeletePassenger,
   updateAvatar,
+  followList,
 } = useProfilePage()
 
 const allSections = computed(() => [...tradeSections.value, ...accountSections.value])
@@ -72,7 +75,9 @@ const profileCenterQuery = computed(() => ({
     userInfoQuery.isLoading.value ||
     passengerListQuery.isLoading.value ||
     myOrderPageQuery.isLoading.value ||
-    myTicketPageQuery.isLoading.value,
+    myTicketPageQuery.isLoading.value ||
+    followList.followedEventsQuery.isLoading.value ||
+    followList.followedParticipantsQuery.isLoading.value,
 }))
 </script>
 
@@ -162,6 +167,30 @@ const profileCenterQuery = computed(() => ({
                 :ticket-total-row="ticketTotalRow"
                 @update:ticket-page="updateTicketPage"
                 @update:ticket-page-size="updateTicketPageSize"
+              />
+
+              <ProfileFollowedEventsSection
+                v-else-if="activeSection === 'followed-events'"
+                :paginated-events="followList.paginatedFollowedEvents.value"
+                :page="followList.followedEventsPage.value"
+                :total-pages="followList.followedEventsTotalPages.value"
+                :page-size="followList.followedEventsPageSize.value"
+                :total-row="followList.followedEventsTotalRow.value"
+                @update:page="followList.updateFollowedEventsPage"
+                @update:page-size="followList.updateFollowedEventsPageSize"
+                @toggle-follow="followList.handleUnfollowEvent"
+              />
+
+              <ProfileFollowedParticipantsSection
+                v-else-if="activeSection === 'followed-participants'"
+                :paginated-participants="followList.paginatedFollowedParticipants.value"
+                :page="followList.followedParticipantsPage.value"
+                :total-pages="followList.followedParticipantsTotalPages.value"
+                :page-size="followList.followedParticipantsPageSize.value"
+                :total-row="followList.followedParticipantsTotalRow.value"
+                @update:page="followList.updateFollowedParticipantsPage"
+                @update:page-size="followList.updateFollowedParticipantsPageSize"
+                @toggle-follow="followList.handleUnfollowParticipant"
               />
             </template>
           </section>

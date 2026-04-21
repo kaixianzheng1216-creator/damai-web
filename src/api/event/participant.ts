@@ -5,6 +5,9 @@ import type {
   ParticipantUpdateRequest,
   ParticipantPageRequest,
   PageResponseParticipantVO,
+  EventVO,
+  ParticipantEventPageRequest,
+  PageResponseEventVO,
 } from './types'
 
 // ─── Admin ───────────────────────────────────────────────
@@ -27,3 +30,14 @@ export const updateParticipant = (
 
 export const deleteParticipant = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/participants/${id}`)
+
+// ─── Front ───────────────────────────────────────────────
+
+export const fetchParticipantDetail = (id: string): Promise<ParticipantVO> =>
+  request.get<ParticipantVO>(`/api/event/front/participants/${id}`)
+
+export const fetchParticipantEventsPage = (
+  id: string,
+  query?: ParticipantEventPageRequest,
+): Promise<PageResponseEventVO> =>
+  request.get<PageResponseEventVO>(`/api/event/front/participants/${id}/events`, { params: query })

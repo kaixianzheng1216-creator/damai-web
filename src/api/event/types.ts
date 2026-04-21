@@ -20,6 +20,7 @@ export interface EventVO {
   recommendWeight?: number
   status: number
   statusLabel?: string
+  participants?: EventParticipantVO[]
 }
 
 export interface EventPageRequest {
@@ -324,6 +325,12 @@ export interface ParticipantVO {
   id: string
   name: string
   avatarUrl: string
+  followCount?: number
+}
+
+export interface ParticipantEventPageRequest {
+  page?: number
+  size?: number
 }
 
 export interface EventParticipantVO {
@@ -507,3 +514,31 @@ export interface TicketTypeCopyRequest {
   sourceSessionId: string
   targetSessionIds: string[]
 }
+
+// ─── User Follow ─────────────────────────────────────────
+
+export interface UserFollowEventRequest {
+  eventId: string
+}
+
+export interface UserFollowParticipantRequest {
+  participantId: string
+}
+
+export interface UserFollowEventVO {
+  id: string
+  eventId: string
+  event: EventVO
+  createAt?: string
+}
+
+export interface UserFollowParticipantVO {
+  id: string
+  participantId: string
+  participant: ParticipantVO
+  createAt?: string
+}
+
+export type PageResponseUserFollowEventVO = PaginatedResponse<UserFollowEventVO>
+
+export type PageResponseUserFollowParticipantVO = PaginatedResponse<UserFollowParticipantVO>

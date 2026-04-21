@@ -31,11 +31,6 @@ const emit = defineEmits<{
 
 const columns: ColumnDef<PassengerItem>[] = [
   {
-    accessorKey: 'id',
-    header: '序号',
-    size: 100,
-  },
-  {
     accessorKey: 'name',
     header: '姓名',
   },

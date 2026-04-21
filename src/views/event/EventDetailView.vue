@@ -39,6 +39,9 @@ const {
   switchEvent,
   handleBuyNow,
   confirmPassengerAndCreateOrder,
+  toggleFollow,
+  isFollowed,
+  isFollowLoading,
 } = useEventDetailPage()
 
 const detail = computed(() => detailQuery.data.value ?? null)
@@ -82,11 +85,14 @@ const sanitizedDescription = computed(() =>
           :available-ticket-types="availableTicketTypes"
           :selected-ticket-type="selectedTicketType"
           :series-events="seriesEvents"
+          :is-followed="isFollowed"
+          :is-follow-loading="isFollowLoading"
           @switch-event="switchEvent"
           @update:selected-session-id="selectedSessionId = $event"
           @update:selected-ticket-type-id="selectedTicketTypeId = $event"
           @update:ticket-quantity="ticketQuantity = $event"
           @buy-now="handleBuyNow"
+          @toggle-follow="toggleFollow"
         />
 
         <Tabs v-model="activeTab" class="border-b border-border bg-muted/20">

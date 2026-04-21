@@ -8,6 +8,7 @@ import { usePassengerManagement } from './usePassengerManagement'
 import { useOrderList } from './useOrderList'
 import { useTicketList } from './useTicketList'
 import { useAvatarUpload } from './useAvatarUpload'
+import { useFollowList } from './useFollowList'
 
 export const useProfilePage = () => {
   const queryClient = useQueryClient()
@@ -17,6 +18,7 @@ export const useProfilePage = () => {
   const orderList = useOrderList()
   const ticketList = useTicketList()
   const avatarUpload = useAvatarUpload()
+  const followList = useFollowList()
 
   const userInfoQuery = useQuery<UserVO>({
     queryKey: ['user-info'],
@@ -114,5 +116,7 @@ export const useProfilePage = () => {
     userInfoQuery,
     displayAvatar: avatarUpload.displayAvatar,
     updateAvatar: avatarUpload.updateAvatar,
+    // Follow List (直接导出整个对象以避免参数蔓延)
+    followList,
   }
 }

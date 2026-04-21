@@ -1,4 +1,10 @@
-export type ProfileSectionKey = 'orders' | 'tickets' | 'info' | 'passengers'
+export type ProfileSectionKey =
+  | 'orders'
+  | 'tickets'
+  | 'followed-events'
+  | 'followed-participants'
+  | 'info'
+  | 'passengers'
 
 export interface ProfileSectionOption {
   key: ProfileSectionKey
@@ -10,6 +16,8 @@ export interface ProfileSectionOption {
 export const PROFILE_SECTIONS: ProfileSectionOption[] = [
   { key: 'orders', label: '订单管理', group: 'trade', icon: 'shopping-bag' },
   { key: 'tickets', label: '我的电子票', group: 'trade', icon: 'ticket' },
+  { key: 'followed-events', label: '关注的活动', group: 'trade', icon: 'heart' },
+  { key: 'followed-participants', label: '关注的艺人', group: 'trade', icon: 'star' },
   { key: 'info', label: '个人信息', group: 'account', icon: 'user' },
   { key: 'passengers', label: '常用购票人', group: 'account', icon: 'users' },
 ]
@@ -17,6 +25,8 @@ export const PROFILE_SECTIONS: ProfileSectionOption[] = [
 export const HEADER_PROFILE_MENU_ITEMS: Array<{ section: ProfileSectionKey; label: string }> = [
   { section: 'orders', label: '订单管理' },
   { section: 'tickets', label: '我的电子票' },
+  { section: 'followed-events', label: '关注的活动' },
+  { section: 'followed-participants', label: '关注的艺人' },
   { section: 'info', label: '个人信息' },
   { section: 'passengers', label: '常用购票人' },
 ]

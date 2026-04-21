@@ -1,9 +1,9 @@
 import { computed, ref, watch } from 'vue'
 import dayjs from 'dayjs'
-import { useMutation, useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchPassengerPage } from '@/api/account'
-import { fetchEventDetailById } from '@/api/event'
+import { fetchEventDetailById, followEvent, unfollowEvent, checkIsFollowedEvent } from '@/api/event'
 import { createTicketOrder, fetchUserPurchaseCounts } from '@/api/trade'
 import type { DetailTabKey } from '@/constants'
 import { EVENT_CONFIG, TICKET_TYPE_STATUS } from '@/constants'
@@ -12,6 +12,7 @@ import type { SessionVO, TicketTypeVO, SeriesEventVO } from '@/api/event'
 import { useUserStore } from '@/stores/user'
 import { formatPrice } from '@/utils/format'
 import { mapPassengerToPassengerItem } from '@/utils/mappers'
+import { useFollowToggle } from '@/composables/common/useFollowToggle'
 
 const isTicketTypeOnSale = (ticketType: TicketTypeVO): boolean => {
   if (ticketType.status !== TICKET_TYPE_STATUS.ON_SALE) {
@@ -53,6 +54,7 @@ export const useEventDetailPage = () => {
   const route = useRoute()
   const router = useRouter()
   const userStore = useUserStore()
+  const queryClient = useQueryClient()
 
   const activeTab = ref<DetailTabKey>('detail')
   const selectedSessionId = ref<string | null>(null)
@@ -68,6 +70,23 @@ export const useEventDetailPage = () => {
     queryKey: ['event-detail', eventId],
     queryFn: () => fetchEventDetailById(eventId.value),
     enabled: computed(() => !!eventId.value && eventId.value.length > 0),
+  })
+
+  const {
+    isFollowedQuery,
+    followMutation,
+    unfollowMutation,
+    toggleFollow,
+    isFollowed,
+    isFollowLoading,
+  } = useFollowToggle({
+    id: () => eventId.value,
+    followQueryKeyPrefix: 'event-followed',
+    entityQueryKeyPrefix: 'event-detail',
+    checkIsFollowed: checkIsFollowedEvent,
+    follow: followEvent,
+    unfollow: unfollowEvent,
+    buildFollowRequest: (id) => ({ eventId: id }),
   })
 
   const passengerListQuery = useQuery<PageResponsePassengerVO>({
@@ -351,5 +370,12 @@ export const useEventDetailPage = () => {
     switchEvent,
     handleBuyNow,
     confirmPassengerAndCreateOrder,
+    // Follow
+    isFollowedQuery,
+    followMutation,
+    unfollowMutation,
+    toggleFollow,
+    isFollowed,
+    isFollowLoading,
   }
 }
