@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { formatPrice, formatDateTime } from '@/utils/format'
+import { formatPrice, formatDateTime, formatDate } from '@/utils/format'
 import type { EventVO } from '@/api/event'
 
-defineProps<{
-  item: EventVO
-}>()
+withDefaults(
+  defineProps<{
+    item: EventVO
+    showParticipants?: boolean
+  }>(),
+  {
+    showParticipants: true,
+  },
+)
 </script>
 
 <template>
@@ -31,7 +37,7 @@ defineProps<{
           </h3>
         </RouterLink>
         <div
-          v-if="item.participants && item.participants.length > 0"
+          v-if="showParticipants && item.participants && item.participants.length > 0"
           class="flex items-center gap-1"
         >
           <icon-lucide-users class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -57,30 +63,44 @@ defineProps<{
         </p>
         <p class="flex items-center gap-1 text-sm text-muted-foreground">
           <icon-lucide-calendar class="h-3.5 w-3.5 shrink-0" />
+          <!-- 移动端：只显示开始日期 -->
+          <span class="md:hidden" v-if="item.firstSessionStartAt">
+            {{ formatDate(item.firstSessionStartAt) }}
+          </span>
+          <!-- 桌面端：完整时间区间 -->
           <span
             v-if="
               item.firstSessionStartAt &&
               item.lastSessionEndAt &&
               item.firstSessionStartAt !== item.lastSessionEndAt
             "
+            class="hidden md:inline"
           >
             {{ formatDateTime(item.firstSessionStartAt) }} —
             {{ formatDateTime(item.lastSessionEndAt) }}
           </span>
-          <span v-else-if="item.firstSessionStartAt">
+          <span v-else-if="item.firstSessionStartAt" class="hidden md:inline">
             {{ formatDateTime(item.firstSessionStartAt) }}
           </span>
         </p>
       </div>
       <div class="pt-2">
         <RouterLink :to="`/detail/${item.id}`" class="inline-block">
+          <!-- 移动端：只显示起始价 -->
+          <span v-if="item.minPrice != null" class="text-2xl font-semibold text-primary md:hidden">
+            {{ formatPrice(item.minPrice) }} 起
+          </span>
+          <!-- 桌面端：完整价格区间 -->
           <span
             v-if="item.minPrice != null && item.maxPrice != null && item.minPrice !== item.maxPrice"
-            class="text-2xl font-semibold text-primary"
+            class="hidden text-2xl font-semibold text-primary md:inline"
           >
             {{ formatPrice(item.minPrice) }} — {{ formatPrice(item.maxPrice) }}
           </span>
-          <span v-else-if="item.minPrice != null" class="text-2xl font-semibold text-primary">
+          <span
+            v-else-if="item.minPrice != null"
+            class="hidden text-2xl font-semibold text-primary md:inline"
+          >
             {{ formatPrice(item.minPrice) }} 起
           </span>
         </RouterLink>

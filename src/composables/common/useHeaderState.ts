@@ -115,6 +115,7 @@ export const useHeaderState = () => {
         cityId: undefined,
         categoryId: DEFAULT_SEARCH_QUERY.categoryId,
         timeType: DEFAULT_SEARCH_QUERY.timeType,
+        sortType: DEFAULT_SEARCH_QUERY.sortType,
         sortField: DEFAULT_SEARCH_QUERY.sortField,
         sortOrder: DEFAULT_SEARCH_QUERY.sortOrder,
       },

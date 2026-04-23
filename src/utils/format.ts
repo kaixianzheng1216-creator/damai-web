@@ -27,3 +27,9 @@ export const formatDateTimeLocalInput = (dateTime: string | Date | undefined | n
   if (!dateTime) return ''
   return dayjs(dateTime).format('YYYY-MM-DDTHH:mm')
 }
+
+export const formatDate = (dateTime: string | Date | undefined | null): string => {
+  if (!dateTime) return ''
+  const date = dayjs(dateTime)
+  return `${date.year()}.${date.month() + 1}.${date.date()}`
+}

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ref, shallowRef, computed } from 'vue'
+import { CalendarDate } from '@internationalized/date'
+import type { DateValue } from 'reka-ui'
 import { useEventSearchPage } from '@/composables/event/useEventSearchPage'
 import {
   Pagination,
@@ -8,6 +11,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/common/ui/pagination'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/common/ui/dialog'
+import { Calendar } from '@/components/common/ui/calendar'
+import { Button } from '@/components/common/ui/button'
 
 const {
   queryParams,
@@ -22,6 +34,41 @@ const {
   handleSortChange,
   handlePageChange,
 } = useEventSearchPage()
+
+const showDateDialog = ref(false)
+const selectedCalDate = shallowRef<CalendarDate | undefined>(undefined)
+
+const calDateModel = computed<DateValue | undefined>(
+  () => selectedCalDate.value as unknown as DateValue | undefined,
+)
+
+const pad = (n: number) => String(n).padStart(2, '0')
+
+const handleTimeClick = (value: number) => {
+  if (value === 4) {
+    // 按日历：打开日期选择弹窗，初始化已选日期
+    const dateStr = queryParams.value.date
+    if (dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number)
+      selectedCalDate.value = new CalendarDate(y!, m!, d!)
+    } else {
+      selectedCalDate.value = undefined
+    }
+    showDateDialog.value = true
+  } else {
+    handleFilterChange('timeType', value)
+  }
+}
+
+const confirmDate = () => {
+  if (!selectedCalDate.value) return
+  showDateDialog.value = false
+  const dateStr = `${selectedCalDate.value.year}-${pad(selectedCalDate.value.month)}-${pad(selectedCalDate.value.day)}`
+  handleFilterChange('timeType', 4)
+  setTimeout(() => {
+    handleFilterChange('date', dateStr)
+  }, 0)
+}
 </script>
 
 <template>
@@ -59,9 +106,9 @@ const {
           @change="handleFilterChange('categoryId', $event)"
         />
 
-        <div class="flex items-start gap-4 py-4">
+        <div class="flex flex-wrap items-start gap-4 py-4">
           <p class="w-12 shrink-0 pt-1 text-sm text-muted-foreground">时间</p>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <button
               v-for="item in timeOptions"
               :key="item.value"
@@ -74,7 +121,7 @@ const {
                     : 'text-foreground hover:bg-muted',
                 )
               "
-              @click="handleFilterChange('timeType', item.value)"
+              @click="handleTimeClick(item.value)"
             >
               {{ item.label }}
             </button>
@@ -89,12 +136,12 @@ const {
           <div class="flex items-center">
             <button
               v-for="item in sortOptions"
-              :key="item.value.field"
+              :key="item.value"
               type="button"
               :class="
                 cn(
                   'border-r border-border px-5 py-2 text-sm last:border-r-0',
-                  item.value.field === queryParams.sortField ? 'text-primary' : 'text-foreground',
+                  item.value === queryParams.sortType ? 'text-primary' : 'text-foreground',
                 )
               "
               @click="handleSortChange(item.value)"
@@ -156,4 +203,25 @@ const {
       </div>
     </section>
   </div>
+
+  <!-- Date Picker Dialog -->
+  <Dialog v-model:open="showDateDialog">
+    <DialogContent class="sm:max-w-[360px]">
+      <DialogHeader>
+        <DialogTitle>选择日期</DialogTitle>
+      </DialogHeader>
+      <div class="py-2">
+        <Calendar
+          :model-value="calDateModel"
+          layout="month-and-year"
+          locale="zh-CN"
+          @update:model-value="selectedCalDate = $event as CalendarDate"
+        />
+      </div>
+      <DialogFooter>
+        <Button variant="outline" @click="showDateDialog = false">取消</Button>
+        <Button :disabled="!selectedCalDate" @click="confirmDate">确认</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>

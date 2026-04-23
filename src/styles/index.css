@@ -30,6 +30,10 @@
 
   --radius-xl: calc(var(--radius) + 4px);
 
+  --height-mobile-nav: var(--layout-mobile-nav);
+
+  --height-header: var(--layout-header);
+
   --color-background: var(--background);
 
   --color-foreground: var(--foreground);
@@ -97,6 +101,11 @@
 
 :root {
   --radius: 0.625rem;
+
+  /* 布局尺寸 —— 供 calc() 与 @theme 统一引用 */
+  --layout-mobile-nav: 3.5rem;
+  --layout-header: 3rem;
+  --layout-header-desktop: 4rem;
 
   --background: oklch(1 0 0);
 

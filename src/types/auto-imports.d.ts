@@ -42,6 +42,7 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const extendRef: typeof import('@vueuse/core').extendRef
   const fetchHomeData: typeof import('../api/home').fetchHomeData
+  const formatDate: typeof import('../utils/format').formatDate
   const formatDateTime: typeof import('../utils/format').formatDateTime
   const formatDateTimeLocalInput: typeof import('../utils/format').formatDateTimeLocalInput
   const formatDateTimeWithWeekday: typeof import('../utils/format').formatDateTimeWithWeekday
@@ -145,6 +146,7 @@ declare global {
   const unrefElement: typeof import('@vueuse/core').unrefElement
   const until: typeof import('@vueuse/core').until
   const uploadFormData: typeof import('../api/request').uploadFormData
+  const useAIChat: typeof import('../composables/useAIChat').useAIChat
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
   const useAdminStore: typeof import('../stores/admin').useAdminStore
   const useAnimate: typeof import('@vueuse/core').useAnimate
@@ -428,6 +430,7 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<(typeof import('vue'))['effectScope']>
     readonly extendRef: UnwrapRef<(typeof import('@vueuse/core'))['extendRef']>
     readonly fetchHomeData: UnwrapRef<(typeof import('../api/home'))['fetchHomeData']>
+    readonly formatDate: UnwrapRef<(typeof import('../utils/format'))['formatDate']>
     readonly formatDateTime: UnwrapRef<(typeof import('../utils/format'))['formatDateTime']>
     readonly formatDateTimeLocalInput: UnwrapRef<
       (typeof import('../utils/format'))['formatDateTimeLocalInput']
@@ -543,6 +546,7 @@ declare module 'vue' {
     readonly unrefElement: UnwrapRef<(typeof import('@vueuse/core'))['unrefElement']>
     readonly until: UnwrapRef<(typeof import('@vueuse/core'))['until']>
     readonly uploadFormData: UnwrapRef<(typeof import('../api/request'))['uploadFormData']>
+    readonly useAIChat: UnwrapRef<(typeof import('../composables/useAIChat'))['useAIChat']>
     readonly useActiveElement: UnwrapRef<(typeof import('@vueuse/core'))['useActiveElement']>
     readonly useAdminStore: UnwrapRef<(typeof import('../stores/admin'))['useAdminStore']>
     readonly useAnimate: UnwrapRef<(typeof import('@vueuse/core'))['useAnimate']>

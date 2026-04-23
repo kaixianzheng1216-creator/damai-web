@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <aside class="self-start section-card xl:p-5">
+  <aside class="self-start rounded-none border border-border p-4 xl:p-5">
     <p class="text-base font-semibold text-foreground">服务保障</p>
 
     <div class="mt-4 space-y-4">

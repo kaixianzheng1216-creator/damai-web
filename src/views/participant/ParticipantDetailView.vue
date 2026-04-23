@@ -109,6 +109,7 @@ const {
               v-for="item in eventsQuery.data.value.records"
               :key="item.id"
               :item="item"
+              :show-participants="false"
             />
           </div>
 

@@ -1108,6 +1108,27 @@
         }
       }
     },
+    "/admin/events/publish-all": {
+      "put": {
+        "tags": [
+          "活动管理接口"
+        ],
+        "summary": "【调试专用】发布所有活动",
+        "operationId": "publishAllEvents",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/cities/{id}": {
       "get": {
         "tags": [
@@ -2414,12 +2435,12 @@
           {
             "name": "page",
             "in": "query",
-            "description": "页码",
+            "description": "当前页码",
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "default": 1
+              "format": "int64",
+              "description": "当前页码"
             }
           },
           {
@@ -2429,8 +2450,38 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "default": 10
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户 ID（仅 Agent 可指定）",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
             }
           }
         ],
@@ -2441,6 +2492,81 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponsePageResponseUserFollowParticipantVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/user-follows/participants/events/page": {
+      "get": {
+        "tags": [
+          "用户关注前台接口"
+        ],
+        "summary": "获取我关注的艺人参与的活动分页列表",
+        "operationId": "getFollowedParticipantEventPage",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户 ID（仅 Agent 可指定）",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseEventVO"
                 }
               }
             }
@@ -2492,12 +2618,12 @@
           {
             "name": "page",
             "in": "query",
-            "description": "页码",
+            "description": "当前页码",
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "default": 1
+              "format": "int64",
+              "description": "当前页码"
             }
           },
           {
@@ -2507,8 +2633,38 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "default": 10
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户 ID（仅 Agent 可指定）",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
             }
           }
         ],
@@ -2578,11 +2734,45 @@
             }
           },
           {
-            "name": "request",
+            "name": "page",
             "in": "query",
-            "required": true,
+            "description": "当前页码",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/ParticipantEventPageRequest"
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -2642,11 +2832,143 @@
         "operationId": "getEventPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "name",
             "in": "query",
-            "required": true,
+            "description": "活动、场馆、艺人、城市、分类关键词",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/EventPageRequest"
+              "type": "string",
+              "description": "活动、场馆、艺人、城市、分类关键词"
+            }
+          },
+          {
+            "name": "cityId",
+            "in": "query",
+            "description": "城市 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "城市 ID"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "分类 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "分类 ID"
+            }
+          },
+          {
+            "name": "timeType",
+            "in": "query",
+            "description": "时间筛选：0 全部，1 今天，2 本周末，3 一个月内，4 按日历",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "时间筛选：0 全部，1 今天，2 本周末，3 一个月内，4 按日历"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "指定日期，timeType=4 时生效",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "指定日期，timeType=4 时生效"
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "最低价格(分)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "最低价格(分)"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "最高价格(分)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "最高价格(分)"
+            }
+          },
+          {
+            "name": "sortType",
+            "in": "query",
+            "description": "排序方式：0 推荐排序，1 最近开场，2 最新上架",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "排序方式：0 推荐排序，1 最近开场，2 最新上架"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "活动状态：0 草稿，1 已发布，2 已下线",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "活动状态：0 草稿，1 已发布，2 已下线"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -2802,11 +3124,85 @@
         "operationId": "getVenuePage",
         "parameters": [
           {
-            "name": "request",
+            "name": "name",
             "in": "query",
-            "required": true,
+            "description": "场馆名称关键词",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/VenuePageRequest"
+              "type": "string",
+              "description": "场馆名称关键词"
+            }
+          },
+          {
+            "name": "province",
+            "in": "query",
+            "description": "省份",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "省份"
+            }
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "description": "城市",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "城市"
+            }
+          },
+          {
+            "name": "district",
+            "in": "query",
+            "description": "区县",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "区县"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -2833,11 +3229,55 @@
         "operationId": "getServicePage",
         "parameters": [
           {
-            "name": "request",
+            "name": "name",
             "in": "query",
-            "required": true,
+            "description": "服务名关键词",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/ServiceGuaranteePageRequest"
+              "type": "string",
+              "description": "服务名关键词"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -2864,11 +3304,55 @@
         "operationId": "getSeriesPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "name",
             "in": "query",
-            "required": true,
+            "description": "系列名称关键词",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/SeriesPageRequest"
+              "type": "string",
+              "description": "系列名称关键词"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -2895,11 +3379,55 @@
         "operationId": "getParticipantPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "name",
             "in": "query",
-            "required": true,
+            "description": "参与方名称关键词",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/ParticipantPageRequest"
+              "type": "string",
+              "description": "参与方名称关键词"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -2926,11 +3454,66 @@
         "operationId": "getNoticePage",
         "parameters": [
           {
-            "name": "request",
+            "name": "type",
             "in": "query",
-            "required": true,
+            "description": "须知类型：1-购票须知，2-入场须知",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/NoticePageRequest"
+              "type": "integer",
+              "format": "int32",
+              "description": "须知类型：1-购票须知，2-入场须知"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "须知名关键词",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "须知名关键词"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -2957,11 +3540,143 @@
         "operationId": "getEventPage_1",
         "parameters": [
           {
-            "name": "request",
+            "name": "name",
             "in": "query",
-            "required": true,
+            "description": "活动、场馆、艺人、城市、分类关键词",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/EventPageRequest"
+              "type": "string",
+              "description": "活动、场馆、艺人、城市、分类关键词"
+            }
+          },
+          {
+            "name": "cityId",
+            "in": "query",
+            "description": "城市 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "城市 ID"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "分类 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "分类 ID"
+            }
+          },
+          {
+            "name": "timeType",
+            "in": "query",
+            "description": "时间筛选：0 全部，1 今天，2 本周末，3 一个月内，4 按日历",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "时间筛选：0 全部，1 今天，2 本周末，3 一个月内，4 按日历"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "指定日期，timeType=4 时生效",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "指定日期，timeType=4 时生效"
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "最低价格(分)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "最低价格(分)"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "最高价格(分)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "最高价格(分)"
+            }
+          },
+          {
+            "name": "sortType",
+            "in": "query",
+            "description": "排序方式：0 推荐排序，1 最近开场，2 最新上架",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "排序方式：0 推荐排序，1 最近开场，2 最新上架"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "活动状态：0 草稿，1 已发布，2 已下线",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "活动状态：0 草稿，1 已发布，2 已下线"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -2988,11 +3703,55 @@
         "operationId": "getCityPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "name",
             "in": "query",
-            "required": true,
+            "description": "城市名称关键词",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/CityPageRequest"
+              "type": "string",
+              "description": "城市名称关键词"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -3019,11 +3778,55 @@
         "operationId": "getCategoryPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "name",
             "in": "query",
-            "required": true,
+            "description": "分类名称关键词",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/CategoryPageRequest"
+              "type": "string",
+              "description": "分类名称关键词"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -3050,11 +3853,62 @@
         "operationId": "getBannerPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "cityId",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/BannerPageRequest"
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -4244,7 +5098,7 @@
           }
         }
       },
-      "ApiResponsePageResponseUserFollowEventVO": {
+      "ApiResponsePageResponseEventVO": {
         "type": "object",
         "properties": {
           "code": {
@@ -4254,7 +5108,7 @@
             "type": "string"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseUserFollowEventVO"
+            "$ref": "#/components/schemas/PageResponseEventVO"
           }
         }
       },
@@ -4300,6 +5154,10 @@
           "categoryNameSnapshot": {
             "type": "string",
             "description": "分类名称快照"
+          },
+          "parentCategoryNameSnapshot": {
+            "type": "string",
+            "description": "一级分类名称快照"
           },
           "venueId": {
             "type": "integer",
@@ -4375,6 +5233,53 @@
           }
         }
       },
+      "PageResponseEventVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/EventVO"
+            }
+          }
+        }
+      },
+      "ApiResponsePageResponseUserFollowEventVO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseUserFollowEventVO"
+          }
+        }
+      },
       "PageResponseUserFollowEventVO": {
         "type": "object",
         "description": "分页响应基类",
@@ -4444,85 +5349,6 @@
           },
           "data": {
             "$ref": "#/components/schemas/ParticipantVO"
-          }
-        }
-      },
-      "ParticipantEventPageRequest": {
-        "type": "object",
-        "description": "参与方活动分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "ApiResponsePageResponseEventVO": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/PageResponseEventVO"
-          }
-        }
-      },
-      "PageResponseEventVO": {
-        "type": "object",
-        "description": "分页响应基类",
-        "properties": {
-          "pageNumber": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "totalRow": {
-            "type": "integer",
-            "format": "int64",
-            "description": "总数量"
-          },
-          "totalPage": {
-            "type": "integer",
-            "format": "int64",
-            "description": "总页数"
-          },
-          "records": {
-            "type": "array",
-            "description": "数据列表",
-            "items": {
-              "$ref": "#/components/schemas/EventVO"
-            }
           }
         }
       },
@@ -4836,77 +5662,6 @@
           }
         }
       },
-      "EventPageRequest": {
-        "type": "object",
-        "description": "活动分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "name": {
-            "type": "string",
-            "description": "活动、场馆、艺人关键词"
-          },
-          "cityId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "城市 ID"
-          },
-          "categoryId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "分类 ID"
-          },
-          "timeType": {
-            "type": "integer",
-            "format": "int32",
-            "description": "时间筛选：0 全部，1 今天，2 本周末，3 一个月内"
-          },
-          "minPrice": {
-            "type": "integer",
-            "format": "int32",
-            "description": "最低价格(分)"
-          },
-          "maxPrice": {
-            "type": "integer",
-            "format": "int32",
-            "description": "最高价格(分)"
-          },
-          "sortType": {
-            "type": "integer",
-            "format": "int32",
-            "description": "排序方式：0 推荐排序，1 最近开场，2 最新上架"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "description": "活动状态：0 草稿，1 已发布，2 已下线"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "ApiResponseCityListVO": {
         "type": "object",
         "properties": {
@@ -5116,54 +5871,6 @@
           }
         }
       },
-      "VenuePageRequest": {
-        "type": "object",
-        "description": "场馆分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "name": {
-            "type": "string",
-            "description": "场馆名称关键词"
-          },
-          "province": {
-            "type": "string",
-            "description": "省份"
-          },
-          "city": {
-            "type": "string",
-            "description": "城市"
-          },
-          "district": {
-            "type": "string",
-            "description": "区县"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "ApiResponsePageResponseVenueVO": {
         "type": "object",
         "properties": {
@@ -5239,42 +5946,6 @@
           },
           "data": {
             "$ref": "#/components/schemas/ServiceGuaranteeVO"
-          }
-        }
-      },
-      "ServiceGuaranteePageRequest": {
-        "type": "object",
-        "description": "服务保障分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "name": {
-            "type": "string",
-            "description": "服务名关键词"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },
@@ -5371,42 +6042,6 @@
           }
         }
       },
-      "SeriesPageRequest": {
-        "type": "object",
-        "description": "系列分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "name": {
-            "type": "string",
-            "description": "系列名称关键词"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "ApiResponsePageResponseSeriesVO": {
         "type": "object",
         "properties": {
@@ -5468,42 +6103,6 @@
             "items": {
               "$ref": "#/components/schemas/ParticipantVO"
             }
-          }
-        }
-      },
-      "ParticipantPageRequest": {
-        "type": "object",
-        "description": "参与方分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "name": {
-            "type": "string",
-            "description": "参与方名称关键词"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },
@@ -5610,47 +6209,6 @@
           }
         }
       },
-      "NoticePageRequest": {
-        "type": "object",
-        "description": "须知模板分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "type": {
-            "type": "integer",
-            "format": "int32",
-            "description": "须知类型：1-购票须知，2-入场须知"
-          },
-          "name": {
-            "type": "string",
-            "description": "须知名关键词"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "ApiResponsePageResponseNoticeVO": {
         "type": "object",
         "properties": {
@@ -5712,42 +6270,6 @@
           }
         }
       },
-      "CityPageRequest": {
-        "type": "object",
-        "description": "城市分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "name": {
-            "type": "string",
-            "description": "城市名称关键词"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "ApiResponsePageResponseCityVO": {
         "type": "object",
         "properties": {
@@ -5792,42 +6314,6 @@
             "items": {
               "$ref": "#/components/schemas/CityVO"
             }
-          }
-        }
-      },
-      "CategoryPageRequest": {
-        "type": "object",
-        "description": "分类分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "name": {
-            "type": "string",
-            "description": "分类名称关键词"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },
@@ -5889,44 +6375,6 @@
           },
           "data": {
             "$ref": "#/components/schemas/BannerVO"
-          }
-        }
-      },
-      "BannerPageRequest": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "cityId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "title": {
-            "type": "string"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },

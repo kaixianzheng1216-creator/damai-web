@@ -1,0 +1,138 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://26.166.16.133:18087",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/front/ai/chat": {
+      "get": {
+        "tags": [
+          "AI 前台接口"
+        ],
+        "summary": "AI 对话",
+        "operationId": "chat",
+        "parameters": [
+          {
+            "name": "flowName",
+            "in": "query",
+            "description": "Flow 名称: assistant-首页助手, support-客服工单",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "message",
+            "in": "query",
+            "description": "用户消息",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "query",
+            "description": "会话 ID，同一会话需传入相同值",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAiChatResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AiChatItem": {
+        "type": "object",
+        "description": "AI 返回的活动/商品条目",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "活动 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "cover_url": {
+            "type": "string",
+            "description": "封面图 URL"
+          },
+          "venue_name": {
+            "type": "string",
+            "description": "场馆名称"
+          },
+          "start_time": {
+            "type": "string",
+            "description": "开始时间"
+          },
+          "min_price": {
+            "type": "integer",
+            "format": "int32",
+            "description": "最低票价（分）"
+          }
+        }
+      },
+      "AiChatResponse": {
+        "type": "object",
+        "description": "AI 对话响应",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "AI 回复消息"
+          },
+          "items": {
+            "type": "array",
+            "description": "相关活动",
+            "items": {
+              "$ref": "#/components/schemas/AiChatItem"
+            }
+          },
+          "suggestions": {
+            "type": "array",
+            "description": "建议选项按钮",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ApiResponseAiChatResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AiChatResponse"
+          }
+        }
+      }
+    }
+  }
+}

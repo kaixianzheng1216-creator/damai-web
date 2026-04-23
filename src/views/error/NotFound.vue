@@ -5,7 +5,9 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col flex-center bg-background px-4 pb-14 md:pb-0">
+  <div
+    class="min-h-screen flex flex-col flex-center bg-background px-4 pb-(--height-mobile-nav) md:pb-0"
+  >
     <div class="text-center space-y-6 max-w-md">
       <div class="relative">
         <p class="text-[8rem] font-black text-primary/10 leading-none select-none">404</p>

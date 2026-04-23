@@ -326,11 +326,67 @@
         "operationId": "getMyTicketOrderPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "userId",
             "in": "query",
-            "required": true,
+            "description": "用户 ID",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/TicketOrderPageRequest"
+              "type": "integer",
+              "format": "int64",
+              "description": "用户 ID"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "订单状态",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "订单状态"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -357,11 +413,67 @@
         "operationId": "getTicketOrderPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "userId",
             "in": "query",
-            "required": true,
+            "description": "用户 ID",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/TicketOrderPageRequest"
+              "type": "integer",
+              "format": "int64",
+              "description": "用户 ID"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "订单状态",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "订单状态"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -891,48 +1003,6 @@
               "type": "integer",
               "format": "int32"
             }
-          }
-        }
-      },
-      "TicketOrderPageRequest": {
-        "type": "object",
-        "description": "订单分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "userId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "用户 ID"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "description": "订单状态"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },

@@ -57,6 +57,12 @@ const router = createRouter({
           component: () => import('@/views/profile/ProfileView.vue'),
           meta: { title: '个人中心', requiresAuth: true },
         },
+        {
+          path: 'ai',
+          name: 'ai-chat',
+          component: () => import('@/views/ai/AIChatView.vue'),
+          meta: { title: 'AI 助手' },
+        },
       ],
     },
     {

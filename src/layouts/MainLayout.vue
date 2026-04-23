@@ -4,7 +4,7 @@ import MobileBottomNav from '@/components/common/MobileBottomNav.vue'
 </script>
 
 <template>
-  <div class="pb-14 md:pb-0">
+  <div class="pb-(--height-mobile-nav) md:pb-0">
     <TheHeader />
     <router-view />
     <MobileBottomNav />

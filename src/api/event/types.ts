@@ -33,6 +33,7 @@ export interface EventPageRequest {
   cityId?: string
   categoryId?: string
   timeType?: number
+  date?: string
   minPrice?: number
   maxPrice?: number
 }

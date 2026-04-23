@@ -358,11 +358,55 @@
         "operationId": "getPassengerPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "name",
             "in": "query",
-            "required": true,
+            "description": "姓名关键词",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/PassengerPageRequest"
+              "type": "string",
+              "description": "姓名关键词"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -421,11 +465,76 @@
         "operationId": "getUserPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "username",
             "in": "query",
-            "required": true,
+            "description": "用户名",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/UserQueryRequest"
+              "type": "string",
+              "description": "用户名"
+            }
+          },
+          {
+            "name": "mobile",
+            "in": "query",
+            "description": "手机号",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "手机号"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "账号状态：0 封禁，1 正常",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "账号状态：0 封禁，1 正常"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -452,11 +561,76 @@
         "operationId": "getAdminPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "username",
             "in": "query",
-            "required": true,
+            "description": "用户名",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/AdminQueryRequest"
+              "type": "string",
+              "description": "用户名"
+            }
+          },
+          {
+            "name": "mobile",
+            "in": "query",
+            "description": "手机号",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "手机号"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "账号状态：0 封禁，1 正常",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "账号状态：0 封禁，1 正常"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -734,42 +908,6 @@
           }
         }
       },
-      "PassengerPageRequest": {
-        "type": "object",
-        "description": "购票人分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "name": {
-            "type": "string",
-            "description": "姓名关键词"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "ApiResponsePageResponsePassengerVO": {
         "type": "object",
         "properties": {
@@ -814,51 +952,6 @@
             "items": {
               "$ref": "#/components/schemas/PassengerVO"
             }
-          }
-        }
-      },
-      "UserQueryRequest": {
-        "type": "object",
-        "description": "用户查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "username": {
-            "type": "string",
-            "description": "用户名"
-          },
-          "mobile": {
-            "type": "string",
-            "description": "手机号"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "description": "账号状态：0 封禁，1 正常"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },
@@ -958,60 +1051,6 @@
           },
           "data": {
             "$ref": "#/components/schemas/AdminVO"
-          }
-        }
-      },
-      "AdminQueryRequest": {
-        "type": "object",
-        "description": "管理员查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码",
-            "refType": null
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小",
-            "refType": null
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段",
-            "refType": null
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向",
-            "refType": null
-          },
-          "username": {
-            "type": "string",
-            "description": "用户名",
-            "refType": null
-          },
-          "mobile": {
-            "type": "string",
-            "description": "手机号",
-            "refType": null
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "description": "账号状态：0 封禁，1 正常",
-            "refType": null
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64",
-            "refType": null
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64",
-            "refType": null
           }
         }
       },

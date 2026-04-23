@@ -17,9 +17,9 @@ const isActive = (name: string) => {
 
 <template>
   <nav
-    class="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur pb-safe md:hidden"
+    class="fixed bottom-0 left-0 right-0 z-50 h-(--height-mobile-nav) border-t bg-background/95 backdrop-blur pb-safe md:hidden"
   >
-    <div class="flex h-14 items-stretch">
+    <div class="flex h-full items-stretch">
       <RouterLink
         v-for="tab in tabs"
         :key="tab.name"

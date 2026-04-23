@@ -27,7 +27,12 @@ const { banners, categories, eventSections, isLoading, isError } = useHomePage()
         :events="section.events"
       />
 
-      <HomeFloatingSupport />
+      <div
+        class="fixed right-6 bottom-[calc(var(--height-mobile-nav)+1rem)] z-50 flex flex-col items-end gap-3 md:bottom-6"
+      >
+        <AIAssistant />
+        <HomeFloatingSupport />
+      </div>
     </template>
   </div>
 </template>

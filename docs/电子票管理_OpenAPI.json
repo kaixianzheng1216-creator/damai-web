@@ -151,11 +151,100 @@
         "operationId": "getMyTicketPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "userId",
             "in": "query",
-            "required": true,
+            "description": "用户 ID",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/TicketPageRequest"
+              "type": "integer",
+              "format": "int64",
+              "description": "用户 ID"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "query",
+            "description": "订单 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "订单 ID"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "query",
+            "description": "活动 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "活动 ID"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "query",
+            "description": "场次 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "场次 ID"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "电子票状态",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "电子票状态"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -182,11 +271,100 @@
         "operationId": "getTicketPage",
         "parameters": [
           {
-            "name": "request",
+            "name": "userId",
             "in": "query",
-            "required": true,
+            "description": "用户 ID",
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/TicketPageRequest"
+              "type": "integer",
+              "format": "int64",
+              "description": "用户 ID"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "query",
+            "description": "订单 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "订单 ID"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "query",
+            "description": "活动 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "活动 ID"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "query",
+            "description": "场次 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "场次 ID"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "电子票状态",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "电子票状态"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
             }
           }
         ],
@@ -353,63 +531,6 @@
             "type": "string",
             "format": "date-time",
             "description": "创建时间"
-          }
-        }
-      },
-      "TicketPageRequest": {
-        "type": "object",
-        "description": "电子票分页查询请求",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "sortField": {
-            "type": "string",
-            "description": "排序字段"
-          },
-          "sortOrder": {
-            "type": "string",
-            "description": "排序方向"
-          },
-          "userId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "用户 ID"
-          },
-          "orderId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "订单 ID"
-          },
-          "eventId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "活动 ID"
-          },
-          "sessionId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "场次 ID"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "description": "电子票状态"
-          },
-          "validPage": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "validSize": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },

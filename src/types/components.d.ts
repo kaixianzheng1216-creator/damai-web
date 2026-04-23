@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdminSidebar: typeof import('./../components/admin/AdminSidebar.vue')['default']
+    AIAssistant: typeof import('./../components/common/AIAssistant.vue')['default']
     AlertDialog: typeof import('./../components/common/ui/alert-dialog/AlertDialog.vue')['default']
     AlertDialogAction: typeof import('./../components/common/ui/alert-dialog/AlertDialogAction.vue')['default']
     AlertDialogCancel: typeof import('./../components/common/ui/alert-dialog/AlertDialogCancel.vue')['default']
@@ -115,6 +116,7 @@ declare module 'vue' {
     IconLucideAlertCircle: typeof import('~icons/lucide/alert-circle')['default']
     IconLucideArrowLeft: typeof import('~icons/lucide/arrow-left')['default']
     IconLucideArrowUp: typeof import('~icons/lucide/arrow-up')['default']
+    IconLucideBot: typeof import('~icons/lucide/bot')['default']
     IconLucideBuilding2: typeof import('~icons/lucide/building2')['default']
     IconLucideCalendar: typeof import('~icons/lucide/calendar')['default']
     IconLucideCheckCircle: typeof import('~icons/lucide/check-circle')['default']
@@ -139,8 +141,11 @@ declare module 'vue' {
     IconLucideRedo2: typeof import('~icons/lucide/redo2')['default']
     IconLucideRefreshCw: typeof import('~icons/lucide/refresh-cw')['default']
     IconLucideRemoveFormatting: typeof import('~icons/lucide/remove-formatting')['default']
+    IconLucideRotateCcw: typeof import('~icons/lucide/rotate-ccw')['default']
     IconLucideScanLine: typeof import('~icons/lucide/scan-line')['default']
     IconLucideSearch: typeof import('~icons/lucide/search')['default']
+    IconLucideSend: typeof import('~icons/lucide/send')['default']
+    IconLucideSparkles: typeof import('~icons/lucide/sparkles')['default']
     IconLucideTicket: typeof import('~icons/lucide/ticket')['default']
     IconLucideUndo2: typeof import('~icons/lucide/undo2')['default']
     IconLucideUser: typeof import('~icons/lucide/user')['default']

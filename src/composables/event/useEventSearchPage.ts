@@ -4,10 +4,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { fetchEventPage, fetchCitiesList, fetchCategories } from '@/api/event'
 import { DEFAULT_SEARCH_QUERY, TIME_OPTIONS, SORT_OPTIONS } from '@/constants/search'
 import type { EventPageRequest, CityVO, CategoryVO } from '@/api/event'
+import dayjs from 'dayjs'
 
 const parseQueryNumber = (value: unknown, fallback: number) => {
   const parsed = Number(value)
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback
 }
 
 const parseQueryString = (value: unknown) => {
@@ -40,6 +41,11 @@ export const useEventSearchPage = () => {
       typeof route.query.timeType === 'string'
         ? parseQueryNumber(route.query.timeType, DEFAULT_SEARCH_QUERY.timeType)
         : DEFAULT_SEARCH_QUERY.timeType,
+    date: parseQueryString(route.query.date),
+    sortType:
+      typeof route.query.sortType === 'string'
+        ? parseQueryNumber(route.query.sortType, DEFAULT_SEARCH_QUERY.sortType)
+        : DEFAULT_SEARCH_QUERY.sortType,
     sortField:
       typeof route.query.sortField === 'string'
         ? route.query.sortField
@@ -170,19 +176,39 @@ export const useEventSearchPage = () => {
   }
 
   const handleFilterChange = async (
-    field: 'cityId' | 'categoryId' | 'timeType',
+    field: 'cityId' | 'categoryId' | 'timeType' | 'date',
     value: string | number | undefined,
   ) => {
-    await pushQuery({
+    const updates: Record<string, string | undefined> = {
       [field]: value?.toString(),
       page: String(DEFAULT_SEARCH_QUERY.page),
-    })
+    }
+
+    // 当时间筛选切换到非"按日历"时，清除 date 参数
+    if (field === 'timeType' && value !== 4) {
+      updates.date = undefined
+    }
+
+    // 当时间筛选切换到"按日历"且没有 date 时，默认设为今天
+    if (field === 'timeType' && value === 4 && !route.query.date) {
+      updates.date = dayjs().format('YYYY-MM-DD')
+    }
+
+    await pushQuery(updates)
   }
 
-  const handleSortChange = async (sortOption: { field: string; order: string }) => {
+  const handleSortChange = async (sortType: number) => {
+    const sortMap = {
+      0: { field: 'recommendWeight', order: 'desc' },
+      1: { field: 'firstSessionStartAt', order: 'asc' },
+      2: { field: 'createdAt', order: 'desc' },
+    } as const
+    const preset = sortMap[sortType as keyof typeof sortMap] ?? sortMap[0]
+
     await pushQuery({
-      sortField: sortOption.field,
-      sortOrder: sortOption.order,
+      sortType: String(sortType),
+      sortField: preset.field,
+      sortOrder: preset.order,
       page: String(DEFAULT_SEARCH_QUERY.page),
     })
   }
