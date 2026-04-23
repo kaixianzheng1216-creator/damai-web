@@ -5,7 +5,6 @@ import { computed } from 'vue'
 export interface UserInfo {
   id: string
   username: string
-  nickname?: string
   avatarUrl: string
   mobile: string
   status?: number

@@ -1,13 +1,19 @@
 import { ref, computed } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
+import { useStorage } from '@vueuse/core'
 import { chatWithAI } from '@/api/ai'
 import type { ChatMessage, AiChatItem } from '@/api/ai/types'
+import { useUserStore } from '@/stores/user'
+import { COMMON_CONFIG } from '@/constants'
 
 function generateSessionId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
 export function useAIChat() {
+  const userStore = useUserStore()
+  const selectedCity = useStorage('selected-city', COMMON_CONFIG.DEFAULT_CITY)
+
   const sessionId = ref<string>(generateSessionId())
   const messages = ref<ChatMessage[]>([
     {
@@ -44,8 +50,24 @@ export function useAIChat() {
     const trimmed = text.trim()
     if (!trimmed || isPending.value) return
 
+    const isFirstUserMessage = !messages.value.some((m) => m.role === 'user')
+
+    let sendContent = trimmed
+    if (isFirstUserMessage) {
+      const parts: string[] = []
+      parts.push('【系统上下文】')
+      const userInfo = userStore.userInfo
+      parts.push(`用户ID: ${userInfo?.id}`)
+      parts.push(`用户名: ${userInfo?.username}`)
+      parts.push(`手机号: ${userInfo?.mobile}`)
+      parts.push(`当前城市: ${selectedCity.value}`)
+      parts.push('【用户问题】')
+      parts.push(trimmed)
+      sendContent = parts.join('\n')
+    }
+
     messages.value.push({ role: 'user', content: trimmed })
-    sendMessage(trimmed)
+    sendMessage(sendContent)
   }
 
   const resetSession = () => {
