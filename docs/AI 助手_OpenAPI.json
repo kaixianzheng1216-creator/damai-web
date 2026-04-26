@@ -12,41 +12,22 @@
   ],
   "paths": {
     "/front/ai/chat": {
-      "get": {
+      "post": {
         "tags": [
           "AI 前台接口"
         ],
         "summary": "AI 对话",
         "operationId": "chat",
-        "parameters": [
-          {
-            "name": "flowName",
-            "in": "query",
-            "description": "Flow 名称: assistant-首页助手, support-客服工单",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiChatRequest"
+              }
             }
           },
-          {
-            "name": "message",
-            "in": "query",
-            "description": "用户消息",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sessionId",
-            "in": "query",
-            "description": "会话 ID，同一会话需传入相同值",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -64,34 +45,69 @@
   },
   "components": {
     "schemas": {
+      "AiChatRequest": {
+        "type": "object",
+        "description": "AI 对话请求",
+        "properties": {
+          "flowName": {
+            "type": "string",
+            "description": "Flow 名称: assistant-首页助手, support-客服工单",
+            "minLength": 1,
+            "refType": null
+          },
+          "message": {
+            "type": "string",
+            "description": "用户消息",
+            "minLength": 1,
+            "refType": null
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "会话 ID，同一会话需传入相同值",
+            "minLength": 1,
+            "refType": null
+          }
+        },
+        "required": [
+          "flowName",
+          "message",
+          "sessionId"
+        ]
+      },
       "AiChatItem": {
         "type": "object",
         "description": "AI 返回的活动条目",
         "properties": {
           "id": {
             "type": "string",
-            "description": "活动 ID"
+            "description": "活动 ID",
+            "refType": null
           },
           "name": {
             "type": "string",
-            "description": "活动名称"
+            "description": "活动名称",
+            "refType": null
           },
           "coverUrl": {
             "type": "string",
-            "description": "封面图 URL"
+            "description": "封面图 URL",
+            "refType": null
           },
           "venueName": {
             "type": "string",
-            "description": "场馆名称"
+            "description": "场馆名称",
+            "refType": null
           },
           "startTime": {
             "type": "string",
-            "description": "开始时间"
+            "description": "开始时间",
+            "refType": null
           },
           "minPrice": {
             "type": "integer",
             "format": "int32",
-            "description": "最低票价（分）"
+            "description": "最低票价（分）",
+            "refType": null
           }
         }
       },
@@ -101,21 +117,24 @@
         "properties": {
           "message": {
             "type": "string",
-            "description": "AI 回复消息"
+            "description": "AI 回复消息",
+            "refType": null
           },
           "items": {
             "type": "array",
             "description": "相关活动",
             "items": {
               "$ref": "#/components/schemas/AiChatItem"
-            }
+            },
+            "refType": "AiChatItem"
           },
           "suggestions": {
             "type": "array",
             "description": "建议选项按钮",
             "items": {
               "type": "string"
-            }
+            },
+            "refType": "string"
           }
         }
       },
