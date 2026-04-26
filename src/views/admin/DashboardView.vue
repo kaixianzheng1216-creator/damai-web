@@ -14,6 +14,7 @@ import {
   IconFileText,
   IconShieldCheck,
   IconTicket,
+  IconMessageCircle,
 } from '@tabler/icons-vue'
 
 const router = useRouter()
@@ -32,6 +33,7 @@ const quickActionItems = [
   { key: 'notices', label: '须知模板', icon: IconFileText, path: '/admin/notices' },
   { key: 'services', label: '服务保障', icon: IconShieldCheck, path: '/admin/services' },
   { key: 'tickets', label: '电子票管理', icon: IconTicket, path: '/admin/tickets' },
+  { key: 'work-orders', label: '工单管理', icon: IconMessageCircle, path: '/admin/work-orders' },
   { key: 'users', label: '用户管理', icon: IconUsers, path: '/admin/users' },
   { key: 'admins', label: '管理员管理', icon: IconUsers, path: '/admin/admins' },
 ]
