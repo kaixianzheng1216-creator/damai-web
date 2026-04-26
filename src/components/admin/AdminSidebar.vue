@@ -14,6 +14,7 @@ import {
   IconFileText,
   IconShieldCheck,
   IconTicket,
+  IconMessageCircle,
 } from '@tabler/icons-vue'
 import {
   Sidebar,
@@ -91,6 +92,11 @@ const navItems: NavItem[] = [
     title: '电子票管理',
     url: '/admin/tickets',
     icon: IconTicket,
+  },
+  {
+    title: '工单管理',
+    url: '/admin/work-orders',
+    icon: IconMessageCircle,
   },
   {
     title: '用户管理',

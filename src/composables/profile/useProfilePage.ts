@@ -7,6 +7,7 @@ import { useProfileSection } from './useProfileSection'
 import { usePassengerManagement } from './usePassengerManagement'
 import { useOrderList } from './useOrderList'
 import { useTicketList } from './useTicketList'
+import { useWorkOrderList } from './useWorkOrderList'
 import { useAvatarUpload } from './useAvatarUpload'
 import { useFollowList } from './useFollowList'
 
@@ -17,6 +18,7 @@ export const useProfilePage = () => {
   const passengerManagement = usePassengerManagement()
   const orderList = useOrderList()
   const ticketList = useTicketList()
+  const workOrderList = useWorkOrderList()
   const avatarUpload = useAvatarUpload()
   const followList = useFollowList()
 
@@ -113,6 +115,30 @@ export const useProfilePage = () => {
     ticketTotalRow: ticketList.ticketTotalRow,
     updateTicketPage: ticketList.updateTicketPage,
     updateTicketPageSize: ticketList.updateTicketPageSize,
+    workOrderFilter: workOrderList.workOrderFilter,
+    workOrderKeyword: workOrderList.workOrderKeyword,
+    workOrderPage: workOrderList.workOrderPage,
+    workOrderPageSize: workOrderList.workOrderPageSize,
+    workOrderListQuery: workOrderList.workOrderListQuery,
+    workOrders: workOrderList.workOrders,
+    workOrderTotalPages: workOrderList.workOrderTotalPages,
+    workOrderTotalRow: workOrderList.workOrderTotalRow,
+    selectedWorkOrderId: workOrderList.selectedWorkOrderId,
+    selectedWorkOrder: workOrderList.selectedWorkOrder,
+    workOrderDetailQuery: workOrderList.workOrderDetailQuery,
+    replyContent: workOrderList.replyContent,
+    replyError: workOrderList.replyError,
+    replyMutation: workOrderList.replyMutation,
+    closeWorkOrderMutation: workOrderList.closeWorkOrderMutation,
+    showCloseWorkOrderModal: workOrderList.showCloseWorkOrderModal,
+    updateWorkOrderPage: workOrderList.updateWorkOrderPage,
+    updateWorkOrderPageSize: workOrderList.updateWorkOrderPageSize,
+    openWorkOrderDetail: workOrderList.openWorkOrderDetail,
+    closeWorkOrderDetail: workOrderList.closeWorkOrderDetail,
+    submitWorkOrderReply: workOrderList.submitWorkOrderReply,
+    openCloseWorkOrderModal: workOrderList.openCloseWorkOrderModal,
+    closeCloseWorkOrderModal: workOrderList.closeCloseWorkOrderModal,
+    confirmCloseWorkOrder: workOrderList.confirmCloseWorkOrder,
     userInfoQuery,
     displayAvatar: avatarUpload.displayAvatar,
     updateAvatar: avatarUpload.updateAvatar,

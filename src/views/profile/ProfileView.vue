@@ -7,6 +7,8 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import ProfileInfoSection from '@/components/features/profile/ProfileInfoSection.vue'
 import ProfileOrdersSection from '@/components/features/profile/ProfileOrdersSection.vue'
 import ProfileTicketsSection from '@/components/features/profile/ProfileTicketsSection.vue'
+import ProfileWorkOrderDetailDialog from '@/components/features/profile/ProfileWorkOrderDetailDialog.vue'
+import ProfileWorkOrdersSection from '@/components/features/profile/ProfileWorkOrdersSection.vue'
 
 import ProfileSidebar from '@/components/features/profile/ProfileSidebar.vue'
 import ProfileMobileBottomNav from '@/components/features/profile/ProfileMobileBottomNav.vue'
@@ -34,6 +36,14 @@ const {
   ticketPage,
   ticketPageSize,
   ticketTotalRow,
+  workOrderFilter,
+  workOrderKeyword,
+  workOrderPage,
+  workOrderPageSize,
+  workOrderTotalRow,
+  replyContent,
+  replyError,
+  showCloseWorkOrderModal,
   years,
   months,
   days,
@@ -45,14 +55,20 @@ const {
   passengerListQuery,
   myOrderPageQuery,
   myTicketPageQuery,
+  workOrderListQuery,
+  workOrderDetailQuery,
   paginatedOrders,
   paginatedTickets,
+  workOrders,
   orderTotalPages,
   ticketTotalPages,
+  workOrderTotalPages,
   updateOrderPage,
   updateOrderPageSize,
   updateTicketPage,
   updateTicketPageSize,
+  updateWorkOrderPage,
+  updateWorkOrderPageSize,
   updatePassengerPage,
   updatePassengerPageSize,
   updatePassengerKeyword,
@@ -65,6 +81,16 @@ const {
   closeDeletePassengerModal,
   confirmDeletePassenger,
   updateAvatar,
+  selectedWorkOrderId,
+  selectedWorkOrder,
+  replyMutation,
+  closeWorkOrderMutation,
+  openWorkOrderDetail,
+  closeWorkOrderDetail,
+  submitWorkOrderReply,
+  openCloseWorkOrderModal,
+  closeCloseWorkOrderModal,
+  confirmCloseWorkOrder,
   followList,
 } = useProfilePage()
 
@@ -76,6 +102,7 @@ const profileCenterQuery = computed(() => ({
     passengerListQuery.isLoading.value ||
     myOrderPageQuery.isLoading.value ||
     myTicketPageQuery.isLoading.value ||
+    workOrderListQuery.isLoading.value ||
     followList.followedEventsQuery.isLoading.value ||
     followList.followedParticipantsQuery.isLoading.value,
 }))
@@ -169,6 +196,22 @@ const profileCenterQuery = computed(() => ({
                 @update:ticket-page-size="updateTicketPageSize"
               />
 
+              <ProfileWorkOrdersSection
+                v-else-if="activeSection === 'work-orders'"
+                :work-order-filter="workOrderFilter"
+                :work-order-keyword="workOrderKeyword"
+                :work-orders="workOrders"
+                :work-order-page="workOrderPage"
+                :work-order-page-size="workOrderPageSize"
+                :work-order-total-pages="workOrderTotalPages"
+                :work-order-total-row="workOrderTotalRow"
+                @update:work-order-filter="workOrderFilter = $event"
+                @update:work-order-keyword="workOrderKeyword = $event"
+                @update:work-order-page="updateWorkOrderPage"
+                @update:work-order-page-size="updateWorkOrderPageSize"
+                @open-detail="openWorkOrderDetail"
+              />
+
               <ProfileFollowedEventsSection
                 v-else-if="activeSection === 'followed-events'"
                 :paginated-events="followList.paginatedFollowedEvents.value"
@@ -213,6 +256,28 @@ const profileCenterQuery = computed(() => ({
       :confirm-text="PROFILE_DIALOG_COPY.deletePassengerConfirmText"
       @close="closeDeletePassengerModal"
       @confirm="confirmDeletePassenger"
+    />
+
+    <ProfileWorkOrderDetailDialog
+      v-model:reply-content="replyContent"
+      :open="!!selectedWorkOrderId"
+      :work-order="selectedWorkOrder"
+      :is-loading="workOrderDetailQuery.isLoading.value"
+      :is-replying="replyMutation.isPending.value"
+      :is-closing="closeWorkOrderMutation.isPending.value"
+      :reply-error="replyError"
+      @close="closeWorkOrderDetail"
+      @submit-reply="submitWorkOrderReply"
+      @close-work-order="openCloseWorkOrderModal"
+    />
+
+    <ConfirmDialog
+      :open="showCloseWorkOrderModal"
+      :title="PROFILE_DIALOG_COPY.closeWorkOrderTitle"
+      :description="PROFILE_DIALOG_COPY.closeWorkOrderDescription"
+      :confirm-text="PROFILE_DIALOG_COPY.closeWorkOrderConfirmText"
+      @close="closeCloseWorkOrderModal"
+      @confirm="confirmCloseWorkOrder"
     />
   </div>
 </template>

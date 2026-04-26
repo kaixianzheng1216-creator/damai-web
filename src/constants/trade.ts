@@ -1,7 +1,13 @@
 export type OrderFilterKey = 'all' | 'pending' | 'paid' | 'done' | 'cancel'
+export type WorkOrderFilterKey = 'all' | 'pending' | 'processing' | 'closed'
 
 export interface OrderFilterOption {
   key: OrderFilterKey
+  label: string
+}
+
+export interface WorkOrderFilterOption {
+  key: WorkOrderFilterKey
   label: string
 }
 
@@ -20,7 +26,14 @@ export const TICKET_STATUS = {
   REFUNDED: 3,
 } as const
 
+export const WORK_ORDER_STATUS = {
+  PENDING: 0,
+  PROCESSING: 1,
+  CLOSED: 3,
+} as const
+
 export const ORDER_PAGE_SIZE = 10
+export const WORK_ORDER_PAGE_SIZE = 10
 
 export const ORDER_FILTER_OPTIONS: OrderFilterOption[] = [
   { key: 'all', label: '全部' },
@@ -35,6 +48,21 @@ export const ORDER_STATUS_BY_FILTER: Partial<Record<Exclude<OrderFilterKey, 'all
   paid: ORDER_STATUS.PAID,
   done: ORDER_STATUS.REFUNDED,
   cancel: ORDER_STATUS.CANCELLED,
+}
+
+export const WORK_ORDER_FILTER_OPTIONS: WorkOrderFilterOption[] = [
+  { key: 'all', label: '全部' },
+  { key: 'pending', label: '待处理' },
+  { key: 'processing', label: '处理中' },
+  { key: 'closed', label: '已关闭' },
+]
+
+export const WORK_ORDER_STATUS_BY_FILTER: Partial<
+  Record<Exclude<WorkOrderFilterKey, 'all'>, number>
+> = {
+  pending: WORK_ORDER_STATUS.PENDING,
+  processing: WORK_ORDER_STATUS.PROCESSING,
+  closed: WORK_ORDER_STATUS.CLOSED,
 }
 
 export const PAYMENT_CHANNELS = {

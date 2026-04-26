@@ -1,6 +1,7 @@
 export type ProfileSectionKey =
   | 'orders'
   | 'tickets'
+  | 'work-orders'
   | 'followed-events'
   | 'followed-participants'
   | 'info'
@@ -16,6 +17,7 @@ export interface ProfileSectionOption {
 export const PROFILE_SECTIONS: ProfileSectionOption[] = [
   { key: 'orders', label: '订单管理', group: 'trade', icon: 'shopping-bag' },
   { key: 'tickets', label: '我的电子票', group: 'trade', icon: 'ticket' },
+  { key: 'work-orders', label: '我的工单', group: 'trade', icon: 'message-square' },
   { key: 'followed-events', label: '我的收藏', group: 'trade', icon: 'heart' },
   { key: 'followed-participants', label: '我的关注', group: 'trade', icon: 'star' },
   { key: 'info', label: '个人信息', group: 'account', icon: 'user' },
@@ -34,6 +36,9 @@ export const PROFILE_DIALOG_COPY = {
   deletePassengerTitle: '删除确认',
   deletePassengerDescription: '确认删除该购票人吗？删除后不可恢复。',
   deletePassengerConfirmText: '删除',
+  closeWorkOrderTitle: '关闭工单',
+  closeWorkOrderDescription: '确认关闭该工单吗？关闭后将无法继续回复。',
+  closeWorkOrderConfirmText: '关闭',
 } as const
 
 export const PROFILE_CONFIG = {

@@ -1,4 +1,4 @@
-import { ORDER_STATUS, TICKET_STATUS } from '@/constants'
+import { ORDER_STATUS, TICKET_STATUS, WORK_ORDER_STATUS } from '@/constants'
 
 export const mapOrderStatus = (status: number): '待付款' | '已支付' | '已完成' | '已取消' => {
   switch (status) {
@@ -42,6 +42,19 @@ export const getOrderStatusBadgeClass = (status: number | string): string => {
       return 'bg-gray-50 text-gray-600 border border-gray-200'
     case ORDER_STATUS.REFUNDED:
       return 'bg-blue-50 text-blue-700 border border-blue-200'
+    default:
+      return 'bg-transparent text-foreground border border-border'
+  }
+}
+
+export const getWorkOrderStatusBadgeClass = (status: number | string): string => {
+  switch (Number(status)) {
+    case WORK_ORDER_STATUS.PENDING:
+      return 'bg-orange-50 text-orange-700 border border-orange-200'
+    case WORK_ORDER_STATUS.PROCESSING:
+      return 'bg-blue-50 text-blue-700 border border-blue-200'
+    case WORK_ORDER_STATUS.CLOSED:
+      return 'bg-gray-50 text-gray-600 border border-gray-200'
     default:
       return 'bg-transparent text-foreground border border-border'
   }

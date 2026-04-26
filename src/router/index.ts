@@ -161,6 +161,12 @@ const router = createRouter({
           meta: { title: '电子票管理' },
         },
         {
+          path: 'work-orders',
+          name: 'admin-work-orders',
+          component: () => import('@/views/admin/WorkOrderListView.vue'),
+          meta: { title: '工单管理' },
+        },
+        {
           path: 'users',
           name: 'admin-users',
           component: () => import('@/views/admin/UserListView.vue'),

@@ -55,6 +55,7 @@ declare global {
   const getOrderStatusBadgeClass: typeof import('../utils/statusMappers').getOrderStatusBadgeClass
   const getTicketStatusClass: typeof import('../utils/statusMappers').getTicketStatusClass
   const getUserInfo: typeof import('../api/auth').getUserInfo
+  const getWorkOrderStatusBadgeClass: typeof import('../utils/statusMappers').getWorkOrderStatusBadgeClass
   const h: typeof import('vue').h
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
   const inject: typeof import('vue').inject
@@ -453,6 +454,9 @@ declare module 'vue' {
       (typeof import('../utils/statusMappers'))['getTicketStatusClass']
     >
     readonly getUserInfo: UnwrapRef<(typeof import('../api/auth'))['getUserInfo']>
+    readonly getWorkOrderStatusBadgeClass: UnwrapRef<
+      (typeof import('../utils/statusMappers'))['getWorkOrderStatusBadgeClass']
+    >
     readonly h: UnwrapRef<(typeof import('vue'))['h']>
     readonly ignorableWatch: UnwrapRef<(typeof import('@vueuse/core'))['ignorableWatch']>
     readonly inject: UnwrapRef<(typeof import('vue'))['inject']>
