@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://26.166.16.133:18083",
+      "url": "http://192.168.10.1:18083",
       "description": "Generated server url"
     }
   ],
@@ -2358,6 +2358,421 @@
         }
       }
     },
+    "/inner/user-follows/participants/page": {
+      "get": {
+        "tags": [
+          "user-follow-inner-controller"
+        ],
+        "operationId": "getFollowedParticipantPage",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseParticipantVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/user-follows/participants/events/page": {
+      "get": {
+        "tags": [
+          "user-follow-inner-controller"
+        ],
+        "operationId": "getFollowedParticipantEventPage",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseEventVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/user-follows/events/page": {
+      "get": {
+        "tags": [
+          "user-follow-inner-controller"
+        ],
+        "operationId": "getFollowedEventPage",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseUserFollowEventVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/events/{id}": {
+      "get": {
+        "tags": [
+          "活动内部接口"
+        ],
+        "summary": "获取活动详情",
+        "operationId": "getEventDetail_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "活动 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseEventDetailVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/events/page": {
+      "get": {
+        "tags": [
+          "活动内部接口"
+        ],
+        "summary": "获取活动分页列表",
+        "operationId": "getEventPage",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "活动、场馆、艺人、城市、分类关键词",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "活动、场馆、艺人、城市、分类关键词"
+            }
+          },
+          {
+            "name": "cityId",
+            "in": "query",
+            "description": "城市 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "城市 ID"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "分类 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "分类 ID"
+            }
+          },
+          {
+            "name": "timeType",
+            "in": "query",
+            "description": "时间筛选：0 全部，1 今天，2 本周末，3 一个月内，4 按日历",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "时间筛选：0 全部，1 今天，2 本周末，3 一个月内，4 按日历"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "指定日期，timeType=4 时生效",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "指定日期，timeType=4 时生效"
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "最低价格(分)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "最低价格(分)"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "最高价格(分)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "最高价格(分)"
+            }
+          },
+          {
+            "name": "sortType",
+            "in": "query",
+            "description": "排序方式：0 推荐排序，1 最近开场，2 最新上架",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "排序方式：0 推荐排序，1 最近开场，2 最新上架"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "活动状态：0 草稿，1 已发布，2 已下线",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "活动状态：0 草稿，1 已发布，2 已下线"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseEventVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/front/venues/{id}": {
       "get": {
         "tags": [
@@ -2430,7 +2845,7 @@
           "用户关注前台接口"
         ],
         "summary": "获取我关注的艺人分页列表",
-        "operationId": "getFollowedParticipantPage",
+        "operationId": "getFollowedParticipantPage_1",
         "parameters": [
           {
             "name": "page",
@@ -2472,16 +2887,6 @@
             "schema": {
               "type": "string",
               "description": "排序方向"
-            }
-          },
-          {
-            "name": "userId",
-            "in": "query",
-            "description": "用户 ID（仅 Agent 可指定）",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
             }
           }
         ],
@@ -2505,7 +2910,7 @@
           "用户关注前台接口"
         ],
         "summary": "获取我关注的艺人参与的活动分页列表",
-        "operationId": "getFollowedParticipantEventPage",
+        "operationId": "getFollowedParticipantEventPage_1",
         "parameters": [
           {
             "name": "page",
@@ -2547,16 +2952,6 @@
             "schema": {
               "type": "string",
               "description": "排序方向"
-            }
-          },
-          {
-            "name": "userId",
-            "in": "query",
-            "description": "用户 ID（仅 Agent 可指定）",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
             }
           }
         ],
@@ -2613,7 +3008,7 @@
           "用户关注前台接口"
         ],
         "summary": "获取我关注的活动分页列表",
-        "operationId": "getFollowedEventPage",
+        "operationId": "getFollowedEventPage_1",
         "parameters": [
           {
             "name": "page",
@@ -2655,16 +3050,6 @@
             "schema": {
               "type": "string",
               "description": "排序方向"
-            }
-          },
-          {
-            "name": "userId",
-            "in": "query",
-            "description": "用户 ID（仅 Agent 可指定）",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
             }
           }
         ],
@@ -2796,7 +3181,7 @@
           "活动前台接口"
         ],
         "summary": "获取活动详情",
-        "operationId": "getEventDetail_1",
+        "operationId": "getEventDetail_2",
         "parameters": [
           {
             "name": "id",
@@ -2829,7 +3214,7 @@
           "活动前台接口"
         ],
         "summary": "获取活动分页列表",
-        "operationId": "getEventPage",
+        "operationId": "getEventPage_1",
         "parameters": [
           {
             "name": "name",
@@ -3537,7 +3922,7 @@
           "活动管理接口"
         ],
         "summary": "活动分页列表",
-        "operationId": "getEventPage_1",
+        "operationId": "getEventPage_2",
         "parameters": [
           {
             "name": "name",
@@ -4109,14 +4494,19 @@
       },
       "ApiResponseVoid": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
-          "data": {}
+          "data": {
+            "description": "响应数据"
+          }
         }
       },
       "ServiceGuaranteeUpdateRequest": {
@@ -4510,16 +4900,20 @@
       },
       "ApiResponseLong": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "响应数据"
           }
         }
       },
@@ -4943,80 +5337,25 @@
           "isFeatured"
         ]
       },
-      "ApiResponseVenueVO": {
+      "ApiResponsePageResponseParticipantVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/VenueVO"
+            "$ref": "#/components/schemas/PageResponseParticipantVO",
+            "description": "响应数据"
           }
         }
       },
-      "VenueVO": {
-        "type": "object",
-        "description": "场馆 VO",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64",
-            "description": "场馆 ID"
-          },
-          "name": {
-            "type": "string",
-            "description": "场馆名称"
-          },
-          "province": {
-            "type": "string",
-            "description": "省份"
-          },
-          "city": {
-            "type": "string",
-            "description": "城市"
-          },
-          "district": {
-            "type": "string",
-            "description": "区县"
-          },
-          "address": {
-            "type": "string",
-            "description": "场馆地址"
-          }
-        }
-      },
-      "ApiResponseBoolean": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "data": {
-            "type": "boolean"
-          }
-        }
-      },
-      "ApiResponsePageResponseUserFollowParticipantVO": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/PageResponseUserFollowParticipantVO"
-          }
-        }
-      },
-      "PageResponseUserFollowParticipantVO": {
+      "PageResponseParticipantVO": {
         "type": "object",
         "description": "分页响应基类",
         "properties": {
@@ -5044,7 +5383,7 @@
             "type": "array",
             "description": "数据列表",
             "items": {
-              "$ref": "#/components/schemas/UserFollowParticipantVO"
+              "$ref": "#/components/schemas/ParticipantVO"
             }
           }
         }
@@ -5073,42 +5412,21 @@
           }
         }
       },
-      "UserFollowParticipantVO": {
-        "type": "object",
-        "description": "用户关注艺人 VO",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64",
-            "description": "关注记录 ID"
-          },
-          "participantId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "艺人 ID"
-          },
-          "participant": {
-            "$ref": "#/components/schemas/ParticipantVO",
-            "description": "艺人信息"
-          },
-          "createAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "关注时间"
-          }
-        }
-      },
       "ApiResponsePageResponseEventVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseEventVO"
+            "$ref": "#/components/schemas/PageResponseEventVO",
+            "description": "响应数据"
           }
         }
       },
@@ -5268,15 +5586,19 @@
       },
       "ApiResponsePageResponseUserFollowEventVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseUserFollowEventVO"
+            "$ref": "#/components/schemas/PageResponseUserFollowEventVO",
+            "description": "响应数据"
           }
         }
       },
@@ -5338,31 +5660,21 @@
           }
         }
       },
-      "ApiResponseParticipantVO": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/ParticipantVO"
-          }
-        }
-      },
       "ApiResponseEventDetailVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/EventDetailVO"
+            "$ref": "#/components/schemas/EventDetailVO",
+            "description": "响应数据"
           }
         }
       },
@@ -5662,17 +5974,182 @@
           }
         }
       },
-      "ApiResponseCityListVO": {
+      "ApiResponseVenueVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/CityListVO"
+            "$ref": "#/components/schemas/VenueVO",
+            "description": "响应数据"
+          }
+        }
+      },
+      "VenueVO": {
+        "type": "object",
+        "description": "场馆 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "场馆 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "场馆名称"
+          },
+          "province": {
+            "type": "string",
+            "description": "省份"
+          },
+          "city": {
+            "type": "string",
+            "description": "城市"
+          },
+          "district": {
+            "type": "string",
+            "description": "区县"
+          },
+          "address": {
+            "type": "string",
+            "description": "场馆地址"
+          }
+        }
+      },
+      "ApiResponseBoolean": {
+        "type": "object",
+        "description": "通用 API 响应结构",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "响应码"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "data": {
+            "type": "boolean",
+            "description": "响应数据"
+          }
+        }
+      },
+      "ApiResponsePageResponseUserFollowParticipantVO": {
+        "type": "object",
+        "description": "通用 API 响应结构",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "响应码"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseUserFollowParticipantVO",
+            "description": "响应数据"
+          }
+        }
+      },
+      "PageResponseUserFollowParticipantVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/UserFollowParticipantVO"
+            }
+          }
+        }
+      },
+      "UserFollowParticipantVO": {
+        "type": "object",
+        "description": "用户关注艺人 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关注记录 ID"
+          },
+          "participantId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "艺人 ID"
+          },
+          "participant": {
+            "$ref": "#/components/schemas/ParticipantVO",
+            "description": "艺人信息"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "关注时间"
+          }
+        }
+      },
+      "ApiResponseParticipantVO": {
+        "type": "object",
+        "description": "通用 API 响应结构",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "响应码"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ParticipantVO",
+            "description": "响应数据"
+          }
+        }
+      },
+      "ApiResponseCityListVO": {
+        "type": "object",
+        "description": "通用 API 响应结构",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "响应码"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CityListVO",
+            "description": "响应数据"
           }
         }
       },
@@ -5726,15 +6203,19 @@
       },
       "ApiResponseListCityVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "array",
+            "description": "响应数据",
             "items": {
               "$ref": "#/components/schemas/CityVO"
             }
@@ -5743,15 +6224,19 @@
       },
       "ApiResponseListCategoryVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "array",
+            "description": "响应数据",
             "items": {
               "$ref": "#/components/schemas/CategoryVO"
             }
@@ -5788,29 +6273,37 @@
       },
       "ApiResponseCategoryVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/CategoryVO"
+            "$ref": "#/components/schemas/CategoryVO",
+            "description": "响应数据"
           }
         }
       },
       "ApiResponseListBannerVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "array",
+            "description": "响应数据",
             "items": {
               "$ref": "#/components/schemas/BannerVO"
             }
@@ -5856,15 +6349,19 @@
       },
       "ApiResponseListVenueVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "array",
+            "description": "响应数据",
             "items": {
               "$ref": "#/components/schemas/VenueVO"
             }
@@ -5873,15 +6370,19 @@
       },
       "ApiResponsePageResponseVenueVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseVenueVO"
+            "$ref": "#/components/schemas/PageResponseVenueVO",
+            "description": "响应数据"
           }
         }
       },
@@ -5920,15 +6421,19 @@
       },
       "ApiResponseListServiceGuaranteeVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "array",
+            "description": "响应数据",
             "items": {
               "$ref": "#/components/schemas/ServiceGuaranteeVO"
             }
@@ -5937,29 +6442,37 @@
       },
       "ApiResponseServiceGuaranteeVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/ServiceGuaranteeVO"
+            "$ref": "#/components/schemas/ServiceGuaranteeVO",
+            "description": "响应数据"
           }
         }
       },
       "ApiResponsePageResponseServiceGuaranteeVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseServiceGuaranteeVO"
+            "$ref": "#/components/schemas/PageResponseServiceGuaranteeVO",
+            "description": "响应数据"
           }
         }
       },
@@ -5998,15 +6511,19 @@
       },
       "ApiResponseListSeriesVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "array",
+            "description": "响应数据",
             "items": {
               "$ref": "#/components/schemas/SeriesVO"
             }
@@ -6030,29 +6547,37 @@
       },
       "ApiResponseSeriesVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/SeriesVO"
+            "$ref": "#/components/schemas/SeriesVO",
+            "description": "响应数据"
           }
         }
       },
       "ApiResponsePageResponseSeriesVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseSeriesVO"
+            "$ref": "#/components/schemas/PageResponseSeriesVO",
+            "description": "响应数据"
           }
         }
       },
@@ -6091,62 +6616,19 @@
       },
       "ApiResponseListParticipantVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ParticipantVO"
-            }
-          }
-        }
-      },
-      "ApiResponsePageResponseParticipantVO": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/PageResponseParticipantVO"
-          }
-        }
-      },
-      "PageResponseParticipantVO": {
-        "type": "object",
-        "description": "分页响应基类",
-        "properties": {
-          "pageNumber": {
-            "type": "integer",
-            "format": "int64",
-            "description": "当前页码"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int64",
-            "description": "每页大小"
-          },
-          "totalRow": {
-            "type": "integer",
-            "format": "int64",
-            "description": "总数量"
-          },
-          "totalPage": {
-            "type": "integer",
-            "format": "int64",
-            "description": "总页数"
-          },
-          "records": {
-            "type": "array",
-            "description": "数据列表",
+            "description": "响应数据",
             "items": {
               "$ref": "#/components/schemas/ParticipantVO"
             }
@@ -6155,15 +6637,19 @@
       },
       "ApiResponseListNoticeVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "array",
+            "description": "响应数据",
             "items": {
               "$ref": "#/components/schemas/NoticeVO"
             }
@@ -6197,29 +6683,37 @@
       },
       "ApiResponseNoticeVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/NoticeVO"
+            "$ref": "#/components/schemas/NoticeVO",
+            "description": "响应数据"
           }
         }
       },
       "ApiResponsePageResponseNoticeVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseNoticeVO"
+            "$ref": "#/components/schemas/PageResponseNoticeVO",
+            "description": "响应数据"
           }
         }
       },
@@ -6258,29 +6752,37 @@
       },
       "ApiResponseCityVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/CityVO"
+            "$ref": "#/components/schemas/CityVO",
+            "description": "响应数据"
           }
         }
       },
       "ApiResponsePageResponseCityVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseCityVO"
+            "$ref": "#/components/schemas/PageResponseCityVO",
+            "description": "响应数据"
           }
         }
       },
@@ -6319,15 +6821,19 @@
       },
       "ApiResponsePageResponseCategoryVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseCategoryVO"
+            "$ref": "#/components/schemas/PageResponseCategoryVO",
+            "description": "响应数据"
           }
         }
       },
@@ -6366,29 +6872,37 @@
       },
       "ApiResponseBannerVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/BannerVO"
+            "$ref": "#/components/schemas/BannerVO",
+            "description": "响应数据"
           }
         }
       },
       "ApiResponsePageResponseBannerVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseBannerVO"
+            "$ref": "#/components/schemas/PageResponseBannerVO",
+            "description": "响应数据"
           }
         }
       },

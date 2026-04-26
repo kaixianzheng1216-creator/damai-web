@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://26.166.16.133:18082",
+      "url": "http://192.168.10.1:18082",
       "description": "Generated server url"
     }
   ],
@@ -725,14 +725,19 @@
       },
       "ApiResponseVoid": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
-          "data": {}
+          "data": {
+            "description": "响应数据"
+          }
         }
       },
       "AdminUpdateRequest": {
@@ -781,16 +786,20 @@
       },
       "ApiResponseLong": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "响应数据"
           }
         }
       },
@@ -814,15 +823,19 @@
       },
       "ApiResponseListPassengerVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
             "type": "array",
+            "description": "响应数据",
             "items": {
               "$ref": "#/components/schemas/PassengerVO"
             }
@@ -864,15 +877,19 @@
       },
       "ApiResponseUserVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/UserVO"
+            "$ref": "#/components/schemas/UserVO",
+            "description": "响应数据"
           }
         }
       },
@@ -910,15 +927,19 @@
       },
       "ApiResponsePageResponsePassengerVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponsePassengerVO"
+            "$ref": "#/components/schemas/PageResponsePassengerVO",
+            "description": "响应数据"
           }
         }
       },
@@ -957,15 +978,19 @@
       },
       "ApiResponsePageResponseUserVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseUserVO"
+            "$ref": "#/components/schemas/PageResponseUserVO",
+            "description": "响应数据"
           }
         }
       },
@@ -1009,62 +1034,64 @@
           "id": {
             "type": "integer",
             "format": "int64",
-            "description": "管理员ID",
-            "refType": null
+            "description": "管理员ID"
           },
           "username": {
             "type": "string",
-            "description": "用户名",
-            "refType": null
+            "description": "用户名"
           },
           "mobile": {
             "type": "string",
-            "description": "手机号",
-            "refType": null
+            "description": "手机号"
           },
           "avatarUrl": {
             "type": "string",
-            "description": "头像 URL",
-            "refType": null
+            "description": "头像 URL"
           },
           "status": {
             "type": "integer",
             "format": "int32",
-            "description": "账号状态：0 封禁，1 正常",
-            "refType": null
+            "description": "账号状态：0 封禁，1 正常"
           },
           "statusLabel": {
             "type": "string",
-            "description": "账号状态 Label",
-            "refType": null
+            "description": "账号状态 Label"
           }
         }
       },
       "ApiResponseAdminVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/AdminVO"
+            "$ref": "#/components/schemas/AdminVO",
+            "description": "响应数据"
           }
         }
       },
       "ApiResponsePageResponseAdminVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseAdminVO"
+            "$ref": "#/components/schemas/PageResponseAdminVO",
+            "description": "响应数据"
           }
         }
       },
@@ -1075,34 +1102,29 @@
           "pageNumber": {
             "type": "integer",
             "format": "int64",
-            "description": "当前页码",
-            "refType": null
+            "description": "当前页码"
           },
           "pageSize": {
             "type": "integer",
             "format": "int64",
-            "description": "每页大小",
-            "refType": null
+            "description": "每页大小"
           },
           "totalRow": {
             "type": "integer",
             "format": "int64",
-            "description": "总数量",
-            "refType": null
+            "description": "总数量"
           },
           "totalPage": {
             "type": "integer",
             "format": "int64",
-            "description": "总页数",
-            "refType": null
+            "description": "总页数"
           },
           "records": {
             "type": "array",
             "description": "数据列表",
             "items": {
               "$ref": "#/components/schemas/AdminVO"
-            },
-            "refType": "AdminVO"
+            }
           }
         }
       }

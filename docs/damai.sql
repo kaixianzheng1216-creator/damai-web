@@ -58,6 +58,33 @@ CREATE TABLE `passenger`
 INSERT INTO `passenger` (`id`, `user_id`, `name`, `id_type`, `id_no_masked`)
 VALUES (1, 1, '张三', 1, '110101********1234');
 
+CREATE TABLE `user_follow_event`
+(
+    `id`         BIGINT UNSIGNED  NOT NULL COMMENT '主键 ID',
+    `user_id`    BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '用户 ID',
+    `event_id`   BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '活动 ID',
+    `is_deleted` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 否，1 是',
+    `create_at`  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`  BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '创建者 ID',
+    `update_at`  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `update_by`  BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '更新者 ID',
+    PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `user_follow_participant`
+(
+    `id`             BIGINT UNSIGNED  NOT NULL COMMENT '主键 ID',
+    `user_id`        BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '用户 ID',
+    `participant_id` BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '艺人 ID',
+    `is_deleted`     TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 否，1 是',
+    `create_at`      DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`      BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '创建者 ID',
+    `update_at`      DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `update_by`      BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '更新者 ID',
+    PRIMARY KEY (`id`)
+);
+
+
 CREATE TABLE `banner`
 (
     `id`               BIGINT UNSIGNED  NOT NULL COMMENT '主键 ID',
@@ -262,28 +289,29 @@ VALUES (1, '测试演唱会系列'),
 
 CREATE TABLE `event`
 (
-    `id`                     BIGINT UNSIGNED  NOT NULL COMMENT '主键 ID',
-    `city_id`                BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '城市 ID',
-    `city_name_snapshot`     VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '城市名称快照',
-    `series_id`              BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '系列 ID',
-    `category_id`            BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '分类 ID',
-    `category_name_snapshot` VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '分类名称快照',
-    `venue_id`               BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '场馆 ID',
-    `venue_name_snapshot`    VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '场馆名称快照',
-    `name`                   VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '活动名称',
-    `cover_url`              VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '封面图 URL',
-    `min_price`              INT UNSIGNED     NOT NULL DEFAULT 0 COMMENT '最低票价(分)',
-    `max_price`              INT UNSIGNED     NOT NULL DEFAULT 0 COMMENT '最高票价(分)',
-    `first_session_start_at` DATETIME         NULL     DEFAULT NULL COMMENT '最早场次开始时间',
-    `last_session_end_at`    DATETIME         NULL     DEFAULT NULL COMMENT '最晚场次结束时间',
-    `recommend_weight`       INT              NOT NULL DEFAULT 0 COMMENT '推荐权重（越高越靠前）',
-    `follow_count`           BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '关注数',
-    `status`                 TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '活动状态：0 草稿，1 已发布，2 已下线',
-    `is_deleted`             TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 否，1 是',
-    `create_at`              DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `create_by`              BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '创建者 ID',
-    `update_at`              DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `update_by`              BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '更新者 ID',
+    `id`                            BIGINT UNSIGNED  NOT NULL COMMENT '主键 ID',
+    `city_id`                       BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '城市 ID',
+    `city_name_snapshot`            VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '城市名称快照',
+    `series_id`                     BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '系列 ID',
+    `category_id`                   BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '分类 ID',
+    `category_name_snapshot`        VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '分类名称快照',
+    `parent_category_name_snapshot` VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '一级分类名称快照',
+    `venue_id`                      BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '场馆 ID',
+    `venue_name_snapshot`           VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '场馆名称快照',
+    `name`                          VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '活动名称',
+    `cover_url`                     VARCHAR(512)     NOT NULL DEFAULT '' COMMENT '封面图 URL',
+    `min_price`                     INT UNSIGNED     NOT NULL DEFAULT 0 COMMENT '最低票价(分)',
+    `max_price`                     INT UNSIGNED     NOT NULL DEFAULT 0 COMMENT '最高票价(分)',
+    `first_session_start_at`        DATETIME         NULL     DEFAULT NULL COMMENT '最早场次开始时间',
+    `last_session_end_at`           DATETIME         NULL     DEFAULT NULL COMMENT '最晚场次结束时间',
+    `recommend_weight`              INT              NOT NULL DEFAULT 0 COMMENT '推荐权重（越高越靠前）',
+    `follow_count`                  BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '关注数',
+    `status`                        TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '活动状态：0 草稿，1 已发布，2 已下线',
+    `is_deleted`                    TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 否，1 是',
+    `create_at`                     DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`                     BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '创建者 ID',
+    `update_at`                     DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `update_by`                     BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '更新者 ID',
     PRIMARY KEY (`id`)
 );
 
@@ -496,10 +524,11 @@ CREATE TABLE `ticket`
 -- =============================================
 
 -- ----- Event 1: 测试演唱会 1 (演唱会, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (1, 1, 2, '流行', 1, '测试场馆', 1, '北京', '测试演唱会 1',
+VALUES (1, 1, 2, '流行', '演唱会', 1, '测试场馆', 1, '北京', '测试演唱会 1',
         'https://placehold.jp/600x800.png?text=Event1', 12800, 28000,
         '2026-05-01 19:30:00', '2026-05-01 22:00:00', 100, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -533,10 +562,11 @@ VALUES (1, 1, 500, 0, 0),
        (2, 2, 2000, 0, 0);
 
 -- ----- Event 2: 测试演唱会 2 (演唱会, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (2, 1, 2, '流行', 1, '测试场馆', 1, '北京', '测试演唱会 2',
+VALUES (2, 1, 2, '流行', '演唱会', 1, '测试场馆', 1, '北京', '测试演唱会 2',
         'https://placehold.jp/600x800.png?text=Event2', 12800, 28000,
         '2026-05-15 19:30:00', '2026-05-15 22:00:00', 95, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -570,10 +600,11 @@ VALUES (3, 3, 500, 0, 0),
        (4, 4, 2000, 0, 0);
 
 -- ----- Event 3: 测试演唱会 3 (演唱会, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (3, 1, 2, '流行', 1, '测试场馆', 1, '北京', '测试演唱会 3',
+VALUES (3, 1, 2, '流行', '演唱会', 1, '测试场馆', 1, '北京', '测试演唱会 3',
         'https://placehold.jp/600x800.png?text=Event3', 12800, 28000,
         '2026-05-30 19:30:00', '2026-05-30 22:00:00', 90, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -607,10 +638,11 @@ VALUES (5, 5, 500, 0, 0),
        (6, 6, 2000, 0, 0);
 
 -- ----- Event 4: 测试演唱会 4 (演唱会, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (4, 1, 2, '流行', 1, '测试场馆', 1, '北京', '测试演唱会 4',
+VALUES (4, 1, 2, '流行', '演唱会', 1, '测试场馆', 1, '北京', '测试演唱会 4',
         'https://placehold.jp/600x800.png?text=Event4', 12800, 28000,
         '2026-06-01 19:30:00', '2026-06-01 22:00:00', 85, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -644,10 +676,11 @@ VALUES (7, 7, 500, 0, 0),
        (8, 8, 2000, 0, 0);
 
 -- ----- Event 5: 测试演唱会 5 (演唱会, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (5, 1, 2, '流行', 1, '测试场馆', 1, '北京', '测试演唱会 5',
+VALUES (5, 1, 2, '流行', '演唱会', 1, '测试场馆', 1, '北京', '测试演唱会 5',
         'https://placehold.jp/600x800.png?text=Event5', 12800, 28000,
         '2026-06-15 19:30:00', '2026-06-15 22:00:00', 80, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -681,10 +714,11 @@ VALUES (9, 9, 500, 0, 0),
        (10, 10, 2000, 0, 0);
 
 -- ----- Event 6: 测试演唱会 6 (演唱会, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (6, 1, 2, '流行', 1, '测试场馆', 1, '北京', '测试演唱会 6',
+VALUES (6, 1, 2, '流行', '演唱会', 1, '测试场馆', 1, '北京', '测试演唱会 6',
         'https://placehold.jp/600x800.png?text=Event6', 12800, 28000,
         '2026-06-30 19:30:00', '2026-06-30 22:00:00', 75, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -718,10 +752,11 @@ VALUES (11, 11, 500, 0, 0),
        (12, 12, 2000, 0, 0);
 
 -- ----- Event 7: 测试话剧 1 (话剧歌剧, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (7, 2, 5, '话剧', 1, '测试场馆', 1, '北京', '测试话剧 1',
+VALUES (7, 2, 5, '话剧', '话剧歌剧', 1, '测试场馆', 1, '北京', '测试话剧 1',
         'https://placehold.jp/600x800.png?text=Event7', 12800, 28000,
         '2026-07-01 19:30:00', '2026-07-01 22:00:00', 70, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -755,10 +790,11 @@ VALUES (13, 13, 500, 0, 0),
        (14, 14, 2000, 0, 0);
 
 -- ----- Event 8: 测试话剧 2 (话剧歌剧, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (8, 2, 5, '话剧', 1, '测试场馆', 1, '北京', '测试话剧 2',
+VALUES (8, 2, 5, '话剧', '话剧歌剧', 1, '测试场馆', 1, '北京', '测试话剧 2',
         'https://placehold.jp/600x800.png?text=Event8', 12800, 28000,
         '2026-07-15 19:30:00', '2026-07-15 22:00:00', 65, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -792,10 +828,11 @@ VALUES (15, 15, 500, 0, 0),
        (16, 16, 2000, 0, 0);
 
 -- ----- Event 9: 测试体育赛事 1 (体育, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (9, 3, 8, '足球', 1, '测试场馆', 1, '北京', '测试体育赛事 1',
+VALUES (9, 3, 8, '足球', '体育', 1, '测试场馆', 1, '北京', '测试体育赛事 1',
         'https://placehold.jp/600x800.png?text=Event9', 12800, 28000,
         '2026-07-30 19:30:00', '2026-07-30 22:00:00', 60, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -829,10 +866,11 @@ VALUES (17, 17, 500, 0, 0),
        (18, 18, 2000, 0, 0);
 
 -- ----- Event 10: 测试体育赛事 2 (体育, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (10, 3, 8, '足球', 1, '测试场馆', 1, '北京', '测试体育赛事 2',
+VALUES (10, 3, 8, '足球', '体育', 1, '测试场馆', 1, '北京', '测试体育赛事 2',
         'https://placehold.jp/600x800.png?text=Event10', 12800, 28000,
         '2026-08-01 19:30:00', '2026-08-01 22:00:00', 55, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -866,10 +904,11 @@ VALUES (19, 19, 500, 0, 0),
        (20, 20, 2000, 0, 0);
 
 -- ----- Event 11: 测试儿童剧 1 (儿童亲子, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (11, 4, 11, '儿童剧', 1, '测试场馆', 1, '北京', '测试儿童剧 1',
+VALUES (11, 4, 11, '儿童剧', '儿童亲子', 1, '测试场馆', 1, '北京', '测试儿童剧 1',
         'https://placehold.jp/600x800.png?text=Event11', 12800, 28000,
         '2026-08-15 19:30:00', '2026-08-15 22:00:00', 50, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -903,10 +942,11 @@ VALUES (21, 21, 500, 0, 0),
        (22, 22, 2000, 0, 0);
 
 -- ----- Event 12: 测试儿童剧 2 (儿童亲子, 北京) -----
-INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `venue_id`, `venue_name_snapshot`,
+INSERT INTO `event` (`id`, `series_id`, `category_id`, `category_name_snapshot`, `parent_category_name_snapshot`,
+                     `venue_id`, `venue_name_snapshot`,
                      `city_id`, `city_name_snapshot`, `name`, `cover_url`, `min_price`, `max_price`,
                      `first_session_start_at`, `last_session_end_at`, `recommend_weight`, `status`)
-VALUES (12, 4, 11, '儿童剧', 1, '测试场馆', 1, '北京', '测试儿童剧 2',
+VALUES (12, 4, 11, '儿童剧', '儿童亲子', 1, '测试场馆', 1, '北京', '测试儿童剧 2',
         'https://placehold.jp/600x800.png?text=Event12', 12800, 28000,
         '2026-08-30 19:30:00', '2026-08-30 22:00:00', 45, 0);
 INSERT INTO `event_info` (`id`, `event_id`, `description`, `purchase_notice`, `admission_notice`)
@@ -939,33 +979,46 @@ INSERT INTO `ticket_inventory` (`id`, `ticket_type_id`, `total_qty`, `locked_qty
 VALUES (23, 23, 500, 0, 0),
        (24, 24, 2000, 0, 0);
 
--- ----- 用户关注表 -----
-CREATE TABLE `user_follow_event`
+CREATE TABLE `work_order`
 (
-    `id`               BIGINT UNSIGNED  NOT NULL COMMENT '主键 ID',
-    `user_id`          BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '用户 ID',
-    `event_id`         BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '活动 ID',
-    `is_deleted`       TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 否，1 是',
-    `create_at`        DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `create_by`        BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '创建者 ID',
-    `update_at`        DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `update_by`        BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '更新者 ID',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_user_event` (`user_id`, `event_id`),
-    KEY `idx_event_id` (`event_id`)
-);
+    `id`                 BIGINT UNSIGNED  NOT NULL COMMENT '主键 ID',
+    `user_id`            BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '用户 ID',
+    `work_order_no`      VARCHAR(64)      NOT NULL DEFAULT '' COMMENT '工单编号',
+    `type`               TINYINT UNSIGNED NOT NULL DEFAULT 3 COMMENT '类型：1-交易异常 2-用户投诉 3-其他',
+    `status`             TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '状态：0-待处理 1-处理中 3-已关闭',
+    `related_order_id`   BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '关联订单 ID',
+    `related_ticket_id`  BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '关联电子票 ID',
+    `title`              VARCHAR(256)     NOT NULL DEFAULT '' COMMENT '工单标题（AI 自动生成）',
+    `content`            TEXT             NOT NULL COMMENT '问题描述（AI 整理用户诉求）',
+    `last_reply_preview` VARCHAR(256)     NOT NULL DEFAULT '' COMMENT '最后回复预览',
+    `last_reply_at`      DATETIME                  DEFAULT NULL COMMENT '最后回复时间',
+    `user_has_unread`    TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户是否有未读：0-否 1-是',
+    `admin_has_unread`   TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '客服是否有未读：0-否 1-是',
+    `closed_by_type`     TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '关闭者类型：0-未关闭 1-用户 2-管理员',
+    `closed_by`          BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '关闭者 ID',
+    `is_deleted`         TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 否，1 是',
+    `create_by`          BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '创建者 ID',
+    `create_at`          DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`          BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '更新者 ID',
+    `update_at`          DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT ='客服工单表';
 
-CREATE TABLE `user_follow_participant`
+CREATE TABLE `work_order_reply`
 (
-    `id`               BIGINT UNSIGNED  NOT NULL COMMENT '主键 ID',
-    `user_id`          BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '用户 ID',
-    `participant_id`   BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '艺人 ID',
-    `is_deleted`       TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 否，1 是',
-    `create_at`        DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `create_by`        BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '创建者 ID',
-    `update_at`        DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `update_by`        BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '更新者 ID',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_user_participant` (`user_id`, `participant_id`),
-    KEY `idx_participant_id` (`participant_id`)
-);
+    `id`            BIGINT UNSIGNED  NOT NULL COMMENT '主键 ID',
+    `work_order_id` BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '工单 ID',
+    `sender_type`   TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '发送者类型：0-用户 1-客服',
+    `sender_id`     BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '发送者 ID',
+    `content`       TEXT             NOT NULL COMMENT '回复内容',
+    `is_deleted`    TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 否，1 是',
+    `create_by`     BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '创建者 ID',
+    `create_at`     DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`     BIGINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '更新者 ID',
+    `update_at`     DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT ='工单回复表';

@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://26.166.16.133:18085",
+      "url": "http://192.168.10.1:18085",
       "description": "Generated server url"
     }
   ],
@@ -109,13 +109,101 @@
         }
       }
     },
+    "/inner/ticket/{id}": {
+      "get": {
+        "tags": [
+          "电子票内部接口"
+        ],
+        "summary": "获取电子票详情",
+        "operationId": "getTicketDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "电子票 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTicketVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/ticket/my": {
+      "get": {
+        "tags": [
+          "电子票内部接口"
+        ],
+        "summary": "获取用户电子票分页列表",
+        "operationId": "getMyTicketPage",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseTicketVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/front/tickets/{id}": {
       "get": {
         "tags": [
           "电子票前台接口"
         ],
         "summary": "查看电子票详情",
-        "operationId": "getTicketDetail",
+        "operationId": "getTicketDetail_1",
         "parameters": [
           {
             "name": "id",
@@ -148,7 +236,7 @@
           "电子票前台接口"
         ],
         "summary": "我的电子票分页列表",
-        "operationId": "getMyTicketPage",
+        "operationId": "getMyTicketPage_1",
         "parameters": [
           {
             "name": "userId",
@@ -387,27 +475,36 @@
     "schemas": {
       "ApiResponseVoid": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
-          "data": {}
+          "data": {
+            "description": "响应数据"
+          }
         }
       },
       "ApiResponseTicketVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/TicketVO"
+            "$ref": "#/components/schemas/TicketVO",
+            "description": "响应数据"
           }
         }
       },
@@ -536,15 +633,19 @@
       },
       "ApiResponsePageResponseTicketVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseTicketVO"
+            "$ref": "#/components/schemas/PageResponseTicketVO",
+            "description": "响应数据"
           }
         }
       },

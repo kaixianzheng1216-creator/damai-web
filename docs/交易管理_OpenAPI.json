@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://26.166.16.133:18084",
+      "url": "http://192.168.10.1:18084",
       "description": "Generated server url"
     }
   ],
@@ -25,6 +25,163 @@
               "*/*": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/work-orders": {
+      "post": {
+        "tags": [
+          "工单内部接口"
+        ],
+        "summary": "创建客服工单",
+        "operationId": "createWorkOrder",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "工单类型：1-交易异常 2-用户投诉 3-其他",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "工单标题",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "content",
+            "in": "query",
+            "description": "问题描述",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "relatedOrderId",
+            "in": "query",
+            "description": "关联订单 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "relatedTicketId",
+            "in": "query",
+            "description": "关联电子票 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWorkOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/work-orders/{id}/replies": {
+      "post": {
+        "tags": [
+          "工单前台接口"
+        ],
+        "summary": "用户回复工单",
+        "operationId": "addUserReply",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkOrderReplyCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/work-orders/{id}/close": {
+      "post": {
+        "tags": [
+          "工单前台接口"
+        ],
+        "summary": "用户关闭工单",
+        "operationId": "closeWorkOrderByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
                 }
               }
             }
@@ -182,6 +339,82 @@
         }
       }
     },
+    "/admin/work-orders/{id}/replies": {
+      "post": {
+        "tags": [
+          "工单管理接口"
+        ],
+        "summary": "客服回复工单",
+        "operationId": "addAdminReply",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkOrderReplyCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/work-orders/{id}/close": {
+      "post": {
+        "tags": [
+          "工单管理接口"
+        ],
+        "summary": "管理员关闭工单",
+        "operationId": "closeWorkOrderByAdmin",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/inner/ticket-orders/{id}": {
       "get": {
         "tags": [
@@ -208,6 +441,181 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponseTicketOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inner/ticket-orders/my": {
+      "get": {
+        "tags": [
+          "订单内部接口"
+        ],
+        "summary": "获取用户订单分页列表",
+        "operationId": "getMyTicketOrderPage",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseTicketOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/work-orders/{id}": {
+      "get": {
+        "tags": [
+          "工单前台接口"
+        ],
+        "summary": "获取工单详情",
+        "operationId": "getMyWorkOrderDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWorkOrderDetailVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/front/work-orders/my": {
+      "get": {
+        "tags": [
+          "工单前台接口"
+        ],
+        "summary": "获取我的工单分页列表",
+        "operationId": "getMyWorkOrderPage",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "用户 ID"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态：0 待处理，1 处理中，3 已关闭",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "状态：0 待处理，1 处理中，3 已关闭"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseWorkOrderVO"
                 }
               }
             }
@@ -323,7 +731,7 @@
           "订单前台接口"
         ],
         "summary": "获取我的订单分页列表",
-        "operationId": "getMyTicketOrderPage",
+        "operationId": "getMyTicketOrderPage_1",
         "parameters": [
           {
             "name": "userId",
@@ -397,6 +805,126 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponsePageResponseTicketOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/work-orders": {
+      "get": {
+        "tags": [
+          "工单管理接口"
+        ],
+        "summary": "获取工单分页列表",
+        "operationId": "getWorkOrderPage",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户 ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "用户 ID"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态：0 待处理，1 处理中，3 已关闭",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "状态：0 待处理，1 处理中，3 已关闭"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "当前页码"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "每页大小"
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序字段"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序方向"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseWorkOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/work-orders/{id}": {
+      "get": {
+        "tags": [
+          "工单管理接口"
+        ],
+        "summary": "获取工单详情",
+        "operationId": "getWorkOrderDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWorkOrderDetailVO"
                 }
               }
             }
@@ -527,6 +1055,141 @@
   },
   "components": {
     "schemas": {
+      "ApiResponseWorkOrderVO": {
+        "type": "object",
+        "description": "通用 API 响应结构",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "响应码"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WorkOrderVO",
+            "description": "响应数据"
+          }
+        }
+      },
+      "WorkOrderVO": {
+        "type": "object",
+        "description": "工单 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "工单 ID"
+          },
+          "workOrderNo": {
+            "type": "string",
+            "description": "工单编号"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "类型：1-交易异常 2-用户投诉 3-其他"
+          },
+          "typeLabel": {
+            "type": "string",
+            "description": "类型 Label"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态：0-待处理 1-处理中 3-已关闭"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "状态 Label"
+          },
+          "relatedOrderId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关联订单 ID"
+          },
+          "relatedTicketId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关联电子票 ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "工单标题"
+          },
+          "content": {
+            "type": "string",
+            "description": "问题描述"
+          },
+          "lastReplyPreview": {
+            "type": "string",
+            "description": "最后回复预览"
+          },
+          "lastReplyAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "最后回复时间"
+          },
+          "userHasUnread": {
+            "type": "integer",
+            "format": "int32",
+            "description": "用户是否有未读：0-否 1-是"
+          },
+          "adminHasUnread": {
+            "type": "integer",
+            "format": "int32",
+            "description": "客服是否有未读：0-否 1-是"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "closedByType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "关闭者类型：0-未关闭 1-用户 2-管理员"
+          },
+          "closedBy": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关闭者 ID"
+          }
+        }
+      },
+      "WorkOrderReplyCreateRequest": {
+        "type": "object",
+        "description": "工单回复请求",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "回复内容",
+            "maxLength": 2000,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "content"
+        ]
+      },
+      "ApiResponseVoid": {
+        "type": "object",
+        "description": "通用 API 响应结构",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "响应码"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "data": {
+            "description": "响应数据"
+          }
+        }
+      },
       "TicketOrderCreateRequest": {
         "type": "object",
         "description": "创建订单请求",
@@ -571,15 +1234,19 @@
       },
       "ApiResponseOrderStatusVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/OrderStatusVO"
+            "$ref": "#/components/schemas/OrderStatusVO",
+            "description": "响应数据"
           }
         }
       },
@@ -615,15 +1282,19 @@
       },
       "ApiResponseRefundVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/RefundVO"
+            "$ref": "#/components/schemas/RefundVO",
+            "description": "响应数据"
           }
         }
       },
@@ -719,15 +1390,19 @@
       },
       "ApiResponsePaymentVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PaymentVO"
+            "$ref": "#/components/schemas/PaymentVO",
+            "description": "响应数据"
           }
         }
       },
@@ -817,29 +1492,21 @@
           }
         }
       },
-      "ApiResponseVoid": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "data": {}
-        }
-      },
       "ApiResponseTicketOrderVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/TicketOrderVO"
+            "$ref": "#/components/schemas/TicketOrderVO",
+            "description": "响应数据"
           }
         }
       },
@@ -988,35 +1655,21 @@
           }
         }
       },
-      "ApiResponseMapLongInteger": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "data": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        }
-      },
       "ApiResponsePageResponseTicketOrderVO": {
         "type": "object",
+        "description": "通用 API 响应结构",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "description": "响应码"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "响应消息"
           },
           "data": {
-            "$ref": "#/components/schemas/PageResponseTicketOrderVO"
+            "$ref": "#/components/schemas/PageResponseTicketOrderVO",
+            "description": "响应数据"
           }
         }
       },
@@ -1050,6 +1703,214 @@
             "items": {
               "$ref": "#/components/schemas/TicketOrderVO"
             }
+          }
+        }
+      },
+      "ApiResponseWorkOrderDetailVO": {
+        "type": "object",
+        "description": "通用 API 响应结构",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "响应码"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WorkOrderDetailVO",
+            "description": "响应数据"
+          }
+        }
+      },
+      "WorkOrderDetailVO": {
+        "type": "object",
+        "description": "工单详情 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "工单 ID"
+          },
+          "workOrderNo": {
+            "type": "string",
+            "description": "工单编号"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "类型：1-交易异常 2-用户投诉 3-其他"
+          },
+          "typeLabel": {
+            "type": "string",
+            "description": "类型 Label"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态：0-待处理 1-处理中 3-已关闭"
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "状态 Label"
+          },
+          "relatedOrderId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关联订单 ID"
+          },
+          "relatedTicketId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关联电子票 ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "工单标题"
+          },
+          "content": {
+            "type": "string",
+            "description": "问题描述"
+          },
+          "lastReplyPreview": {
+            "type": "string",
+            "description": "最后回复预览"
+          },
+          "lastReplyAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "最后回复时间"
+          },
+          "userHasUnread": {
+            "type": "integer",
+            "format": "int32",
+            "description": "用户是否有未读：0-否 1-是"
+          },
+          "adminHasUnread": {
+            "type": "integer",
+            "format": "int32",
+            "description": "客服是否有未读：0-否 1-是"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "closedByType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "关闭者类型：0-未关闭 1-用户 2-管理员"
+          },
+          "closedBy": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关闭者 ID"
+          },
+          "replies": {
+            "type": "array",
+            "description": "回复列表",
+            "items": {
+              "$ref": "#/components/schemas/WorkOrderReplyVO"
+            }
+          }
+        }
+      },
+      "WorkOrderReplyVO": {
+        "type": "object",
+        "description": "工单回复 VO",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "回复 ID"
+          },
+          "senderType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "发送者类型：0-用户 1-客服"
+          },
+          "content": {
+            "type": "string",
+            "description": "回复内容"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          }
+        }
+      },
+      "ApiResponsePageResponseWorkOrderVO": {
+        "type": "object",
+        "description": "通用 API 响应结构",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "响应码"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageResponseWorkOrderVO",
+            "description": "响应数据"
+          }
+        }
+      },
+      "PageResponseWorkOrderVO": {
+        "type": "object",
+        "description": "分页响应基类",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "当前页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "每页大小"
+          },
+          "totalRow": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总数量"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总页数"
+          },
+          "records": {
+            "type": "array",
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/WorkOrderVO"
+            }
+          }
+        }
+      },
+      "ApiResponseMapLongInteger": {
+        "type": "object",
+        "description": "通用 API 响应结构",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "响应码"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "响应数据"
           }
         }
       }
