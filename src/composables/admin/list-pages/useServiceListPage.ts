@@ -76,7 +76,8 @@ export function useServiceListPage() {
   const optionDialogTitle = computed(() => (editingOptionId.value ? '编辑选项' : '新建选项'))
 
   const syncSelectedService = () => {
-    if (!selectedService.value) return
+    const serviceId = selectedService.value?.id
+    if (!serviceId) return
     const fresh = list.value.find((service) => service.id === selectedService.value?.id)
     if (fresh) selectedService.value = fresh
   }
@@ -152,8 +153,13 @@ export function useServiceListPage() {
   })
 
   const createOptionMutation = useMutation({
-    mutationFn: (payload: ServiceOptionCreateRequest) =>
-      createServiceOption(selectedService.value!.id, payload),
+    mutationFn: (payload: ServiceOptionCreateRequest) => {
+      const serviceId = selectedService.value?.id
+      if (!serviceId) {
+        throw new Error('Missing selected service')
+      }
+      return createServiceOption(serviceId, payload)
+    },
     onSuccess: () => {
       invalidate()
       showOptionDialog.value = false
@@ -161,8 +167,13 @@ export function useServiceListPage() {
   })
 
   const updateOptionMutation = useMutation({
-    mutationFn: ({ optionId, data }: { optionId: string; data: ServiceOptionUpdateRequest }) =>
-      updateServiceOption(selectedService.value!.id, optionId, data),
+    mutationFn: ({ optionId, data }: { optionId: string; data: ServiceOptionUpdateRequest }) => {
+      const serviceId = selectedService.value?.id
+      if (!serviceId) {
+        throw new Error('Missing selected service')
+      }
+      return updateServiceOption(serviceId, optionId, data)
+    },
     onSuccess: () => {
       invalidate()
       showOptionDialog.value = false
@@ -200,7 +211,7 @@ export function useServiceListPage() {
 
   const handleDeleteService = (row: ServiceGuaranteeVO) => {
     openConfirm('确认删除', `确认删除服务保障「${row.name}」？`, () => {
-      deleteServiceMutation.mutate(row.id)
+      return deleteServiceMutation.mutateAsync(row.id)
     })
   }
 
@@ -228,10 +239,11 @@ export function useServiceListPage() {
   }
 
   const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
-    if (!selectedService.value) return
+    const serviceId = selectedService.value?.id
+    if (!serviceId) return
 
     openConfirm('确认删除', `确认删除选项「${row.name}」？`, () => {
-      deleteOptionMutation.mutate({ serviceId: selectedService.value!.id, optionId: row.id })
+      return deleteOptionMutation.mutateAsync({ serviceId, optionId: row.id })
     })
   }
 

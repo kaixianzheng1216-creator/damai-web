@@ -5,11 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui
 import { EVENT_STATUS } from '@/constants'
 import { useEventEditPage } from '@/composables/admin'
 
-import BasicTab from './EventEdit/BasicTab.vue'
-import SessionsAndTicketsTab from './EventEdit/SessionsAndTicketsTab.vue'
-import ServicesTab from './EventEdit/ServicesTab.vue'
-import ParticipantsTab from './EventEdit/ParticipantsTab.vue'
-import InfoTab from './EventEdit/InfoTab.vue'
+import BasicTab from '@/components/features/admin-event-edit/BasicTab.vue'
+import SessionsAndTicketsTab from '@/components/features/admin-event-edit/SessionsAndTicketsTab.vue'
+import ServicesTab from '@/components/features/admin-event-edit/ServicesTab.vue'
+import ParticipantsTab from '@/components/features/admin-event-edit/ParticipantsTab.vue'
+import InfoTab from '@/components/features/admin-event-edit/InfoTab.vue'
 
 const {
   eventId,

@@ -127,7 +127,7 @@ export function useSessionList(options: UseSessionListOptions) {
 
   const handleDeleteSession = (session: SessionVO) => {
     openConfirm('确认删除', `确认删除场次「${session.name}」？`, () =>
-      deleteSessionMutation.mutate(session.id),
+      deleteSessionMutation.mutateAsync(session.id),
     )
   }
 

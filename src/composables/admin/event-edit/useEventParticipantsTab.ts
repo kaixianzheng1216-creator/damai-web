@@ -30,7 +30,7 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
   })
 
   const queryKey = computed(() => [
-    'admin-participants-page',
+    ...queryKeys.admin.list('participants'),
     participantSearchQuery.value,
     currentPage.value,
   ])
@@ -102,13 +102,13 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
     }
 
     await batchAddParticipantsMutation.mutateAsync({
-      participantIds: newParticipantIds.map((id) => Number(id)),
+      participantIds: newParticipantIds,
     })
   }
 
   const handleRemoveParticipant = (eventParticipant: EventParticipantVO) => {
     openConfirm('确认移除', `确认移除参与方「${eventParticipant.participant.name}」？`, () =>
-      removeParticipantMutation.mutate(eventParticipant.id),
+      removeParticipantMutation.mutateAsync(eventParticipant.id),
     )
   }
 

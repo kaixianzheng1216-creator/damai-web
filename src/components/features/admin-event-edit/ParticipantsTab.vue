@@ -175,6 +175,9 @@ const {
     :open="confirmDialog.open"
     :title="confirmDialog.title"
     :description="confirmDialog.description"
+    :confirm-text="confirmDialog.confirmText"
+    :confirm-variant="confirmDialog.confirmVariant"
+    :loading="confirmDialog.isProcessing"
     @close="closeConfirm"
     @confirm="handleConfirm"
   />

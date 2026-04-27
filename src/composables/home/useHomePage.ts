@@ -9,7 +9,7 @@ import type {
   PageResponseEventVO,
   CityVO,
 } from '@/api/event'
-import { HOME_CONFIG, COMMON_CONFIG } from '@/constants'
+import { HOME_CONFIG, COMMON_CONFIG, queryKeys } from '@/constants'
 
 interface HomeSectionViewModel {
   key: string
@@ -29,17 +29,17 @@ export const useHomePage = () => {
   const selectedCity = useStorage('selected-city', COMMON_CONFIG.DEFAULT_CITY)
 
   const bannersQuery = useQuery({
-    queryKey: ['banners'],
+    queryKey: queryKeys.home.banners(),
     queryFn: () => fetchBanners(),
   })
 
   const categoriesQuery = useQuery({
-    queryKey: ['categories'],
+    queryKey: queryKeys.home.categories(),
     queryFn: fetchCategories,
   })
 
   const citiesQuery = useQuery({
-    queryKey: ['cities'],
+    queryKey: queryKeys.home.cities(),
     queryFn: fetchCitiesList,
   })
 
@@ -144,7 +144,7 @@ export const useHomePage = () => {
   )
 
   watch(selectedCity, async () => {
-    await queryClient.invalidateQueries({ queryKey: ['banners'] })
+    await queryClient.invalidateQueries({ queryKey: queryKeys.home.banners() })
     eventQueryResults.value.clear()
     topCategories.value.forEach((category) => {
       fetchCategoryEvents(category.id)

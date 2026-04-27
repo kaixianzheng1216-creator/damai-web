@@ -122,8 +122,8 @@ export interface TicketTypeInventoryAdjustRequest {
 }
 
 export interface ServiceItem {
-  serviceGuaranteeId: number
-  serviceGuaranteeOptionId: number
+  serviceGuaranteeId: string
+  serviceGuaranteeOptionId: string
 }
 
 export interface EventServiceBatchAddRequest {
@@ -131,7 +131,7 @@ export interface EventServiceBatchAddRequest {
 }
 
 export interface EventParticipantBatchAddRequest {
-  participantIds: number[]
+  participantIds: string[]
 }
 
 export interface EventInfoCreateRequest {

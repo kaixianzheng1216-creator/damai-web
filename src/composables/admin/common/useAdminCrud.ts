@@ -1,5 +1,5 @@
-import { ref, reactive, computed, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { shallowRef, reactive, computed, watch } from 'vue'
+import { useQuery, useMutation, useQueryClient, type QueryKey } from '@tanstack/vue-query'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 import type { PaginatedResponse } from '@/api/types'
 
@@ -14,10 +14,9 @@ export interface UseAdminCrudOptions<
   TForm extends Record<string, unknown>,
   TCreateRequest = TForm,
   TUpdateRequest = Partial<TForm>,
-  TPageParams extends AdminPageParams = AdminPageParams,
 > {
-  queryKeyBase: string
-  fetchPage: (params: TPageParams) => Promise<PaginatedResponse<TItem>>
+  queryKeyBase: QueryKey
+  fetchPage: (params: AdminPageParams) => Promise<PaginatedResponse<TItem>>
   createItem: (data: TCreateRequest) => Promise<unknown>
   updateItem: (id: string, data: TUpdateRequest) => Promise<unknown>
   deleteItem: (id: string) => Promise<unknown>
@@ -26,13 +25,18 @@ export interface UseAdminCrudOptions<
   getDeleteConfirmMessage?: (item: TItem) => { title: string; description: string }
 }
 
+interface UseAdminCrudSubmitOptions<TForm, TCreateRequest, TUpdateRequest> {
+  validate?: () => boolean | Promise<boolean>
+  getCreateData: (form: TForm) => TCreateRequest
+  getUpdateData: (form: TForm) => TUpdateRequest
+}
+
 export function useAdminCrud<
   TItem extends { id: string },
   TForm extends Record<string, unknown>,
   TCreateRequest = TForm,
   TUpdateRequest = Partial<TForm>,
-  TPageParams extends AdminPageParams = AdminPageParams,
->(options: UseAdminCrudOptions<TItem, TForm, TCreateRequest, TUpdateRequest, TPageParams>) {
+>(options: UseAdminCrudOptions<TItem, TForm, TCreateRequest, TUpdateRequest>) {
   const {
     queryKeyBase,
     fetchPage,
@@ -47,12 +51,12 @@ export function useAdminCrud<
   const queryClient = useQueryClient()
   const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
 
-  const currentPage = ref(1)
-  const pageSize = ref(defaultPageSize)
-  const searchName = ref('')
+  const currentPage = shallowRef(1)
+  const pageSize = shallowRef(defaultPageSize)
+  const searchName = shallowRef('')
 
   const queryKey = computed(() => [
-    queryKeyBase,
+    ...queryKeyBase,
     currentPage.value,
     pageSize.value,
     searchName.value,
@@ -65,15 +69,15 @@ export function useAdminCrud<
         page: currentPage.value,
         size: pageSize.value,
         name: searchName.value || undefined,
-      } as TPageParams),
+      }),
   })
 
   const list = computed(() => data.value?.records ?? [])
   const totalRow = computed(() => data.value?.totalRow ?? 0)
   const totalPages = computed(() => data.value?.totalPage ?? 1)
 
-  const showDialog = ref(false)
-  const editingId = ref<string | null>(null)
+  const showDialog = shallowRef(false)
+  const editingId = shallowRef<string | null>(null)
   const form = reactive({ ...initialForm }) as TForm
 
   const dialogTitle = computed(() => (editingId.value ? '编辑' : '新建'))
@@ -82,7 +86,7 @@ export function useAdminCrud<
     Object.assign(form, { ...initialForm })
   }
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: [queryKeyBase] })
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeyBase })
 
   const openCreate = () => {
     resetForm()
@@ -126,26 +130,22 @@ export function useAdminCrud<
     currentPage.value = 1
   })
 
-  const handleSubmit = async (options?: {
-    validate?: () => boolean | Promise<boolean>
-    getCreateData?: () => TCreateRequest
-    getUpdateData?: () => TUpdateRequest
-  }) => {
-    const { validate, getCreateData, getUpdateData } = options ?? {}
+  const handleSubmit = async (
+    options: UseAdminCrudSubmitOptions<TForm, TCreateRequest, TUpdateRequest>,
+  ) => {
+    const { validate, getCreateData, getUpdateData } = options
 
     if (validate && !(await validate())) {
       return
     }
 
     if (editingId.value) {
-      const updateData = getUpdateData ? getUpdateData() : (form as unknown as TUpdateRequest)
       await updateMutation.mutateAsync({
         id: editingId.value,
-        data: updateData,
+        data: getUpdateData(form),
       })
     } else {
-      const createData = getCreateData ? getCreateData() : (form as unknown as TCreateRequest)
-      await createMutation.mutateAsync(createData)
+      await createMutation.mutateAsync(getCreateData(form))
     }
   }
 
@@ -154,7 +154,7 @@ export function useAdminCrud<
       ? getDeleteConfirmMessage(item)
       : { title: '确认删除', description: '确认删除该项目？' }
 
-    openConfirm(title, description, () => deleteMutation.mutate(item.id))
+    openConfirm(title, description, () => deleteMutation.mutateAsync(item.id))
   }
 
   return {

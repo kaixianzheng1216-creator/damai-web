@@ -40,8 +40,8 @@ export function useParticipantDetailPage() {
     isFollowLoading,
   } = useFollowToggle({
     id: () => participantId.value,
-    followQueryKeyPrefix: 'participant-followed',
-    entityQueryKeyPrefix: 'participant-detail',
+    followQueryKey: queryKeys.participant.followed,
+    entityQueryKey: queryKeys.participant.detail,
     checkIsFollowed: checkIsFollowedParticipant,
     follow: followParticipant,
     unfollow: unfollowParticipant,

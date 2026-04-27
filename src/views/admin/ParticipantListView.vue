@@ -1,21 +1,11 @@
 <script setup lang="ts">
-import { h } from 'vue'
-import type { ColumnDef } from '@tanstack/vue-table'
+import AdminFormDialog from '@/components/admin/AdminFormDialog.vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import { createParticipantColumns } from '@/components/admin/listPageColumns'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import ImageUpload from '@/components/common/ImageUpload.vue'
-import { Button } from '@/components/common/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
 import { useParticipantListPage } from '@/composables/admin'
-import type { ParticipantVO } from '@/api/event'
 
 const {
   currentPage,
@@ -39,72 +29,7 @@ const {
   handleConfirm,
 } = useParticipantListPage()
 
-const columns: ColumnDef<ParticipantVO>[] = [
-  {
-    accessorKey: 'id',
-    header: 'ID',
-    size: 180,
-    cell: ({ row }) => String(row.getValue('id')),
-  },
-  {
-    id: 'avatar',
-    header: '头像',
-    size: 100,
-    cell: ({ row }) => {
-      const avatarUrl = row.original.avatarUrl
-      return avatarUrl
-        ? h('img', {
-            src: avatarUrl,
-            alt: row.original.name,
-            class: 'h-10 w-10 rounded-full border border-border object-cover',
-          })
-        : h(
-            'div',
-            {
-              class: 'flex-center h-10 w-10 rounded-full bg-muted text-muted-foreground',
-            },
-            '暂无',
-          )
-    },
-  },
-  {
-    accessorKey: 'name',
-    header: '名称',
-    cell: ({ row }) => String(row.getValue('name')),
-  },
-  {
-    id: 'actions',
-    header: '操作',
-    size: 160,
-    cell: ({ row }) =>
-      h('div', { class: 'flex items-center gap-2' }, [
-        h(
-          Button,
-          {
-            size: 'sm',
-            variant: 'outline',
-            onClick: (event: Event) => {
-              event.stopPropagation()
-              openEdit(row.original)
-            },
-          },
-          () => '编辑',
-        ),
-        h(
-          Button,
-          {
-            size: 'sm',
-            variant: 'destructive',
-            onClick: (event: Event) => {
-              event.stopPropagation()
-              handleDelete(row.original)
-            },
-          },
-          () => '删除',
-        ),
-      ]),
-  },
-]
+const columns = createParticipantColumns({ openEdit, handleDelete })
 </script>
 
 <template>
@@ -130,43 +55,34 @@ const columns: ColumnDef<ParticipantVO>[] = [
     </template>
   </DataTableCrud>
 
-  <Dialog v-model:open="showDialog">
-    <DialogContent class="max-w-md">
-      <DialogHeader>
-        <DialogTitle>{{ dialogTitle }}</DialogTitle>
-        <DialogDescription class="sr-only">维护参与方名称与头像</DialogDescription>
-      </DialogHeader>
-
-      <div class="grid gap-4 py-4">
-        <div class="grid gap-2">
-          <label for="participant-name" class="text-sm font-medium">
-            名称 <span class="text-destructive">*</span>
-          </label>
-          <Input id="participant-name" v-model="form.name" placeholder="请输入参与方名称" />
-        </div>
-        <div class="grid gap-2">
-          <label class="text-sm font-medium">头像</label>
-          <ImageUpload v-model="form.avatarUrl" />
-        </div>
+  <AdminFormDialog
+    v-model:open="showDialog"
+    :title="dialogTitle"
+    description="维护参与方名称与头像"
+    :is-saving="createMutation.isPending.value || updateMutation.isPending.value"
+    @submit="handleSubmit"
+  >
+    <div class="grid gap-4">
+      <div class="grid gap-2">
+        <label for="participant-name" class="text-sm font-medium">
+          名称 <span class="text-destructive">*</span>
+        </label>
+        <Input id="participant-name" v-model="form.name" placeholder="请输入参与方名称" />
       </div>
-
-      <DialogFooter>
-        <Button type="button" variant="outline" @click="showDialog = false">取消</Button>
-        <Button
-          type="button"
-          :disabled="createMutation.isPending.value || updateMutation.isPending.value"
-          @click="handleSubmit"
-        >
-          保存
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+      <div class="grid gap-2">
+        <label class="text-sm font-medium">头像</label>
+        <ImageUpload v-model="form.avatarUrl" />
+      </div>
+    </div>
+  </AdminFormDialog>
 
   <ConfirmDialog
     :open="confirmDialog.open"
     :title="confirmDialog.title"
     :description="confirmDialog.description"
+    :confirm-text="confirmDialog.confirmText"
+    :confirm-variant="confirmDialog.confirmVariant"
+    :loading="confirmDialog.isProcessing"
     @close="closeConfirm"
     @confirm="handleConfirm"
   />

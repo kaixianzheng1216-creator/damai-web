@@ -8,7 +8,7 @@ import { Button } from '@/components/common/ui/button'
 import { Badge } from '@/components/common/ui/badge'
 import { fetchAdminUserPage, updateAdminUserStatus } from '@/api/account/user'
 import type { UserVO } from '@/api/account'
-import { USER_STATUS } from '@/constants'
+import { USER_STATUS, queryKeys } from '@/constants'
 
 const queryClient = useQueryClient()
 const currentPage = ref(1)
@@ -71,7 +71,7 @@ const columns: ColumnDef<UserVO>[] = [
 ]
 
 const queryKey = computed(() => [
-  'admin-user-list',
+  ...queryKeys.admin.list('users'),
   currentPage.value,
   pageSize.value,
   searchUsername.value,
@@ -97,7 +97,7 @@ const handleSearch = () => {
   currentPage.value = 1
 }
 
-const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-user-list'] })
+const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.list('users') })
 
 const statusMutation = useMutation({
   mutationFn: ({ id, status }: { id: string; status: number }) => updateAdminUserStatus(id, status),

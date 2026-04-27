@@ -26,6 +26,7 @@ const {
   passengerKeyword,
   showPassengerModal,
   showDeletePassengerModal,
+  deletePassengerMutation,
   passengerError,
   passengerForm,
   orderFilter,
@@ -230,6 +231,8 @@ const allSections = computed(() => [...tradeSections.value, ...accountSections.v
       :title="PROFILE_DIALOG_COPY.deletePassengerTitle"
       :description="PROFILE_DIALOG_COPY.deletePassengerDescription"
       :confirm-text="PROFILE_DIALOG_COPY.deletePassengerConfirmText"
+      confirm-variant="destructive"
+      :loading="deletePassengerMutation.isPending.value"
       @close="closeDeletePassengerModal"
       @confirm="confirmDeletePassenger"
     />
@@ -252,6 +255,8 @@ const allSections = computed(() => [...tradeSections.value, ...accountSections.v
       :title="PROFILE_DIALOG_COPY.closeWorkOrderTitle"
       :description="PROFILE_DIALOG_COPY.closeWorkOrderDescription"
       :confirm-text="PROFILE_DIALOG_COPY.closeWorkOrderConfirmText"
+      confirm-variant="destructive"
+      :loading="closeWorkOrderMutation.isPending.value"
       @close="closeCloseWorkOrderModal"
       @confirm="confirmCloseWorkOrder"
     />

@@ -16,7 +16,7 @@ import {
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { fetchAdminPage, createAdmin, updateAdmin, updateAdminStatus } from '@/api/account/admin'
 import type { AdminVO, AdminCreateRequest, AdminUpdateRequest } from '@/api/account'
-import { USER_STATUS } from '@/constants'
+import { USER_STATUS, queryKeys } from '@/constants'
 
 const queryClient = useQueryClient()
 const currentPage = ref(1)
@@ -93,7 +93,7 @@ const columns: ColumnDef<AdminVO>[] = [
 ]
 
 const queryKey = computed(() => [
-  'admin-list',
+  ...queryKeys.admin.list('admins'),
   currentPage.value,
   pageSize.value,
   searchUsername.value,
@@ -149,7 +149,7 @@ const openEdit = (row: AdminVO) => {
   showDialog.value = true
 }
 
-const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-list'] })
+const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.list('admins') })
 
 const createMutation = useMutation({
   mutationFn: (data: AdminCreateRequest) => createAdmin(data),

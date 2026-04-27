@@ -141,7 +141,7 @@ const requestClose = (row?: WorkOrderVO) => {
   }
 
   openConfirm('关闭工单', `确认关闭「${title}」吗？关闭后用户与客服都无法继续回复。`, () =>
-    closeMutation.mutate(id),
+    closeMutation.mutateAsync(id),
   )
 }
 
@@ -254,7 +254,9 @@ const columns: ColumnDef<WorkOrderVO>[] = [
     :open="confirmDialog.open"
     :title="confirmDialog.title"
     :description="confirmDialog.description"
-    confirm-text="关闭"
+    :confirm-text="confirmDialog.confirmText"
+    :confirm-variant="confirmDialog.confirmVariant"
+    :loading="confirmDialog.isProcessing"
     @close="closeConfirm"
     @confirm="handleConfirm"
   />

@@ -88,8 +88,8 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
     }
 
     const services = selectedServices.value.map((item) => ({
-      serviceGuaranteeId: Number(item.serviceId),
-      serviceGuaranteeOptionId: Number(item.optionId),
+      serviceGuaranteeId: item.serviceId,
+      serviceGuaranteeOptionId: item.optionId,
     }))
     await batchAddServicesMutation.mutateAsync({ services })
   }
@@ -125,7 +125,7 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
 
   const handleRemoveService = (eventService: EventServiceGuaranteeVO) => {
     openConfirm('确认移除', `确认移除服务保障「${eventService.serviceGuarantee.name}」？`, () =>
-      removeServiceMutation.mutate(eventService.id),
+      removeServiceMutation.mutateAsync(eventService.id),
     )
   }
 

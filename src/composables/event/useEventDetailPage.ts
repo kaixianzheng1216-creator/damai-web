@@ -80,8 +80,8 @@ export const useEventDetailPage = () => {
     isFollowLoading,
   } = useFollowToggle({
     id: () => eventId.value,
-    followQueryKeyPrefix: 'event-followed',
-    entityQueryKeyPrefix: 'event-detail',
+    followQueryKey: queryKeys.event.followed,
+    entityQueryKey: queryKeys.event.detail,
     checkIsFollowed: checkIsFollowedEvent,
     follow: followEvent,
     unfollow: unfollowEvent,

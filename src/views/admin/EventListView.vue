@@ -20,7 +20,7 @@ import { fetchAdminCities } from '@/api/event/city'
 import { fetchAdminCategories } from '@/api/event/category'
 import { formatPrice } from '@/utils/format'
 import type { EventVO } from '@/api/event'
-import { EVENT_STATUS } from '@/constants'
+import { EVENT_STATUS, queryKeys } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 
 const router = useRouter()
@@ -35,12 +35,12 @@ const searchCityId = ref('')
 const searchCategoryId = ref('')
 
 const { data: citiesData } = useQuery({
-  queryKey: ['admin-cities-all'],
+  queryKey: queryKeys.admin.list('cities'),
   queryFn: fetchAdminCities,
 })
 
 const { data: categoriesData } = useQuery({
-  queryKey: ['admin-categories-all'],
+  queryKey: queryKeys.admin.list('categories'),
   queryFn: fetchAdminCategories,
 })
 
@@ -170,7 +170,7 @@ const columns: ColumnDef<EventVO>[] = [
 ]
 
 const queryKey = computed(() => [
-  'admin-events',
+  ...queryKeys.admin.list('events'),
   currentPage.value,
   searchName.value,
   searchCityId.value,
@@ -200,7 +200,7 @@ const list = computed(() => data.value?.records ?? [])
 const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
 const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 
-const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-events'] })
+const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.list('events') })
 
 const openCreate = () => {
   router.push('/admin/events/create')
@@ -226,15 +226,19 @@ const offlineMutation = useMutation({
 })
 
 const handleDelete = (row: EventVO) => {
-  openConfirm('确认删除', `确认删除活动「${row.name}」？`, () => deleteMutation.mutate(row.id))
+  openConfirm('确认删除', `确认删除活动「${row.name}」？`, () => deleteMutation.mutateAsync(row.id))
 }
 
 const handlePublish = (row: EventVO) => {
-  openConfirm('确认发布', `确认发布活动「${row.name}」？`, () => publishMutation.mutate(row.id))
+  openConfirm('确认发布', `确认发布活动「${row.name}」？`, () =>
+    publishMutation.mutateAsync(row.id),
+  )
 }
 
 const handleOffline = (row: EventVO) => {
-  openConfirm('确认下线', `确认下线活动「${row.name}」？`, () => offlineMutation.mutate(row.id))
+  openConfirm('确认下线', `确认下线活动「${row.name}」？`, () =>
+    offlineMutation.mutateAsync(row.id),
+  )
 }
 </script>
 
@@ -285,6 +289,9 @@ const handleOffline = (row: EventVO) => {
     :open="confirmDialog.open"
     :title="confirmDialog.title"
     :description="confirmDialog.description"
+    :confirm-text="confirmDialog.confirmText"
+    :confirm-variant="confirmDialog.confirmVariant"
+    :loading="confirmDialog.isProcessing"
     @close="closeConfirm"
     @confirm="handleConfirm"
   />

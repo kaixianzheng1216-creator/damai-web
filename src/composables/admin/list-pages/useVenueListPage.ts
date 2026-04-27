@@ -1,7 +1,8 @@
 import { computed } from 'vue'
-import { useAdminCrud } from './useAdminCrud'
+import { useAdminCrud } from '../common/useAdminCrud'
 import { createVenue, deleteVenue, fetchAdminVenuesPage, updateVenue } from '@/api/event/venue'
-import type { VenueCreateRequest, VenuePageRequest, VenueUpdateRequest, VenueVO } from '@/api/event'
+import { queryKeys } from '@/constants'
+import type { VenueCreateRequest, VenueUpdateRequest, VenueVO } from '@/api/event'
 
 type VenueForm = {
   name: string
@@ -12,14 +13,8 @@ type VenueForm = {
 }
 
 export function useVenueListPage() {
-  const crud = useAdminCrud<
-    VenueVO,
-    VenueForm,
-    VenueCreateRequest,
-    VenueUpdateRequest,
-    VenuePageRequest
-  >({
-    queryKeyBase: 'admin-venues',
+  const crud = useAdminCrud<VenueVO, VenueForm, VenueCreateRequest, VenueUpdateRequest>({
+    queryKeyBase: queryKeys.admin.list('venues'),
     fetchPage: fetchAdminVenuesPage,
     createItem: createVenue,
     updateItem: updateVenue,

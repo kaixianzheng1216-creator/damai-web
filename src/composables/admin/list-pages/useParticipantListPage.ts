@@ -1,17 +1,13 @@
 import { computed } from 'vue'
-import { useAdminCrud } from './useAdminCrud'
+import { useAdminCrud } from '../common/useAdminCrud'
+import { queryKeys } from '@/constants'
 import {
   createParticipant,
   deleteParticipant,
   fetchAdminParticipantsPage,
   updateParticipant,
 } from '@/api/event/participant'
-import type {
-  ParticipantCreateRequest,
-  ParticipantPageRequest,
-  ParticipantUpdateRequest,
-  ParticipantVO,
-} from '@/api/event'
+import type { ParticipantCreateRequest, ParticipantUpdateRequest, ParticipantVO } from '@/api/event'
 
 type ParticipantForm = {
   name: string
@@ -23,10 +19,9 @@ export function useParticipantListPage() {
     ParticipantVO,
     ParticipantForm,
     ParticipantCreateRequest,
-    ParticipantUpdateRequest,
-    ParticipantPageRequest
+    ParticipantUpdateRequest
   >({
-    queryKeyBase: 'admin-participants',
+    queryKeyBase: queryKeys.admin.list('participants'),
     fetchPage: fetchAdminParticipantsPage,
     createItem: createParticipant,
     updateItem: updateParticipant,

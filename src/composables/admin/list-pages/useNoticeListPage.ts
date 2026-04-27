@@ -123,7 +123,9 @@ export function useNoticeListPage() {
   }
 
   const handleDelete = (row: NoticeVO) => {
-    openConfirm('确认删除', `确认删除须知「${row.name}」？`, () => deleteMutation.mutate(row.id))
+    openConfirm('确认删除', `确认删除须知「${row.name}」？`, () =>
+      deleteMutation.mutateAsync(row.id),
+    )
   }
 
   return {

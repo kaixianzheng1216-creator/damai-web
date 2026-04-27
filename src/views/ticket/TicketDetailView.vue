@@ -6,6 +6,7 @@ import { fetchTicketById } from '@/api/ticket'
 import { formatDateTime } from '@/utils/format'
 import { getTicketStatusClass } from '@/utils/statusMappers'
 import { Badge } from '@/components/common/ui/badge'
+import { queryKeys } from '@/constants'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,7 +18,7 @@ const {
   isLoading,
   isError,
 } = useQuery({
-  queryKey: ['ticket-detail', ticketId],
+  queryKey: queryKeys.ticket.detail(ticketId),
   queryFn: () => fetchTicketById(ticketId.value),
   enabled: computed(() => !!ticketId.value),
 })

@@ -1,12 +1,12 @@
 import { computed } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useQuery, useMutation, useQueryClient, type QueryKey } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 
 interface UseFollowToggleOptions<TId, TFollowRequest> {
   id: () => TId
-  followQueryKeyPrefix: string
-  entityQueryKeyPrefix: string
+  followQueryKey: (id: TId) => QueryKey
+  entityQueryKey: (id: TId) => QueryKey
   checkIsFollowed: (id: TId) => Promise<boolean>
   follow: (request: TFollowRequest) => Promise<void>
   unfollow: (id: TId) => Promise<void>
@@ -15,8 +15,8 @@ interface UseFollowToggleOptions<TId, TFollowRequest> {
 
 export function useFollowToggle<TId extends string, TFollowRequest>({
   id,
-  followQueryKeyPrefix,
-  entityQueryKeyPrefix,
+  followQueryKey,
+  entityQueryKey,
   checkIsFollowed,
   follow,
   unfollow,
@@ -28,7 +28,7 @@ export function useFollowToggle<TId extends string, TFollowRequest>({
   const queryClient = useQueryClient()
 
   const isFollowedQuery = useQuery({
-    queryKey: computed(() => [followQueryKeyPrefix, id()]),
+    queryKey: computed(() => followQueryKey(id())),
     queryFn: () => checkIsFollowed(id()),
     enabled: computed(() => !!id() && id().length > 0 && userStore.isLoggedIn),
   })
@@ -36,16 +36,16 @@ export function useFollowToggle<TId extends string, TFollowRequest>({
   const followMutation = useMutation({
     mutationFn: follow,
     onSuccess: () => {
-      queryClient.setQueryData([followQueryKeyPrefix, id()], true)
-      queryClient.invalidateQueries({ queryKey: [entityQueryKeyPrefix, id()] })
+      queryClient.setQueryData(followQueryKey(id()), true)
+      queryClient.invalidateQueries({ queryKey: entityQueryKey(id()) })
     },
   })
 
   const unfollowMutation = useMutation({
     mutationFn: unfollow,
     onSuccess: () => {
-      queryClient.setQueryData([followQueryKeyPrefix, id()], false)
-      queryClient.invalidateQueries({ queryKey: [entityQueryKeyPrefix, id()] })
+      queryClient.setQueryData(followQueryKey(id()), false)
+      queryClient.invalidateQueries({ queryKey: entityQueryKey(id()) })
     },
   })
 

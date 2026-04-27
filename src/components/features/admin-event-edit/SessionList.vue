@@ -82,7 +82,8 @@ const {
             <div>
               <CardTitle class="text-base">{{ session.name }}</CardTitle>
               <p class="text-sm text-muted-foreground mt-0.5">
-                {{ formatDateTime(session.startAt!) }} — {{ formatDateTime(session.endAt!) }}
+                {{ formatDateTime(session.startAt, '-') }} —
+                {{ formatDateTime(session.endAt, '-') }}
               </p>
             </div>
             <div class="flex shrink-0 items-center gap-2">
@@ -220,6 +221,9 @@ const {
     :open="confirmDialog.open"
     :title="confirmDialog.title"
     :description="confirmDialog.description"
+    :confirm-text="confirmDialog.confirmText"
+    :confirm-variant="confirmDialog.confirmVariant"
+    :loading="confirmDialog.isProcessing"
     @close="closeConfirm"
     @confirm="handleConfirm"
   />

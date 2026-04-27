@@ -1,18 +1,8 @@
 <script setup lang="ts">
-import { h } from 'vue'
-import type { ColumnDef } from '@tanstack/vue-table'
+import AdminFormDialog from '@/components/admin/AdminFormDialog.vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import { createNoticeColumns } from '@/components/admin/listPageColumns'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { Badge } from '@/components/common/ui/badge'
-import { Button } from '@/components/common/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
 import {
   Select,
@@ -22,8 +12,6 @@ import {
   SelectValue,
 } from '@/components/common/ui/select'
 import { useNoticeListPage } from '@/composables/admin'
-import type { NoticeVO } from '@/api/event'
-import { NOTICE_TYPE_LABEL } from '@/constants'
 
 const {
   currentPage,
@@ -49,67 +37,7 @@ const {
   handleConfirm,
 } = useNoticeListPage()
 
-const columns: ColumnDef<NoticeVO>[] = [
-  {
-    accessorKey: 'id',
-    header: 'ID',
-    size: 180,
-  },
-  {
-    accessorKey: 'type',
-    header: '类型',
-    size: 120,
-    cell: ({ row }) => {
-      const type = row.original.type
-      return h(
-        Badge,
-        { class: 'border border-border bg-transparent text-foreground' },
-        () => NOTICE_TYPE_LABEL[type] ?? type,
-      )
-    },
-  },
-  {
-    accessorKey: 'name',
-    header: '名称',
-  },
-  {
-    accessorKey: 'sortOrder',
-    header: '排序',
-    size: 100,
-  },
-  {
-    id: 'actions',
-    header: '操作',
-    size: 160,
-    cell: ({ row }) =>
-      h('div', { class: 'flex items-center gap-2' }, [
-        h(
-          Button,
-          {
-            size: 'sm',
-            variant: 'outline',
-            onClick: (event: Event) => {
-              event.stopPropagation()
-              openEdit(row.original)
-            },
-          },
-          () => '编辑',
-        ),
-        h(
-          Button,
-          {
-            size: 'sm',
-            variant: 'destructive',
-            onClick: (event: Event) => {
-              event.stopPropagation()
-              handleDelete(row.original)
-            },
-          },
-          () => '删除',
-        ),
-      ]),
-  },
-]
+const columns = createNoticeColumns({ openEdit, handleDelete })
 </script>
 
 <template>
@@ -145,66 +73,57 @@ const columns: ColumnDef<NoticeVO>[] = [
     </template>
   </DataTableCrud>
 
-  <Dialog v-model:open="showDialog">
-    <DialogContent class="max-w-md">
-      <DialogHeader>
-        <DialogTitle>{{ dialogTitle }}</DialogTitle>
-        <DialogDescription class="sr-only">维护购票或入场须知</DialogDescription>
-      </DialogHeader>
-
-      <div class="grid gap-4 py-4">
-        <div class="grid gap-2">
-          <label id="notice-type-label" class="text-sm font-medium">
-            类型 <span class="text-destructive">*</span>
-          </label>
-          <Select
-            :model-value="String(form.type)"
-            :disabled="Boolean(editingId)"
-            @update:model-value="(value) => (form.type = Number(value))"
-          >
-            <SelectTrigger aria-labelledby="notice-type-label">
-              <SelectValue placeholder="选择类型" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">购票须知</SelectItem>
-              <SelectItem value="2">入场须知</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div class="grid gap-2">
-          <label for="notice-name" class="text-sm font-medium">
-            名称 <span class="text-destructive">*</span>
-          </label>
-          <Input id="notice-name" v-model="form.name" placeholder="请输入须知名称" />
-        </div>
-        <div class="grid gap-2">
-          <label for="notice-sort-order" class="text-sm font-medium">排序</label>
-          <Input
-            id="notice-sort-order"
-            v-model.number="form.sortOrder"
-            type="number"
-            placeholder="排序权重（可选，数值越小越靠前）"
-          />
-        </div>
-      </div>
-
-      <DialogFooter>
-        <Button type="button" variant="outline" @click="showDialog = false">取消</Button>
-        <Button
-          type="button"
-          :disabled="createMutation.isPending.value || updateMutation.isPending.value"
-          @click="handleSubmit"
+  <AdminFormDialog
+    v-model:open="showDialog"
+    :title="dialogTitle"
+    description="维护购票或入场须知"
+    :is-saving="createMutation.isPending.value || updateMutation.isPending.value"
+    @submit="handleSubmit"
+  >
+    <div class="grid gap-4">
+      <div class="grid gap-2">
+        <label id="notice-type-label" class="text-sm font-medium">
+          类型 <span class="text-destructive">*</span>
+        </label>
+        <Select
+          :model-value="String(form.type)"
+          :disabled="Boolean(editingId)"
+          @update:model-value="(value) => (form.type = Number(value))"
         >
-          保存
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+          <SelectTrigger aria-labelledby="notice-type-label">
+            <SelectValue placeholder="选择类型" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">购票须知</SelectItem>
+            <SelectItem value="2">入场须知</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="grid gap-2">
+        <label for="notice-name" class="text-sm font-medium">
+          名称 <span class="text-destructive">*</span>
+        </label>
+        <Input id="notice-name" v-model="form.name" placeholder="请输入须知名称" />
+      </div>
+      <div class="grid gap-2">
+        <label for="notice-sort-order" class="text-sm font-medium">排序</label>
+        <Input
+          id="notice-sort-order"
+          v-model.number="form.sortOrder"
+          type="number"
+          placeholder="排序权重（可选，数值越小越靠前）"
+        />
+      </div>
+    </div>
+  </AdminFormDialog>
 
   <ConfirmDialog
     :open="confirmDialog.open"
     :title="confirmDialog.title"
     :description="confirmDialog.description"
+    :confirm-text="confirmDialog.confirmText"
+    :confirm-variant="confirmDialog.confirmVariant"
+    :loading="confirmDialog.isProcessing"
     @close="closeConfirm"
     @confirm="handleConfirm"
   />

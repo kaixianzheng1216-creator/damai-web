@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchEventPage, fetchCitiesList, fetchCategories } from '@/api/event'
 import { DEFAULT_SEARCH_QUERY, TIME_OPTIONS, SORT_OPTIONS } from '@/constants/search'
+import { queryKeys } from '@/constants'
 import type { EventPageRequest, CityVO, CategoryVO } from '@/api/event'
 import dayjs from 'dayjs'
 
@@ -20,12 +21,12 @@ export const useEventSearchPage = () => {
   const router = useRouter()
 
   const citiesQuery = useQuery({
-    queryKey: ['search-cities'],
+    queryKey: queryKeys.event.searchCities(),
     queryFn: fetchCitiesList,
   })
 
   const categoriesQuery = useQuery({
-    queryKey: ['search-categories'],
+    queryKey: queryKeys.event.searchCategories(),
     queryFn: fetchCategories,
   })
 
@@ -65,7 +66,7 @@ export const useEventSearchPage = () => {
   }))
 
   const searchQuery = useQuery({
-    queryKey: ['event-search', queryParams],
+    queryKey: queryKeys.event.search(queryParams),
     queryFn: () => fetchEventPage(queryParams.value),
   })
 

@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
-import { useAdminCrud } from './useAdminCrud'
+import { useAdminCrud } from '../common/useAdminCrud'
+import { queryKeys } from '@/constants'
 import {
   createCity,
   deleteCity,
@@ -8,7 +9,7 @@ import {
   updateCity,
   updateCityFeatured,
 } from '@/api/event/city'
-import type { CityCreateRequest, CityPageRequest, CityUpdateRequest, CityVO } from '@/api/event'
+import type { CityCreateRequest, CityUpdateRequest, CityVO } from '@/api/event'
 
 type CityForm = {
   name: string
@@ -17,14 +18,8 @@ type CityForm = {
 }
 
 export function useCityListPage() {
-  const crud = useAdminCrud<
-    CityVO,
-    CityForm,
-    CityCreateRequest,
-    CityUpdateRequest,
-    CityPageRequest
-  >({
-    queryKeyBase: 'admin-cities',
+  const crud = useAdminCrud<CityVO, CityForm, CityCreateRequest, CityUpdateRequest>({
+    queryKeyBase: queryKeys.admin.list('cities'),
     fetchPage: fetchAdminCitiesPage,
     createItem: createCity,
     updateItem: updateCity,

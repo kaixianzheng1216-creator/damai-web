@@ -17,12 +17,16 @@ function isEntityIdListField(key: string): boolean {
   return key.endsWith('Ids') || key.endsWith('IDs')
 }
 
-function normalizeIdValue(value: unknown): unknown {
+export function normalizeId(value: unknown): unknown {
   if (typeof value === 'number' || typeof value === 'bigint') {
     return String(value)
   }
 
   return value
+}
+
+export function normalizeIdList(values: readonly unknown[]): unknown[] {
+  return values.map(normalizeId)
 }
 
 export function transformDateTimeFields(value: unknown): unknown {
@@ -59,11 +63,11 @@ export function normalizeResponseFields(value: unknown): unknown {
       }
 
       if (isEntityIdField(key)) {
-        return [key, normalizeIdValue(fieldValue)]
+        return [key, normalizeId(fieldValue)]
       }
 
       if (isEntityIdListField(key) && Array.isArray(fieldValue)) {
-        return [key, fieldValue.map(normalizeIdValue)]
+        return [key, normalizeIdList(fieldValue)]
       }
 
       return [key, normalizeResponseFields(fieldValue)]

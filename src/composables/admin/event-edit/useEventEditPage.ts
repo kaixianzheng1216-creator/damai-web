@@ -34,8 +34,15 @@ export function useEventEditPage() {
     queryClient.invalidateQueries({ queryKey: eventDetailQueryKey.value })
   }
 
+  const requireEventId = () => {
+    if (!eventId.value) {
+      throw new Error('Missing event id')
+    }
+    return eventId.value
+  }
+
   const publishMutation = useMutation({
-    mutationFn: () => publishEvent(eventId.value!),
+    mutationFn: () => publishEvent(requireEventId()),
     onSuccess: () => {
       toast.success('活动发布成功')
       invalidateEventDetail()
@@ -46,7 +53,7 @@ export function useEventEditPage() {
   })
 
   const offlineMutation = useMutation({
-    mutationFn: () => offlineEvent(eventId.value!),
+    mutationFn: () => offlineEvent(requireEventId()),
     onSuccess: () => {
       toast.success('活动已下线')
       invalidateEventDetail()

@@ -62,7 +62,7 @@ export function useSessionsAndTicketsTab(options: UseSessionsAndTicketsTabOption
 
   const handleDeleteTicketType = (ticketType: TicketTypeVO) => {
     openConfirm('确认删除', `确认删除票种「${ticketType.name}」？`, () =>
-      deleteTicketTypeMutation.mutate(ticketType.id),
+      deleteTicketTypeMutation.mutateAsync(ticketType.id),
     )
   }
 

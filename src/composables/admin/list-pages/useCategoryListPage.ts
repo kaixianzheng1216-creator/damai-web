@@ -205,12 +205,14 @@ export function useCategoryListPage() {
   }
 
   const handleDelete = (row: CategoryVO) => {
-    openConfirm('确认删除', `确认删除分类「${row.name}」？`, () => deleteMutation.mutate(row.id))
+    openConfirm('确认删除', `确认删除分类「${row.name}」？`, () =>
+      deleteMutation.mutateAsync(row.id),
+    )
   }
 
   const handleDeleteChild = (row: CategoryVO) => {
     openConfirm('确认删除', `确认删除子分类「${row.name}」？`, () =>
-      deleteChildMutation.mutate(row.id),
+      deleteChildMutation.mutateAsync(row.id),
     )
   }
 

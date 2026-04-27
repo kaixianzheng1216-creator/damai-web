@@ -7,6 +7,7 @@ import {
   HEADER_PROFILE_MENU_ITEMS,
   COMMON_CONFIG,
   AVATAR_PLACEHOLDERS,
+  queryKeys,
   type ProfileSectionKey,
 } from '@/constants'
 import { useUserStore } from '@/stores/user'
@@ -25,7 +26,7 @@ export const useHeaderState = () => {
   const selectedCity = useStorage<string>('selected-city', DEFAULT_CITY)
 
   const cityOptionsQuery = useQuery({
-    queryKey: ['city-options'],
+    queryKey: queryKeys.event.cityOptions(),
     queryFn: fetchGroupedCities,
   })
 

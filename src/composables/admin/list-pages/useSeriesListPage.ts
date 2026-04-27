@@ -1,26 +1,16 @@
 import { computed } from 'vue'
-import { useAdminCrud } from './useAdminCrud'
+import { useAdminCrud } from '../common/useAdminCrud'
 import { createSeries, deleteSeries, fetchAdminSeriesPage, updateSeries } from '@/api/event/series'
-import type {
-  SeriesCreateRequest,
-  SeriesEventVO,
-  SeriesPageRequest,
-  SeriesUpdateRequest,
-} from '@/api/event'
+import { queryKeys } from '@/constants'
+import type { SeriesCreateRequest, SeriesEventVO, SeriesUpdateRequest } from '@/api/event'
 
 type SeriesForm = {
   name: string
 }
 
 export function useSeriesListPage() {
-  const crud = useAdminCrud<
-    SeriesEventVO,
-    SeriesForm,
-    SeriesCreateRequest,
-    SeriesUpdateRequest,
-    SeriesPageRequest
-  >({
-    queryKeyBase: 'admin-series',
+  const crud = useAdminCrud<SeriesEventVO, SeriesForm, SeriesCreateRequest, SeriesUpdateRequest>({
+    queryKeyBase: queryKeys.admin.list('series'),
     fetchPage: fetchAdminSeriesPage,
     createItem: createSeries,
     updateItem: updateSeries,

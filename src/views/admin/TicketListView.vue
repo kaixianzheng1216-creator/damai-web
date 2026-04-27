@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { h } from 'vue'
-import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import { createTicketColumns } from '@/components/admin/listPageColumns'
 import ScanCheckinDialog from '@/components/admin/ScanCheckinDialog.vue'
-import { Badge } from '@/components/common/ui/badge'
 import { Button } from '@/components/common/ui/button'
 import { Input } from '@/components/common/ui/input'
 import {
@@ -14,8 +12,6 @@ import {
   SelectValue,
 } from '@/components/common/ui/select'
 import { useTicketListPage } from '@/composables/admin'
-import type { TicketVO } from '@/api/ticket/types'
-import { formatDateTime } from '@/utils/format'
 
 const {
   currentPage,
@@ -35,26 +31,7 @@ const {
   openScanDialog,
 } = useTicketListPage()
 
-const columns: ColumnDef<TicketVO>[] = [
-  { accessorKey: 'id', header: 'ID', size: 100 },
-  { accessorKey: 'ticketNo', header: '票号', size: 200 },
-  { accessorKey: 'eventNameSnapshot', header: '活动' },
-  { accessorKey: 'sessionNameSnapshot', header: '场次' },
-  { accessorKey: 'ticketTypeNameSnapshot', header: '票档', size: 100 },
-  { accessorKey: 'passengerNameSnapshot', header: '购票人', size: 100 },
-  {
-    accessorKey: 'status',
-    header: '状态',
-    size: 100,
-    cell: ({ row }) => h(Badge, { variant: 'outline' }, () => row.original.statusLabel),
-  },
-  {
-    accessorKey: 'createAt',
-    header: '创建时间',
-    size: 160,
-    cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '--'),
-  },
-]
+const columns = createTicketColumns()
 </script>
 
 <template>

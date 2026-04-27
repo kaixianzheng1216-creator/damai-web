@@ -175,7 +175,7 @@ export function useBannerListPage() {
 
   const handleDelete = (row: BannerVO) => {
     openConfirm('确认删除', `确认删除 Banner「${row.title}」？`, () =>
-      deleteMutation.mutate(row.id),
+      deleteMutation.mutateAsync(row.id),
     )
   }
 

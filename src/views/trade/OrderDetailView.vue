@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { fetchOrderById } from '@/api/trade'
 import { formatPrice, formatDateTime } from '@/utils/format'
 import { getOrderStatusBadgeClass } from '@/utils/statusMappers'
-import { ORDER_STATUS } from '@/constants'
+import { ORDER_STATUS, queryKeys } from '@/constants'
 import { Badge } from '@/components/common/ui/badge'
 import { Button } from '@/components/common/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
@@ -20,7 +20,7 @@ const {
   isLoading,
   isError,
 } = useQuery({
-  queryKey: ['order-detail', orderId],
+  queryKey: queryKeys.trade.orderDetail(orderId),
   queryFn: () => fetchOrderById(orderId.value),
   enabled: computed(() => !!orderId.value),
 })

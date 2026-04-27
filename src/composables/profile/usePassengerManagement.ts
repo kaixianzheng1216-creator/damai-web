@@ -186,6 +186,7 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
 
   return {
     passengerListQuery,
+    deletePassengerMutation,
     passengerList,
     passengerPage,
     passengerPageSize,

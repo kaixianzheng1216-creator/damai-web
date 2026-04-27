@@ -11,7 +11,7 @@ import { ADMIN_AUTH_COPY } from '@/constants/admin'
 import { AUTH_COPY } from '@/constants/auth'
 import { VALIDATION_PATTERNS } from '@/constants/validation'
 import { PROFILE_CONFIG } from '@/constants/profile'
-import { useAdminAuth } from '@/composables/admin/useAdminAuth'
+import { useAdminAuth } from '@/composables/admin'
 import { useCountdown } from '@/composables/common'
 import AuthPageShell from '@/components/features/auth/AuthPageShell.vue'
 
