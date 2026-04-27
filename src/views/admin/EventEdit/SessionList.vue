@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { toast } from 'vue3-toastify'
 import { Button } from '@/components/common/ui/button'
 import { Input } from '@/components/common/ui/input'
 import { Label } from '@/components/common/ui/label'
@@ -20,10 +17,10 @@ import {
 } from '@/components/common/ui/dropdown-menu'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
-import { batchAddSessions, updateSession, deleteSession } from '@/api/event/event'
-import { formatDateTime, formatDateTimeLocalInput } from '@/utils/format'
+import { formatDateTime } from '@/utils/format'
 import DateTimePicker from '@/components/common/DateTimePicker.vue'
-import type { SessionVO, SessionItem, SessionUpdateRequest } from '@/api/event'
+import type { SessionVO, TicketTypeVO } from '@/api/event'
+import { useSessionList } from '@/composables/admin'
 
 interface Props {
   eventId: string
@@ -35,135 +32,30 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   updated: []
   'create-ticket-type': [sessionId: string]
-  'edit-ticket-type': [ticketType: any]
-  'adjust-inventory': [ticketType: any]
-  'delete-ticket-type': [ticketType: any]
+  'edit-ticket-type': [ticketType: TicketTypeVO]
+  'adjust-inventory': [ticketType: TicketTypeVO]
+  'delete-ticket-type': [ticketType: TicketTypeVO]
   'copy-ticket-types': [session: SessionVO]
 }>()
 
-const queryClient = useQueryClient()
-
-const invalidateAll = () => {
-  queryClient.invalidateQueries({ queryKey: ['admin-event-detail', props.eventId] })
-}
-
-// ─── Confirm Dialog ───────────────────────────────────────
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
-}
-
-// ─── Session ──────────────────────────────────────────────
-
-const showSessionDialog = ref(false)
-const editingSessionId = ref<string | null>(null)
-
-const sessionForm = reactive<SessionItem & Partial<SessionUpdateRequest>>({
-  name: '',
-  startAt: '',
-  endAt: '',
+const {
+  confirmDialog,
+  showSessionDialog,
+  editingSessionId,
+  sessionForm,
+  batchSessionRows,
+  addBatchRow,
+  removeBatchRow,
+  openSessionCreate,
+  openSessionEdit,
+  handleSaveSession,
+  handleDeleteSession,
+  closeConfirm,
+  handleConfirm,
+} = useSessionList({
+  eventId: () => props.eventId,
+  onUpdated: () => emit('updated'),
 })
-
-const batchSessionRows = ref<Array<{ name: string; startAt: string; endAt: string }>>([
-  { name: '', startAt: '', endAt: '' },
-])
-
-const addBatchRow = () => {
-  batchSessionRows.value.push({ name: '', startAt: '', endAt: '' })
-}
-
-const removeBatchRow = (idx: number) => {
-  if (batchSessionRows.value.length > 1) {
-    batchSessionRows.value.splice(idx, 1)
-  }
-}
-
-const openSessionCreate = () => {
-  batchSessionRows.value = [{ name: '', startAt: '', endAt: '' }]
-  editingSessionId.value = null
-  showSessionDialog.value = true
-}
-
-const openSessionEdit = (session: SessionVO) => {
-  sessionForm.name = session.name
-  sessionForm.startAt = formatDateTimeLocalInput(session.startAt!)
-  sessionForm.endAt = formatDateTimeLocalInput(session.endAt!)
-  editingSessionId.value = session.id
-  showSessionDialog.value = true
-}
-
-const batchAddSessionsMutation = useMutation({
-  mutationFn: (sessions: SessionItem[]) => batchAddSessions(props.eventId, { sessions }),
-  onSuccess: () => {
-    toast.success('场次添加成功')
-    showSessionDialog.value = false
-    invalidateAll()
-    emit('updated')
-  },
-  onError: () => {
-    toast.error('添加失败')
-  },
-})
-
-const updateSessionMutation = useMutation({
-  mutationFn: ({ sessionId, data }: { sessionId: string; data: SessionUpdateRequest }) =>
-    updateSession(props.eventId, sessionId, data),
-  onSuccess: () => {
-    toast.success('场次更新成功')
-    showSessionDialog.value = false
-    invalidateAll()
-    emit('updated')
-  },
-  onError: () => {
-    toast.error('更新失败')
-  },
-})
-
-const deleteSessionMutation = useMutation({
-  mutationFn: (sessionId: string) => deleteSession(props.eventId, sessionId),
-  onSuccess: () => {
-    toast.success('场次删除成功')
-    invalidateAll()
-    emit('updated')
-  },
-  onError: () => {
-    toast.error('删除失败')
-  },
-})
-
-const handleSaveSession = async () => {
-  if (editingSessionId.value) {
-    if (!sessionForm.name) {
-      toast.error('请填写场次名称')
-      return
-    }
-    await updateSessionMutation.mutateAsync({
-      sessionId: editingSessionId.value,
-      data: sessionForm,
-    })
-  } else {
-    const validRows = batchSessionRows.value.filter((r) => r.name)
-    if (validRows.length === 0) {
-      toast.error('请至少填写一个场次名称')
-      return
-    }
-    await batchAddSessionsMutation.mutateAsync(validRows)
-  }
-}
-
-const handleDeleteSession = (session: SessionVO) => {
-  openConfirm('确认删除', `确认删除场次「${session.name}」？`, () =>
-    deleteSessionMutation.mutate(session.id),
-  )
-}
 </script>
 
 <template>

@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, h } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
-import { type ColumnDef } from '@tanstack/vue-table'
+import { h } from 'vue'
+import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import ScanCheckinDialog from '@/components/admin/ScanCheckinDialog.vue'
-import { Input } from '@/components/common/ui/input'
-import { Button } from '@/components/common/ui/button'
 import { Badge } from '@/components/common/ui/badge'
+import { Button } from '@/components/common/ui/button'
+import { Input } from '@/components/common/ui/input'
 import {
   Select,
   SelectContent,
@@ -14,27 +13,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/common/ui/select'
-import { fetchAdminTicketPage } from '@/api/ticket/ticket'
-import { formatDateTime } from '@/utils/format'
+import { useTicketListPage } from '@/composables/admin'
 import type { TicketVO } from '@/api/ticket/types'
-import { TICKET_STATUS } from '@/constants'
+import { formatDateTime } from '@/utils/format'
 
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchUserId = ref('')
-const searchOrderId = ref('')
-const searchEventId = ref('')
-const searchSessionId = ref('')
-const searchStatus = ref<string>('all')
-const showScanDialog = ref(false)
-
-const STATUS_OPTIONS = [
-  { label: '全部', value: 'all' },
-  { label: '未使用', value: String(TICKET_STATUS.UNUSED) },
-  { label: '已使用', value: String(TICKET_STATUS.USED) },
-  { label: '已作废', value: String(TICKET_STATUS.VOIDED) },
-  { label: '已退票', value: String(TICKET_STATUS.REFUNDED) },
-]
+const {
+  currentPage,
+  pageSize,
+  searchUserId,
+  searchOrderId,
+  searchEventId,
+  searchSessionId,
+  searchStatus,
+  showScanDialog,
+  isLoading,
+  list,
+  totalRow,
+  totalPages,
+  statusOptions,
+  handleSearch,
+  openScanDialog,
+} = useTicketListPage()
 
 const columns: ColumnDef<TicketVO>[] = [
   { accessorKey: 'id', header: 'ID', size: 100 },
@@ -56,39 +55,6 @@ const columns: ColumnDef<TicketVO>[] = [
     cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '--'),
   },
 ]
-
-const queryKey = computed(() => [
-  'admin-ticket-list',
-  currentPage.value,
-  pageSize.value,
-  searchUserId.value,
-  searchOrderId.value,
-  searchEventId.value,
-  searchSessionId.value,
-  searchStatus.value,
-])
-
-const { data, isLoading } = useQuery({
-  queryKey,
-  queryFn: () =>
-    fetchAdminTicketPage({
-      page: currentPage.value,
-      size: pageSize.value,
-      userId: searchUserId.value || undefined,
-      orderId: searchOrderId.value || undefined,
-      eventId: searchEventId.value || undefined,
-      sessionId: searchSessionId.value || undefined,
-      status: searchStatus.value !== 'all' ? Number(searchStatus.value) : undefined,
-    }),
-})
-
-const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
-const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
-
-const handleSearch = () => {
-  currentPage.value = 1
-}
 </script>
 
 <template>
@@ -107,7 +73,7 @@ const handleSearch = () => {
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
-        <Button size="sm" @click="showScanDialog = true">
+        <Button type="button" size="sm" @click="openScanDialog">
           <icon-lucide-scan-line class="mr-1 h-4 w-4" />
           扫码检票
         </Button>
@@ -116,8 +82,8 @@ const handleSearch = () => {
             <SelectValue placeholder="状态" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="opt in STATUS_OPTIONS" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
+            <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
             </SelectItem>
           </SelectContent>
         </Select>

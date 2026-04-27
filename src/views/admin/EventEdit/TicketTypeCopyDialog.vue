@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { toast } from 'vue3-toastify'
 import { Button } from '@/components/common/ui/button'
 import { Label } from '@/components/common/ui/label'
 import {
@@ -11,8 +8,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/common/ui/dialog'
-import { copyTicketTypes } from '@/api/event/event'
 import type { SessionVO } from '@/api/event'
+import { useTicketTypeCopyDialog } from '@/composables/admin'
 
 interface Props {
   open: boolean
@@ -28,60 +25,19 @@ const emit = defineEmits<{
   copied: []
 }>()
 
-const queryClient = useQueryClient()
-
-const invalidateAll = () => {
-  queryClient.invalidateQueries({ queryKey: ['admin-event-detail', props.eventId] })
-}
-
-const copyTargetSessionIds = ref<string[]>([])
-
-watch(
-  () => props.sourceSession,
-  () => {
-    copyTargetSessionIds.value = []
-  },
-)
-
-const toggleCopyTarget = (sessionId: string) => {
-  const idx = copyTargetSessionIds.value.indexOf(sessionId)
-  if (idx === -1) {
-    copyTargetSessionIds.value.push(sessionId)
-  } else {
-    copyTargetSessionIds.value.splice(idx, 1)
-  }
-}
-
-const copyTicketTypesMutation = useMutation({
-  mutationFn: ({
-    sourceSessionId,
-    targetSessionIds,
-  }: {
-    sourceSessionId: string
-    targetSessionIds: string[]
-  }) => copyTicketTypes(props.eventId, { sourceSessionId, targetSessionIds }),
-  onSuccess: () => {
-    toast.success('票种复制成功')
-    emit('update:open', false)
-    invalidateAll()
-    emit('copied')
-  },
-  onError: () => {
-    toast.error('复制失败')
-  },
+const {
+  copyTargetSessionIds,
+  targetSessions,
+  copyTicketTypesMutation,
+  toggleCopyTarget,
+  handleCopyTicketTypes,
+} = useTicketTypeCopyDialog({
+  eventId: () => props.eventId,
+  sourceSession: () => props.sourceSession,
+  allSessions: () => props.allSessions,
+  onOpenChange: (open) => emit('update:open', open),
+  onCopied: () => emit('copied'),
 })
-
-const handleCopyTicketTypes = async () => {
-  if (!props.sourceSession) return
-  if (copyTargetSessionIds.value.length === 0) {
-    toast.error('请选择目标场次')
-    return
-  }
-  await copyTicketTypesMutation.mutateAsync({
-    sourceSessionId: props.sourceSession.id,
-    targetSessionIds: copyTargetSessionIds.value,
-  })
-}
 </script>
 
 <template>
@@ -98,7 +54,7 @@ const handleCopyTicketTypes = async () => {
           <Label>选择目标场次</Label>
           <div class="space-y-2">
             <div
-              v-for="session in allSessions?.filter((s) => s.id !== sourceSession?.id)"
+              v-for="session in targetSessions"
               :key="session.id"
               class="flex items-center gap-2 cursor-pointer"
               @click="toggleCopyTarget(session.id)"
@@ -115,8 +71,14 @@ const handleCopyTicketTypes = async () => {
         </div>
       </div>
       <DialogFooter>
-        <Button variant="outline" @click="emit('update:open', false)">取消</Button>
-        <Button @click="handleCopyTicketTypes">确认复制</Button>
+        <Button type="button" variant="outline" @click="emit('update:open', false)">取消</Button>
+        <Button
+          type="button"
+          :disabled="copyTicketTypesMutation.isPending.value"
+          @click="handleCopyTicketTypes"
+        >
+          确认复制
+        </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

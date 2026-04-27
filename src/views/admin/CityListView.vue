@@ -1,28 +1,43 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { h } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Button } from '@/components/common/ui/button'
-import { Input } from '@/components/common/ui/input'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/common/ui/dialog'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import {
-  fetchAdminCitiesPage,
-  createCity,
-  updateCity,
-  deleteCity,
-  updateCityFeatured,
-} from '@/api/event/city'
-import type { CityVO, CityCreateRequest, CityUpdateRequest } from '@/api/event'
+import { Input } from '@/components/common/ui/input'
+import { useCityListPage } from '@/composables/admin'
+import type { CityVO } from '@/api/event'
 
-const queryClient = useQueryClient()
+const {
+  currentPage,
+  pageSize,
+  searchName,
+  isLoading,
+  list,
+  totalRow,
+  totalPages,
+  showDialog,
+  form,
+  dialogTitle,
+  confirmDialog,
+  createMutation,
+  updateMutation,
+  openCreate,
+  openEdit,
+  handleSubmit,
+  handleDelete,
+  toggleFeatured,
+  closeConfirm,
+  handleConfirm,
+} = useCityListPage()
 
 const columns: ColumnDef<CityVO>[] = [
   {
@@ -52,16 +67,19 @@ const columns: ColumnDef<CityVO>[] = [
     header: '热门',
     size: 100,
     cell: ({ row }) => {
-      const isFeatured = row.getValue('isFeatured') as number
+      const isFeatured = row.original.isFeatured === 1
       return h(
         Button,
         {
           size: 'sm',
-          variant: isFeatured === 1 ? 'default' : 'outline',
+          variant: isFeatured ? 'default' : 'outline',
           class: 'h-6 px-2 text-xs',
-          onClick: () => toggleFeatured(row.original),
+          onClick: (event: Event) => {
+            event.stopPropagation()
+            toggleFeatured(row.original)
+          },
         },
-        () => (isFeatured === 1 ? '热门' : '普通'),
+        () => (isFeatured ? '热门' : '普通'),
       )
     },
   },
@@ -76,8 +94,8 @@ const columns: ColumnDef<CityVO>[] = [
           {
             size: 'sm',
             variant: 'outline',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               openEdit(row.original)
             },
           },
@@ -88,8 +106,8 @@ const columns: ColumnDef<CityVO>[] = [
           {
             size: 'sm',
             variant: 'destructive',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               handleDelete(row.original)
             },
           },
@@ -98,135 +116,6 @@ const columns: ColumnDef<CityVO>[] = [
       ]),
   },
 ]
-
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchName = ref('')
-
-const queryKey = computed(() => [
-  'admin-cities',
-  currentPage.value,
-  pageSize.value,
-  searchName.value,
-])
-
-const { data, isLoading } = useQuery({
-  queryKey,
-  queryFn: () =>
-    fetchAdminCitiesPage({
-      page: currentPage.value,
-      size: pageSize.value,
-      name: searchName.value || undefined,
-    }),
-})
-
-const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
-const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
-
-const showDialog = ref(false)
-const editingId = ref<string | null>(null)
-const form = reactive<CityCreateRequest>({
-  name: '',
-  pinyin: '',
-  firstLetter: '',
-})
-
-const dialogTitle = computed(() => (editingId.value ? '编辑城市' : '新建城市'))
-
-const resetForm = () => {
-  form.name = ''
-  form.pinyin = ''
-  form.firstLetter = ''
-}
-
-const openCreate = () => {
-  resetForm()
-  editingId.value = null
-  showDialog.value = true
-}
-
-const openEdit = (row: CityVO) => {
-  form.name = row.name
-  form.pinyin = row.pinyin
-  form.firstLetter = row.firstLetter
-  editingId.value = row.id
-  showDialog.value = true
-}
-
-const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-cities'] })
-
-watch(searchName, () => {
-  currentPage.value = 1
-})
-
-const createMutation = useMutation({
-  mutationFn: (data: CityCreateRequest) => createCity(data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const updateMutation = useMutation({
-  mutationFn: ({ id, data }: { id: string; data: CityUpdateRequest }) => updateCity(id, data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const deleteMutation = useMutation({
-  mutationFn: (id: string) => deleteCity(id),
-  onSuccess: invalidate,
-})
-
-const featuredMutation = useMutation({
-  mutationFn: ({ id, isFeatured }: { id: string; isFeatured: number }) =>
-    updateCityFeatured(id, isFeatured),
-  onSuccess: invalidate,
-})
-
-const handleSubmit = async () => {
-  if (editingId.value) {
-    await updateMutation.mutateAsync({
-      id: editingId.value,
-      data: {
-        name: form.name || undefined,
-        pinyin: form.pinyin || undefined,
-        firstLetter: form.firstLetter || undefined,
-      },
-    })
-  } else {
-    if (!form.name || !form.pinyin || !form.firstLetter) return
-    await createMutation.mutateAsync({
-      name: form.name,
-      pinyin: form.pinyin,
-      firstLetter: form.firstLetter,
-    })
-  }
-}
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
-}
-
-const handleDelete = (row: CityVO) => {
-  openConfirm('确认删除', `确认删除城市「${row.name}」？`, () => deleteMutation.mutate(row.id))
-}
-
-const toggleFeatured = (row: CityVO) => {
-  const newValue = row.isFeatured === 1 ? 0 : 1
-  featuredMutation.mutate({ id: row.id, isFeatured: newValue })
-}
 </script>
 
 <template>
@@ -252,30 +141,43 @@ const toggleFeatured = (row: CityVO) => {
     </template>
   </DataTableCrud>
 
-  <Dialog :open="showDialog" @update:open="(v) => !v && (showDialog = false)">
+  <Dialog v-model:open="showDialog">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>{{ dialogTitle }}</DialogTitle>
+        <DialogDescription class="sr-only">维护城市名称、拼音和首字母</DialogDescription>
       </DialogHeader>
 
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
-          <label class="text-sm font-medium">城市名 <span class="text-destructive">*</span></label>
-          <Input v-model="form.name" placeholder="请输入城市名" />
+          <label for="city-name" class="text-sm font-medium">
+            城市名 <span class="text-destructive">*</span>
+          </label>
+          <Input id="city-name" v-model="form.name" placeholder="请输入城市名" />
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">拼音 <span class="text-destructive">*</span></label>
-          <Input v-model="form.pinyin" placeholder="请输入拼音，如 beijing" />
+          <label for="city-pinyin" class="text-sm font-medium">
+            拼音 <span class="text-destructive">*</span>
+          </label>
+          <Input id="city-pinyin" v-model="form.pinyin" placeholder="请输入拼音，如 beijing" />
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">首字母 <span class="text-destructive">*</span></label>
-          <Input v-model="form.firstLetter" placeholder="请输入首字母，如 B" maxlength="1" />
+          <label for="city-first-letter" class="text-sm font-medium">
+            首字母 <span class="text-destructive">*</span>
+          </label>
+          <Input
+            id="city-first-letter"
+            v-model="form.firstLetter"
+            placeholder="请输入首字母，如 B"
+            maxlength="1"
+          />
         </div>
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="showDialog = false">取消</Button>
+        <Button type="button" variant="outline" @click="showDialog = false">取消</Button>
         <Button
+          type="button"
           :disabled="createMutation.isPending.value || updateMutation.isPending.value"
           @click="handleSubmit"
         >

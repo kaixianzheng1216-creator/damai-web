@@ -1,40 +1,58 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { type ColumnDef } from '@tanstack/vue-table'
+import { h } from 'vue'
+import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { Input } from '@/components/common/ui/input'
-import { Button } from '@/components/common/ui/button'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Badge } from '@/components/common/ui/badge'
+import { Button } from '@/components/common/ui/button'
 import { Checkbox } from '@/components/common/ui/checkbox'
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/common/ui/dialog'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import {
-  fetchAdminServicesPage,
-  createService,
-  updateService,
-  deleteService,
-  createServiceOption,
-  updateServiceOption,
-  deleteServiceOption,
-} from '@/api/event/service'
-import type {
-  ServiceGuaranteeVO,
-  ServiceGuaranteeOptionVO,
-  ServiceGuaranteeCreateRequest,
-  ServiceGuaranteeUpdateRequest,
-  ServiceOptionCreateRequest,
-  ServiceOptionUpdateRequest,
-} from '@/api/event'
+import { Input } from '@/components/common/ui/input'
+import { useServiceListPage } from '@/composables/admin'
+import type { ServiceGuaranteeOptionVO, ServiceGuaranteeVO } from '@/api/event'
 import { BOOLEAN_TYPE } from '@/constants'
 
-const queryClient = useQueryClient()
+const {
+  currentPage,
+  pageSize,
+  searchName,
+  isLoading,
+  list,
+  totalRow,
+  totalPages,
+  selectedService,
+  currentOptions,
+  showServiceDialog,
+  showOptionsDialog,
+  showOptionDialog,
+  serviceForm,
+  serviceDialogTitle,
+  optionForm,
+  optionDialogTitle,
+  confirmDialog,
+  createServiceMutation,
+  updateServiceMutation,
+  createOptionMutation,
+  updateOptionMutation,
+  openCreateService,
+  openEditService,
+  openManageOptions,
+  openCreateOption,
+  openEditOption,
+  handleServiceSubmit,
+  handleDeleteService,
+  handleOptionSubmit,
+  handleDeleteOption,
+  setOptionBooleanType,
+  closeConfirm,
+  handleConfirm,
+} = useServiceListPage()
 
 const serviceColumns: ColumnDef<ServiceGuaranteeVO>[] = [
   {
@@ -62,8 +80,8 @@ const serviceColumns: ColumnDef<ServiceGuaranteeVO>[] = [
           {
             size: 'sm',
             variant: 'outline',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               openManageOptions(row.original)
             },
           },
@@ -74,8 +92,8 @@ const serviceColumns: ColumnDef<ServiceGuaranteeVO>[] = [
           {
             size: 'sm',
             variant: 'outline',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               openEditService(row.original)
             },
           },
@@ -86,8 +104,8 @@ const serviceColumns: ColumnDef<ServiceGuaranteeVO>[] = [
           {
             size: 'sm',
             variant: 'destructive',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               handleDeleteService(row.original)
             },
           },
@@ -118,7 +136,7 @@ const optionColumns: ColumnDef<ServiceGuaranteeOptionVO>[] = [
     size: 100,
     cell: ({ row }) => {
       const isBoolean = row.original.isBooleanType === BOOLEAN_TYPE.YES
-      return h(Badge, { class: 'bg-transparent text-foreground border border-border' }, () =>
+      return h(Badge, { class: 'border border-border bg-transparent text-foreground' }, () =>
         isBoolean ? '是' : '否',
       )
     },
@@ -134,8 +152,8 @@ const optionColumns: ColumnDef<ServiceGuaranteeOptionVO>[] = [
           {
             size: 'sm',
             variant: 'outline',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               openEditOption(row.original)
             },
           },
@@ -146,8 +164,8 @@ const optionColumns: ColumnDef<ServiceGuaranteeOptionVO>[] = [
           {
             size: 'sm',
             variant: 'destructive',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               handleDeleteOption(row.original)
             },
           },
@@ -156,230 +174,6 @@ const optionColumns: ColumnDef<ServiceGuaranteeOptionVO>[] = [
       ]),
   },
 ]
-
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchName = ref('')
-
-const queryKey = computed(() => [
-  'admin-services',
-  currentPage.value,
-  pageSize.value,
-  searchName.value,
-])
-
-const { data, isLoading } = useQuery({
-  queryKey,
-  queryFn: () =>
-    fetchAdminServicesPage({
-      page: currentPage.value,
-      size: pageSize.value,
-      name: searchName.value || undefined,
-    }),
-})
-
-const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
-const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
-const selectedService = ref<ServiceGuaranteeVO | null>(null)
-const currentOptions = computed(() => selectedService.value?.options ?? [])
-
-const syncSelectedService = () => {
-  if (!selectedService.value) return
-  const fresh = list.value.find((s) => s.id === selectedService.value!.id)
-  if (fresh) selectedService.value = fresh
-}
-
-const showServiceDialog = ref(false)
-const editingServiceId = ref<string | null>(null)
-const serviceForm = reactive<ServiceGuaranteeCreateRequest & ServiceGuaranteeUpdateRequest>({
-  name: '',
-  sortOrder: undefined,
-})
-
-const serviceDialogTitle = computed(() =>
-  editingServiceId.value ? '编辑服务保障' : '新建服务保障',
-)
-
-const resetServiceForm = () => {
-  serviceForm.name = ''
-  serviceForm.sortOrder = undefined
-}
-
-const openCreateService = () => {
-  resetServiceForm()
-  editingServiceId.value = null
-  showServiceDialog.value = true
-}
-
-const openEditService = (row: ServiceGuaranteeVO) => {
-  serviceForm.name = row.name
-  serviceForm.sortOrder = row.sortOrder
-  editingServiceId.value = row.id
-  showServiceDialog.value = true
-}
-
-const showOptionsDialog = ref(false)
-
-const openManageOptions = (row: ServiceGuaranteeVO) => {
-  const fresh = list.value.find((s) => s.id === row.id)
-  selectedService.value = fresh ?? row
-  showOptionsDialog.value = true
-}
-
-const showOptionDialog = ref(false)
-const editingOptionId = ref<string | null>(null)
-const optionForm = reactive<ServiceOptionCreateRequest & ServiceOptionUpdateRequest>({
-  name: '',
-  description: '',
-  isBooleanType: 0,
-})
-
-const optionDialogTitle = computed(() => (editingOptionId.value ? '编辑选项' : '新建选项'))
-
-const resetOptionForm = () => {
-  optionForm.name = ''
-  optionForm.description = ''
-  optionForm.isBooleanType = BOOLEAN_TYPE.NO
-}
-
-const openCreateOption = () => {
-  resetOptionForm()
-  editingOptionId.value = null
-  showOptionDialog.value = true
-}
-
-const openEditOption = (row: ServiceGuaranteeOptionVO) => {
-  optionForm.name = row.name
-  optionForm.description = row.description
-  optionForm.isBooleanType = row.isBooleanType
-  editingOptionId.value = row.id
-  showOptionDialog.value = true
-}
-
-const invalidate = () => {
-  queryClient.invalidateQueries({ queryKey: ['admin-services'] }).then(syncSelectedService)
-}
-
-watch(searchName, () => {
-  currentPage.value = 1
-})
-
-const createServiceMutation = useMutation({
-  mutationFn: (data: ServiceGuaranteeCreateRequest) => createService(data),
-  onSuccess: () => {
-    invalidate()
-    showServiceDialog.value = false
-  },
-})
-
-const updateServiceMutation = useMutation({
-  mutationFn: ({ id, data }: { id: string; data: ServiceGuaranteeUpdateRequest }) =>
-    updateService(id, data),
-  onSuccess: () => {
-    invalidate()
-    showServiceDialog.value = false
-  },
-})
-
-const deleteServiceMutation = useMutation({
-  mutationFn: (id: string) => deleteService(id),
-  onSuccess: () => {
-    invalidate()
-  },
-})
-
-const createOptionMutation = useMutation({
-  mutationFn: (data: ServiceOptionCreateRequest) =>
-    createServiceOption(selectedService.value!.id, data),
-  onSuccess: () => {
-    invalidate()
-    showOptionDialog.value = false
-  },
-})
-
-const updateOptionMutation = useMutation({
-  mutationFn: ({ optionId, data }: { optionId: string; data: ServiceOptionUpdateRequest }) =>
-    updateServiceOption(selectedService.value!.id, optionId, data),
-  onSuccess: () => {
-    invalidate()
-    showOptionDialog.value = false
-  },
-})
-
-const deleteOptionMutation = useMutation({
-  mutationFn: ({ serviceId, optionId }: { serviceId: string; optionId: string }) =>
-    deleteServiceOption(serviceId, optionId),
-  onSuccess: invalidate,
-})
-
-const handleServiceSubmit = async () => {
-  if (editingServiceId.value) {
-    await updateServiceMutation.mutateAsync({
-      id: editingServiceId.value,
-      data: {
-        name: serviceForm.name || undefined,
-        sortOrder: serviceForm.sortOrder,
-      },
-    })
-  } else {
-    if (!serviceForm.name) return
-    await createServiceMutation.mutateAsync({
-      name: serviceForm.name,
-      sortOrder: serviceForm.sortOrder,
-    })
-  }
-}
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
-}
-
-const handleDeleteService = (row: ServiceGuaranteeVO) => {
-  openConfirm('确认删除', `确认删除服务保障「${row.name}」？`, () => {
-    deleteServiceMutation.mutate(row.id)
-  })
-}
-
-const handleOptionSubmit = async () => {
-  if (!selectedService.value) return
-  if (editingOptionId.value) {
-    await updateOptionMutation.mutateAsync({
-      optionId: editingOptionId.value,
-      data: {
-        name: optionForm.name || undefined,
-        description: optionForm.description || undefined,
-        isBooleanType: optionForm.isBooleanType,
-      },
-    })
-  } else {
-    if (!optionForm.name) return
-    await createOptionMutation.mutateAsync({
-      name: optionForm.name,
-      description: optionForm.description || undefined,
-      isBooleanType: optionForm.isBooleanType,
-    })
-  }
-}
-
-const setOptionBooleanType = (checked: boolean | 'indeterminate') => {
-  optionForm.isBooleanType = checked === true ? BOOLEAN_TYPE.YES : BOOLEAN_TYPE.NO
-}
-
-const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
-  if (!selectedService.value) return
-  openConfirm('确认删除', `确认删除选项「${row.name}」？`, () => {
-    deleteOptionMutation.mutate({ serviceId: selectedService.value!.id, optionId: row.id })
-  })
-}
 </script>
 
 <template>
@@ -407,7 +201,7 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
     </DataTableCrud>
   </div>
 
-  <Dialog :open="showServiceDialog" @update:open="(v) => !v && (showServiceDialog = false)">
+  <Dialog v-model:open="showServiceDialog">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>{{ serviceDialogTitle }}</DialogTitle>
@@ -415,14 +209,15 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
 
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
-          <label class="text-sm font-medium"
-            >服务名称 <span class="text-destructive">*</span></label
-          >
-          <Input v-model="serviceForm.name" placeholder="请输入服务保障名称" />
+          <label for="service-name" class="text-sm font-medium">
+            服务名称 <span class="text-destructive">*</span>
+          </label>
+          <Input id="service-name" v-model="serviceForm.name" placeholder="请输入服务保障名称" />
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">排序</label>
+          <label for="service-sort-order" class="text-sm font-medium">排序</label>
           <Input
+            id="service-sort-order"
             v-model.number="serviceForm.sortOrder"
             type="number"
             placeholder="排序权重（可选，数值越小越靠前）"
@@ -431,8 +226,9 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="showServiceDialog = false">取消</Button>
+        <Button type="button" variant="outline" @click="showServiceDialog = false">取消</Button>
         <Button
+          type="button"
           :disabled="createServiceMutation.isPending.value || updateServiceMutation.isPending.value"
           @click="handleServiceSubmit"
         >
@@ -442,8 +238,8 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
     </DialogContent>
   </Dialog>
 
-  <Dialog :open="showOptionsDialog" @update:open="(v) => !v && (showOptionsDialog = false)">
-    <DialogContent class="sm:max-w-none w-[95vw] max-w-[1100px]">
+  <Dialog v-model:open="showOptionsDialog">
+    <DialogContent class="w-[95vw] max-w-[1100px] sm:max-w-none">
       <DialogHeader>
         <DialogTitle>「{{ selectedService?.name }}」的选项</DialogTitle>
       </DialogHeader>
@@ -463,7 +259,7 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
     </DialogContent>
   </Dialog>
 
-  <Dialog :open="showOptionDialog" @update:open="(v) => !v && (showOptionDialog = false)">
+  <Dialog v-model:open="showOptionDialog">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>{{ optionDialogTitle }}</DialogTitle>
@@ -471,14 +267,18 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
 
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
-          <label class="text-sm font-medium"
-            >选项名称 <span class="text-destructive">*</span></label
-          >
-          <Input v-model="optionForm.name" placeholder="请输入选项名称" />
+          <label for="service-option-name" class="text-sm font-medium">
+            选项名称 <span class="text-destructive">*</span>
+          </label>
+          <Input id="service-option-name" v-model="optionForm.name" placeholder="请输入选项名称" />
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">描述</label>
-          <Input v-model="optionForm.description" placeholder="请输入描述（可选）" />
+          <label for="service-option-description" class="text-sm font-medium">描述</label>
+          <Input
+            id="service-option-description"
+            v-model="optionForm.description"
+            placeholder="请输入描述（可选）"
+          />
         </div>
         <div class="flex items-center gap-3">
           <Checkbox
@@ -494,8 +294,9 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="showOptionDialog = false">取消</Button>
+        <Button type="button" variant="outline" @click="showOptionDialog = false">取消</Button>
         <Button
+          type="button"
           :disabled="createOptionMutation.isPending.value || updateOptionMutation.isPending.value"
           @click="handleOptionSubmit"
         >

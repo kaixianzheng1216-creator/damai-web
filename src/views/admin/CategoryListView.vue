@@ -1,27 +1,54 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { type ColumnDef } from '@tanstack/vue-table'
+import { h } from 'vue'
+import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { Input } from '@/components/common/ui/input'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Button } from '@/components/common/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/common/ui/dialog'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import {
-  fetchAdminCategoriesPage,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} from '@/api/event/category'
-import type { CategoryVO, CategoryCreateRequest, CategoryUpdateRequest } from '@/api/event'
+import { Input } from '@/components/common/ui/input'
+import { useCategoryListPage } from '@/composables/admin'
+import type { CategoryVO } from '@/api/event'
 
-const queryClient = useQueryClient()
+const {
+  currentPage,
+  pageSize,
+  searchName,
+  isLoading,
+  list,
+  totalRow,
+  totalPages,
+  showDialog,
+  showChildrenDialog,
+  showChildDialog,
+  selectedParent,
+  currentChildren,
+  form,
+  childForm,
+  dialogTitle,
+  childDialogTitle,
+  confirmDialog,
+  createMutation,
+  updateMutation,
+  createChildMutation,
+  updateChildMutation,
+  openCreate,
+  openEdit,
+  openManageChildren,
+  openCreateChild,
+  openEditChild,
+  handleSubmit,
+  handleChildSubmit,
+  handleDelete,
+  handleDeleteChild,
+  closeConfirm,
+  handleConfirm,
+} = useCategoryListPage()
 
 const columns: ColumnDef<CategoryVO>[] = [
   {
@@ -63,8 +90,8 @@ const columns: ColumnDef<CategoryVO>[] = [
                 {
                   size: 'sm',
                   variant: 'outline',
-                  onClick: (e: Event) => {
-                    e.stopPropagation()
+                  onClick: (event: Event) => {
+                    event.stopPropagation()
                     openManageChildren(row.original)
                   },
                 },
@@ -76,8 +103,8 @@ const columns: ColumnDef<CategoryVO>[] = [
             {
               size: 'sm',
               variant: 'outline',
-              onClick: (e: Event) => {
-                e.stopPropagation()
+              onClick: (event: Event) => {
+                event.stopPropagation()
                 openEdit(row.original)
               },
             },
@@ -88,8 +115,8 @@ const columns: ColumnDef<CategoryVO>[] = [
             {
               size: 'sm',
               variant: 'destructive',
-              onClick: (e: Event) => {
-                e.stopPropagation()
+              onClick: (event: Event) => {
+                event.stopPropagation()
                 handleDelete(row.original)
               },
             },
@@ -130,8 +157,8 @@ const childColumns: ColumnDef<CategoryVO>[] = [
           {
             size: 'sm',
             variant: 'outline',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               openEditChild(row.original)
             },
           },
@@ -142,8 +169,8 @@ const childColumns: ColumnDef<CategoryVO>[] = [
           {
             size: 'sm',
             variant: 'destructive',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               handleDeleteChild(row.original)
             },
           },
@@ -152,212 +179,6 @@ const childColumns: ColumnDef<CategoryVO>[] = [
       ]),
   },
 ]
-
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchName = ref('')
-
-const queryKey = computed(() => [
-  'admin-categories',
-  currentPage.value,
-  pageSize.value,
-  searchName.value,
-])
-
-const { data, isLoading } = useQuery({
-  queryKey,
-  queryFn: () =>
-    fetchAdminCategoriesPage({
-      page: currentPage.value,
-      size: pageSize.value,
-      name: searchName.value || undefined,
-    }),
-})
-
-const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
-const totalPages = computed(() => Number(data.value?.totalPage ?? 0))
-
-const showDialog = ref(false)
-const editingId = ref<string | null>(null)
-const form = reactive({
-  name: '',
-  sortOrder: 0,
-})
-
-const showChildrenDialog = ref(false)
-const selectedParent = ref<CategoryVO | null>(null)
-const currentChildren = computed(() => selectedParent.value?.children ?? [])
-
-const showChildDialog = ref(false)
-const editingChildId = ref<string | null>(null)
-const childForm = reactive({
-  name: '',
-  sortOrder: 0,
-})
-
-const dialogTitle = computed(() => (editingId.value ? '编辑分类' : '新建分类'))
-const childDialogTitle = computed(() => (editingChildId.value ? '编辑子分类' : '新建子分类'))
-
-const resetForm = () => {
-  form.name = ''
-  form.sortOrder = 0
-}
-
-const resetChildForm = () => {
-  childForm.name = ''
-  childForm.sortOrder = 0
-}
-
-const openCreate = () => {
-  resetForm()
-  editingId.value = null
-  showDialog.value = true
-}
-
-const openEdit = (row: CategoryVO) => {
-  form.name = row.name
-  form.sortOrder = row.sortOrder
-  editingId.value = row.id
-  showDialog.value = true
-}
-
-const openManageChildren = (row: CategoryVO) => {
-  selectedParent.value = row
-  showChildrenDialog.value = true
-}
-
-const openCreateChild = () => {
-  resetChildForm()
-  editingChildId.value = null
-  showChildDialog.value = true
-}
-
-const openEditChild = (row: CategoryVO) => {
-  childForm.name = row.name
-  childForm.sortOrder = row.sortOrder
-  editingChildId.value = row.id
-  showChildDialog.value = true
-}
-
-const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-categories'] })
-
-const syncSelectedParent = () => {
-  if (!selectedParent.value) return
-  const fresh = list.value.find((s) => s.id === selectedParent.value!.id)
-  if (fresh) selectedParent.value = fresh
-}
-
-watch(searchName, () => {
-  currentPage.value = 1
-})
-
-const createMutation = useMutation({
-  mutationFn: (data: CategoryCreateRequest) => createCategory(data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const updateMutation = useMutation({
-  mutationFn: ({ id, data }: { id: string; data: CategoryUpdateRequest }) =>
-    updateCategory(id, data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const deleteMutation = useMutation({
-  mutationFn: (id: string) => deleteCategory(id),
-  onSuccess: invalidate,
-})
-
-const createChildMutation = useMutation({
-  mutationFn: (data: CategoryCreateRequest) => createCategory(data),
-  onSuccess: () => {
-    invalidate().then(syncSelectedParent)
-    showChildDialog.value = false
-  },
-})
-
-const updateChildMutation = useMutation({
-  mutationFn: ({ id, data }: { id: string; data: CategoryUpdateRequest }) =>
-    updateCategory(id, data),
-  onSuccess: () => {
-    invalidate().then(syncSelectedParent)
-    showChildDialog.value = false
-  },
-})
-
-const deleteChildMutation = useMutation({
-  mutationFn: (id: string) => deleteCategory(id),
-  onSuccess: () => {
-    invalidate().then(syncSelectedParent)
-  },
-})
-
-const handleSubmit = async () => {
-  if (editingId.value) {
-    await updateMutation.mutateAsync({
-      id: editingId.value,
-      data: {
-        name: form.name || undefined,
-        sortOrder: form.sortOrder,
-      },
-    })
-  } else {
-    if (!form.name) return
-    await createMutation.mutateAsync({
-      name: form.name,
-      parentId: '0',
-      sortOrder: form.sortOrder,
-    })
-  }
-}
-
-const handleChildSubmit = async () => {
-  if (!selectedParent.value) return
-  if (editingChildId.value) {
-    await updateChildMutation.mutateAsync({
-      id: editingChildId.value,
-      data: {
-        name: childForm.name || undefined,
-        sortOrder: childForm.sortOrder,
-      },
-    })
-  } else {
-    if (!childForm.name) return
-    await createChildMutation.mutateAsync({
-      name: childForm.name,
-      parentId: selectedParent.value.id,
-      sortOrder: childForm.sortOrder,
-    })
-  }
-}
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
-}
-
-const handleDelete = (row: CategoryVO) => {
-  openConfirm('确认删除', `确认删除分类「${row.name}」？`, () => deleteMutation.mutate(row.id))
-}
-
-const handleDeleteChild = (row: CategoryVO) => {
-  openConfirm('确认删除', `确认删除子分类「${row.name}」？`, () =>
-    deleteChildMutation.mutate(row.id),
-  )
-}
 </script>
 
 <template>
@@ -383,7 +204,7 @@ const handleDeleteChild = (row: CategoryVO) => {
     </template>
   </DataTableCrud>
 
-  <Dialog :open="showDialog" @update:open="(v) => !v && (showDialog = false)">
+  <Dialog v-model:open="showDialog">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>{{ dialogTitle }}</DialogTitle>
@@ -391,12 +212,15 @@ const handleDeleteChild = (row: CategoryVO) => {
 
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
-          <label class="text-sm font-medium">分类名 <span class="text-destructive">*</span></label>
-          <Input v-model="form.name" placeholder="请输入分类名" />
+          <label for="category-name" class="text-sm font-medium">
+            分类名 <span class="text-destructive">*</span>
+          </label>
+          <Input id="category-name" v-model="form.name" placeholder="请输入分类名" />
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">排序</label>
+          <label for="category-sort-order" class="text-sm font-medium">排序</label>
           <Input
+            id="category-sort-order"
             v-model.number="form.sortOrder"
             type="number"
             placeholder="请输入排序值（数字越小越靠前）"
@@ -405,8 +229,9 @@ const handleDeleteChild = (row: CategoryVO) => {
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="showDialog = false">取消</Button>
+        <Button type="button" variant="outline" @click="showDialog = false">取消</Button>
         <Button
+          type="button"
           :disabled="createMutation.isPending.value || updateMutation.isPending.value"
           @click="handleSubmit"
         >
@@ -416,8 +241,8 @@ const handleDeleteChild = (row: CategoryVO) => {
     </DialogContent>
   </Dialog>
 
-  <Dialog :open="showChildrenDialog" @update:open="(v) => !v && (showChildrenDialog = false)">
-    <DialogContent class="sm:max-w-none w-[95vw] max-w-[900px]">
+  <Dialog v-model:open="showChildrenDialog">
+    <DialogContent class="w-[95vw] max-w-[900px] sm:max-w-none">
       <DialogHeader>
         <DialogTitle>「{{ selectedParent?.name }}」的子分类</DialogTitle>
       </DialogHeader>
@@ -437,7 +262,7 @@ const handleDeleteChild = (row: CategoryVO) => {
     </DialogContent>
   </Dialog>
 
-  <Dialog :open="showChildDialog" @update:open="(v) => !v && (showChildDialog = false)">
+  <Dialog v-model:open="showChildDialog">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>{{ childDialogTitle }}</DialogTitle>
@@ -445,14 +270,15 @@ const handleDeleteChild = (row: CategoryVO) => {
 
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
-          <label class="text-sm font-medium"
-            >子分类名 <span class="text-destructive">*</span></label
-          >
-          <Input v-model="childForm.name" placeholder="请输入子分类名" />
+          <label for="child-category-name" class="text-sm font-medium">
+            子分类名 <span class="text-destructive">*</span>
+          </label>
+          <Input id="child-category-name" v-model="childForm.name" placeholder="请输入子分类名" />
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">排序</label>
+          <label for="child-category-sort-order" class="text-sm font-medium">排序</label>
           <Input
+            id="child-category-sort-order"
             v-model.number="childForm.sortOrder"
             type="number"
             placeholder="请输入排序值（数字越小越靠前）"
@@ -461,8 +287,9 @@ const handleDeleteChild = (row: CategoryVO) => {
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="showChildDialog = false">取消</Button>
+        <Button type="button" variant="outline" @click="showChildDialog = false">取消</Button>
         <Button
+          type="button"
           :disabled="createChildMutation.isPending.value || updateChildMutation.isPending.value"
           @click="handleChildSubmit"
         >

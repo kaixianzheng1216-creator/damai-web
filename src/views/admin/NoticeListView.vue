@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { type ColumnDef } from '@tanstack/vue-table'
+import { h } from 'vue'
+import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { Input } from '@/components/common/ui/input'
-import { Button } from '@/components/common/ui/button'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Badge } from '@/components/common/ui/badge'
+import { Button } from '@/components/common/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/common/ui/dialog'
+import { Input } from '@/components/common/ui/input'
 import {
   Select,
   SelectContent,
@@ -20,14 +21,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/common/ui/select'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { fetchAdminNoticesPage, createNotice, updateNotice, deleteNotice } from '@/api/event/notice'
-import type { NoticeVO, NoticeCreateRequest, NoticeUpdateRequest } from '@/api/event'
+import { useNoticeListPage } from '@/composables/admin'
+import type { NoticeVO } from '@/api/event'
 import { NOTICE_TYPE_LABEL } from '@/constants'
 
-const queryClient = useQueryClient()
-
-const noticeTypeMap = NOTICE_TYPE_LABEL
+const {
+  currentPage,
+  pageSize,
+  searchName,
+  searchType,
+  isLoading,
+  list,
+  totalRow,
+  totalPages,
+  showDialog,
+  editingId,
+  form,
+  dialogTitle,
+  confirmDialog,
+  createMutation,
+  updateMutation,
+  openCreate,
+  openEdit,
+  handleSubmit,
+  handleDelete,
+  closeConfirm,
+  handleConfirm,
+} = useNoticeListPage()
 
 const columns: ColumnDef<NoticeVO>[] = [
   {
@@ -43,8 +63,8 @@ const columns: ColumnDef<NoticeVO>[] = [
       const type = row.original.type
       return h(
         Badge,
-        { class: 'bg-transparent text-foreground border border-border' },
-        () => noticeTypeMap[type] ?? type,
+        { class: 'border border-border bg-transparent text-foreground' },
+        () => NOTICE_TYPE_LABEL[type] ?? type,
       )
     },
   },
@@ -68,8 +88,8 @@ const columns: ColumnDef<NoticeVO>[] = [
           {
             size: 'sm',
             variant: 'outline',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               openEdit(row.original)
             },
           },
@@ -80,8 +100,8 @@ const columns: ColumnDef<NoticeVO>[] = [
           {
             size: 'sm',
             variant: 'destructive',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               handleDelete(row.original)
             },
           },
@@ -90,130 +110,6 @@ const columns: ColumnDef<NoticeVO>[] = [
       ]),
   },
 ]
-
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchName = ref('')
-const searchType = ref('')
-
-const queryKey = computed(() => [
-  'admin-notices',
-  currentPage.value,
-  pageSize.value,
-  searchName.value,
-  searchType.value,
-])
-
-const { data, isLoading } = useQuery({
-  queryKey,
-  queryFn: () =>
-    fetchAdminNoticesPage({
-      page: currentPage.value,
-      size: pageSize.value,
-      name: searchName.value || undefined,
-      type: searchType.value && searchType.value !== 'all' ? Number(searchType.value) : undefined,
-    }),
-})
-
-const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
-const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
-
-const showDialog = ref(false)
-const editingId = ref<string | null>(null)
-const form = reactive<{
-  type: number
-  name: string
-  sortOrder: number | undefined
-}>({
-  type: 1,
-  name: '',
-  sortOrder: undefined,
-})
-
-const dialogTitle = computed(() => (editingId.value ? '编辑须知' : '新建须知'))
-
-const resetForm = () => {
-  form.type = 1
-  form.name = ''
-  form.sortOrder = undefined
-}
-
-const openCreate = () => {
-  resetForm()
-  editingId.value = null
-  showDialog.value = true
-}
-
-const openEdit = (row: NoticeVO) => {
-  form.type = row.type
-  form.name = row.name
-  form.sortOrder = row.sortOrder
-  editingId.value = row.id
-  showDialog.value = true
-}
-
-const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-notices'] })
-
-watch([searchName, searchType], () => {
-  currentPage.value = 1
-})
-
-const createMutation = useMutation({
-  mutationFn: (data: NoticeCreateRequest) => createNotice(data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const updateMutation = useMutation({
-  mutationFn: ({ id, data }: { id: string; data: NoticeUpdateRequest }) => updateNotice(id, data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const deleteMutation = useMutation({
-  mutationFn: (id: string) => deleteNotice(id),
-  onSuccess: invalidate,
-})
-
-const handleSubmit = async () => {
-  if (editingId.value) {
-    await updateMutation.mutateAsync({
-      id: editingId.value,
-      data: {
-        name: form.name || undefined,
-        sortOrder: form.sortOrder,
-      },
-    })
-  } else {
-    if (!form.name) return
-    await createMutation.mutateAsync({
-      type: form.type,
-      name: form.name,
-      sortOrder: form.sortOrder,
-    })
-  }
-}
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
-}
-
-const handleDelete = (row: NoticeVO) => {
-  openConfirm('确认删除', `确认删除须知「${row.name}」？`, () => deleteMutation.mutate(row.id))
-}
 </script>
 
 <template>
@@ -249,21 +145,24 @@ const handleDelete = (row: NoticeVO) => {
     </template>
   </DataTableCrud>
 
-  <Dialog :open="showDialog" @update:open="(v) => !v && (showDialog = false)">
+  <Dialog v-model:open="showDialog">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>{{ dialogTitle }}</DialogTitle>
+        <DialogDescription class="sr-only">维护购票或入场须知</DialogDescription>
       </DialogHeader>
 
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
-          <label class="text-sm font-medium">类型 <span class="text-destructive">*</span></label>
+          <label id="notice-type-label" class="text-sm font-medium">
+            类型 <span class="text-destructive">*</span>
+          </label>
           <Select
             :model-value="String(form.type)"
-            :disabled="!!editingId"
-            @update:model-value="(v) => (form.type = Number(v))"
+            :disabled="Boolean(editingId)"
+            @update:model-value="(value) => (form.type = Number(value))"
           >
-            <SelectTrigger>
+            <SelectTrigger aria-labelledby="notice-type-label">
               <SelectValue placeholder="选择类型" />
             </SelectTrigger>
             <SelectContent>
@@ -273,12 +172,15 @@ const handleDelete = (row: NoticeVO) => {
           </Select>
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">名称 <span class="text-destructive">*</span></label>
-          <Input v-model="form.name" placeholder="请输入须知名称" />
+          <label for="notice-name" class="text-sm font-medium">
+            名称 <span class="text-destructive">*</span>
+          </label>
+          <Input id="notice-name" v-model="form.name" placeholder="请输入须知名称" />
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">排序</label>
+          <label for="notice-sort-order" class="text-sm font-medium">排序</label>
           <Input
+            id="notice-sort-order"
             v-model.number="form.sortOrder"
             type="number"
             placeholder="排序权重（可选，数值越小越靠前）"
@@ -287,8 +189,9 @@ const handleDelete = (row: NoticeVO) => {
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="showDialog = false">取消</Button>
+        <Button type="button" variant="outline" @click="showDialog = false">取消</Button>
         <Button
+          type="button"
           :disabled="createMutation.isPending.value || updateMutation.isPending.value"
           @click="handleSubmit"
         >

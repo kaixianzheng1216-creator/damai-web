@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { toast } from 'vue3-toastify'
 import { Button } from '@/components/common/ui/button'
 import { Label } from '@/components/common/ui/label'
 import { Checkbox } from '@/components/common/ui/checkbox'
@@ -15,9 +12,8 @@ import {
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import { Input } from '@/components/common/ui/input'
-import { fetchAdminParticipantsPage } from '@/api/event/participant'
-import { batchAddParticipants, removeParticipant } from '@/api/event/event'
-import type { EventParticipantVO, EventParticipantBatchAddRequest } from '@/api/event'
+import type { EventParticipantVO } from '@/api/event'
+import { useEventParticipantsTab } from '@/composables/admin'
 
 interface Props {
   eventId: string
@@ -30,111 +26,26 @@ const emit = defineEmits<{
   updated: []
 }>()
 
-const queryClient = useQueryClient()
-
-// ─── Dialog State ─────────────────────────────────────────
-
-const showParticipantDialog = ref(false)
-const participantSearchQuery = ref('')
-const currentPage = ref(1)
-const pageSize = 10
-const selectedParticipantIds = ref<string[]>([])
-
-// Reset to page 1 when search changes
-watch(participantSearchQuery, () => {
-  currentPage.value = 1
+const {
+  confirmDialog,
+  showParticipantDialog,
+  participantSearchQuery,
+  currentPage,
+  selectedParticipantIds,
+  pageData,
+  isFetching,
+  batchAddParticipantsMutation,
+  openParticipantDialog,
+  handleAddParticipants,
+  handleRemoveParticipant,
+  toggleParticipant,
+  closeConfirm,
+  handleConfirm,
+} = useEventParticipantsTab({
+  eventId: () => props.eventId,
+  eventParticipants: () => props.eventParticipants,
+  onUpdated: () => emit('updated'),
 })
-
-const { data: pageData, isFetching } = useQuery({
-  queryKey: ['admin-participants-page', participantSearchQuery, currentPage],
-  queryFn: () =>
-    fetchAdminParticipantsPage({
-      page: currentPage.value,
-      size: pageSize,
-      name: participantSearchQuery.value || undefined,
-    }),
-  enabled: showParticipantDialog,
-})
-
-const openParticipantDialog = () => {
-  selectedParticipantIds.value = props.eventParticipants.map((p) => p.participant.id)
-  participantSearchQuery.value = ''
-  currentPage.value = 1
-  showParticipantDialog.value = true
-}
-
-// ─── Mutations ────────────────────────────────────────────
-
-const invalidateAll = () => {
-  queryClient.invalidateQueries({ queryKey: ['admin-event-detail', props.eventId] })
-}
-
-const batchAddParticipantsMutation = useMutation({
-  mutationFn: (data: EventParticipantBatchAddRequest) => batchAddParticipants(props.eventId, data),
-  onSuccess: () => {
-    toast.success('参与方添加成功')
-    showParticipantDialog.value = false
-    invalidateAll()
-    emit('updated')
-  },
-  onError: () => {
-    toast.error('添加失败')
-  },
-})
-
-const removeParticipantMutation = useMutation({
-  mutationFn: (eventParticipantId: string) => removeParticipant(props.eventId, eventParticipantId),
-  onSuccess: () => {
-    toast.success('参与方移除成功')
-    invalidateAll()
-    emit('updated')
-  },
-  onError: () => {
-    toast.error('移除失败')
-  },
-})
-
-// ─── Handlers ─────────────────────────────────────────────
-
-const handleAddParticipants = async () => {
-  const newParticipantIds = selectedParticipantIds.value.filter(
-    (id) => !props.eventParticipants.some((p) => p.participant.id === id),
-  )
-  if (newParticipantIds.length > 0) {
-    await batchAddParticipantsMutation.mutateAsync({
-      participantIds: newParticipantIds.map((id) => parseInt(id)),
-    })
-  } else {
-    showParticipantDialog.value = false
-  }
-}
-
-const handleRemoveParticipant = (eventParticipant: EventParticipantVO) => {
-  openConfirm('确认移除', `确认移除参与方「${eventParticipant.participant.name}」？`, () =>
-    removeParticipantMutation.mutate(eventParticipant.id),
-  )
-}
-
-const toggleParticipant = (participantId: string) => {
-  const index = selectedParticipantIds.value.indexOf(participantId)
-  if (index > -1) {
-    selectedParticipantIds.value.splice(index, 1)
-  } else {
-    selectedParticipantIds.value.push(participantId)
-  }
-}
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
-}
 </script>
 
 <template>
@@ -142,7 +53,7 @@ const handleConfirm = () => {
     <CardHeader>
       <div class="flex items-center justify-between">
         <CardTitle>参与方</CardTitle>
-        <Button @click="openParticipantDialog">添加参与方</Button>
+        <Button type="button" @click="openParticipantDialog">添加参与方</Button>
       </div>
     </CardHeader>
     <CardContent>
@@ -158,6 +69,7 @@ const handleConfirm = () => {
           <div class="flex items-center gap-3">
             <img
               :src="participant.participant.avatarUrl"
+              :alt="participant.participant.name"
               class="w-8 h-8 rounded-full object-cover"
             />
             <div class="font-medium">{{ participant.participant.name }}</div>
@@ -183,7 +95,12 @@ const handleConfirm = () => {
 
       <!-- Search -->
       <div class="pb-3">
-        <Input v-model="participantSearchQuery" placeholder="搜索参与方..." class="w-full" />
+        <Input
+          v-model="participantSearchQuery"
+          placeholder="搜索参与方..."
+          class="w-full"
+          aria-label="搜索参与方"
+        />
       </div>
 
       <!-- List -->
@@ -207,7 +124,11 @@ const handleConfirm = () => {
               @update:checked="() => toggleParticipant(participant.id)"
               @click.stop
             />
-            <img :src="participant.avatarUrl" class="w-9 h-9 rounded-full object-cover" />
+            <img
+              :src="participant.avatarUrl"
+              :alt="participant.name"
+              class="w-9 h-9 rounded-full object-cover"
+            />
             <Label class="font-medium cursor-pointer">{{ participant.name }}</Label>
           </div>
         </div>
@@ -236,8 +157,11 @@ const handleConfirm = () => {
       </div>
 
       <DialogFooter class="pt-4">
-        <Button variant="outline" @click="showParticipantDialog = false">取消</Button>
+        <Button type="button" variant="outline" @click="showParticipantDialog = false">
+          取消
+        </Button>
         <Button
+          type="button"
           :disabled="batchAddParticipantsMutation.isPending.value"
           @click="handleAddParticipants"
         >

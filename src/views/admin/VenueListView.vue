@@ -1,22 +1,42 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { h } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Button } from '@/components/common/ui/button'
-import { Input } from '@/components/common/ui/input'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/common/ui/dialog'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { fetchAdminVenuesPage, createVenue, updateVenue, deleteVenue } from '@/api/event/venue'
-import type { VenueVO, VenueCreateRequest, VenueUpdateRequest } from '@/api/event'
+import { Input } from '@/components/common/ui/input'
+import { useVenueListPage } from '@/composables/admin'
+import type { VenueVO } from '@/api/event'
 
-const queryClient = useQueryClient()
+const {
+  currentPage,
+  pageSize,
+  searchName,
+  isLoading,
+  list,
+  totalRow,
+  totalPages,
+  showDialog,
+  form,
+  dialogTitle,
+  confirmDialog,
+  createMutation,
+  updateMutation,
+  openCreate,
+  openEdit,
+  handleSubmit,
+  handleDelete,
+  closeConfirm,
+  handleConfirm,
+} = useVenueListPage()
 
 const columns: ColumnDef<VenueVO>[] = [
   {
@@ -64,8 +84,8 @@ const columns: ColumnDef<VenueVO>[] = [
           {
             size: 'sm',
             variant: 'outline',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               openEdit(row.original)
             },
           },
@@ -76,8 +96,8 @@ const columns: ColumnDef<VenueVO>[] = [
           {
             size: 'sm',
             variant: 'destructive',
-            onClick: (e: Event) => {
-              e.stopPropagation()
+            onClick: (event: Event) => {
+              event.stopPropagation()
               handleDelete(row.original)
             },
           },
@@ -86,128 +106,6 @@ const columns: ColumnDef<VenueVO>[] = [
       ]),
   },
 ]
-
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchName = ref('')
-
-const queryKey = computed(() => [
-  'admin-venues',
-  currentPage.value,
-  pageSize.value,
-  searchName.value,
-])
-
-const { data, isLoading } = useQuery({
-  queryKey,
-  queryFn: () =>
-    fetchAdminVenuesPage({
-      page: currentPage.value,
-      size: pageSize.value,
-      name: searchName.value || undefined,
-    }),
-})
-
-const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
-const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
-
-const showDialog = ref(false)
-const editingId = ref<string | null>(null)
-const form = reactive<VenueCreateRequest>({
-  name: '',
-  province: '',
-  city: '',
-  district: '',
-  address: '',
-})
-
-const dialogTitle = computed(() => (editingId.value ? '编辑场馆' : '新建场馆'))
-
-const resetForm = () => {
-  form.name = ''
-  form.province = ''
-  form.city = ''
-  form.district = ''
-  form.address = ''
-}
-
-const openCreate = () => {
-  resetForm()
-  editingId.value = null
-  showDialog.value = true
-}
-
-const openEdit = (row: VenueVO) => {
-  form.name = row.name
-  form.province = row.province
-  form.city = row.city
-  form.district = row.district
-  form.address = row.address
-  editingId.value = row.id
-  showDialog.value = true
-}
-
-const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-venues'] })
-
-watch(searchName, () => {
-  currentPage.value = 1
-})
-
-const createMutation = useMutation({
-  mutationFn: (data: VenueCreateRequest) => createVenue(data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const updateMutation = useMutation({
-  mutationFn: ({ id, data }: { id: string; data: VenueUpdateRequest }) => updateVenue(id, data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const deleteMutation = useMutation({
-  mutationFn: (id: string) => deleteVenue(id),
-  onSuccess: invalidate,
-})
-
-const handleSubmit = async () => {
-  if (editingId.value) {
-    await updateMutation.mutateAsync({
-      id: editingId.value,
-      data: {
-        name: form.name || undefined,
-        province: form.province || undefined,
-        city: form.city || undefined,
-        district: form.district || undefined,
-        address: form.address || undefined,
-      },
-    })
-  } else {
-    if (!form.name || !form.province || !form.city || !form.address) return
-    await createMutation.mutateAsync({ ...form })
-  }
-}
-
-const confirmDialog = ref({ open: false, title: '', description: '', onConfirm: () => {} })
-const openConfirm = (title: string, description: string, onConfirm: () => void) => {
-  confirmDialog.value = { open: true, title, description, onConfirm }
-}
-const closeConfirm = () => {
-  confirmDialog.value.open = false
-}
-const handleConfirm = () => {
-  confirmDialog.value.onConfirm()
-  closeConfirm()
-}
-
-const handleDelete = (row: VenueVO) => {
-  openConfirm('确认删除', `确认删除场馆「${row.name}」？`, () => deleteMutation.mutate(row.id))
-}
 </script>
 
 <template>
@@ -233,42 +131,50 @@ const handleDelete = (row: VenueVO) => {
     </template>
   </DataTableCrud>
 
-  <Dialog :open="showDialog" @update:open="(v) => !v && (showDialog = false)">
+  <Dialog v-model:open="showDialog">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>{{ dialogTitle }}</DialogTitle>
+        <DialogDescription class="sr-only">维护场馆基础信息与地址</DialogDescription>
       </DialogHeader>
 
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
-          <label class="text-sm font-medium">场馆名 <span class="text-destructive">*</span></label>
-          <Input v-model="form.name" placeholder="请输入场馆名" />
+          <label for="venue-name" class="text-sm font-medium">
+            场馆名 <span class="text-destructive">*</span>
+          </label>
+          <Input id="venue-name" v-model="form.name" placeholder="请输入场馆名" />
         </div>
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
           <div class="grid gap-2">
-            <label class="text-sm font-medium">省份 <span class="text-destructive">*</span></label>
-            <Input v-model="form.province" placeholder="省份" />
+            <label for="venue-province" class="text-sm font-medium">
+              省份 <span class="text-destructive">*</span>
+            </label>
+            <Input id="venue-province" v-model="form.province" placeholder="省份" />
           </div>
           <div class="grid gap-2">
-            <label class="text-sm font-medium">城市 <span class="text-destructive">*</span></label>
-            <Input v-model="form.city" placeholder="城市" />
+            <label for="venue-city" class="text-sm font-medium">
+              城市 <span class="text-destructive">*</span>
+            </label>
+            <Input id="venue-city" v-model="form.city" placeholder="城市" />
           </div>
           <div class="grid gap-2">
-            <label class="text-sm font-medium">区县</label>
-            <Input v-model="form.district" placeholder="区县" />
+            <label for="venue-district" class="text-sm font-medium">区县</label>
+            <Input id="venue-district" v-model="form.district" placeholder="区县" />
           </div>
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium"
-            >详细地址 <span class="text-destructive">*</span></label
-          >
-          <Input v-model="form.address" placeholder="请输入详细地址" />
+          <label for="venue-address" class="text-sm font-medium">
+            详细地址 <span class="text-destructive">*</span>
+          </label>
+          <Input id="venue-address" v-model="form.address" placeholder="请输入详细地址" />
         </div>
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="showDialog = false">取消</Button>
+        <Button type="button" variant="outline" @click="showDialog = false">取消</Button>
         <Button
+          type="button"
           :disabled="createMutation.isPending.value || updateMutation.isPending.value"
           @click="handleSubmit"
         >

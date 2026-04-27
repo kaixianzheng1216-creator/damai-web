@@ -6,7 +6,6 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-  const ApiRequestError: typeof import('../api/request').ApiRequestError
   const EffectScope: typeof import('vue').EffectScope
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
@@ -42,7 +41,6 @@ declare global {
   const eagerComputed: typeof import('@vueuse/core').eagerComputed
   const effectScope: typeof import('vue').effectScope
   const extendRef: typeof import('@vueuse/core').extendRef
-  const fetchHomeData: typeof import('../api/home').fetchHomeData
   const formatDate: typeof import('../utils/format').formatDate
   const formatDateTime: typeof import('../utils/format').formatDateTime
   const formatDateTimeLocalInput: typeof import('../utils/format').formatDateTimeLocalInput
@@ -55,7 +53,6 @@ declare global {
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
   const getOrderStatusBadgeClass: typeof import('../utils/statusMappers').getOrderStatusBadgeClass
   const getTicketStatusClass: typeof import('../utils/statusMappers').getTicketStatusClass
-  const getUserInfo: typeof import('../api/auth').getUserInfo
   const getWorkOrderStatusBadgeClass: typeof import('../utils/statusMappers').getWorkOrderStatusBadgeClass
   const h: typeof import('vue').h
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
@@ -67,8 +64,6 @@ declare global {
   const isReadonly: typeof import('vue').isReadonly
   const isRef: typeof import('vue').isRef
   const isShallow: typeof import('vue').isShallow
-  const login: typeof import('../api/auth').login
-  const logout: typeof import('../api/auth').logout
   const makeDestructurable: typeof import('@vueuse/core').makeDestructurable
   const mapActions: typeof import('pinia').mapActions
   const mapGetters: typeof import('pinia').mapGetters
@@ -79,7 +74,6 @@ declare global {
   const mapWritableState: typeof import('pinia').mapWritableState
   const markRaw: typeof import('vue').markRaw
   const nextTick: typeof import('vue').nextTick
-  const normalizeResponseFields: typeof import('../api/requestTransforms').normalizeResponseFields
   const onActivated: typeof import('vue').onActivated
   const onBeforeMount: typeof import('vue').onBeforeMount
   const onBeforeRouteLeave: typeof import('vue-router').onBeforeRouteLeave
@@ -118,8 +112,6 @@ declare global {
   const refManualReset: typeof import('@vueuse/core').refManualReset
   const refThrottled: typeof import('@vueuse/core').refThrottled
   const refWithControl: typeof import('@vueuse/core').refWithControl
-  const register: typeof import('../api/auth').register
-  const request: typeof import('../api/request').default
   const resolveComponent: typeof import('vue').resolveComponent
   const resolveRef: typeof import('@vueuse/core').resolveRef
   const setActivePinia: typeof import('pinia').setActivePinia
@@ -138,7 +130,6 @@ declare global {
   const toRef: typeof import('vue').toRef
   const toRefs: typeof import('vue').toRefs
   const toValue: typeof import('vue').toValue
-  const transformDateTimeFields: typeof import('../api/requestTransforms').transformDateTimeFields
   const triggerRef: typeof import('vue').triggerRef
   const tryOnBeforeMount: typeof import('@vueuse/core').tryOnBeforeMount
   const tryOnBeforeUnmount: typeof import('@vueuse/core').tryOnBeforeUnmount
@@ -149,10 +140,8 @@ declare global {
   const unref: typeof import('vue').unref
   const unrefElement: typeof import('@vueuse/core').unrefElement
   const until: typeof import('@vueuse/core').until
-  const uploadFormData: typeof import('../api/request').uploadFormData
   const useAIChat: typeof import('../composables/useAIChat').useAIChat
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
-  const useAdminStore: typeof import('../stores/admin').useAdminStore
   const useAnimate: typeof import('@vueuse/core').useAnimate
   const useArrayDifference: typeof import('@vueuse/core').useArrayDifference
   const useArrayEvery: typeof import('@vueuse/core').useArrayEvery
@@ -312,7 +301,6 @@ declare global {
   const useTransition: typeof import('@vueuse/core').useTransition
   const useUrlSearchParams: typeof import('@vueuse/core').useUrlSearchParams
   const useUserMedia: typeof import('@vueuse/core').useUserMedia
-  const useUserStore: typeof import('../stores/user').useUserStore
   const useVModel: typeof import('@vueuse/core').useVModel
   const useVModels: typeof import('@vueuse/core').useVModels
   const useVibrate: typeof import('@vueuse/core').useVibrate

@@ -4,8 +4,8 @@ import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 import type { PaginatedResponse } from '@/api/types'
 
 type AdminPageParams = {
-  page: number
-  size: number
+  page?: number
+  size?: number
   name?: string
 }
 

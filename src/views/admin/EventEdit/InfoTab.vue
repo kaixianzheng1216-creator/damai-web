@@ -1,14 +1,9 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { toast } from 'vue3-toastify'
 import { Input } from '@/components/common/ui/input'
 import { Label } from '@/components/common/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
-import { saveEventInfo } from '@/api/event/event'
-import { fetchAdminNotices } from '@/api/event/notice'
-import type { EventInfoCreateRequest, EventInfoVO } from '@/api/event'
-import { NOTICE_TYPE } from '@/constants'
+import type { EventInfoVO } from '@/api/event'
+import { useEventInfoTab } from '@/composables/admin'
 import RichTextEditor from '@/components/common/RichTextEditor.vue'
 
 interface Props {
@@ -22,79 +17,20 @@ const emit = defineEmits<{
   updated: []
 }>()
 
-const queryClient = useQueryClient()
-
-// ─── Notice Templates ─────────────────────────────────────
-
-const { data: noticeTemplates } = useQuery({
-  queryKey: ['admin-notices'],
-  queryFn: fetchAdminNotices,
+const {
+  description,
+  purchaseContent,
+  admissionContent,
+  purchaseTemplates,
+  admissionTemplates,
+  save,
+} = useEventInfoTab({
+  eventId: () => props.eventId,
+  eventInfo: () => props.eventInfo,
+  onUpdated: () => emit('updated'),
 })
 
-const purchaseTemplates = computed(() =>
-  (noticeTemplates.value ?? [])
-    .filter((n) => n.type === NOTICE_TYPE.PURCHASE)
-    .sort((a, b) => a.sortOrder - b.sortOrder),
-)
-const admissionTemplates = computed(() =>
-  (noticeTemplates.value ?? [])
-    .filter((n) => n.type === NOTICE_TYPE.ADMISSION)
-    .sort((a, b) => a.sortOrder - b.sortOrder),
-)
-
-// ─── Form State ───────────────────────────────────────────
-
-const description = ref('')
-const purchaseContent = reactive<Record<string, string>>({})
-const admissionContent = reactive<Record<string, string>>({})
-
-const populateFromEventInfo = () => {
-  if (!props.eventInfo || !noticeTemplates.value) return
-  description.value = props.eventInfo.description || ''
-
-  for (const notice of props.eventInfo.purchaseNotice ?? []) {
-    const tmpl = purchaseTemplates.value.find((t) => t.name === notice.name)
-    if (tmpl) purchaseContent[tmpl.id] = notice.description
-  }
-  for (const notice of props.eventInfo.admissionNotice ?? []) {
-    const tmpl = admissionTemplates.value.find((t) => t.name === notice.name)
-    if (tmpl) admissionContent[tmpl.id] = notice.description
-  }
-}
-
-watch([() => props.eventInfo, noticeTemplates], populateFromEventInfo, { immediate: true })
-
-// ─── Save ─────────────────────────────────────────────────
-
-const saveEventInfoMutation = useMutation({
-  mutationFn: (data: EventInfoCreateRequest) => saveEventInfo(props.eventId, data),
-  onSuccess: () => {
-    toast.success('详情信息保存成功')
-    queryClient.invalidateQueries({ queryKey: ['admin-event-detail', props.eventId] })
-    emit('updated')
-  },
-  onError: () => {
-    toast.error('保存失败')
-  },
-})
-
-const handleSaveInfo = async () => {
-  const purchaseNotice = purchaseTemplates.value
-    .filter((t) => purchaseContent[t.id]?.trim())
-    .map((t) => ({ name: t.name, description: purchaseContent[t.id]! }))
-
-  const admissionNotice = admissionTemplates.value
-    .filter((t) => admissionContent[t.id]?.trim())
-    .map((t) => ({ name: t.name, description: admissionContent[t.id]! }))
-
-  await saveEventInfoMutation.mutateAsync({
-    description: description.value,
-    purchaseNotice,
-    admissionNotice,
-  })
-}
-
-defineExpose({ save: handleSaveInfo })
+defineExpose({ save })
 </script>
 
 <template>

@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref, reactive, watch, computed } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { toast } from 'vue3-toastify'
 import { Input } from '@/components/common/ui/input'
 import { Label } from '@/components/common/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
@@ -13,12 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/common/ui/select'
-import { fetchAdminCities } from '@/api/event/city'
-import { fetchAdminCategories } from '@/api/event/category'
-import { fetchAdminVenues } from '@/api/event/venue'
-import { fetchAdminSeries } from '@/api/event/series'
-import { createEvent, updateEvent } from '@/api/event/event'
-import type { EventCreateRequest, EventUpdateRequest, EventVO } from '@/api/event'
+import type { EventVO } from '@/api/event'
+import { useEventBasicTab } from '@/composables/admin'
 
 interface Props {
   eventId?: string
@@ -33,146 +26,15 @@ const emit = defineEmits<{
   updated: []
 }>()
 
-const queryClient = useQueryClient()
-const isLoading = ref(false)
-
-const { data: citiesData } = useQuery({
-  queryKey: ['admin-cities'],
-  queryFn: fetchAdminCities,
+const { basicForm, cities, categoryOptions, venues, series, save } = useEventBasicTab({
+  eventId: () => props.eventId,
+  isEdit: () => props.isEdit,
+  eventData: () => props.eventData,
+  onCreated: (eventId) => emit('created', eventId),
+  onUpdated: () => emit('updated'),
 })
 
-const { data: categoriesData } = useQuery({
-  queryKey: ['admin-categories'],
-  queryFn: fetchAdminCategories,
-})
-
-const { data: venuesData } = useQuery({
-  queryKey: ['admin-venues'],
-  queryFn: fetchAdminVenues,
-})
-
-const { data: seriesData } = useQuery({
-  queryKey: ['admin-series'],
-  queryFn: fetchAdminSeries,
-})
-
-// 构建分类列表 - 只显示子分类
-const categoryOptions = computed(() => {
-  const categories = toArray(categoriesData.value)
-  const options: { id: string; name: string; parentName?: string }[] = []
-
-  for (const cat of categories) {
-    if (!cat) continue
-    if (String(cat.parentId) === '0') {
-      const children = cat.children
-      if (children && Array.isArray(children)) {
-        for (const child of children) {
-          if (child && child.id) {
-            options.push({
-              id: String(child.id),
-              name: `${cat.name} - ${child.name}`,
-              parentName: cat.name,
-            })
-          }
-        }
-      }
-    }
-  }
-
-  return options
-})
-
-const basicForm = reactive<EventCreateRequest & Partial<EventUpdateRequest>>({
-  categoryId: '',
-  venueId: '',
-  cityId: '',
-  name: '',
-  coverUrl: '',
-  recommendWeight: 0,
-  seriesId: 'none',
-})
-
-const toArray = (data: unknown): any[] => {
-  if (!data || typeof data !== 'object') return []
-  if (Array.isArray(data)) return data
-  try {
-    return Object.values(data as Record<string, unknown>)
-  } catch {
-    return []
-  }
-}
-
-watch(
-  () => props.eventData,
-  (newData) => {
-    if (!newData) return
-
-    Object.assign(basicForm, {
-      categoryId: String(newData.categoryId || ''),
-      venueId: String(newData.venueId || ''),
-      cityId: String(newData.cityId || ''),
-      name: newData.name,
-      coverUrl: newData.coverUrl,
-      recommendWeight: newData.recommendWeight || 0,
-      seriesId: newData.seriesId ? String(newData.seriesId) : 'none',
-    })
-  },
-  { immediate: true, deep: true },
-)
-
-const invalidateAll = () => {
-  queryClient.invalidateQueries({ queryKey: ['admin-events'] })
-  if (props.eventId) {
-    queryClient.invalidateQueries({ queryKey: ['admin-event-detail', props.eventId] })
-  }
-}
-
-const createMutation = useMutation({
-  mutationFn: (data: EventCreateRequest) => createEvent(data),
-  onSuccess: (eventId) => {
-    toast.success('活动创建成功')
-    emit('created', eventId)
-  },
-  onError: () => {
-    toast.error('创建失败')
-  },
-})
-
-const updateMutation = useMutation({
-  mutationFn: ({ id, data }: { id: string; data: EventUpdateRequest }) => updateEvent(id, data),
-  onSuccess: () => {
-    toast.success('更新成功')
-    invalidateAll()
-    emit('updated')
-  },
-  onError: () => {
-    toast.error('更新失败')
-  },
-})
-
-const handleSaveBasic = async () => {
-  if (!basicForm.name || !basicForm.categoryId || !basicForm.venueId || !basicForm.cityId) {
-    toast.error('请填写完整信息')
-    return
-  }
-
-  isLoading.value = true
-  try {
-    const submitData = {
-      ...basicForm,
-      seriesId: basicForm.seriesId === 'none' ? undefined : basicForm.seriesId,
-    }
-    if (props.isEdit && props.eventId) {
-      await updateMutation.mutateAsync({ id: props.eventId, data: submitData })
-    } else {
-      await createMutation.mutateAsync(submitData as EventCreateRequest)
-    }
-  } finally {
-    isLoading.value = false
-  }
-}
-
-defineExpose({ save: handleSaveBasic })
+defineExpose({ save })
 </script>
 
 <template>
@@ -192,12 +54,13 @@ defineExpose({ save: handleSaveBasic })
         <div class="flex-1 min-w-0 space-y-4 pt-0.5">
           <div class="grid grid-cols-2 gap-x-4 gap-y-4">
             <div class="space-y-2">
-              <Label>活动名称 <span class="text-destructive">*</span></Label>
-              <Input v-model="basicForm.name" placeholder="请输入活动名称" />
+              <Label for="event-basic-name">活动名称 <span class="text-destructive">*</span></Label>
+              <Input id="event-basic-name" v-model="basicForm.name" placeholder="请输入活动名称" />
             </div>
             <div class="space-y-2">
-              <Label>推荐权重</Label>
+              <Label for="event-basic-recommend-weight">推荐权重</Label>
               <Input
+                id="event-basic-recommend-weight"
                 v-model.number="basicForm.recommendWeight"
                 type="number"
                 placeholder="数字越大越靠前"
@@ -210,11 +73,7 @@ defineExpose({ save: handleSaveBasic })
                   <SelectValue placeholder="请选择城市" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="city in toArray(citiesData)"
-                    :key="city.id"
-                    :value="String(city.id)"
-                  >
+                  <SelectItem v-for="city in cities" :key="city.id" :value="String(city.id)">
                     {{ city.name }}
                   </SelectItem>
                 </SelectContent>
@@ -244,11 +103,7 @@ defineExpose({ save: handleSaveBasic })
                   <SelectValue placeholder="请选择场馆" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="venue in toArray(venuesData)"
-                    :key="venue.id"
-                    :value="String(venue.id)"
-                  >
+                  <SelectItem v-for="venue in venues" :key="venue.id" :value="String(venue.id)">
                     {{ venue.name }}
                   </SelectItem>
                 </SelectContent>
@@ -262,8 +117,8 @@ defineExpose({ save: handleSaveBasic })
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">不属于任何系列</SelectItem>
-                  <SelectItem v-for="s in toArray(seriesData)" :key="s.id" :value="String(s.id)">
-                    {{ s.name }}
+                  <SelectItem v-for="item in series" :key="item.id" :value="String(item.id)">
+                    {{ item.name }}
                   </SelectItem>
                 </SelectContent>
               </Select>
