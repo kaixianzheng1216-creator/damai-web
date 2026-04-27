@@ -3,8 +3,7 @@ import { h } from 'vue'
 import { useRouter } from 'vue-router'
 import { type ColumnDef } from '@tanstack/vue-table'
 import type { OrderItem } from '@/api/account'
-import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { Input } from '@/components/common/ui/input'
+import DataTableCrud from '@/components/common/CommonDataTableCrud.vue'
 import { Badge } from '@/components/common/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import { cn } from '@/utils'
@@ -20,7 +19,6 @@ const handleOrderClick = (order: OrderItem) => {
 
 defineProps<{
   orderFilter: OrderFilterKey
-  orderKeyword: string
   paginatedOrders: OrderItem[]
   orderPage: number
   orderTotalPages: number
@@ -30,7 +28,6 @@ defineProps<{
 
 const emit = defineEmits<{
   'update:orderFilter': [value: OrderFilterKey]
-  'update:orderKeyword': [value: string]
   'update:orderPage': [page: number]
   'update:orderPageSize': [pageSize: number]
 }>()
@@ -88,12 +85,6 @@ const columns: ColumnDef<OrderItem>[] = [
             {{ item.label }}
           </button>
         </div>
-        <Input
-          :model-value="orderKeyword"
-          class="h-8 w-48"
-          placeholder="搜索订单号或演出名称"
-          @update:model-value="emit('update:orderKeyword', String($event))"
-        />
       </div>
     </template>
 

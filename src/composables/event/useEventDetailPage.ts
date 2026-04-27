@@ -1,12 +1,12 @@
 import { computed, ref, watch } from 'vue'
 import dayjs from 'dayjs'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchPassengerPage } from '@/api/account'
 import { fetchEventDetailById, followEvent, unfollowEvent, checkIsFollowedEvent } from '@/api/event'
 import { createTicketOrder, fetchUserPurchaseCounts } from '@/api/trade'
 import type { DetailTabKey } from '@/constants'
-import { EVENT_CONFIG, TICKET_TYPE_STATUS } from '@/constants'
+import { EVENT_CONFIG, TICKET_TYPE_STATUS, queryKeys } from '@/constants'
 import type { PassengerItem, PageResponsePassengerVO } from '@/api/account'
 import type { SessionVO, TicketTypeVO, SeriesEventVO } from '@/api/event'
 import { useUserStore } from '@/stores/user'
@@ -54,7 +54,6 @@ export const useEventDetailPage = () => {
   const route = useRoute()
   const router = useRouter()
   const userStore = useUserStore()
-  const queryClient = useQueryClient()
 
   const activeTab = ref<DetailTabKey>('detail')
   const selectedSessionId = ref<string | null>(null)
@@ -67,7 +66,7 @@ export const useEventDetailPage = () => {
   const eventId = computed(() => route.params.id as string)
 
   const detailQuery = useQuery({
-    queryKey: ['event-detail', eventId],
+    queryKey: queryKeys.event.detail(eventId),
     queryFn: () => fetchEventDetailById(eventId.value),
     enabled: computed(() => !!eventId.value && eventId.value.length > 0),
   })
@@ -90,7 +89,7 @@ export const useEventDetailPage = () => {
   })
 
   const passengerListQuery = useQuery<PageResponsePassengerVO>({
-    queryKey: ['passenger-list', 1, 100, passengerKeyword],
+    queryKey: queryKeys.profile.passengers(1, 100, passengerKeyword),
     queryFn: () =>
       fetchPassengerPage({
         page: 1,

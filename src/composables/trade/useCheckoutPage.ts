@@ -10,6 +10,7 @@ import {
   PAYMENT_METHODS,
   TIME_UNITS,
   CHECKOUT_CONFIG,
+  queryKeys,
 } from '@/constants'
 import { fetchOrderById, fetchOrderStatus, createPayment, cancelTicketOrder } from '@/api/trade'
 
@@ -31,13 +32,13 @@ export const useCheckoutPage = () => {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['ticket-order', orderId],
+    queryKey: queryKeys.trade.order(orderId),
     queryFn: () => fetchOrderById(orderId.value),
     enabled: computed(() => !!orderId.value),
   })
 
   const { data: status } = useQuery({
-    queryKey: ['order-status', orderId],
+    queryKey: queryKeys.trade.orderStatus(orderId),
     queryFn: () => fetchOrderStatus(orderId.value),
     enabled: computed(() => !!orderId.value),
     refetchInterval: CHECKOUT_CONFIG.STATUS_REFETCH_INTERVAL_MS,
@@ -51,7 +52,6 @@ export const useCheckoutPage = () => {
   const isPaid = computed((): boolean => currentStatus.value === ORDER_STATUS.PAID)
   const isCancelled = computed((): boolean => currentStatus.value === ORDER_STATUS.CANCELLED)
   const isClosed = computed((): boolean => currentStatus.value === ORDER_STATUS.CLOSED)
-  const isRefunded = computed((): boolean => currentStatus.value === ORDER_STATUS.REFUNDED)
 
   const remainSeconds = computed(() => {
     if (!order.value?.expireAt) return 0
@@ -99,8 +99,8 @@ export const useCheckoutPage = () => {
     onSuccess: async (data) => {
       paymentData.value = data
       showQrCodeDialog.value = true
-      await queryClient.invalidateQueries({ queryKey: ['order-status', orderId] })
-      await queryClient.invalidateQueries({ queryKey: ['ticket-order', orderId] })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.trade.orderStatus(orderId) })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.trade.order(orderId) })
     },
     onError: () => {
       toast.error('创建支付失败，请重试')
@@ -110,17 +110,13 @@ export const useCheckoutPage = () => {
   const cancelTicketOrderMutation = useMutation({
     mutationFn: () => cancelTicketOrder(orderId.value),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['order-status', orderId] })
-      await queryClient.invalidateQueries({ queryKey: ['ticket-order', orderId] })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.trade.orderStatus(orderId) })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.trade.order(orderId) })
     },
     onError: () => {
       toast.error('取消订单失败，请重试')
     },
   })
-
-  const refreshStatus = () => {
-    queryClient.invalidateQueries({ queryKey: ['order-status', orderId] })
-  }
 
   const goOrders = () => {
     router.push({ path: '/profile', query: { section: 'orders' } })

@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
 import { useStorage } from '@vueuse/core'
 import { chatWithAI } from '@/api/ai'
-import type { ChatMessage, AiChatItem } from '@/api/ai/types'
+import type { ChatMessage } from '@/api/ai/types'
 import { useUserStore } from '@/stores/user'
 import { COMMON_CONFIG } from '@/constants'
 
@@ -56,10 +56,10 @@ export function useAIChat() {
     if (isFirstUserMessage) {
       const parts: string[] = []
       parts.push('【系统上下文】')
-      const userInfo = userStore.userInfo
-      parts.push(`用户ID: ${userInfo?.id}`)
-      parts.push(`用户名: ${userInfo?.username}`)
-      parts.push(`手机号: ${userInfo?.mobile}`)
+      const username = userStore.userInfo?.username
+      if (username) {
+        parts.push(`用户名: ${username}`)
+      }
       parts.push(`当前城市: ${selectedCity.value}`)
       parts.push('【用户问题】')
       parts.push(trimmed)

@@ -29,7 +29,6 @@ const {
   passengerError,
   passengerForm,
   orderFilter,
-  orderKeyword,
   orderPage,
   orderPageSize,
   orderTotalRow,
@@ -37,7 +36,6 @@ const {
   ticketPageSize,
   ticketTotalRow,
   workOrderFilter,
-  workOrderKeyword,
   workOrderPage,
   workOrderPageSize,
   workOrderTotalRow,
@@ -51,11 +49,7 @@ const {
   accountSections,
   currentTitle,
   displayAvatar,
-  userInfoQuery,
-  passengerListQuery,
-  myOrderPageQuery,
-  myTicketPageQuery,
-  workOrderListQuery,
+  activeSectionLoading,
   workOrderDetailQuery,
   paginatedOrders,
   paginatedTickets,
@@ -95,17 +89,6 @@ const {
 } = useProfilePage()
 
 const allSections = computed(() => [...tradeSections.value, ...accountSections.value])
-
-const profileCenterQuery = computed(() => ({
-  isLoading:
-    userInfoQuery.isLoading.value ||
-    passengerListQuery.isLoading.value ||
-    myOrderPageQuery.isLoading.value ||
-    myTicketPageQuery.isLoading.value ||
-    workOrderListQuery.isLoading.value ||
-    followList.followedEventsQuery.isLoading.value ||
-    followList.followedParticipantsQuery.isLoading.value,
-}))
 </script>
 
 <template>
@@ -130,10 +113,7 @@ const profileCenterQuery = computed(() => ({
           <section
             class="rounded-2xl border border-border bg-background p-4 md:p-5 lg:p-6 shadow-sm"
           >
-            <div
-              v-if="profileCenterQuery.isLoading"
-              class="flex min-h-[320px] items-center justify-center"
-            >
+            <div v-if="activeSectionLoading" class="flex min-h-[320px] items-center justify-center">
               <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
             </div>
 
@@ -173,14 +153,12 @@ const profileCenterQuery = computed(() => ({
               <ProfileOrdersSection
                 v-else-if="activeSection === 'orders'"
                 :order-filter="orderFilter"
-                :order-keyword="orderKeyword"
                 :paginated-orders="paginatedOrders"
                 :order-page="orderPage"
                 :order-page-size="orderPageSize"
                 :order-total-pages="orderTotalPages"
                 :order-total-row="orderTotalRow"
                 @update:order-filter="orderFilter = $event"
-                @update:order-keyword="orderKeyword = $event"
                 @update:order-page="updateOrderPage"
                 @update:order-page-size="updateOrderPageSize"
               />
@@ -199,14 +177,12 @@ const profileCenterQuery = computed(() => ({
               <ProfileWorkOrdersSection
                 v-else-if="activeSection === 'work-orders'"
                 :work-order-filter="workOrderFilter"
-                :work-order-keyword="workOrderKeyword"
                 :work-orders="workOrders"
                 :work-order-page="workOrderPage"
                 :work-order-page-size="workOrderPageSize"
                 :work-order-total-pages="workOrderTotalPages"
                 :work-order-total-row="workOrderTotalRow"
                 @update:work-order-filter="workOrderFilter = $event"
-                @update:work-order-keyword="workOrderKeyword = $event"
                 @update:work-order-page="updateWorkOrderPage"
                 @update:work-order-page-size="updateWorkOrderPageSize"
                 @open-detail="openWorkOrderDetail"

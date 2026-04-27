@@ -190,7 +190,7 @@ const goBack = () => {
                   class="flex gap-3 rounded-xl bg-white p-3 transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
                 >
                   <img
-                    :src="item.cover_url"
+                    :src="item.coverUrl"
                     :alt="item.name"
                     class="aspect-[3/4] h-auto w-20 shrink-0 rounded-lg object-cover"
                   />
@@ -200,17 +200,17 @@ const goBack = () => {
                       <div class="space-y-0.5">
                         <p class="flex items-center gap-1 text-xs text-muted-foreground">
                           <icon-lucide-map-pin class="h-3 w-3" />
-                          {{ item.venue_name }}
+                          {{ item.venueName }}
                         </p>
                         <p class="flex items-center gap-1 text-xs text-muted-foreground">
                           <icon-lucide-calendar class="h-3 w-3" />
-                          {{ item.start_time }}
+                          {{ item.startTime }}
                         </p>
                       </div>
                     </div>
                     <div class="flex items-end justify-between">
                       <p class="text-lg font-bold text-primary">
-                        {{ formatPrice(item.min_price) }}
+                        {{ formatPrice(item.minPrice) }}
                       </p>
                       <Button
                         size="sm"

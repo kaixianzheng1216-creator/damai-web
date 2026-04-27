@@ -1,8 +1,8 @@
-import { reactive, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { fetchUserInfo, updateUserInfo } from '@/api/account'
 import type { UserVO } from '@/api/account'
-import { PROFILE_CONFIG } from '@/constants'
+import { PROFILE_CONFIG, queryKeys } from '@/constants'
 import { useProfileSection } from './useProfileSection'
 import { usePassengerManagement } from './usePassengerManagement'
 import { useOrderList } from './useOrderList'
@@ -15,23 +15,60 @@ export const useProfilePage = () => {
   const queryClient = useQueryClient()
 
   const profileSection = useProfileSection()
-  const passengerManagement = usePassengerManagement()
-  const orderList = useOrderList()
-  const ticketList = useTicketList()
-  const workOrderList = useWorkOrderList()
+  const isInfoSection = computed(() => profileSection.activeSection.value === 'info')
+  const isPassengersSection = computed(() => profileSection.activeSection.value === 'passengers')
+  const isOrdersSection = computed(() => profileSection.activeSection.value === 'orders')
+  const isTicketsSection = computed(() => profileSection.activeSection.value === 'tickets')
+  const isWorkOrdersSection = computed(() => profileSection.activeSection.value === 'work-orders')
+  const isFollowedEventsSection = computed(
+    () => profileSection.activeSection.value === 'followed-events',
+  )
+  const isFollowedParticipantsSection = computed(
+    () => profileSection.activeSection.value === 'followed-participants',
+  )
+
+  const passengerManagement = usePassengerManagement({ enabled: isPassengersSection })
+  const orderList = useOrderList({ enabled: isOrdersSection })
+  const ticketList = useTicketList({ enabled: isTicketsSection })
+  const workOrderList = useWorkOrderList({ enabled: isWorkOrdersSection })
   const avatarUpload = useAvatarUpload()
-  const followList = useFollowList()
+  const followList = useFollowList({
+    events: { enabled: isFollowedEventsSection },
+    participants: { enabled: isFollowedParticipantsSection },
+  })
 
   const userInfoQuery = useQuery<UserVO>({
-    queryKey: ['user-info'],
+    queryKey: queryKeys.profile.userInfo(),
     queryFn: fetchUserInfo,
+    enabled: isInfoSection,
   })
 
   const updateUserInfoMutation = useMutation({
     mutationFn: updateUserInfo,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['user-info'] })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.profile.userInfo() })
     },
+  })
+
+  const activeSectionLoading = computed(() => {
+    switch (profileSection.activeSection.value) {
+      case 'info':
+        return userInfoQuery.isLoading.value
+      case 'passengers':
+        return passengerManagement.passengerListQuery.isLoading.value
+      case 'orders':
+        return orderList.myOrderPageQuery.isLoading.value
+      case 'tickets':
+        return ticketList.myTicketPageQuery.isLoading.value
+      case 'work-orders':
+        return workOrderList.workOrderListQuery.isLoading.value
+      case 'followed-events':
+        return followList.followedEventsQuery.isLoading.value
+      case 'followed-participants':
+        return followList.followedParticipantsQuery.isLoading.value
+      default:
+        return false
+    }
   })
 
   const years = Array.from({ length: PROFILE_CONFIG.YEAR_RANGE }, (_, i) =>
@@ -72,6 +109,7 @@ export const useProfilePage = () => {
     accountSections: profileSection.accountSections,
     currentTitle: profileSection.currentTitle,
     openSection: profileSection.openSection,
+    activeSectionLoading,
     infoForm,
     saveInfo,
     years,
@@ -98,7 +136,6 @@ export const useProfilePage = () => {
     updatePassengerPageSize: passengerManagement.updatePassengerPageSize,
     updatePassengerKeyword: passengerManagement.updatePassengerKeyword,
     orderFilter: orderList.orderFilter,
-    orderKeyword: orderList.orderKeyword,
     orderPage: orderList.orderPage,
     orderPageSize: orderList.orderPageSize,
     myOrderPageQuery: orderList.myOrderPageQuery,
@@ -116,7 +153,6 @@ export const useProfilePage = () => {
     updateTicketPage: ticketList.updateTicketPage,
     updateTicketPageSize: ticketList.updateTicketPageSize,
     workOrderFilter: workOrderList.workOrderFilter,
-    workOrderKeyword: workOrderList.workOrderKeyword,
     workOrderPage: workOrderList.workOrderPage,
     workOrderPageSize: workOrderList.workOrderPageSize,
     workOrderListQuery: workOrderList.workOrderListQuery,

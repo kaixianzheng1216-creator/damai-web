@@ -2,41 +2,12 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdminStore } from '@/stores/admin'
-import {
-  IconCalendar,
-  IconUsers,
-  IconMapPin,
-  IconTags,
-  IconBuilding,
-  IconPhoto,
-  IconUserCircle,
-  IconStack,
-  IconFileText,
-  IconShieldCheck,
-  IconTicket,
-  IconMessageCircle,
-} from '@tabler/icons-vue'
+import { adminDashboardModules } from '@/constants'
 
 const router = useRouter()
 const adminStore = useAdminStore()
 
 const adminName = computed(() => adminStore.adminInfo?.username ?? '管理员')
-
-const quickActionItems = [
-  { key: 'banners', label: 'Banner 管理', icon: IconPhoto, path: '/admin/banners' },
-  { key: 'events', label: '活动管理', icon: IconCalendar, path: '/admin/events' },
-  { key: 'series', label: '系列管理', icon: IconStack, path: '/admin/series' },
-  { key: 'cities', label: '城市管理', icon: IconMapPin, path: '/admin/cities' },
-  { key: 'categories', label: '分类管理', icon: IconTags, path: '/admin/categories' },
-  { key: 'venues', label: '场馆管理', icon: IconBuilding, path: '/admin/venues' },
-  { key: 'participants', label: '参与方管理', icon: IconUserCircle, path: '/admin/participants' },
-  { key: 'notices', label: '须知模板', icon: IconFileText, path: '/admin/notices' },
-  { key: 'services', label: '服务保障', icon: IconShieldCheck, path: '/admin/services' },
-  { key: 'tickets', label: '电子票管理', icon: IconTicket, path: '/admin/tickets' },
-  { key: 'work-orders', label: '工单管理', icon: IconMessageCircle, path: '/admin/work-orders' },
-  { key: 'users', label: '用户管理', icon: IconUsers, path: '/admin/users' },
-  { key: 'admins', label: '管理员管理', icon: IconUsers, path: '/admin/admins' },
-]
 
 const navigate = (path: string) => router.push(path)
 </script>
@@ -52,7 +23,7 @@ const navigate = (path: string) => router.push(path)
       <h2 class="text-lg font-semibold text-foreground mb-4">快捷操作</h2>
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         <button
-          v-for="item in quickActionItems"
+          v-for="item in adminDashboardModules"
           :key="item.key"
           class="group flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-card p-6 text-center shadow-sm transition-all hover:border-primary hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           @click="navigate(item.path)"

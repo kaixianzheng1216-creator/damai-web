@@ -22,7 +22,7 @@ import {
   replyAdminWorkOrder,
 } from '@/api/trade'
 import type { WorkOrderVO } from '@/api/trade'
-import { WORK_ORDER_STATUS } from '@/constants'
+import { WORK_ORDER_STATUS, queryKeys } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 import { formatDateTime } from '@/utils/format'
 import { getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
@@ -34,7 +34,6 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const searchUserId = ref('')
 const searchStatus = ref('all')
-const searchKeyword = ref('')
 const selectedWorkOrderId = ref<string | null>(null)
 const replyContent = ref('')
 const replyError = ref('')
@@ -47,7 +46,7 @@ const statusOptions = [
 ]
 
 const queryKey = computed(() => [
-  'admin-work-order-list',
+  ...queryKeys.admin.workOrderList(),
   currentPage.value,
   pageSize.value,
   searchUserId.value,
@@ -68,7 +67,7 @@ const { data, isLoading } = useQuery({
 })
 
 const workOrderDetailQuery = useQuery({
-  queryKey: ['admin-work-order-detail', selectedWorkOrderId],
+  queryKey: queryKeys.admin.workOrderDetail(selectedWorkOrderId),
   queryFn: () => fetchAdminWorkOrderById(selectedWorkOrderId.value ?? ''),
   enabled: computed(() => !!selectedWorkOrderId.value),
 })
@@ -78,27 +77,14 @@ const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
 const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 const selectedWorkOrder = computed(() => workOrderDetailQuery.data.value)
 
-const filteredList = computed(() => {
-  const keyword = searchKeyword.value.trim()
-  if (!keyword) {
-    return list.value
-  }
-
-  return list.value.filter((item) =>
-    [item.title, item.workOrderNo, item.typeLabel, item.statusLabel, item.lastReplyPreview]
-      .filter(Boolean)
-      .some((value) => String(value).includes(keyword)),
-  )
-})
-
-watch([searchUserId, searchStatus, searchKeyword], () => {
+watch([searchUserId, searchStatus], () => {
   currentPage.value = 1
 })
 
 const invalidateWorkOrders = async () => {
   await Promise.all([
-    queryClient.invalidateQueries({ queryKey: ['admin-work-order-list'] }),
-    queryClient.invalidateQueries({ queryKey: ['admin-work-order-detail'] }),
+    queryClient.invalidateQueries({ queryKey: queryKeys.admin.workOrderList() }),
+    queryClient.invalidateQueries({ queryKey: queryKeys.admin.workOrderDetail() }),
   ])
 }
 
@@ -222,7 +208,7 @@ const columns: ColumnDef<WorkOrderVO>[] = [
 <template>
   <DataTableCrud
     :columns="columns"
-    :data="filteredList"
+    :data="list"
     :loading="isLoading"
     :current-page="currentPage"
     :total-pages="totalPages"
@@ -247,7 +233,6 @@ const columns: ColumnDef<WorkOrderVO>[] = [
           </SelectContent>
         </Select>
         <Input v-model="searchUserId" placeholder="用户 ID" class="h-8 w-28" />
-        <Input v-model="searchKeyword" placeholder="搜索工单号或标题" class="h-8 w-48" />
       </div>
     </template>
   </DataTableCrud>

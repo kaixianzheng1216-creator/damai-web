@@ -10,16 +10,17 @@ import {
   WORK_ORDER_PAGE_SIZE,
   WORK_ORDER_STATUS,
   WORK_ORDER_STATUS_BY_FILTER,
+  queryKeys,
   type WorkOrderFilterKey,
 } from '@/constants'
-import { usePagination } from '@/composables/common'
+import { usePagination, useQueryEnabled, type QueryEnabledOptions } from '@/composables/common'
 import type { WorkOrderVO } from '@/api/trade'
 
-export const useWorkOrderList = () => {
+export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
+  const enabled = useQueryEnabled(options.enabled)
   const queryClient = useQueryClient()
 
   const workOrderFilter = ref<WorkOrderFilterKey>('all')
-  const workOrderKeyword = ref('')
   const selectedWorkOrderId = ref<string | null>(null)
   const replyContent = ref('')
   const replyError = ref('')
@@ -36,7 +37,7 @@ export const useWorkOrderList = () => {
     getTotalRow,
   } = usePagination({
     initialPageSize: WORK_ORDER_PAGE_SIZE,
-    resetTriggers: [workOrderFilter, workOrderKeyword],
+    resetTriggers: [workOrderFilter],
   })
 
   const requestStatus = computed(() => {
@@ -44,7 +45,7 @@ export const useWorkOrderList = () => {
   })
 
   const workOrderListQuery = useQuery({
-    queryKey: ['my-work-order-page', workOrderPage, workOrderPageSize, requestStatus],
+    queryKey: queryKeys.profile.workOrders(workOrderPage, workOrderPageSize, requestStatus),
     queryFn: () =>
       fetchMyWorkOrderPage({
         ...getPaginationParams(),
@@ -52,28 +53,16 @@ export const useWorkOrderList = () => {
         sortField: 'lastReplyAt',
         sortOrder: 'desc',
       }),
+    enabled,
   })
 
   const workOrderDetailQuery = useQuery({
-    queryKey: ['my-work-order-detail', selectedWorkOrderId],
+    queryKey: queryKeys.profile.workOrderDetail(selectedWorkOrderId),
     queryFn: () => fetchWorkOrderById(selectedWorkOrderId.value ?? ''),
     enabled: computed(() => !!selectedWorkOrderId.value),
   })
 
   const workOrderList = computed(() => getRecords<WorkOrderVO>(workOrderListQuery.data).value ?? [])
-
-  const filteredWorkOrders = computed(() => {
-    const keyword = workOrderKeyword.value.trim()
-    if (!keyword) {
-      return workOrderList.value
-    }
-
-    return workOrderList.value.filter((item) =>
-      [item.title, item.workOrderNo, item.typeLabel, item.statusLabel, item.lastReplyPreview]
-        .filter(Boolean)
-        .some((value) => String(value).includes(keyword)),
-    )
-  })
 
   const workOrderTotalPages = getTotalPages(workOrderListQuery.data)
   const workOrderTotalRow = getTotalRow(workOrderListQuery.data)
@@ -84,8 +73,8 @@ export const useWorkOrderList = () => {
 
   const invalidateWorkOrders = async () => {
     await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['my-work-order-page'] }),
-      queryClient.invalidateQueries({ queryKey: ['my-work-order-detail'] }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.profile.workOrders() }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.profile.workOrderDetail() }),
     ])
   }
 
@@ -158,11 +147,10 @@ export const useWorkOrderList = () => {
 
   return {
     workOrderFilter,
-    workOrderKeyword,
     workOrderPage,
     workOrderPageSize,
     workOrderListQuery,
-    workOrders: filteredWorkOrders,
+    workOrders: workOrderList,
     workOrderTotalPages,
     workOrderTotalRow,
     selectedWorkOrderId,

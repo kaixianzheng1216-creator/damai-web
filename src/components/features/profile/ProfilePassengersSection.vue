@@ -2,7 +2,7 @@
 import { h } from 'vue'
 import { type ColumnDef } from '@tanstack/vue-table'
 import type { PassengerItem } from '@/api/account'
-import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import DataTableCrud from '@/components/common/CommonDataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'

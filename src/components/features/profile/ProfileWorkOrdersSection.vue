@@ -2,10 +2,9 @@
 import { h } from 'vue'
 import { type ColumnDef } from '@tanstack/vue-table'
 import type { WorkOrderVO } from '@/api/trade'
-import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import DataTableCrud from '@/components/common/CommonDataTableCrud.vue'
 import { Badge } from '@/components/common/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
-import { Input } from '@/components/common/ui/input'
 import { WORK_ORDER_FILTER_OPTIONS, type WorkOrderFilterKey } from '@/constants'
 import { cn } from '@/utils'
 import { formatDateTime } from '@/utils/format'
@@ -15,7 +14,6 @@ const { viewMode } = useViewMode()
 
 defineProps<{
   workOrderFilter: WorkOrderFilterKey
-  workOrderKeyword: string
   workOrders: WorkOrderVO[]
   workOrderPage: number
   workOrderPageSize?: number
@@ -25,7 +23,6 @@ defineProps<{
 
 const emit = defineEmits<{
   'update:workOrderFilter': [value: WorkOrderFilterKey]
-  'update:workOrderKeyword': [value: string]
   'update:workOrderPage': [page: number]
   'update:workOrderPageSize': [pageSize: number]
   'open-detail': [workOrder: WorkOrderVO]
@@ -89,12 +86,6 @@ const columns: ColumnDef<WorkOrderVO>[] = [
             {{ item.label }}
           </button>
         </div>
-        <Input
-          :model-value="workOrderKeyword"
-          class="h-8 w-full sm:w-56"
-          placeholder="搜索工单号或标题"
-          @update:model-value="emit('update:workOrderKeyword', String($event))"
-        />
       </div>
     </template>
 

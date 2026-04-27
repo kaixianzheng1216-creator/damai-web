@@ -1,10 +1,16 @@
 export interface AiChatItem {
   id: string
   name: string
-  cover_url: string
-  venue_name: string
-  start_time: string
-  min_price: number
+  coverUrl: string
+  venueName: string
+  startTime: string
+  minPrice: number
+}
+
+export interface AiChatRequest {
+  flowName: string
+  message: string
+  sessionId: string
 }
 
 export interface AiChatResponse {

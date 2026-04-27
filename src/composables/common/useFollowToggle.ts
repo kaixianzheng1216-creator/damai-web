@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 
-interface UseFollowToggleOptions<TId, TFollowRequest, TEntity> {
+interface UseFollowToggleOptions<TId, TFollowRequest> {
   id: () => TId
   followQueryKeyPrefix: string
   entityQueryKeyPrefix: string
@@ -13,7 +13,7 @@ interface UseFollowToggleOptions<TId, TFollowRequest, TEntity> {
   buildFollowRequest: (id: TId) => TFollowRequest
 }
 
-export function useFollowToggle<TId extends string, TFollowRequest, TEntity>({
+export function useFollowToggle<TId extends string, TFollowRequest>({
   id,
   followQueryKeyPrefix,
   entityQueryKeyPrefix,
@@ -21,7 +21,7 @@ export function useFollowToggle<TId extends string, TFollowRequest, TEntity>({
   follow,
   unfollow,
   buildFollowRequest,
-}: UseFollowToggleOptions<TId, TFollowRequest, TEntity>) {
+}: UseFollowToggleOptions<TId, TFollowRequest>) {
   const route = useRoute()
   const router = useRouter()
   const userStore = useUserStore()

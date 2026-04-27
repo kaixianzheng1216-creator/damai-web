@@ -7,62 +7,85 @@ import {
   unfollowParticipant,
 } from '@/api/event'
 import { useUserStore } from '@/stores/user'
+import { queryKeys } from '@/constants'
 import { usePagination } from '@/composables/common/usePagination'
+import { useQueryEnabled, type QueryEnabledOptions } from '@/composables/common/useQueryEnabled'
+import type {
+  PageResponseUserFollowEventVO,
+  PageResponseUserFollowParticipantVO,
+} from '@/api/event'
 
-export function useFollowList() {
+interface FollowListOptions {
+  events?: QueryEnabledOptions
+  participants?: QueryEnabledOptions
+}
+
+export function useFollowList(options: FollowListOptions = {}) {
   const userStore = useUserStore()
   const queryClient = useQueryClient()
+  const eventSectionEnabled = useQueryEnabled(options.events?.enabled)
+  const participantSectionEnabled = useQueryEnabled(options.participants?.enabled)
+  const eventsEnabled = computed(() => userStore.isLoggedIn && eventSectionEnabled.value)
+  const participantsEnabled = computed(
+    () => userStore.isLoggedIn && participantSectionEnabled.value,
+  )
 
   const eventsPagination = usePagination()
   const participantsPagination = usePagination()
 
   const followedEventsQuery = useQuery({
-    queryKey: computed(() => [
-      'followed-events',
-      eventsPagination.page.value,
-      eventsPagination.pageSize.value,
-    ]),
+    queryKey: computed(() =>
+      queryKeys.profile.followedEvents(
+        eventsPagination.page.value,
+        eventsPagination.pageSize.value,
+      ),
+    ),
     queryFn: () => fetchFollowedEventsPage(eventsPagination.getPaginationParams()),
-    enabled: computed(() => userStore.isLoggedIn),
+    enabled: eventsEnabled,
   })
 
   const followedParticipantsQuery = useQuery({
-    queryKey: computed(() => [
-      'followed-participants',
-      participantsPagination.page.value,
-      participantsPagination.pageSize.value,
-    ]),
+    queryKey: computed(() =>
+      queryKeys.profile.followedParticipants(
+        participantsPagination.page.value,
+        participantsPagination.pageSize.value,
+      ),
+    ),
     queryFn: () => fetchFollowedParticipantsPage(participantsPagination.getPaginationParams()),
-    enabled: computed(() => userStore.isLoggedIn),
+    enabled: participantsEnabled,
   })
 
   const unfollowEventMutation = useMutation({
     mutationFn: unfollowEvent,
     onSuccess: (_data, eventId) => {
-      // Optimize: directly update cache data instead of just invalidating
-      queryClient.setQueriesData({ queryKey: ['followed-events'] }, (oldData: any) => {
-        if (!oldData?.records) return oldData
-        return {
-          ...oldData,
-          records: oldData.records.filter((item: any) => item.eventId !== eventId),
-          totalRow: oldData.totalRow ? oldData.totalRow - 1 : undefined,
-        }
-      })
+      queryClient.setQueriesData<PageResponseUserFollowEventVO>(
+        { queryKey: queryKeys.profile.followedEvents() },
+        (oldData) => {
+          if (!oldData?.records) return oldData
+          return {
+            ...oldData,
+            records: oldData.records.filter((item) => item.eventId !== eventId),
+            totalRow: Math.max(0, oldData.totalRow - 1),
+          }
+        },
+      )
     },
   })
 
   const unfollowParticipantMutation = useMutation({
     mutationFn: unfollowParticipant,
     onSuccess: (_data, participantId) => {
-      // Optimize: directly update cache data instead of just invalidating
-      queryClient.setQueriesData({ queryKey: ['followed-participants'] }, (oldData: any) => {
-        if (!oldData?.records) return oldData
-        return {
-          ...oldData,
-          records: oldData.records.filter((item: any) => item.participantId !== participantId),
-          totalRow: oldData.totalRow ? oldData.totalRow - 1 : undefined,
-        }
-      })
+      queryClient.setQueriesData<PageResponseUserFollowParticipantVO>(
+        { queryKey: queryKeys.profile.followedParticipants() },
+        (oldData) => {
+          if (!oldData?.records) return oldData
+          return {
+            ...oldData,
+            records: oldData.records.filter((item) => item.participantId !== participantId),
+            totalRow: Math.max(0, oldData.totalRow - 1),
+          }
+        },
+      )
     },
   })
 

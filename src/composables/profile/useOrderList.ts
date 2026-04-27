@@ -1,10 +1,15 @@
 import { computed, ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { fetchMyOrderPage } from '@/api/trade'
-import { ORDER_PAGE_SIZE, ORDER_STATUS_BY_FILTER, type OrderFilterKey } from '@/constants'
+import {
+  ORDER_PAGE_SIZE,
+  ORDER_STATUS_BY_FILTER,
+  queryKeys,
+  type OrderFilterKey,
+} from '@/constants'
 import { formatPrice, formatDateTime } from '@/utils/format'
 import { mapOrderStatus } from '@/utils/statusMappers'
-import { usePagination } from '@/composables/common'
+import { usePagination, useQueryEnabled, type QueryEnabledOptions } from '@/composables/common'
 import type { OrderItem, OrderStatus } from '@/api/account'
 import type { TicketOrderVO } from '@/api/trade'
 
@@ -20,9 +25,9 @@ const mapTicketOrderToOrderItem = (order: TicketOrderVO): OrderItem => ({
   statusLabel: (order.statusLabel || mapOrderStatus(order.status)) as OrderStatus,
 })
 
-export const useOrderList = () => {
+export const useOrderList = (options: QueryEnabledOptions = {}) => {
+  const enabled = useQueryEnabled(options.enabled)
   const orderFilter = ref<OrderFilter>('all')
-  const orderKeyword = ref('')
 
   const {
     page: orderPage,
@@ -35,7 +40,7 @@ export const useOrderList = () => {
     getTotalRow,
   } = usePagination({
     initialPageSize: ORDER_PAGE_SIZE,
-    resetTriggers: [orderFilter, orderKeyword],
+    resetTriggers: [orderFilter],
   })
 
   // 计算要传递给后端的 status 参数
@@ -44,12 +49,13 @@ export const useOrderList = () => {
   })
 
   const myOrderPageQuery = useQuery({
-    queryKey: ['my-order-page', orderPage, orderPageSize, requestStatus],
+    queryKey: queryKeys.profile.orders(orderPage, orderPageSize, requestStatus),
     queryFn: () =>
       fetchMyOrderPage({
         ...getPaginationParams(),
         status: requestStatus.value,
       }),
+    enabled,
   })
 
   const orderList = computed<OrderItem[]>(
@@ -57,27 +63,12 @@ export const useOrderList = () => {
       getRecords<TicketOrderVO>(myOrderPageQuery.data).value.map(mapTicketOrderToOrderItem) ?? [],
   )
 
-  // 只对关键词进行前端过滤（后端暂不支持关键词搜索）
-  const filteredOrders = computed(() => {
-    const keyword = orderKeyword.value.trim()
-    if (!keyword) {
-      return orderList.value
-    }
-    return orderList.value.filter(
-      (item) =>
-        item.title.includes(keyword) ||
-        item.id.includes(keyword) ||
-        (item.orderNo && item.orderNo.includes(keyword)),
-    )
-  })
-
   const orderTotalPages = getTotalPages(myOrderPageQuery.data)
   const orderTotalRow = getTotalRow(myOrderPageQuery.data)
-  const paginatedOrders = computed(() => filteredOrders.value)
+  const paginatedOrders = computed(() => orderList.value)
 
   return {
     orderFilter,
-    orderKeyword,
     orderPage,
     orderPageSize,
     myOrderPageQuery,

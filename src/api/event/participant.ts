@@ -5,7 +5,6 @@ import type {
   ParticipantUpdateRequest,
   ParticipantPageRequest,
   PageResponseParticipantVO,
-  EventVO,
   ParticipantEventPageRequest,
   PageResponseEventVO,
 } from './types'

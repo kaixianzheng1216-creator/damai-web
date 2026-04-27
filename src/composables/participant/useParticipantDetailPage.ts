@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 import {
   fetchParticipantDetail,
@@ -9,21 +9,21 @@ import {
   checkIsFollowedParticipant,
 } from '@/api/event'
 import { useFollowToggle } from '@/composables/common/useFollowToggle'
+import { queryKeys } from '@/constants'
 
 export function useParticipantDetailPage() {
   const route = useRoute()
-  const router = useRouter()
 
   const participantId = computed(() => route.params.id as string)
   const currentPage = ref(1)
 
   const participantQuery = useQuery({
-    queryKey: computed(() => ['participant-detail', participantId.value]),
+    queryKey: computed(() => queryKeys.participant.detail(participantId.value)),
     queryFn: () => fetchParticipantDetail(participantId.value),
   })
 
   const eventsQuery = useQuery({
-    queryKey: computed(() => ['participant-events', participantId.value, currentPage.value]),
+    queryKey: computed(() => queryKeys.participant.events(participantId.value, currentPage.value)),
     queryFn: () =>
       fetchParticipantEventsPage(participantId.value, {
         page: currentPage.value,

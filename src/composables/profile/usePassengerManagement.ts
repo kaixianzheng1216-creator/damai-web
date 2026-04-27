@@ -9,7 +9,8 @@ import {
 } from '@/api/account'
 import { PASSENGER_CERT_TYPES } from '@/constants'
 import { mapPassengerToPassengerItem } from '@/utils/mappers'
-import { usePagination } from '@/composables/common'
+import { queryKeys } from '@/constants'
+import { usePagination, useQueryEnabled, type QueryEnabledOptions } from '@/composables/common'
 import type { PassengerItem, PassengerFormData, PageResponsePassengerVO } from '@/api/account'
 
 const passengerSchema = z.object({
@@ -17,7 +18,8 @@ const passengerSchema = z.object({
   certNo: z.string().trim().min(1, '请输入证件号'),
 })
 
-export const usePassengerManagement = () => {
+export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
+  const enabled = useQueryEnabled(options.enabled)
   const queryClient = useQueryClient()
 
   const showPassengerModal = ref(false)
@@ -45,19 +47,19 @@ export const usePassengerManagement = () => {
     getRecords,
     getTotalPages,
     getTotalRow,
-    resetPage,
   } = usePagination({
     initialPageSize: 10,
     resetTriggers: [passengerKeyword],
   })
 
   const passengerListQuery = useQuery<PageResponsePassengerVO>({
-    queryKey: ['passenger-list', passengerPage, passengerPageSize, passengerKeyword],
+    queryKey: queryKeys.profile.passengers(passengerPage, passengerPageSize, passengerKeyword),
     queryFn: () =>
       fetchPassengerPage({
         ...getPaginationParams(),
         name: passengerKeyword.value || undefined,
       }),
+    enabled,
   })
 
   const passengerList = computed<PassengerItem[]>(() => {
@@ -67,7 +69,8 @@ export const usePassengerManagement = () => {
   const passengerTotalPages = getTotalPages(passengerListQuery.data)
   const passengerTotalRow = getTotalRow(passengerListQuery.data)
 
-  const refreshPassengerList = () => queryClient.invalidateQueries({ queryKey: ['passenger-list'] })
+  const refreshPassengerList = () =>
+    queryClient.invalidateQueries({ queryKey: queryKeys.profile.passengers() })
 
   const createPassengerMutation = useMutation({
     mutationFn: createPassenger,

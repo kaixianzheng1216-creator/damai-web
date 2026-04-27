@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/vue-query'
 import { fetchMyTicketPage } from '@/api/ticket'
-import { ORDER_PAGE_SIZE } from '@/constants'
-import { usePagination } from '@/composables/common'
+import { ORDER_PAGE_SIZE, queryKeys } from '@/constants'
+import { usePagination, useQueryEnabled, type QueryEnabledOptions } from '@/composables/common'
 import type { TicketVO } from '@/api/ticket'
 
-export const useTicketList = () => {
+export const useTicketList = (options: QueryEnabledOptions = {}) => {
+  const enabled = useQueryEnabled(options.enabled)
   const {
     page: ticketPage,
     pageSize: ticketPageSize,
@@ -17,8 +18,9 @@ export const useTicketList = () => {
   } = usePagination({ initialPageSize: ORDER_PAGE_SIZE })
 
   const myTicketPageQuery = useQuery({
-    queryKey: ['my-ticket-page', ticketPage, ticketPageSize],
+    queryKey: queryKeys.profile.tickets(ticketPage, ticketPageSize),
     queryFn: () => fetchMyTicketPage(getPaginationParams()),
+    enabled,
   })
 
   const ticketList = getRecords<TicketVO>(myTicketPageQuery.data)

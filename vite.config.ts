@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => {
       vueTemplate: true,
     }),
     Components({
+      dirs: ['src/components/common/ui', 'src/components/admin', 'src/components/features'],
       resolvers: [IconsResolver({ prefix: 'icon' })],
       dts: 'src/types/components.d.ts',
     }),

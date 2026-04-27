@@ -1,21 +1,38 @@
 import { ref, reactive, computed, watch } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import type { PaginatedResponse } from '@/api/types'
 
-export interface UseAdminCrudOptions<TItem, TCreateRequest, TUpdateRequest> {
+type AdminPageParams = {
+  page: number
+  size: number
+  name?: string
+}
+
+export interface UseAdminCrudOptions<
+  TItem,
+  TForm extends Record<string, unknown>,
+  TCreateRequest = TForm,
+  TUpdateRequest = Partial<TForm>,
+  TPageParams extends AdminPageParams = AdminPageParams,
+> {
   queryKeyBase: string
-  fetchPage: (params: any) => Promise<any>
-  createItem: (data: any) => Promise<any>
-  updateItem: (id: string, data: any) => Promise<any>
-  deleteItem: (id: string) => Promise<any>
-  initialForm: any
+  fetchPage: (params: TPageParams) => Promise<PaginatedResponse<TItem>>
+  createItem: (data: TCreateRequest) => Promise<unknown>
+  updateItem: (id: string, data: TUpdateRequest) => Promise<unknown>
+  deleteItem: (id: string) => Promise<unknown>
+  initialForm: TForm
   defaultPageSize?: number
   getDeleteConfirmMessage?: (item: TItem) => { title: string; description: string }
 }
 
-export function useAdminCrud<TItem extends { id: string }>(
-  options: UseAdminCrudOptions<TItem, any, any>,
-) {
+export function useAdminCrud<
+  TItem extends { id: string },
+  TForm extends Record<string, unknown>,
+  TCreateRequest = TForm,
+  TUpdateRequest = Partial<TForm>,
+  TPageParams extends AdminPageParams = AdminPageParams,
+>(options: UseAdminCrudOptions<TItem, TForm, TCreateRequest, TUpdateRequest, TPageParams>) {
   const {
     queryKeyBase,
     fetchPage,
@@ -48,7 +65,7 @@ export function useAdminCrud<TItem extends { id: string }>(
         page: currentPage.value,
         size: pageSize.value,
         name: searchName.value || undefined,
-      }),
+      } as TPageParams),
   })
 
   const list = computed(() => data.value?.records ?? [])
@@ -57,7 +74,7 @@ export function useAdminCrud<TItem extends { id: string }>(
 
   const showDialog = ref(false)
   const editingId = ref<string | null>(null)
-  const form = reactive({ ...initialForm })
+  const form = reactive({ ...initialForm }) as TForm
 
   const dialogTitle = computed(() => (editingId.value ? '编辑' : '新建'))
 
@@ -73,7 +90,7 @@ export function useAdminCrud<TItem extends { id: string }>(
     showDialog.value = true
   }
 
-  const openEdit = (item: TItem, mapItemToForm?: (item: TItem) => any) => {
+  const openEdit = (item: TItem, mapItemToForm?: (item: TItem) => Partial<TForm>) => {
     resetForm()
     if (mapItemToForm) {
       Object.assign(form, mapItemToForm(item))
@@ -93,7 +110,7 @@ export function useAdminCrud<TItem extends { id: string }>(
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => updateItem(id, data),
+    mutationFn: ({ id, data }: { id: string; data: TUpdateRequest }) => updateItem(id, data),
     onSuccess: () => {
       invalidate()
       showDialog.value = false
@@ -111,8 +128,8 @@ export function useAdminCrud<TItem extends { id: string }>(
 
   const handleSubmit = async (options?: {
     validate?: () => boolean | Promise<boolean>
-    getCreateData?: () => any
-    getUpdateData?: () => any
+    getCreateData?: () => TCreateRequest
+    getUpdateData?: () => TUpdateRequest
   }) => {
     const { validate, getCreateData, getUpdateData } = options ?? {}
 
@@ -121,13 +138,13 @@ export function useAdminCrud<TItem extends { id: string }>(
     }
 
     if (editingId.value) {
-      const updateData = getUpdateData ? getUpdateData() : form
+      const updateData = getUpdateData ? getUpdateData() : (form as unknown as TUpdateRequest)
       await updateMutation.mutateAsync({
         id: editingId.value,
         data: updateData,
       })
     } else {
-      const createData = getCreateData ? getCreateData() : form
+      const createData = getCreateData ? getCreateData() : (form as unknown as TCreateRequest)
       await createMutation.mutateAsync(createData)
     }
   }
