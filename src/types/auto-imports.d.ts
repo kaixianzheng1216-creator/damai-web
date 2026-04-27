@@ -352,18 +352,6 @@ declare global {
   // @ts-ignore
   export type { ViewMode } from '../composables/useViewMode'
   import('../composables/useViewMode')
-  // @ts-ignore
-  export type { ApiRequestError } from '../api/request'
-  import('../api/request')
-  // @ts-ignore
-  export type { EntityId, RequestConfig, PaginatedResponse, ApiResponse } from '../api/types'
-  import('../api/types')
-  // @ts-ignore
-  export type { AdminInfo } from '../stores/admin'
-  import('../stores/admin')
-  // @ts-ignore
-  export type { UserInfo } from '../stores/user'
-  import('../stores/user')
 }
 
 // for vue template auto import
@@ -371,7 +359,6 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
-    readonly ApiRequestError: UnwrapRef<typeof import('../api/request')['ApiRequestError']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
@@ -407,7 +394,6 @@ declare module 'vue' {
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
-    readonly fetchHomeData: UnwrapRef<typeof import('../api/home')['fetchHomeData']>
     readonly formatDate: UnwrapRef<typeof import('../utils/format')['formatDate']>
     readonly formatDateTime: UnwrapRef<typeof import('../utils/format')['formatDateTime']>
     readonly formatDateTimeLocalInput: UnwrapRef<typeof import('../utils/format')['formatDateTimeLocalInput']>
@@ -420,7 +406,6 @@ declare module 'vue' {
     readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
     readonly getOrderStatusBadgeClass: UnwrapRef<typeof import('../utils/statusMappers')['getOrderStatusBadgeClass']>
     readonly getTicketStatusClass: UnwrapRef<typeof import('../utils/statusMappers')['getTicketStatusClass']>
-    readonly getUserInfo: UnwrapRef<typeof import('../api/auth')['getUserInfo']>
     readonly getWorkOrderStatusBadgeClass: UnwrapRef<typeof import('../utils/statusMappers')['getWorkOrderStatusBadgeClass']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
@@ -432,8 +417,6 @@ declare module 'vue' {
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
-    readonly login: UnwrapRef<typeof import('../api/auth')['login']>
-    readonly logout: UnwrapRef<typeof import('../api/auth')['logout']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>
     readonly mapGetters: UnwrapRef<typeof import('pinia')['mapGetters']>
@@ -444,7 +427,6 @@ declare module 'vue' {
     readonly mapWritableState: UnwrapRef<typeof import('pinia')['mapWritableState']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
-    readonly normalizeResponseFields: UnwrapRef<typeof import('../api/requestTransforms')['normalizeResponseFields']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>
@@ -483,8 +465,6 @@ declare module 'vue' {
     readonly refManualReset: UnwrapRef<typeof import('@vueuse/core')['refManualReset']>
     readonly refThrottled: UnwrapRef<typeof import('@vueuse/core')['refThrottled']>
     readonly refWithControl: UnwrapRef<typeof import('@vueuse/core')['refWithControl']>
-    readonly register: UnwrapRef<typeof import('../api/auth')['register']>
-    readonly request: UnwrapRef<typeof import('../api/request')['default']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
@@ -503,7 +483,6 @@ declare module 'vue' {
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
     readonly toValue: UnwrapRef<typeof import('vue')['toValue']>
-    readonly transformDateTimeFields: UnwrapRef<typeof import('../api/requestTransforms')['transformDateTimeFields']>
     readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
     readonly tryOnBeforeMount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeMount']>
     readonly tryOnBeforeUnmount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeUnmount']>
@@ -514,10 +493,8 @@ declare module 'vue' {
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
-    readonly uploadFormData: UnwrapRef<typeof import('../api/request')['uploadFormData']>
     readonly useAIChat: UnwrapRef<typeof import('../composables/useAIChat')['useAIChat']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
-    readonly useAdminStore: UnwrapRef<typeof import('../stores/admin')['useAdminStore']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>
     readonly useArrayEvery: UnwrapRef<typeof import('@vueuse/core')['useArrayEvery']>
@@ -677,7 +654,6 @@ declare module 'vue' {
     readonly useTransition: UnwrapRef<typeof import('@vueuse/core')['useTransition']>
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
     readonly useUserMedia: UnwrapRef<typeof import('@vueuse/core')['useUserMedia']>
-    readonly useUserStore: UnwrapRef<typeof import('../stores/user')['useUserStore']>
     readonly useVModel: UnwrapRef<typeof import('@vueuse/core')['useVModel']>
     readonly useVModels: UnwrapRef<typeof import('@vueuse/core')['useVModels']>
     readonly useVibrate: UnwrapRef<typeof import('@vueuse/core')['useVibrate']>

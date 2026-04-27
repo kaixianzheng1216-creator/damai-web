@@ -60,6 +60,7 @@ watch(api, (newApi) => {
 
     <div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5 md:bottom-4 md:gap-2">
       <button
+        type="button"
         v-for="(_, index) in banners"
         :key="index"
         class="h-1.5 rounded-full bg-white/50 transition-all duration-300 hover:bg-white/80 md:h-2"

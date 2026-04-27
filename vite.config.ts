@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
         { '@tanstack/vue-query': ['useQuery', 'useMutation', 'useQueryClient'] },
         { zod: ['z'], clsx: ['clsx'], 'tailwind-merge': ['twMerge'] },
       ],
-      dirs: ['src/utils', 'src/composables', 'src/api', 'src/stores'],
+      dirs: ['src/utils', 'src/composables'],
       dts: 'src/types/auto-imports.d.ts',
       vueTemplate: true,
     }),

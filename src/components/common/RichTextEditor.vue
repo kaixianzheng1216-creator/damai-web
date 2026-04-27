@@ -119,9 +119,9 @@ const clearFormatting = () => {
           class="absolute top-full left-0 mt-0.5 z-50 min-w-[100px] rounded-md border bg-background shadow-md py-1"
         >
           <button
+            type="button"
             v-for="opt in headingOptions"
             :key="opt.label"
-            type="button"
             class="w-full text-left px-3 py-1.5 text-sm hover:bg-muted/60 transition-colors"
             @mousedown.prevent="applyHeading(opt)"
           >

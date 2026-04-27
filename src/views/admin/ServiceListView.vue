@@ -6,6 +6,7 @@ import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
 import { Badge } from '@/components/common/ui/badge'
+import { Checkbox } from '@/components/common/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -369,6 +370,10 @@ const handleOptionSubmit = async () => {
   }
 }
 
+const setOptionBooleanType = (checked: boolean | 'indeterminate') => {
+  optionForm.isBooleanType = checked === true ? BOOLEAN_TYPE.YES : BOOLEAN_TYPE.NO
+}
+
 const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
   if (!selectedService.value) return
   openConfirm('确认删除', `确认删除选项「${row.name}」？`, () => {
@@ -476,23 +481,12 @@ const handleDeleteOption = (row: ServiceGuaranteeOptionVO) => {
           <Input v-model="optionForm.description" placeholder="请输入描述（可选）" />
         </div>
         <div class="flex items-center gap-3">
-          <label class="text-sm font-medium">布尔类型</label>
-          <button
-            type="button"
-            class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
-            :class="optionForm.isBooleanType === BOOLEAN_TYPE.YES ? 'bg-primary' : 'bg-muted'"
-            @click="
-              optionForm.isBooleanType =
-                optionForm.isBooleanType === BOOLEAN_TYPE.YES ? BOOLEAN_TYPE.NO : BOOLEAN_TYPE.YES
-            "
-          >
-            <span
-              class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200"
-              :class="
-                optionForm.isBooleanType === BOOLEAN_TYPE.YES ? 'translate-x-4' : 'translate-x-0'
-              "
-            />
-          </button>
+          <Checkbox
+            id="service-option-boolean-type"
+            :checked="optionForm.isBooleanType === BOOLEAN_TYPE.YES"
+            @update:checked="setOptionBooleanType"
+          />
+          <label for="service-option-boolean-type" class="text-sm font-medium">布尔类型</label>
           <span class="text-sm text-muted-foreground">
             {{ optionForm.isBooleanType === BOOLEAN_TYPE.YES ? '是' : '否' }}
           </span>

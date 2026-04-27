@@ -112,9 +112,9 @@ const emit = defineEmits<{
           <p class="text-sm text-muted-foreground">同系列活动</p>
           <div class="mt-2 flex flex-wrap gap-2">
             <button
+              type="button"
               v-for="event in seriesEvents"
               :key="event.id"
-              type="button"
               :class="
                 cn(
                   'rounded-sm border px-3 py-1 text-sm transition-colors',
@@ -134,9 +134,9 @@ const emit = defineEmits<{
           <p class="text-sm text-muted-foreground">场次</p>
           <div class="mt-2 flex max-w-[760px] flex-wrap gap-2">
             <button
+              type="button"
               v-for="session in detail.sessions"
               :key="session.id"
-              type="button"
               :class="
                 cn(
                   'rounded-sm border px-3 py-1 text-sm transition-colors',
@@ -156,9 +156,9 @@ const emit = defineEmits<{
           <p class="text-sm text-muted-foreground">票档</p>
           <div class="mt-2 flex max-w-[760px] flex-wrap gap-2">
             <button
+              type="button"
               v-for="ticketType in availableTicketTypes"
               :key="ticketType.id"
-              type="button"
               :disabled="!isTicketTypeOnSale(ticketType)"
               :class="
                 cn(

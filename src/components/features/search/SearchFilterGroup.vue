@@ -41,9 +41,9 @@ useResizeObserver(listRef, checkOverflow)
       :class="expanded ? '' : 'max-h-[36px] overflow-hidden'"
     >
       <button
+        type="button"
         v-for="item in options"
         :key="item.value"
-        type="button"
         :class="
           cn(
             'rounded-sm px-3 py-1.5 text-sm whitespace-nowrap transition-colors',
@@ -58,8 +58,8 @@ useResizeObserver(listRef, checkOverflow)
       </button>
     </div>
     <button
-      v-if="overflows || expanded"
       type="button"
+      v-if="overflows || expanded"
       class="flex shrink-0 items-center gap-0.5 pt-1 text-sm text-primary transition-colors hover:text-primary/80"
       @click="expanded = !expanded"
     >

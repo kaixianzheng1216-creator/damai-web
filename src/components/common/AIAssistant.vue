@@ -20,8 +20,8 @@ const isAIChatPage = computed(() => route.path === '/ai')
 
 <template>
   <button
-    v-if="!isAIChatPage"
     type="button"
+    v-if="!isAIChatPage"
     class="flex h-11 min-w-[108px] items-center justify-center gap-1.5 rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
     @click="goToAI"
   >

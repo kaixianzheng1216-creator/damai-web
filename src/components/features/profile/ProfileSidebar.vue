@@ -23,9 +23,9 @@ const emit = defineEmits<{
         </p>
         <div class="space-y-1">
           <button
+            type="button"
             v-for="item in tradeSections"
             :key="item.key"
-            type="button"
             class="h-10 w-full rounded-lg border border-transparent px-3 text-left text-[15px] font-medium text-foreground transition-colors duration-200 ease-out motion-reduce:transition-none"
             :class="
               activeSection === item.key
@@ -45,9 +45,9 @@ const emit = defineEmits<{
         </p>
         <div class="space-y-1">
           <button
+            type="button"
             v-for="item in accountSections"
             :key="item.key"
-            type="button"
             class="h-10 w-full rounded-lg border border-transparent px-3 text-left text-[15px] font-medium text-foreground transition-colors duration-200 ease-out motion-reduce:transition-none"
             :class="
               activeSection === item.key

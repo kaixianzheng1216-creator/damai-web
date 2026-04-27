@@ -14,9 +14,9 @@ const emit = defineEmits<{
 <template>
   <div class="flex gap-2 overflow-x-auto scrollbar-hide lg:hidden">
     <button
+      type="button"
       v-for="section in allSections"
       :key="section.key"
-      type="button"
       class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors"
       :class="
         activeSection === section.key

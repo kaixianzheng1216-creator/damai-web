@@ -1,19 +1,19 @@
 import type { Component } from 'vue'
 import {
-  IconBuilding,
-  IconCalendar,
-  IconFileText,
-  IconLayoutDashboard,
-  IconMapPin,
-  IconMessageCircle,
-  IconPhoto,
-  IconShieldCheck,
-  IconStack,
-  IconTags,
-  IconTicket,
-  IconUserCircle,
-  IconUsers,
-} from '@tabler/icons-vue'
+  BadgeCheck,
+  Building2,
+  CalendarDays,
+  FileText,
+  Images,
+  Layers,
+  LayoutDashboard,
+  MapPin,
+  MessageCircle,
+  Tags,
+  Ticket,
+  UserCircle,
+  Users,
+} from 'lucide-vue-next'
 
 export interface AdminModuleItem {
   key: string
@@ -30,7 +30,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '仪表盘',
     label: '仪表盘',
     path: '/admin',
-    icon: IconLayoutDashboard,
+    icon: LayoutDashboard,
     showInDashboard: false,
   },
   {
@@ -38,7 +38,7 @@ export const adminModules: AdminModuleItem[] = [
     title: 'Banner 管理',
     label: 'Banner 管理',
     path: '/admin/banners',
-    icon: IconPhoto,
+    icon: Images,
     showInDashboard: true,
   },
   {
@@ -46,7 +46,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '活动管理',
     label: '活动管理',
     path: '/admin/events',
-    icon: IconCalendar,
+    icon: CalendarDays,
     showInDashboard: true,
   },
   {
@@ -54,7 +54,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '系列管理',
     label: '系列管理',
     path: '/admin/series',
-    icon: IconStack,
+    icon: Layers,
     showInDashboard: true,
   },
   {
@@ -62,7 +62,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '城市管理',
     label: '城市管理',
     path: '/admin/cities',
-    icon: IconMapPin,
+    icon: MapPin,
     showInDashboard: true,
   },
   {
@@ -70,7 +70,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '分类管理',
     label: '分类管理',
     path: '/admin/categories',
-    icon: IconTags,
+    icon: Tags,
     showInDashboard: true,
   },
   {
@@ -78,7 +78,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '场馆管理',
     label: '场馆管理',
     path: '/admin/venues',
-    icon: IconBuilding,
+    icon: Building2,
     showInDashboard: true,
   },
   {
@@ -86,7 +86,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '参与方管理',
     label: '参与方管理',
     path: '/admin/participants',
-    icon: IconUserCircle,
+    icon: UserCircle,
     showInDashboard: true,
   },
   {
@@ -94,7 +94,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '须知模板',
     label: '须知模板',
     path: '/admin/notices',
-    icon: IconFileText,
+    icon: FileText,
     showInDashboard: true,
   },
   {
@@ -102,7 +102,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '服务保障',
     label: '服务保障',
     path: '/admin/services',
-    icon: IconShieldCheck,
+    icon: BadgeCheck,
     showInDashboard: true,
   },
   {
@@ -110,7 +110,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '电子票管理',
     label: '电子票管理',
     path: '/admin/tickets',
-    icon: IconTicket,
+    icon: Ticket,
     showInDashboard: true,
   },
   {
@@ -118,7 +118,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '工单管理',
     label: '工单管理',
     path: '/admin/work-orders',
-    icon: IconMessageCircle,
+    icon: MessageCircle,
     showInDashboard: true,
   },
   {
@@ -126,7 +126,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '用户管理',
     label: '用户管理',
     path: '/admin/users',
-    icon: IconUsers,
+    icon: Users,
     showInDashboard: true,
   },
   {
@@ -134,7 +134,7 @@ export const adminModules: AdminModuleItem[] = [
     title: '管理员管理',
     label: '管理员管理',
     path: '/admin/admins',
-    icon: IconUsers,
+    icon: Users,
     showInDashboard: true,
   },
 ]

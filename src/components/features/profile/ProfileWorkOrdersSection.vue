@@ -70,9 +70,9 @@ const columns: ColumnDef<WorkOrderVO>[] = [
       <div class="flex flex-wrap items-center gap-2">
         <div class="flex flex-wrap gap-2">
           <button
+            type="button"
             v-for="item in WORK_ORDER_FILTER_OPTIONS"
             :key="item.key"
-            type="button"
             :class="
               cn(
                 'rounded-full px-3 py-1 text-sm',

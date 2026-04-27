@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AIAssistant from '@/components/common/AIAssistant.vue'
 import { useHomePage } from '@/composables/home/useHomePage'
 
 const { banners, categories, eventSections, isLoading, isError } = useHomePage()

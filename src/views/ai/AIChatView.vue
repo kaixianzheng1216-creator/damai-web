@@ -84,10 +84,10 @@ const goBack = () => {
     高度由纯 CSS calc(100dvh - header - nav) 计算，零 JS 干预
   -->
   <div
-    class="grid grid-rows-[auto_1fr_auto] overflow-hidden bg-[#F5F7FA] h-[calc(100dvh-var(--layout-header)-var(--layout-mobile-nav))] md:h-[calc(100vh-var(--layout-header-desktop))]"
+    class="grid grid-rows-[auto_1fr_auto] overflow-hidden bg-muted/40 h-[calc(100dvh-var(--layout-header)-var(--layout-mobile-nav))] md:h-[calc(100vh-var(--layout-header-desktop))]"
   >
     <!-- Header -->
-    <div class="z-10 border-b border-[#EAEAEA] bg-white">
+    <div class="z-10 border-b border-border bg-background">
       <div class="mx-auto flex w-full max-w-[800px] items-center justify-between px-4 py-3 md:px-6">
         <div class="flex items-center gap-3">
           <Button variant="ghost" size="icon-sm" class="h-8 w-8" @click="goBack">
@@ -119,15 +119,18 @@ const goBack = () => {
         class="mx-auto flex min-h-full w-full max-w-[800px] flex-col items-center justify-center px-4 py-12"
       >
         <img :src="assistantAvatar" alt="AI" class="mb-6 h-auto max-h-36 w-auto object-contain" />
-        <h2 class="mb-2 text-center text-2xl font-bold text-gray-900">你好！我是 Damai 智能助手</h2>
+        <h2 class="mb-2 text-center text-2xl font-bold text-foreground">
+          你好！我是 Damai 智能助手
+        </h2>
         <p class="mb-10 text-center text-base text-muted-foreground">
           我可以帮你找演出、抢热门票、或者解答购票疑问。
         </p>
         <div class="flex flex-wrap justify-center gap-3">
           <button
+            type="button"
             v-for="(prompt, idx) in quickPrompts"
             :key="idx"
-            class="h-auto cursor-pointer rounded-full border border-transparent bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-[0_2px_6px_rgba(0,0,0,0.04)] transition-all hover:border-primary hover:text-primary active:scale-[0.98] focus:outline-none"
+            class="h-auto cursor-pointer rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all hover:border-primary hover:text-primary active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             @click="handleSuggestionClick(prompt)"
           >
             {{ prompt }}
@@ -157,8 +160,8 @@ const goBack = () => {
               class="px-4 py-3 text-sm leading-[1.6]"
               :class="
                 msg.role === 'user'
-                  ? 'bg-[#FFF0E6] text-foreground rounded-[16px_2px_16px_16px]'
-                  : 'bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] text-foreground rounded-[2px_16px_16px_16px]'
+                  ? 'bg-primary/10 text-foreground rounded-[16px_2px_16px_16px]'
+                  : 'bg-card shadow-sm text-foreground rounded-[2px_16px_16px_16px]'
               "
             >
               {{ msg.content }}
@@ -170,9 +173,10 @@ const goBack = () => {
               class="mt-2 flex flex-wrap gap-2"
             >
               <button
+                type="button"
                 v-for="(suggestion, sIdx) in msg.suggestions"
                 :key="sIdx"
-                class="h-auto cursor-pointer rounded-full border-0 bg-orange-50 px-4 py-1.5 text-xs font-medium text-gray-700 transition-all hover:bg-orange-100 hover:text-primary active:scale-[0.98] focus:outline-none"
+                class="h-auto cursor-pointer rounded-full border-0 bg-primary/10 px-4 py-1.5 text-xs font-medium text-foreground transition-all hover:bg-primary/15 hover:text-primary active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 @click="handleSuggestionClick(suggestion)"
               >
                 {{ suggestion }}
@@ -187,7 +191,7 @@ const goBack = () => {
                   v-for="item in msg.items"
                   :key="item.id"
                   :to="`/detail/${item.id}`"
-                  class="flex gap-3 rounded-xl bg-white p-3 transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
+                  class="flex gap-3 rounded-xl bg-card p-3 transition-shadow hover:shadow-md"
                 >
                   <img
                     :src="item.coverUrl"
@@ -196,7 +200,7 @@ const goBack = () => {
                   />
                   <div class="flex flex-1 flex-col justify-between py-0.5">
                     <div class="space-y-1">
-                      <p class="line-clamp-2 text-sm font-bold text-gray-900">{{ item.name }}</p>
+                      <p class="line-clamp-2 text-sm font-bold text-foreground">{{ item.name }}</p>
                       <div class="space-y-0.5">
                         <p class="flex items-center gap-1 text-xs text-muted-foreground">
                           <icon-lucide-map-pin class="h-3 w-3" />
@@ -247,9 +251,7 @@ const goBack = () => {
             alt="AI"
             class="mr-2 mt-1 h-7 w-7 shrink-0 rounded-full object-cover"
           />
-          <div
-            class="rounded-[2px_16px_16px_16px] bg-white px-4 py-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
-          >
+          <div class="rounded-[2px_16px_16px_16px] bg-card px-4 py-3 shadow-sm">
             <div class="flex items-center gap-1.5">
               <div
                 class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/60 [animation-delay:-0.3s]"
@@ -265,14 +267,14 @@ const goBack = () => {
     </div>
 
     <!-- Input Area -->
-    <div class="border-t border-[#EAEAEA] bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
+    <div class="border-t border-border bg-background shadow-sm">
       <div class="mx-auto w-full max-w-[800px] px-4 py-4 pb-6 md:pb-8">
         <div class="flex items-center gap-2">
           <Input
             ref="inputRef"
             v-model="inputValue"
             placeholder="输入你想找的演出..."
-            class="flex-1 bg-[#F2F3F5] rounded-full border-0 px-4 py-2.5 focus-visible:ring-0 focus-visible:ring-offset-0"
+            class="flex-1 rounded-full border-0 bg-muted px-4 py-2.5 focus-visible:ring-0 focus-visible:ring-offset-0"
             @keydown="handleKeydown"
           />
           <Button

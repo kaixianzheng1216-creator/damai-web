@@ -110,9 +110,9 @@ const confirmDate = () => {
           <p class="w-12 shrink-0 pt-1 text-sm text-muted-foreground">时间</p>
           <div class="flex flex-wrap items-center gap-2">
             <button
+              type="button"
               v-for="item in timeOptions"
               :key="item.value"
-              type="button"
               :class="
                 cn(
                   'rounded-sm px-3 py-1.5 text-sm transition-colors',
@@ -135,9 +135,9 @@ const confirmDate = () => {
         >
           <div class="flex items-center">
             <button
+              type="button"
               v-for="item in sortOptions"
               :key="item.value"
-              type="button"
               :class="
                 cn(
                   'border-r border-border px-5 py-2 text-sm last:border-r-0',

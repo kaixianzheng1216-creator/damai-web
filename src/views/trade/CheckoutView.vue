@@ -148,9 +148,9 @@ const selectedMethodStr = computed({
         </h3>
         <div class="mt-4 grid grid-cols-2 gap-3">
           <button
+            type="button"
             v-for="channel in PAYMENT_CHANNEL_OPTIONS"
             :key="channel.value"
-            type="button"
             class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 p-4 transition-all"
             :class="[
               selectedChannel === channel.value

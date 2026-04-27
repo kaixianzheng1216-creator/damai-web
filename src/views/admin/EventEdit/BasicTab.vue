@@ -5,6 +5,7 @@ import { toast } from 'vue3-toastify'
 import { Input } from '@/components/common/ui/input'
 import { Label } from '@/components/common/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
+import ImageUpload from '@/components/common/ImageUpload.vue'
 import {
   Select,
   SelectContent,

@@ -28,7 +28,7 @@ const emit = defineEmits<{
             <p v-if="item.value" class="text-sm text-muted-foreground">{{ item.value }}</p>
           </div>
         </div>
-        <button class="text-sky-600 hover:underline" @click="emit('action', item)">
+        <button type="button" class="text-sky-600 hover:underline" @click="emit('action', item)">
           {{ item.actionText }}
         </button>
       </div>

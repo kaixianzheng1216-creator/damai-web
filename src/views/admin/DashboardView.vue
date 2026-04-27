@@ -23,6 +23,7 @@ const navigate = (path: string) => router.push(path)
       <h2 class="text-lg font-semibold text-foreground mb-4">快捷操作</h2>
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         <button
+          type="button"
           v-for="item in adminDashboardModules"
           :key="item.key"
           class="group flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-card p-6 text-center shadow-sm transition-all hover:border-primary hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"

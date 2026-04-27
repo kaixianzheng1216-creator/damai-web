@@ -45,9 +45,9 @@ const emit = defineEmits<{
           <p class="w-20 pt-1 text-sm text-foreground">热门城市:</p>
           <div class="flex flex-wrap gap-x-6 gap-y-3">
             <button
+              type="button"
               v-for="city in hotCities"
               :key="city"
-              type="button"
               class="text-sm text-foreground transition-colors hover:text-primary"
               :class="city === selectedCity ? 'text-primary' : ''"
               @click="emit('select', city)"
@@ -63,9 +63,9 @@ const emit = defineEmits<{
           <p class="w-20 pt-1 text-sm text-foreground">其他城市:</p>
           <div class="flex flex-wrap gap-x-6 gap-y-3">
             <button
+              type="button"
               v-for="city in otherCities"
               :key="city"
-              type="button"
               class="text-sm text-foreground transition-colors hover:text-primary"
               :class="city === selectedCity ? 'text-primary' : ''"
               @click="emit('select', city)"

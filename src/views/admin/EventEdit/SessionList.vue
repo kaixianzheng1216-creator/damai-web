@@ -226,6 +226,7 @@ const handleDeleteSession = (session: SessionVO) => {
         </CardHeader>
         <CardContent>
           <button
+            type="button"
             v-if="!session.ticketTypes || session.ticketTypes.length === 0"
             class="w-full text-sm text-muted-foreground text-center py-5 border border-dashed rounded-md hover:border-primary hover:text-primary transition-colors cursor-pointer"
             @click="emit('create-ticket-type', session.id)"
