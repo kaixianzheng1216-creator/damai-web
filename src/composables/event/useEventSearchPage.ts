@@ -7,6 +7,8 @@ import { queryKeys } from '@/constants'
 import type { EventPageRequest, CityVO, CategoryVO } from '@/api/event'
 import dayjs from 'dayjs'
 
+type FilterField = 'cityId' | 'categoryId' | 'timeType' | 'date'
+
 const parseQueryNumber = (value: unknown, fallback: number) => {
   const parsed = Number(value)
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback
@@ -14,6 +16,20 @@ const parseQueryNumber = (value: unknown, fallback: number) => {
 
 const parseQueryString = (value: unknown) => {
   return typeof value === 'string' && value.length > 0 ? value : undefined
+}
+
+const findParentCategoryId = (categories: CategoryVO[], categoryId: string) => {
+  for (const category of categories) {
+    if (category.id === categoryId) {
+      return category.parentId === '0' ? category.id : category.parentId
+    }
+
+    if (category.children?.some((child) => child.id === categoryId)) {
+      return category.id
+    }
+  }
+
+  return undefined
 }
 
 export const useEventSearchPage = () => {
@@ -70,6 +86,8 @@ export const useEventSearchPage = () => {
     queryFn: () => fetchEventPage(queryParams.value),
   })
 
+  const searchRecords = computed(() => searchQuery.data.value?.records ?? [])
+  const totalRow = computed(() => Number(searchQuery.data.value?.totalRow ?? 0))
   const totalPages = computed(() => Number(searchQuery.data.value?.totalPage) || 1)
 
   const cityOptions = computed(() => {
@@ -128,20 +146,7 @@ export const useEventSearchPage = () => {
     }
 
     const categories = categoriesQuery.data.value ?? []
-    const category = categories.find((cat) => cat.id === categoryId)
-
-    if (category) {
-      if (category.parentId === '0') {
-        // 选中的是一级分类
-        selectedParentCategoryId.value = categoryId
-      } else {
-        // 选中的是二级分类，找到它的父分类
-        const parent = categories.find((cat) =>
-          cat.children?.some((child: CategoryVO) => child.id === categoryId),
-        )
-        selectedParentCategoryId.value = parent?.id
-      }
-    }
+    selectedParentCategoryId.value = findParentCategoryId(categories, categoryId)
   }
 
   // 当分类数据加载完成或 URL 变化时同步
@@ -176,10 +181,7 @@ export const useEventSearchPage = () => {
     })
   }
 
-  const handleFilterChange = async (
-    field: 'cityId' | 'categoryId' | 'timeType' | 'date',
-    value: string | number | undefined,
-  ) => {
+  const handleFilterChange = async (field: FilterField, value: string | number | undefined) => {
     const updates: Record<string, string | undefined> = {
       [field]: value?.toString(),
       page: String(DEFAULT_SEARCH_QUERY.page),
@@ -196,6 +198,19 @@ export const useEventSearchPage = () => {
     }
 
     await pushQuery(updates)
+  }
+
+  const handleParentCategoryChange = async (value: string | number | undefined) => {
+    selectedParentCategoryId.value = typeof value === 'string' ? value : undefined
+    await handleFilterChange('categoryId', value)
+  }
+
+  const handleCalendarDateChange = async (date: string) => {
+    await pushQuery({
+      timeType: '4',
+      date,
+      page: String(DEFAULT_SEARCH_QUERY.page),
+    })
   }
 
   const handleSortChange = async (sortType: number) => {
@@ -225,6 +240,8 @@ export const useEventSearchPage = () => {
   return {
     queryParams,
     searchQuery,
+    searchRecords,
+    totalRow,
     totalPages,
     sortOptions,
     cityOptions,
@@ -234,6 +251,8 @@ export const useEventSearchPage = () => {
     timeOptions,
     visiblePages,
     handleFilterChange,
+    handleParentCategoryChange,
+    handleCalendarDateChange,
     handleSortChange,
     handlePageChange,
   }

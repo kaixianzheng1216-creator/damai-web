@@ -154,7 +154,9 @@ export function useAdminCrud<
       ? getDeleteConfirmMessage(item)
       : { title: '确认删除', description: '确认删除该项目？' }
 
-    openConfirm(title, description, () => deleteMutation.mutateAsync(item.id))
+    openConfirm(title, description, async () => {
+      await deleteMutation.mutateAsync(item.id)
+    })
   }
 
   return {

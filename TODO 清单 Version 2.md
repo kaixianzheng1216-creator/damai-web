@@ -8,9 +8,9 @@
 - 当前最大剩余问题不再是“页面里全是 API 调用”，而是：
   - 抽出来的 composable 还需要二次收敛，避免从“胖页面”变成“胖 composable”。
   - 部分旧组件仍可能与新实现重复存在，例如 `TicketTypesTab.vue`、`SessionsTab.vue`。
-  - 前台复杂页面仍偏重：`CheckoutView.vue`、`AIChatView.vue`、`ProfileView.vue`、`EventSearchView.vue`。
-  - 构建存在大 chunk 提示，`HomeView`、`TicketListView`、`EventEditView` 仍需要按功能拆包。
-  - 测试还停留在非常薄的一层，不能覆盖这轮重构后的核心业务行为。
+  - 前台复杂页面已完成 `CheckoutView.vue`、`AIChatView.vue`、`ProfileView.vue`、`EventSearchView.vue` 的首轮拆分；下一步重点转向 `EventDetailView` / `useEventDetailPage`。
+  - 构建已无 500KB 大 chunk 提示，`EventEditView`、`TicketListView` 仍是后续深度拆包候选。
+  - 测试已覆盖 request transforms、Admin CRUD、Checkout、Profile section、AI prompt、Event Search、Event Detail 与活动编辑核心流程。
 
 ## 执行原则
 
@@ -22,23 +22,24 @@
 
 ## P0：工作区收敛与重复实现清理
 
-- [ ] 确认当前大批重构文件是否作为一个独立提交落地。
+- [x] 确认当前大批重构文件是否作为一个独立提交落地。
   - 验收：`git status --short` 中只有本轮目标文件变化；没有误暂存。
-- [ ] 审计 `EventEdit` 下的旧 tab 是否仍被引用。
+- [x] 审计 `EventEdit` 下的旧 tab 是否仍被引用。
   - 重点：`TicketTypesTab.vue`、`SessionsTab.vue`、`SessionsAndTicketsTab.vue`、`SessionList.vue`。
   - 验收：未使用文件删除；仍使用文件有清晰职责；路由/父组件引用唯一。
-- [ ] 清掉根目录遗留生成文件。
+- [x] 清掉根目录遗留生成文件。
   - 重点：`auto-imports.d.ts`、`components.d.ts` 与 `src/types/*` 的关系。
   - 验收：只保留一个生成声明位置；`npm run type-check` 通过。
-- [ ] 复查已删除旧 API/类型文件是否还有隐式引用。
+- [x] 复查已删除旧 API/类型文件是否还有隐式引用。
   - 重点：`src/api/auth.ts`、`src/api/home.ts`、`src/types/auth.ts`、`src/types/home.ts`。
   - 验收：全局搜索无引用；构建通过。
 
 ## P0：类型与 API 契约硬化
 
-- [ ] 统一 ID 策略。
+- [x] 统一 ID 策略。
   - 决策：前端领域模型 ID 全部用 `string`，API 边界做 `number/string` 归一化。
   - 验收：新增 `normalizeId` / `normalizeIdList` 测试；禁止页面里散落 `Number(id)` / `parseInt(id)`。
+  - 审计：当前 `Number` / `parseInt` 残留集中在分页、状态枚举、日期时间、select 数字值；未发现页面级 ID 转数字。
 - [ ] 把 API 层类型从“手写可用”推进到“契约可验证”。
   - 方案 A：从 OpenAPI 生成类型，手写 API 函数引用生成类型。
   - 方案 B：保留手写类型，但补一层 request/transform 单测。
@@ -46,7 +47,8 @@
 - [ ] 收紧 `useAdminCrud` 泛型。
   - 重点：减少 `Record<string, unknown>` 逃逸，明确 `create/update/page` 类型。
   - 验收：现有后台列表页不增加类型断言；`no-explicit-any` 可逐步开启到非 shadcn 目录。
-- [ ] 统一 query key 使用。
+  - 进展：已补 `useAdminCrud` 单测，覆盖分页请求、搜索重置、创建/更新/删除缓存失效与删除确认。
+- [x] 统一 query key 使用。
   - 重点：替换残留 `queryKey: ['xxx']`。
   - 验收：业务代码 query key 均来自 `src/constants/queryKeys.ts`，测试可按 key 精确失效缓存。
 
@@ -56,7 +58,7 @@
   - 范围：`Banner`、`Category`、`Service`、`Notice`、`City`、`Venue`、`Participant`、`Series`、`Ticket`。
   - 建议：`src/components/admin/<module>/<Module>Columns.ts` 或 `src/composables/admin/<module>/columns.ts`。
   - 验收：每个 `*ListView.vue` 控制在 200 行以内。
-- [ ] 整理后台 composable 目录结构。
+- [x] 整理后台 composable 目录结构。
   - 当前 `src/composables/admin` 文件数量已明显增多。
   - 建议按领域分组：`admin/event-edit/*`、`admin/list-pages/*`、`admin/common/*`。
   - 验收：`index.ts` 不再是一长串平铺导出；命名能看出业务边界。
@@ -69,41 +71,48 @@
 
 ## P1：活动编辑模块深度收敛
 
-- [ ] 合并或删除重复票种管理实现。
+- [x] 合并或删除重复票种管理实现。
   - 重点：`TicketTypesTab.vue` 仍是最大文件之一，可能和新的 `SessionsAndTicketsTab` 功能重叠。
   - 验收：票种新增、编辑、调库存、复制只保留一套入口。
-- [ ] 将 `EventEdit` 的子组件移动到 feature 目录。
+- [x] 将 `EventEdit` 的子组件移动到 feature 目录。
   - 建议：`src/components/features/admin-event-edit/*`。
   - 验收：`views/admin/EventEditView.vue` 只作为路由视图和 tab 组合器。
-- [ ] 为活动编辑核心流程补组件/组合函数测试。
+- [x] 为活动编辑核心流程补组件/组合函数测试。
   - 测试点：基础信息保存、票种新增校验、库存调整、参与方添加、服务保障保存。
   - 验收：重构这些组件时有测试兜底。
+  - 进展：已补 `eventEditFlows.test.ts`，覆盖基础信息创建、票种新增校验与创建、库存调整、参与方增量添加、服务保障保存前移除旧关联。
 - [ ] 消除活动编辑中的强制非空断言。
   - 搜索：`!`、`as`、`as unknown`。
   - 验收：关键数据缺失时 UI 有空态或禁用态，不靠运行时崩溃暴露问题。
 
 ## P1：前台复杂页面清理
 
-- [ ] 拆 `CheckoutView.vue`。
+- [x] 拆 `CheckoutView.vue`。
   - 目标：订单提交、实名购票人、票档/场次展示、价格汇总分离。
   - 验收：路由页只编排 composable 与 feature components；提交流程有测试。
-- [ ] 拆 `ProfileView.vue`。
+  - 进展：已拆为 `CheckoutOrderCard`、`CheckoutPaymentPanel`、`CheckoutQrDialog`，并补支付状态/创建支付/取消订单测试。
+- [x] 拆 `ProfileView.vue`。
   - 目标：每个 section 独立 lazy query；移动端弹窗和桌面布局解耦。
   - 验收：切换 section 不触发无关接口；当前 section loading 不挡住其他内容。
-- [ ] 二次清理 `AIChatView.vue`。
+  - 进展：已拆为 `ProfilePageShell`、`ProfileSectionContent`、`ProfileDialogs`，保留 active section lazy query，并补 URL section 同步测试。
+- [x] 二次清理 `AIChatView.vue`。
   - 目标：消息列表、输入区、快捷建议、空状态拆分；隐私 prompt 保持最小数据。
   - 验收：无硬编码灰阶/背景色；UI token 走 Tailwind/shadcn 语义类。
-- [ ] 拆 `EventSearchView.vue` 与 `useEventSearchPage.ts`。
+  - 进展：已拆为 `AIChatHeader`、`AIChatEmptyState`、`AIChatMessageList`、`AIChatInput`、`AIEventRecommendationCard`，首条 prompt 仅保留城市和用户问题，并补隐私上下文测试。
+- [x] 拆 `EventSearchView.vue` 与 `useEventSearchPage.ts`。
   - 目标：筛选、排序、分页、城市/分类选项独立。
   - 验收：模板不再做过滤/排序逻辑；URL query 同步策略清晰。
-- [ ] 审计 `useEventDetailPage.ts`。
+  - 进展：已拆为 `SearchFilterPanel`、`SearchResultsPanel`、`SearchDateDialog`，日期状态移入 `useEventSearchDateDialog`；修复二级分类 URL 回显父分类，并补 URL 同步/分页/排序/日历测试。
+- [x] 审计 `useEventDetailPage.ts`。
   - 目标：关注、购票、详情展示、场次票档派生分层。
   - 验收：单个 composable 不再承担整页所有状态。
+  - 进展：已抽出 `eventDetailState` 纯状态助手与 `useEventTicketSelection`，`useEventDetailPage` 收敛为查询、登录拦截、下单与跳转编排；补票档/购票人派生、登录跳转、创建订单测试。
 
 ## P1：UI 与可访问性规范
 
-- [ ] 全量修复原生 `<button>` 缺少 `type`。
+- [x] 全量修复原生 `<button>` 缺少 `type`。
   - 验收：业务源码中无 `<button>` 默认 submit 风险。
+  - 审计：全量扫描 `src/**/*.vue` 原生 `<button>` 开始标签，未发现缺少 `type` 的业务源码按钮。
 - [ ] 表单控件补齐 `label for/id` 或 `aria-label`。
   - 范围：后台表单、活动编辑、结算页、个人中心弹窗。
   - 验收：主要表单可被键盘和读屏合理访问。
@@ -118,16 +127,19 @@
 
 ## P2：性能与构建体积
 
-- [ ] 拆大 chunk。
+- [x] 拆大 chunk。
   - 当前信号：`HomeView`、`TicketListView`、`EventEditView` 构建后偏大。
   - 方向：扫码检票、富文本编辑器、图表、AI 助手、复杂弹窗改 lazy import。
   - 验收：`vite build` 无 500KB chunk warning，或有明确 `manualChunks/chunkSizeWarningLimit` 策略。
+  - 进展：`CategoryNav` 改为 lucide 白名单导入，避免整包图标进入首页；`HomeView` chunk 从约 915KB 降至约 41KB，`vite build` 已无 500KB chunk warning。
 - [ ] 懒加载重组件。
   - 重点：`ScanCheckinDialog`、`RichTextEditor`、AI assistant 图片/模块、后台编辑弹窗。
   - 验收：首屏路由不加载非当前路径的重依赖。
-- [ ] 优化首页资源。
+  - 进展：已将首页 AI 悬浮入口改为异步组件，AI 助手图改为压缩 WebP；其余重组件仍待继续。
+- [x] 优化首页资源。
   - 重点：`assistant-*.png` 体积约 1.3MB。
   - 验收：图片压缩或按需加载；首页首屏包明显下降。
+  - 进展：`assistant.png` 已替换为 360px 宽 `assistant.webp`，源资源体积约从 1.3MB 降到 12KB。
 - [ ] 检查 TanStack Query enabled 策略。
   - 验收：弹窗数据只在打开时拉取；隐藏 tab 不预取不必要数据。
 
@@ -136,6 +148,7 @@
 - [ ] 补 composable 单测。
   - 优先：`requestTransforms`、`useAdminCrud`、`useEventBasicTab`、`useTicketTypeDialog`、`useCheckoutPage`。
   - 验收：核心提交/校验/缓存失效逻辑可测试。
+  - 进展：已补 `requestTransforms`、`useAdminCrud`、`useCheckoutPage`、`checkoutState`、`useProfileSection`、`aiChatPrompt`、`useEventSearchPage`、`useEventSearchDateDialog`、`eventDetailState`、`useEventTicketSelection`、`useEventDetailPage`、活动编辑核心流程测试；后续可继续补组件 smoke test。
 - [ ] 补关键组件 smoke test。
   - 优先：活动编辑、结算、个人中心、后台列表。
   - 验收：主要页面能 mount，核心按钮能触发预期事件。

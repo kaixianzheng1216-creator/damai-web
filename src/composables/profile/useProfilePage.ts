@@ -183,3 +183,5 @@ export const useProfilePage = () => {
     followList,
   }
 }
+
+export type ProfilePageState = ReturnType<typeof useProfilePage>

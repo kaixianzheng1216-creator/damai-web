@@ -1,3 +1,6 @@
+export { default as ProfileDialogs } from './ProfileDialogs.vue'
+export { default as ProfilePageShell } from './ProfilePageShell.vue'
+export { default as ProfileSectionContent } from './ProfileSectionContent.vue'
 export { default as ProfileTicketsSection } from './ProfileTicketsSection.vue'
 export { default as ProfilePassengerDialog } from './ProfilePassengerDialog.vue'
 export { default as ProfileIdentityDialog } from './ProfileIdentityDialog.vue'

@@ -1,13 +1,42 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
+import {
+  Baby,
+  Clapperboard,
+  Compass,
+  Gamepad2,
+  HelpCircle,
+  Landmark,
+  Mic,
+  Music,
+  PersonStanding,
+  Piano,
+  Ticket,
+  Trophy,
+} from 'lucide-vue-next'
 import type { HomeCategoryItem } from '@/api/event'
-import * as LucideIcons from 'lucide-vue-next'
 
 defineProps<{
   categories: HomeCategoryItem[]
 }>()
 
+const categoryIcons: Record<string, Component> = {
+  Baby,
+  Clapperboard,
+  Compass,
+  Gamepad2,
+  HelpCircle,
+  Landmark,
+  Mic,
+  Music,
+  PersonStanding,
+  Piano,
+  Ticket,
+  Trophy,
+}
+
 const getIcon = (name: string) => {
-  return (LucideIcons as Record<string, unknown>)[name] || LucideIcons.HelpCircle
+  return categoryIcons[name] ?? HelpCircle
 }
 </script>
 

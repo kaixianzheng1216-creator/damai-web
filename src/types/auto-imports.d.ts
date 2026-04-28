@@ -10,6 +10,7 @@ declare global {
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
+  const buildAIChatPrompt: typeof import('../composables/aiChatPrompt').buildAIChatPrompt
   const clsx: typeof import('clsx').clsx
   const cn: typeof import('../utils/index').cn
   const computed: typeof import('vue').computed
@@ -351,6 +352,7 @@ declare module 'vue' {
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
+    readonly buildAIChatPrompt: UnwrapRef<typeof import('../composables/aiChatPrompt')['buildAIChatPrompt']>
     readonly clsx: UnwrapRef<typeof import('clsx')['clsx']>
     readonly cn: UnwrapRef<typeof import('../utils/index')['cn']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>

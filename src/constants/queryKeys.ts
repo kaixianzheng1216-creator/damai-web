@@ -42,6 +42,7 @@ export const queryKeys = {
     order: (id?: QueryKeyPart) => key('ticket-order', id),
     orderStatus: (id?: QueryKeyPart) => key('order-status', id),
     orderDetail: (id?: QueryKeyPart) => key('order-detail', id),
+    purchaseCounts: (ticketTypeIds?: QueryKeyPart) => key('purchase-counts', ticketTypeIds),
   },
   ticket: {
     detail: (id?: QueryKeyPart) => key('ticket-detail', id),

@@ -3,6 +3,7 @@ export const PAGE_NUM = 1
 
 export * from './admin'
 export * from './adminModules'
+export * from './ai'
 export * from './auth'
 export * from './common'
 export * from './event'

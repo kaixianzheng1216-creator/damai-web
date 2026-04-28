@@ -5,7 +5,6 @@ import { useNow } from '@vueuse/core'
 import { toast } from 'vue3-toastify'
 import type { PaymentVO } from '@/api/trade'
 import {
-  ORDER_STATUS,
   PAYMENT_CHANNELS,
   PAYMENT_METHODS,
   TIME_UNITS,
@@ -13,6 +12,12 @@ import {
   queryKeys,
 } from '@/constants'
 import { fetchOrderById, fetchOrderStatus, createPayment, cancelTicketOrder } from '@/api/trade'
+import {
+  formatRemainText,
+  getCheckoutStatusFlags,
+  getRemainSeconds,
+  resolveCheckoutPaymentInfo,
+} from './checkoutState'
 
 export const useCheckoutPage = () => {
   const route = useRoute()
@@ -48,40 +53,19 @@ export const useCheckoutPage = () => {
   const currentStatus = computed((): number => status.value?.status ?? order.value?.status ?? 0)
   const statusLabel = computed((): string => order.value?.statusLabel ?? '待支付')
 
-  const isPending = computed((): boolean => currentStatus.value === ORDER_STATUS.PENDING)
-  const isPaid = computed((): boolean => currentStatus.value === ORDER_STATUS.PAID)
-  const isCancelled = computed((): boolean => currentStatus.value === ORDER_STATUS.CANCELLED)
-  const isClosed = computed((): boolean => currentStatus.value === ORDER_STATUS.CLOSED)
+  const checkoutStatus = computed(() => getCheckoutStatusFlags(currentStatus.value))
+  const isPending = computed((): boolean => checkoutStatus.value.isPending)
+  const isPaid = computed((): boolean => checkoutStatus.value.isPaid)
+  const isCancelled = computed((): boolean => checkoutStatus.value.isCancelled)
+  const isClosed = computed((): boolean => checkoutStatus.value.isClosed)
 
-  const remainSeconds = computed(() => {
-    if (!order.value?.expireAt) return 0
-    const left = Math.floor(
-      (new Date(order.value.expireAt).getTime() - now.value.getTime()) /
-        TIME_UNITS.MILLISECONDS_PER_SECOND,
-    )
-    return Math.max(0, left)
-  })
-
-  const remainText = computed(() => {
-    const minutes = String(
-      Math.floor(remainSeconds.value / TIME_UNITS.SECONDS_PER_MINUTE),
-    ).padStart(2, '0')
-    const seconds = String(remainSeconds.value % TIME_UNITS.SECONDS_PER_MINUTE).padStart(2, '0')
-    return `${minutes}:${seconds}`
-  })
-
-  const qrCodeBase64 = computed(
-    () => paymentData.value?.qrCodeBase64 || order.value?.payments?.[0]?.qrCodeBase64 || '',
+  const remainSeconds = computed(() => getRemainSeconds(order.value?.expireAt, now.value))
+  const remainText = computed(() => formatRemainText(remainSeconds.value))
+  const paymentInfo = computed(() =>
+    resolveCheckoutPaymentInfo(paymentData.value, order.value?.payments),
   )
-
-  const tradeNo = computed(
-    () =>
-      paymentData.value?.outTradeNo ||
-      paymentData.value?.paymentNo ||
-      order.value?.payments?.[0]?.outTradeNo ||
-      order.value?.payments?.[0]?.paymentNo ||
-      '',
-  )
+  const qrCodeBase64 = computed(() => paymentInfo.value.qrCodeBase64)
+  const tradeNo = computed(() => paymentInfo.value.tradeNo)
 
   watch(isPaid, (paid) => {
     if (paid) {

@@ -3,15 +3,14 @@ import { useMutation } from '@tanstack/vue-query'
 import { useStorage } from '@vueuse/core'
 import { chatWithAI } from '@/api/ai'
 import type { ChatMessage } from '@/api/ai/types'
-import { useUserStore } from '@/stores/user'
 import { COMMON_CONFIG } from '@/constants'
+import { buildAIChatPrompt } from './aiChatPrompt'
 
 function generateSessionId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
 export function useAIChat() {
-  const userStore = useUserStore()
   const selectedCity = useStorage('selected-city', COMMON_CONFIG.DEFAULT_CITY)
 
   const sessionId = ref<string>(generateSessionId())
@@ -54,16 +53,7 @@ export function useAIChat() {
 
     let sendContent = trimmed
     if (isFirstUserMessage) {
-      const parts: string[] = []
-      parts.push('【系统上下文】')
-      const username = userStore.userInfo?.username
-      if (username) {
-        parts.push(`用户名: ${username}`)
-      }
-      parts.push(`当前城市: ${selectedCity.value}`)
-      parts.push('【用户问题】')
-      parts.push(trimmed)
-      sendContent = parts.join('\n')
+      sendContent = buildAIChatPrompt(trimmed, selectedCity.value)
     }
 
     messages.value.push({ role: 'user', content: trimmed })

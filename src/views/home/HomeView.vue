@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import AIAssistant from '@/components/common/AIAssistant.vue'
+import { defineAsyncComponent } from 'vue'
 import { useHomePage } from '@/composables/home/useHomePage'
+
+const AIAssistant = defineAsyncComponent(() => import('@/components/common/AIAssistant.vue'))
 
 const { banners, categories, eventSections, isLoading, isError } = useHomePage()
 </script>

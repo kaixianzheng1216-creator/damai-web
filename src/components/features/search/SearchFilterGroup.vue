@@ -3,7 +3,7 @@ import { ref, nextTick, watch } from 'vue'
 
 const props = defineProps<{
   label: string
-  options: Array<{ label: string; value: string | number | undefined }>
+  options: ReadonlyArray<{ label: string; value: string | number | undefined }>
   activeValue: string | number | undefined
 }>()
 

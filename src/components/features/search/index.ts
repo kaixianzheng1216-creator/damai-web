@@ -1,2 +1,6 @@
 export { default as SearchResultListItem } from './SearchResultListItem.vue'
 export { default as SearchFilterGroup } from './SearchFilterGroup.vue'
+export { default as SearchFilterPanel } from './SearchFilterPanel.vue'
+export { default as SearchResultsPanel } from './SearchResultsPanel.vue'
+export { default as SearchDateDialog } from './SearchDateDialog.vue'
+export type { SearchOption } from './types'
