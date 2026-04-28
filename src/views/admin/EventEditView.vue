@@ -1,15 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
 import { Button } from '@/components/common/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui/tabs'
 import { EVENT_STATUS } from '@/constants'
 import { useEventEditPage } from '@/composables/admin'
 
 import BasicTab from '@/components/features/admin-event-edit/BasicTab.vue'
-import SessionsAndTicketsTab from '@/components/features/admin-event-edit/SessionsAndTicketsTab.vue'
-import ServicesTab from '@/components/features/admin-event-edit/ServicesTab.vue'
 import ParticipantsTab from '@/components/features/admin-event-edit/ParticipantsTab.vue'
 import InfoTab from '@/components/features/admin-event-edit/InfoTab.vue'
+
+interface SavableTab {
+  save: () => Promise<void> | void
+}
+
+const SessionsAndTicketsTab = defineAsyncComponent(
+  () => import('@/components/features/admin-event-edit/SessionsAndTicketsTab.vue'),
+)
+const ServicesTab = defineAsyncComponent(
+  () => import('@/components/features/admin-event-edit/ServicesTab.vue'),
+)
 
 const {
   eventId,
@@ -30,8 +39,8 @@ const {
 
 // ─── Child Refs ───────────────────────────────────────────
 
-const basicTabRef = ref<InstanceType<typeof BasicTab> | null>(null)
-const infoTabRef = ref<InstanceType<typeof InfoTab> | null>(null)
+const basicTabRef = ref<SavableTab | null>(null)
+const infoTabRef = ref<SavableTab | null>(null)
 
 // ─── Save Logic ───────────────────────────────────────────
 
@@ -123,7 +132,7 @@ const handleSaveChanges = async () => {
       <!-- Tab 2: Sessions & Tickets -->
       <TabsContent value="sessions-tickets">
         <SessionsAndTicketsTab
-          v-if="eventId"
+          v-if="currentTab === 'sessions-tickets' && eventId"
           :event-id="eventId"
           :sessions="sessionsData"
           @updated="invalidateEventDetail"
@@ -133,7 +142,7 @@ const handleSaveChanges = async () => {
       <!-- Tab 3: Services -->
       <TabsContent value="services">
         <ServicesTab
-          v-if="eventId"
+          v-if="currentTab === 'services' && eventId"
           :event-id="eventId"
           :event-services="eventServices"
           @updated="invalidateEventDetail"

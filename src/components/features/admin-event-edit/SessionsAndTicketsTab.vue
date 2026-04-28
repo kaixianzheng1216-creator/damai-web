@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import SessionList from './SessionList.vue'
-import TicketTypeDialog from './TicketTypeDialog.vue'
-import InventoryAdjustDialog from './InventoryAdjustDialog.vue'
-import TicketTypeCopyDialog from './TicketTypeCopyDialog.vue'
 import type { SessionVO } from '@/api/event'
 import { useSessionsAndTicketsTab } from '@/composables/admin'
+
+const TicketTypeDialog = defineAsyncComponent(() => import('./TicketTypeDialog.vue'))
+const InventoryAdjustDialog = defineAsyncComponent(() => import('./InventoryAdjustDialog.vue'))
+const TicketTypeCopyDialog = defineAsyncComponent(() => import('./TicketTypeCopyDialog.vue'))
 
 interface Props {
   eventId: string
@@ -58,6 +60,7 @@ const {
     />
 
     <TicketTypeDialog
+      v-if="showTicketTypeDialog"
       v-model:open="showTicketTypeDialog"
       :event-id="eventId"
       :editing-ticket-type="editingTicketType"
@@ -66,6 +69,7 @@ const {
     />
 
     <InventoryAdjustDialog
+      v-if="showInventoryDialog"
       v-model:open="showInventoryDialog"
       :event-id="eventId"
       :ticket-type="inventoryTicketType"
@@ -73,6 +77,7 @@ const {
     />
 
     <TicketTypeCopyDialog
+      v-if="showCopyDialog"
       v-model:open="showCopyDialog"
       :event-id="eventId"
       :source-session="copySourceSession"

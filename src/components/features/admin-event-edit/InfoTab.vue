@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
 import { Input } from '@/components/common/ui/input'
 import { Label } from '@/components/common/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import type { EventInfoVO } from '@/api/event'
 import { useEventInfoTab } from '@/composables/admin'
-import RichTextEditor from '@/components/common/RichTextEditor.vue'
+
+const RichTextEditor = defineAsyncComponent(() => import('@/components/common/RichTextEditor.vue'))
 
 interface Props {
   eventId: string

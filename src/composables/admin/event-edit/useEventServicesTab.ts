@@ -11,6 +11,7 @@ import type {
 } from '@/api/event'
 import { queryKeys } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { useQueryEnabled } from '@/composables/common/useQueryEnabled'
 
 interface UseEventServicesTabOptions {
   eventId: MaybeRefOrGetter<string>
@@ -28,12 +29,13 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
   const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
 
   const showServiceDialog = ref(false)
+  const serviceDialogEnabled = useQueryEnabled(showServiceDialog)
   const selectedServices = ref<SelectedService[]>([])
 
   const { data: servicesData } = useQuery({
     queryKey: queryKeys.admin.list('services'),
     queryFn: fetchAdminServices,
-    enabled: showServiceDialog,
+    enabled: serviceDialogEnabled,
   })
 
   const openServiceDialog = () => {

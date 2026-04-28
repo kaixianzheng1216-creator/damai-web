@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createTicketColumns } from '@/components/admin/listPageColumns'
-import ScanCheckinDialog from '@/components/admin/ScanCheckinDialog.vue'
 import { Button } from '@/components/common/ui/button'
 import { Input } from '@/components/common/ui/input'
 import {
@@ -12,6 +12,10 @@ import {
   SelectValue,
 } from '@/components/common/ui/select'
 import { useTicketListPage } from '@/composables/admin'
+
+const ScanCheckinDialog = defineAsyncComponent(
+  () => import('@/components/features/admin-ticket/ScanCheckinDialog.vue'),
+)
 
 const {
   currentPage,
@@ -96,5 +100,5 @@ const columns = createTicketColumns()
     </template>
   </DataTableCrud>
 
-  <ScanCheckinDialog v-model:open="showScanDialog" />
+  <ScanCheckinDialog v-if="showScanDialog" v-model:open="showScanDialog" />
 </template>

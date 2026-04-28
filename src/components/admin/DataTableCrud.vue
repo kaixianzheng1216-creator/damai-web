@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="TData">
 import type { ColumnDef, SortingState } from '@tanstack/vue-table'
 import { FlexRender, getCoreRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
 import type { ViewMode } from '@/composables/useViewMode'
@@ -36,7 +36,7 @@ interface Props<TData> {
   showPagination?: boolean
 }
 
-const props = withDefaults(defineProps<Props<any>>(), {
+const props = withDefaults(defineProps<Props<TData>>(), {
   pageSizeOptions: () => [10, 20, 30, 40, 50],
   pageSize: 10,
   currentPage: 1,
@@ -49,11 +49,11 @@ const props = withDefaults(defineProps<Props<any>>(), {
 
 const emit = defineEmits<{
   create: []
-  edit: [row: any]
-  delete: [row: any]
+  edit: [row: TData]
+  delete: [row: TData]
   'update:currentPage': [page: number]
   'update:pageSize': [pageSize: number]
-  'row-click': [row: any]
+  'row-click': [row: TData]
 }>()
 
 const sorting = ref<SortingState>([])

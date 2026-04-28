@@ -214,7 +214,7 @@ declare module 'vue' {
     RadioGroupItem: typeof import('./../components/common/ui/radio-group/RadioGroupItem.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    ScanCheckinDialog: typeof import('./../components/admin/ScanCheckinDialog.vue')['default']
+    ScanCheckinDialog: typeof import('./../components/features/admin-ticket/ScanCheckinDialog.vue')['default']
     SearchDateDialog: typeof import('./../components/features/search/SearchDateDialog.vue')['default']
     SearchFilterGroup: typeof import('./../components/features/search/SearchFilterGroup.vue')['default']
     SearchFilterPanel: typeof import('./../components/features/search/SearchFilterPanel.vue')['default']
@@ -288,6 +288,6 @@ declare module 'vue' {
     TooltipContent: typeof import('./../components/common/ui/tooltip/TooltipContent.vue')['default']
     TooltipProvider: typeof import('./../components/common/ui/tooltip/TooltipProvider.vue')['default']
     TooltipTrigger: typeof import('./../components/common/ui/tooltip/TooltipTrigger.vue')['default']
-    WorkOrderDetailDialog: typeof import('./../components/admin/WorkOrderDetailDialog.vue')['default']
+    WorkOrderDetailDialog: typeof import('./../components/features/admin-work-order/WorkOrderDetailDialog.vue')['default']
   }
 }

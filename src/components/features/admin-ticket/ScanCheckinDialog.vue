@@ -9,6 +9,25 @@ import { checkinTicket } from '@/api/ticket/ticket'
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 
+const getTicketCheckinErrorMessage = (error: unknown) => {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'response' in error &&
+    error.response &&
+    typeof error.response === 'object' &&
+    'data' in error.response &&
+    error.response.data &&
+    typeof error.response.data === 'object' &&
+    'message' in error.response.data &&
+    typeof error.response.data.message === 'string'
+  ) {
+    return error.response.data.message
+  }
+
+  return '检票失败，请重试'
+}
+
 const videoRef = ref<HTMLVideoElement>()
 const manualToken = ref('')
 const isSubmitting = ref(false)
@@ -44,9 +63,8 @@ const submit = async (token: string) => {
     showResult('success', `检票成功：${t}`)
     manualToken.value = ''
     lastScannedToken.value = ''
-  } catch (e: any) {
-    const msg = e?.response?.data?.message ?? '检票失败，请重试'
-    showResult('error', msg)
+  } catch (error: unknown) {
+    showResult('error', getTicketCheckinErrorMessage(error))
   } finally {
     isSubmitting.value = false
   }

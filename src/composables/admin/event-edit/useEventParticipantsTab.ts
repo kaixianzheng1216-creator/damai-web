@@ -7,6 +7,7 @@ import { fetchAdminParticipantsPage } from '@/api/event/participant'
 import type { EventParticipantBatchAddRequest, EventParticipantVO } from '@/api/event'
 import { queryKeys } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { useQueryEnabled } from '@/composables/common/useQueryEnabled'
 
 interface UseEventParticipantsTabOptions {
   eventId: MaybeRefOrGetter<string>
@@ -21,6 +22,7 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
   const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
 
   const showParticipantDialog = ref(false)
+  const participantDialogEnabled = useQueryEnabled(showParticipantDialog)
   const participantSearchQuery = ref('')
   const currentPage = ref(1)
   const selectedParticipantIds = ref<string[]>([])
@@ -43,7 +45,7 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
         size: participantPageSize,
         name: participantSearchQuery.value || undefined,
       }),
-    enabled: showParticipantDialog,
+    enabled: participantDialogEnabled,
   })
 
   const openParticipantDialog = () => {

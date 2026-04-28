@@ -59,7 +59,7 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
   const workOrderDetailQuery = useQuery({
     queryKey: queryKeys.profile.workOrderDetail(selectedWorkOrderId),
     queryFn: () => fetchWorkOrderById(selectedWorkOrderId.value ?? ''),
-    enabled: computed(() => !!selectedWorkOrderId.value),
+    enabled: computed(() => enabled.value && !!selectedWorkOrderId.value),
   })
 
   const workOrderList = computed(() => getRecords<WorkOrderVO>(workOrderListQuery.data).value ?? [])

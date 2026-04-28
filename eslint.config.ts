@@ -28,6 +28,15 @@ export default defineConfigWithVueTs(
     },
   },
 
+  {
+    name: 'app/business-no-explicit-any',
+    files: ['src/**/*.{vue,ts}'],
+    ignores: ['src/components/common/ui/**'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
 
   skipFormatting,

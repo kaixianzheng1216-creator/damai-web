@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { createWorkOrderColumns } from '@/components/admin/listPageColumns'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import WorkOrderDetailDialog from '@/components/admin/WorkOrderDetailDialog.vue'
+import WorkOrderDetailDialog from '@/components/features/admin-work-order/WorkOrderDetailDialog.vue'
 import { Input } from '@/components/common/ui/input'
 import {
   Select,

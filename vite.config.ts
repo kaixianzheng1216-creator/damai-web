@@ -49,6 +49,9 @@ export default defineConfig(({ mode }) => {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
+    test: {
+      environment: 'happy-dom',
+    },
     plugins,
     server: {
       host: true,

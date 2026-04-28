@@ -14,12 +14,17 @@ import { queryKeys } from '@/constants'
 export function useParticipantDetailPage() {
   const route = useRoute()
 
-  const participantId = computed(() => route.params.id as string)
+  const participantId = computed(() => {
+    const id = route.params.id
+    return (Array.isArray(id) ? id[0] : id) ?? ''
+  })
+  const hasParticipantId = computed(() => participantId.value.length > 0)
   const currentPage = ref(1)
 
   const participantQuery = useQuery({
     queryKey: computed(() => queryKeys.participant.detail(participantId.value)),
     queryFn: () => fetchParticipantDetail(participantId.value),
+    enabled: hasParticipantId,
   })
 
   const eventsQuery = useQuery({
@@ -29,6 +34,7 @@ export function useParticipantDetailPage() {
         page: currentPage.value,
         size: 10,
       }),
+    enabled: hasParticipantId,
   })
 
   const {
