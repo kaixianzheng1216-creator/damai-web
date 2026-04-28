@@ -26,6 +26,7 @@ const handleSubmit = () => {
         :model-value="modelValue"
         type="search"
         placeholder="搜索"
+        aria-label="搜索活动"
         class="h-9 w-full rounded-full border-transparent bg-muted/50 pl-9 pr-4 transition-all focus-visible:bg-background focus-visible:ring-primary md:h-10 md:pr-20"
         @update:model-value="emit('update:modelValue', String($event))"
       />

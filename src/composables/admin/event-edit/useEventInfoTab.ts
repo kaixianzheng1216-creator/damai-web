@@ -80,11 +80,14 @@ export function useEventInfoTab(options: UseEventInfoTabOptions) {
   const save = async () => {
     const purchaseNotice = purchaseTemplates.value
       .filter((template) => purchaseContent[template.id]?.trim())
-      .map((template) => ({ name: template.name, description: purchaseContent[template.id]! }))
+      .map((template) => ({ name: template.name, description: purchaseContent[template.id] ?? '' }))
 
     const admissionNotice = admissionTemplates.value
       .filter((template) => admissionContent[template.id]?.trim())
-      .map((template) => ({ name: template.name, description: admissionContent[template.id]! }))
+      .map((template) => ({
+        name: template.name,
+        description: admissionContent[template.id] ?? '',
+      }))
 
     await saveEventInfoMutation.mutateAsync({
       description: description.value,

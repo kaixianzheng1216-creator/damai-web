@@ -26,19 +26,29 @@ const emit = defineEmits<{
 
 <template>
   <Dialog :open="open" @update:open="(val) => !val && emit('close')">
-    <DialogContent class="max-w-md">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-md sm:max-w-md">
       <DialogHeader>
         <DialogTitle>更换手机号</DialogTitle>
       </DialogHeader>
       <div class="space-y-4">
         <div>
-          <Label class="mb-2">新手机号</Label>
-          <Input v-model="form.mobile" class="h-10" placeholder="请输入 11 位手机号" />
+          <Label for="profile-mobile" class="mb-2">新手机号</Label>
+          <Input
+            id="profile-mobile"
+            v-model="form.mobile"
+            class="h-10"
+            placeholder="请输入 11 位手机号"
+          />
         </div>
         <div>
-          <Label class="mb-2">验证码</Label>
+          <Label for="profile-mobile-code" class="mb-2">验证码</Label>
           <div class="flex gap-2">
-            <Input v-model="form.code" class="h-10" placeholder="请输入 6 位验证码" />
+            <Input
+              id="profile-mobile-code"
+              v-model="form.code"
+              class="h-10"
+              placeholder="请输入 6 位验证码"
+            />
             <Button
               type="button"
               variant="outline"

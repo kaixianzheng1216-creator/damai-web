@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/common/ui/button'
+import { Checkbox } from '@/components/common/ui/checkbox'
 import { Label } from '@/components/common/ui/label'
 import {
   Dialog,
@@ -42,7 +43,7 @@ const {
 
 <template>
   <Dialog :open="open" @update:open="(v) => emit('update:open', v)">
-    <DialogContent class="max-w-md">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-md overflow-hidden sm:max-w-md">
       <DialogHeader>
         <DialogTitle>复制票种到其他场次</DialogTitle>
       </DialogHeader>
@@ -57,15 +58,15 @@ const {
               v-for="session in targetSessions"
               :key="session.id"
               class="flex items-center gap-2 cursor-pointer"
-              @click="toggleCopyTarget(session.id)"
             >
-              <input
-                type="checkbox"
+              <Checkbox
+                :id="`copy-target-${session.id}`"
                 :checked="copyTargetSessionIds.includes(session.id)"
-                class="h-4 w-4 cursor-pointer"
-                @click.stop="toggleCopyTarget(session.id)"
+                @update:checked="() => toggleCopyTarget(session.id)"
               />
-              <span class="text-sm">{{ session.name }}</span>
+              <Label :for="`copy-target-${session.id}`" class="cursor-pointer text-sm">
+                {{ session.name }}
+              </Label>
             </div>
           </div>
         </div>

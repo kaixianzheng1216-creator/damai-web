@@ -25,7 +25,7 @@ defineEmits<{
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="sm:max-w-[360px]">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-[360px] sm:max-w-[360px]">
       <DialogHeader>
         <DialogTitle>选择日期</DialogTitle>
       </DialogHeader>

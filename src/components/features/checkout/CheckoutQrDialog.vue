@@ -24,7 +24,7 @@ defineEmits<{
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="max-w-sm">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-sm sm:max-w-sm">
       <DialogHeader>
         <DialogTitle>{{ PAYMENT_COPY.scanQrPay }}</DialogTitle>
         <DialogDescription>

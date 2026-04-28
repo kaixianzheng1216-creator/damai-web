@@ -11,6 +11,7 @@
   - 前台复杂页面已完成 `CheckoutView.vue`、`AIChatView.vue`、`ProfileView.vue`、`EventSearchView.vue` 的首轮拆分；下一步重点转向 `EventDetailView` / `useEventDetailPage`。
   - 构建已无 500KB 大 chunk 提示，`EventEditView`、`TicketListView` 仍是后续深度拆包候选。
   - 测试已覆盖 OpenAPI 契约、request transforms、Admin CRUD、Checkout、Profile section、AI prompt、Event Search、Event Detail 与活动编辑核心流程。
+  - P1 后台列表页列定义已集中到 `listPageColumns.ts`，所有后台 `*ListView.vue` 控制在 200 行以内；主要后台/活动编辑/结算/个人中心表单已补齐 label/aria、图片 alt 与小屏 Dialog 滚动策略。
 
 ## 执行原则
 
@@ -56,20 +57,23 @@
 
 ## P1：后台模块二次整理
 
-- [ ] 将后台列表页列定义拆出视图。
+- [x] 将后台列表页列定义拆出视图。
   - 范围：`Banner`、`Category`、`Service`、`Notice`、`City`、`Venue`、`Participant`、`Series`、`Ticket`。
   - 建议：`src/components/admin/<module>/<Module>Columns.ts` 或 `src/composables/admin/<module>/columns.ts`。
   - 验收：每个 `*ListView.vue` 控制在 200 行以内。
+  - 进展：统一收敛到 `src/components/admin/listPageColumns.ts`；补齐 `Event`、`Admin`、`User`、`WorkOrder` 列定义，所有后台列表页当前均小于 200 行。
 - [x] 整理后台 composable 目录结构。
   - 当前 `src/composables/admin` 文件数量已明显增多。
   - 建议按领域分组：`admin/event-edit/*`、`admin/list-pages/*`、`admin/common/*`。
   - 验收：`index.ts` 不再是一长串平铺导出；命名能看出业务边界。
-- [ ] 抽统一的后台弹窗表单骨架。
+- [x] 抽统一的后台弹窗表单骨架。
   - 范围：标题、描述、footer、保存中状态、取消行为。
   - 验收：不再每个页面重复 `DialogContent + DialogHeader + DialogFooter` 的样板。
-- [ ] 审计删除确认逻辑。
+  - 进展：后台表单统一使用 `AdminFormDialog` 承载标题、描述、footer、保存中状态与小屏内部滚动；非表单型管理弹窗继续保留表格型 Dialog。
+- [x] 审计删除确认逻辑。
   - 目标：统一 `useConfirmDialog` 的确认按钮文案、危险态、异步处理中状态。
   - 验收：删除/移除类操作视觉和交互一致。
+  - 进展：删除、移除、关闭、下线类操作均使用 `useConfirmDialog` / `ConfirmDialog`；确认弹窗默认推导危险态与按钮文案，并在异步处理中禁用关闭和重复提交。
 
 ## P1：活动编辑模块深度收敛
 
@@ -83,9 +87,10 @@
   - 测试点：基础信息保存、票种新增校验、库存调整、参与方添加、服务保障保存。
   - 验收：重构这些组件时有测试兜底。
   - 进展：已补 `eventEditFlows.test.ts`，覆盖基础信息创建、票种新增校验与创建、库存调整、参与方增量添加、服务保障保存前移除旧关联。
-- [ ] 消除活动编辑中的强制非空断言。
+- [x] 消除活动编辑中的强制非空断言。
   - 搜索：`!`、`as`、`as unknown`。
   - 验收：关键数据缺失时 UI 有空态或禁用态，不靠运行时崩溃暴露问题。
+  - 进展：活动基础信息提交显式构造 `EventCreateRequest` 并校验封面；路由活动 ID、须知模板内容等路径改为可空分支和默认值，不再依赖关键数据的强制非空断言。
 
 ## P1：前台复杂页面清理
 
@@ -115,17 +120,21 @@
 - [x] 全量修复原生 `<button>` 缺少 `type`。
   - 验收：业务源码中无 `<button>` 默认 submit 风险。
   - 审计：全量扫描 `src/**/*.vue` 原生 `<button>` 开始标签，未发现缺少 `type` 的业务源码按钮。
-- [ ] 表单控件补齐 `label for/id` 或 `aria-label`。
+- [x] 表单控件补齐 `label for/id` 或 `aria-label`。
   - 范围：后台表单、活动编辑、结算页、个人中心弹窗。
   - 验收：主要表单可被键盘和读屏合理访问。
-- [ ] 统一图片 `alt`。
+  - 进展：后台列表工具栏、活动编辑子表单、检票、结算购票人选择、个人中心资料/实名/手机/购票人弹窗等主要输入和选择控件已补齐 label/aria；`Input`、`SelectTrigger` 扫描无主要业务遗漏。
+- [x] 统一图片 `alt`。
   - 范围：头像、活动封面、Banner、票务图片。
   - 验收：装饰图为空 alt；业务图有明确 alt。
-- [ ] 统一 Dialog 尺寸与滚动策略。
+  - 进展：`ImageUpload` 支持业务 `previewAlt` / `uploadLabel`；头像、Banner、活动封面、二维码、活动卡片等业务图均保留明确 alt，未发现无 alt 的业务 `<img>`。
+- [x] 统一 Dialog 尺寸与滚动策略。
   - 验收：小屏下没有内容溢出视口；长表单内部滚动。
-- [ ] 收敛手写控件。
+  - 进展：基础 `DialogContent` / `AlertDialogContent` 增加 `max-height` 与滚动；后台表单骨架和活动编辑/结算/个人中心弹窗统一 `w-[calc(100vw-2rem)]` + max-width 策略。
+- [x] 收敛手写控件。
   - 重点：checkbox/radio/switch、分页、下拉。
   - 验收：优先使用 shadcn-vue/Reka UI 封装，避免行为不一致。
+  - 进展：活动编辑票种复制、参与方、服务保障等复选/单选入口均使用 shadcn-vue/Reka UI 控件；业务源码未发现原生 checkbox/radio 残留。
 
 ## P2：性能与构建体积
 

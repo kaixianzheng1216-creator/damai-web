@@ -76,7 +76,12 @@ const optionColumns = createServiceOptionColumns({
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
-        <Input v-model="searchName" placeholder="搜索服务名称" class="h-8 w-48" />
+        <Input
+          v-model="searchName"
+          placeholder="搜索服务名称"
+          class="h-8 w-48"
+          aria-label="搜索服务保障名称"
+        />
       </div>
     </template>
   </DataTableCrud>

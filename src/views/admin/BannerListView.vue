@@ -63,7 +63,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
         <Select v-model="searchCityId">
-          <SelectTrigger class="h-8 w-32">
+          <SelectTrigger class="h-8 w-32" aria-label="筛选 Banner 城市">
             <SelectValue placeholder="全部城市" />
           </SelectTrigger>
           <SelectContent>
@@ -73,7 +73,12 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
             </SelectItem>
           </SelectContent>
         </Select>
-        <Input v-model="searchTitle" placeholder="搜索标题" class="h-8 w-36" />
+        <Input
+          v-model="searchTitle"
+          placeholder="搜索标题"
+          class="h-8 w-36"
+          aria-label="搜索 Banner 标题"
+        />
       </div>
     </template>
   </DataTableCrud>
@@ -116,13 +121,23 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
           <label class="text-sm font-medium">
             PC 端图片 <span class="text-destructive">*</span>
           </label>
-          <ImageUpload v-model="form.imageUrl" aspect-class="aspect-[5/2]" />
+          <ImageUpload
+            v-model="form.imageUrl"
+            aspect-class="aspect-[5/2]"
+            preview-alt="Banner PC 端图片预览"
+            upload-label="上传 Banner PC 端图片"
+          />
         </div>
         <div class="grid gap-2">
           <label class="text-sm font-medium">
             移动端图片 <span class="text-destructive">*</span>
           </label>
-          <ImageUpload v-model="form.mobileImageUrl" aspect-class="aspect-video" />
+          <ImageUpload
+            v-model="form.mobileImageUrl"
+            aspect-class="aspect-video"
+            preview-alt="Banner 移动端图片预览"
+            upload-label="上传 Banner 移动端图片"
+          />
         </div>
       </div>
 
@@ -136,11 +151,19 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
       <div class="grid gap-4">
         <div class="grid gap-2">
           <label class="text-sm font-medium">展示开始时间</label>
-          <DateTimePicker v-model="form.displayStartAt" placeholder="选择展示开始时间" />
+          <DateTimePicker
+            v-model="form.displayStartAt"
+            aria-label="选择 Banner 展示开始时间"
+            placeholder="选择展示开始时间"
+          />
         </div>
         <div class="grid gap-2">
           <label class="text-sm font-medium">展示结束时间</label>
-          <DateTimePicker v-model="form.displayEndAt" placeholder="选择展示结束时间" />
+          <DateTimePicker
+            v-model="form.displayEndAt"
+            aria-label="选择 Banner 展示结束时间"
+            placeholder="选择展示结束时间"
+          />
         </div>
         <div class="grid gap-2">
           <label for="banner-sort-order" class="text-sm font-medium">排序</label>

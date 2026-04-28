@@ -79,6 +79,7 @@ const columns: ColumnDef<PassengerItem>[] = [
         :model-value="passengerKeyword"
         class="h-8 w-40"
         placeholder="搜索姓名"
+        aria-label="搜索购票人姓名"
         @update:model-value="emit('update:passengerKeyword', String($event))"
       />
     </template>

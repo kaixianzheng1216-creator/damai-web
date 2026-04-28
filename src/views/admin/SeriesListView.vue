@@ -49,7 +49,12 @@ const columns = createSeriesColumns({ openEdit, handleDelete })
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
-        <Input v-model="searchName" placeholder="搜索系列名称" class="h-8 w-48" />
+        <Input
+          v-model="searchName"
+          placeholder="搜索系列名称"
+          class="h-8 w-48"
+          aria-label="搜索系列名称"
+        />
       </div>
     </template>
   </DataTableCrud>

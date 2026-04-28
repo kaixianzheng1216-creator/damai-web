@@ -50,7 +50,7 @@ const handleAvatarChange = (event: Event) => {
         <div class="flex flex-col items-center gap-3">
           <img
             :src="displayAvatar"
-            alt="avatar"
+            alt="个人头像"
             class="h-20 w-20 rounded-full border border-border object-cover"
           />
           <button
@@ -65,6 +65,7 @@ const handleAvatarChange = (event: Event) => {
             ref="avatarInputRef"
             type="file"
             accept="image/*"
+            aria-label="上传个人头像"
             class="hidden"
             @change="handleAvatarChange"
           />
@@ -74,14 +75,19 @@ const handleAvatarChange = (event: Event) => {
       <div class="section-card">
         <div class="grid gap-4 md:grid-cols-2">
           <div>
-            <Label class="mb-2"><span class="text-primary">*</span> 昵称</Label>
-            <Input v-model="form.nickname" class="h-10" />
+            <Label for="profile-nickname" class="mb-2">
+              <span class="text-primary">*</span> 昵称
+            </Label>
+            <Input id="profile-nickname" v-model="form.nickname" class="h-10" />
           </div>
 
           <div>
-            <Label class="mb-2"><span class="text-primary">*</span> 性别</Label>
+            <Label id="profile-gender-label" class="mb-2">
+              <span class="text-primary">*</span> 性别
+            </Label>
             <RadioGroup
               v-model="form.gender"
+              aria-labelledby="profile-gender-label"
               class="flex h-10 items-center gap-6 rounded-md border border-input px-3"
             >
               <div class="flex items-center gap-1.5">
@@ -96,10 +102,10 @@ const handleAvatarChange = (event: Event) => {
           </div>
 
           <div class="md:col-span-2">
-            <Label class="mb-2">出生日期</Label>
+            <Label id="profile-birthday-label" class="mb-2">出生日期</Label>
             <div class="flex flex-wrap items-center gap-2">
               <Select v-model="form.birthYear">
-                <SelectTrigger class="h-10 w-28">
+                <SelectTrigger class="h-10 w-28" aria-label="选择出生年份">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -109,7 +115,7 @@ const handleAvatarChange = (event: Event) => {
                 </SelectContent>
               </Select>
               <Select v-model="form.birthMonth">
-                <SelectTrigger class="h-10 w-24">
+                <SelectTrigger class="h-10 w-24" aria-label="选择出生月份">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -119,7 +125,7 @@ const handleAvatarChange = (event: Event) => {
                 </SelectContent>
               </Select>
               <Select v-model="form.birthDay">
-                <SelectTrigger class="h-10 w-24">
+                <SelectTrigger class="h-10 w-24" aria-label="选择出生日期">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

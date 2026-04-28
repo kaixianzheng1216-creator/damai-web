@@ -5,10 +5,12 @@ import StarterKit from '@tiptap/starter-kit'
 
 interface Props {
   modelValue?: string
+  ariaLabel?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
+  ariaLabel: '富文本内容',
 })
 
 const emit = defineEmits<{
@@ -27,7 +29,7 @@ const editor = useEditor({
     }),
   ],
   editorProps: {
-    attributes: { class: 'tiptap-editor' },
+    attributes: { class: 'tiptap-editor', 'aria-label': props.ariaLabel },
   },
   onUpdate({ editor }) {
     emit('update:modelValue', editor.getHTML())

@@ -59,7 +59,7 @@ const columns = createNoticeColumns({ openEdit, handleDelete })
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
         <Select v-model="searchType">
-          <SelectTrigger class="h-8 w-28">
+          <SelectTrigger class="h-8 w-28" aria-label="筛选须知类型">
             <SelectValue placeholder="全部类型" />
           </SelectTrigger>
           <SelectContent>
@@ -68,7 +68,12 @@ const columns = createNoticeColumns({ openEdit, handleDelete })
             <SelectItem value="2">入场须知</SelectItem>
           </SelectContent>
         </Select>
-        <Input v-model="searchName" placeholder="搜索须知名称" class="h-8 w-40" />
+        <Input
+          v-model="searchName"
+          placeholder="搜索须知名称"
+          class="h-8 w-40"
+          aria-label="搜索须知名称"
+        />
       </div>
     </template>
   </DataTableCrud>

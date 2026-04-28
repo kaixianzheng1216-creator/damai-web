@@ -171,9 +171,12 @@ onUnmounted(stopScanner)
 
         <!-- 手动输入 (仅在未扫描完成时显示) -->
         <div v-if="!scanCompleted">
-          <p class="mb-2 text-sm text-muted-foreground">手动输入 Token</p>
+          <label for="scan-manual-token" class="mb-2 block text-sm text-muted-foreground">
+            手动输入 Token
+          </label>
           <div class="flex gap-2">
             <Input
+              id="scan-manual-token"
               v-model="manualToken"
               placeholder="粘贴或输入 QR Code Token"
               @keyup.enter="submit(manualToken)"

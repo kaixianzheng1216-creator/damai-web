@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { type ColumnDef } from '@tanstack/vue-table'
+import AdminFormDialog from '@/components/admin/AdminFormDialog.vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import { createAdminColumns } from '@/components/admin/listPageColumns'
 import { Input } from '@/components/common/ui/input'
-import { Button } from '@/components/common/ui/button'
-import { Badge } from '@/components/common/ui/badge'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/common/ui/dialog'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { fetchAdminPage, createAdmin, updateAdmin, updateAdminStatus } from '@/api/account/admin'
 import type { AdminVO, AdminCreateRequest, AdminUpdateRequest } from '@/api/account'
@@ -23,74 +15,6 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const searchUsername = ref('')
 const searchMobile = ref('')
-
-const columns: ColumnDef<AdminVO>[] = [
-  {
-    accessorKey: 'id',
-    header: 'ID',
-    size: 180,
-  },
-  {
-    accessorKey: 'avatarUrl',
-    header: '头像',
-    size: 80,
-    cell: ({ row }) =>
-      row.original.avatarUrl
-        ? h('img', { src: row.original.avatarUrl, class: 'h-8 w-8 rounded-full object-cover' })
-        : null,
-  },
-  {
-    accessorKey: 'username',
-    header: '用户名',
-  },
-  {
-    accessorKey: 'mobile',
-    header: '手机号',
-  },
-  {
-    accessorKey: 'status',
-    header: '状态',
-    size: 100,
-    cell: ({ row }) =>
-      h(
-        Badge,
-        { variant: 'outline' },
-        { default: () => (row.original.status === USER_STATUS.NORMAL ? '正常' : '封禁') },
-      ),
-  },
-  {
-    id: 'actions',
-    header: '操作',
-    size: 160,
-    cell: ({ row }) =>
-      h('div', { class: 'flex items-center gap-2' }, [
-        h(
-          Button,
-          {
-            variant: 'outline',
-            size: 'sm',
-            onClick: (e: Event) => {
-              e.stopPropagation()
-              openEdit(row.original)
-            },
-          },
-          () => '编辑',
-        ),
-        h(
-          Button,
-          {
-            variant: row.original.status === USER_STATUS.NORMAL ? 'destructive' : 'default',
-            size: 'sm',
-            onClick: (e: Event) => {
-              e.stopPropagation()
-              toggleStatus(row.original)
-            },
-          },
-          () => (row.original.status === USER_STATUS.NORMAL ? '封禁' : '解封'),
-        ),
-      ]),
-  },
-]
 
 const queryKey = computed(() => [
   ...queryKeys.admin.list('admins'),
@@ -197,6 +121,8 @@ const toggleStatus = (row: AdminVO) => {
   const newStatus = row.status === USER_STATUS.NORMAL ? USER_STATUS.BANNED : USER_STATUS.NORMAL
   statusMutation.mutate({ id: row.id, status: newStatus })
 }
+
+const columns = createAdminColumns({ openEdit, toggleStatus })
 </script>
 
 <template>
@@ -221,53 +147,52 @@ const toggleStatus = (row: AdminVO) => {
           v-model="searchUsername"
           placeholder="搜索用户名"
           class="h-8 w-36"
+          aria-label="搜索管理员用户名"
           @input="handleSearch"
         />
         <Input
           v-model="searchMobile"
           placeholder="搜索手机号"
           class="h-8 w-36"
+          aria-label="搜索管理员手机号"
           @input="handleSearch"
         />
       </div>
     </template>
   </DataTableCrud>
 
-  <Dialog :open="showDialog" @update:open="(v) => !v && (showDialog = false)">
-    <DialogContent class="max-w-md">
-      <DialogHeader>
-        <DialogTitle>{{ dialogTitle }}</DialogTitle>
-      </DialogHeader>
-
-      <div class="grid gap-4 py-4">
-        <div class="grid gap-2">
-          <label class="text-sm font-medium">手机号 <span class="text-destructive">*</span></label>
-          <Input
-            v-model="form.mobile"
-            placeholder="请输入手机号"
-            type="tel"
-            :disabled="!!editingId"
-          />
-        </div>
-        <div class="grid gap-2">
-          <label class="text-sm font-medium">用户名</label>
-          <Input v-model="form.username" placeholder="请输入用户名（可选）" />
-        </div>
-        <div v-if="editingId" class="grid gap-2">
-          <label class="text-sm font-medium">头像</label>
-          <ImageUpload v-model="form.avatarUrl" />
-        </div>
+  <AdminFormDialog
+    v-model:open="showDialog"
+    :title="dialogTitle"
+    description="维护管理员手机号、用户名和头像"
+    :is-saving="createMutation.isPending.value || updateMutation.isPending.value"
+    @submit="handleSubmit"
+  >
+    <div class="grid gap-4">
+      <div class="grid gap-2">
+        <label for="admin-mobile" class="text-sm font-medium">
+          手机号 <span class="text-destructive">*</span>
+        </label>
+        <Input
+          id="admin-mobile"
+          v-model="form.mobile"
+          placeholder="请输入手机号"
+          type="tel"
+          :disabled="!!editingId"
+        />
       </div>
-
-      <DialogFooter>
-        <Button variant="outline" @click="showDialog = false">取消</Button>
-        <Button
-          :disabled="createMutation.isPending.value || updateMutation.isPending.value"
-          @click="handleSubmit"
-        >
-          保存
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+      <div class="grid gap-2">
+        <label for="admin-username" class="text-sm font-medium">用户名</label>
+        <Input id="admin-username" v-model="form.username" placeholder="请输入用户名（可选）" />
+      </div>
+      <div v-if="editingId" class="grid gap-2">
+        <label class="text-sm font-medium">头像</label>
+        <ImageUpload
+          v-model="form.avatarUrl"
+          preview-alt="管理员头像预览"
+          upload-label="上传管理员头像"
+        />
+      </div>
+    </div>
+  </AdminFormDialog>
 </template>

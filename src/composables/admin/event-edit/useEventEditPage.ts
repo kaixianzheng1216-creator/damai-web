@@ -10,7 +10,10 @@ export function useEventEditPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const eventId = computed(() => route.params.id as string | undefined)
+  const eventId = computed(() => {
+    const id = route.params.id
+    return Array.isArray(id) ? id[0] : id
+  })
   const isEdit = computed(() => Boolean(eventId.value))
   const currentTab = ref('basic-display')
   const isSaving = ref(false)

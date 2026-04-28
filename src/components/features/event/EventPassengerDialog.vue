@@ -49,7 +49,7 @@ const handleUpdateSlot = (index: number, value: unknown) => {
 
 <template>
   <Dialog :open="open" @update:open="(val) => !val && emit('close')">
-    <DialogContent class="max-w-lg">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-lg sm:max-w-lg">
       <DialogHeader>
         <DialogTitle>选择购票人</DialogTitle>
         <DialogDescription>请确认本次订单对应的实名购票人。</DialogDescription>
@@ -60,6 +60,7 @@ const handleUpdateSlot = (index: number, value: unknown) => {
           :model-value="passengerKeyword"
           class="h-9"
           placeholder="搜索购票人姓名"
+          aria-label="搜索购票人姓名"
           @update:model-value="emit('update:passengerKeyword', String($event))"
         />
 
@@ -76,13 +77,21 @@ const handleUpdateSlot = (index: number, value: unknown) => {
         </div>
 
         <div v-for="slot in passengerSlots" :key="slot.index" class="section-card">
-          <p class="text-sm font-medium text-foreground">{{ slot.label }}</p>
+          <p
+            :id="`checkout-passenger-slot-${slot.index}`"
+            class="text-sm font-medium text-foreground"
+          >
+            {{ slot.label }}
+          </p>
           <div class="mt-3">
             <Select
               :model-value="slot.passengerId ?? ''"
               @update:model-value="handleUpdateSlot(slot.index, $event)"
             >
-              <SelectTrigger class="h-10 w-full">
+              <SelectTrigger
+                class="h-10 w-full"
+                :aria-labelledby="`checkout-passenger-slot-${slot.index}`"
+              >
                 <SelectValue placeholder="请选择购票人" />
               </SelectTrigger>
               <SelectContent>

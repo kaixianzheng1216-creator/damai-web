@@ -9,6 +9,7 @@ import { Button } from '@/components/common/ui/button'
 interface Props {
   modelValue?: string
   placeholder?: string
+  ariaLabel?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -65,6 +66,7 @@ const displayText = computed(() => {
   if (!calDate.value) return ''
   return `${calDate.value.year}-${pad(calDate.value.month)}-${pad(calDate.value.day)} ${hour.value}:${minute.value}`
 })
+const triggerAriaLabel = computed(() => props.ariaLabel ?? props.placeholder)
 
 const onDateSelect = (val: DateValue | undefined) => {
   calDate.value = val as CalendarDate | undefined
@@ -92,6 +94,7 @@ const onMinuteChange = () => {
         type="button"
         class="flex h-9 w-full items-center rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         :class="displayText ? 'text-foreground' : 'text-muted-foreground'"
+        :aria-label="triggerAriaLabel"
       >
         <icon-lucide-calendar class="mr-2 h-4 w-4 shrink-0 opacity-50" />
         {{ displayText || placeholder }}
@@ -111,6 +114,7 @@ const onMinuteChange = () => {
           type="number"
           min="0"
           max="23"
+          aria-label="小时"
           class="w-16 rounded border border-input bg-background px-2 py-1 text-sm text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-ring"
           @change="onHourChange"
         />
@@ -120,6 +124,7 @@ const onMinuteChange = () => {
           type="number"
           min="0"
           max="59"
+          aria-label="分钟"
           class="w-16 rounded border border-input bg-background px-2 py-1 text-sm text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-ring"
           @change="onMinuteChange"
         />

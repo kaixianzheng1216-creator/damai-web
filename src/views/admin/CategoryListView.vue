@@ -71,7 +71,12 @@ const childColumns = createCategoryChildColumns({
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
-        <Input v-model="searchName" placeholder="搜索分类名称" class="h-8 w-48" />
+        <Input
+          v-model="searchName"
+          placeholder="搜索分类名称"
+          class="h-8 w-48"
+          aria-label="搜索分类名称"
+        />
       </div>
     </template>
   </DataTableCrud>

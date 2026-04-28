@@ -28,7 +28,7 @@ const emit = defineEmits<{
 
 <template>
   <AlertDialog :open="open" @update:open="(val) => !val && emit('close')">
-    <AlertDialogContent>
+    <AlertDialogContent class="max-h-[calc(100dvh-2rem)] overflow-y-auto">
       <AlertDialogHeader>
         <AlertDialogTitle>{{ title }}</AlertDialogTitle>
         <AlertDialogDescription>{{ description }}</AlertDialogDescription>

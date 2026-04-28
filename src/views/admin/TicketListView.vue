@@ -55,7 +55,7 @@ const columns = createTicketColumns()
           扫码检票
         </Button>
         <Select v-model="searchStatus" @update:model-value="handleSearch">
-          <SelectTrigger class="h-8 w-28">
+          <SelectTrigger class="h-8 w-28" aria-label="筛选电子票状态">
             <SelectValue placeholder="状态" />
           </SelectTrigger>
           <SelectContent>
@@ -68,24 +68,28 @@ const columns = createTicketColumns()
           v-model="searchUserId"
           placeholder="用户 ID"
           class="h-8 w-28"
+          aria-label="按用户 ID 搜索电子票"
           @input="handleSearch"
         />
         <Input
           v-model="searchOrderId"
           placeholder="订单 ID"
           class="h-8 w-28"
+          aria-label="按订单 ID 搜索电子票"
           @input="handleSearch"
         />
         <Input
           v-model="searchEventId"
           placeholder="活动 ID"
           class="h-8 w-28"
+          aria-label="按活动 ID 搜索电子票"
           @input="handleSearch"
         />
         <Input
           v-model="searchSessionId"
           placeholder="场次 ID"
           class="h-8 w-28"
+          aria-label="按场次 ID 搜索电子票"
           @input="handleSearch"
         />
       </div>

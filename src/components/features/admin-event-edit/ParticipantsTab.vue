@@ -88,7 +88,7 @@ const {
   </Card>
 
   <Dialog :open="showParticipantDialog" @update:open="(v) => !v && (showParticipantDialog = false)">
-    <DialogContent class="max-w-2xl">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-2xl sm:max-w-2xl">
       <DialogHeader class="pb-4">
         <DialogTitle class="text-lg font-semibold">选择参与方</DialogTitle>
       </DialogHeader>
@@ -120,7 +120,9 @@ const {
             @click="toggleParticipant(participant.id)"
           >
             <Checkbox
+              :id="`participant-option-${participant.id}`"
               :checked="selectedParticipantIds.includes(participant.id)"
+              :aria-label="`选择参与方 ${participant.name}`"
               @update:checked="() => toggleParticipant(participant.id)"
               @click.stop
             />
@@ -129,7 +131,12 @@ const {
               :alt="participant.name"
               class="w-9 h-9 rounded-full object-cover"
             />
-            <Label class="font-medium cursor-pointer">{{ participant.name }}</Label>
+            <Label
+              :for="`participant-option-${participant.id}`"
+              class="font-medium cursor-pointer"
+              @click.stop
+              >{{ participant.name }}</Label
+            >
           </div>
         </div>
       </div>

@@ -41,8 +41,8 @@ defineExpose({ save })
     <CardContent class="space-y-6 max-w-3xl">
       <!-- 活动描述 -->
       <div class="space-y-2">
-        <Label>活动描述</Label>
-        <RichTextEditor v-model="description" placeholder="请输入活动描述" />
+        <Label id="event-info-description-label">活动描述</Label>
+        <RichTextEditor v-model="description" aria-label="活动描述" placeholder="请输入活动描述" />
       </div>
 
       <!-- 购票须知 -->
@@ -58,9 +58,12 @@ defineExpose({ save })
             class="rounded-lg border p-3 space-y-2"
           >
             <div class="flex items-center gap-2">
-              <span class="text-sm font-medium">{{ tmpl.name }}</span>
+              <Label :for="`purchase-notice-${tmpl.id}`" class="text-sm font-medium">
+                {{ tmpl.name }}
+              </Label>
             </div>
             <Input
+              :id="`purchase-notice-${tmpl.id}`"
               v-model="purchaseContent[tmpl.id]"
               :placeholder="`填写「${tmpl.name}」的具体内容`"
             />
@@ -81,9 +84,12 @@ defineExpose({ save })
             class="rounded-lg border p-3 space-y-2"
           >
             <div class="flex items-center gap-2">
-              <span class="text-sm font-medium">{{ tmpl.name }}</span>
+              <Label :for="`admission-notice-${tmpl.id}`" class="text-sm font-medium">
+                {{ tmpl.name }}
+              </Label>
             </div>
             <Input
+              :id="`admission-notice-${tmpl.id}`"
               v-model="admissionContent[tmpl.id]"
               :placeholder="`填写「${tmpl.name}」的具体内容`"
             />

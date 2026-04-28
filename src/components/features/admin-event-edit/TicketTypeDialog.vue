@@ -45,7 +45,7 @@ const {
 
 <template>
   <Dialog :open="open" @update:open="(v) => emit('update:open', v)">
-    <DialogContent class="max-w-md">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-md overflow-hidden sm:max-w-md">
       <DialogHeader>
         <DialogTitle>{{ dialogTitle }}</DialogTitle>
       </DialogHeader>
@@ -88,11 +88,19 @@ const {
         <div class="grid grid-cols-2 gap-4">
           <div class="grid gap-2">
             <Label>售卖开始时间</Label>
-            <DateTimePicker v-model="form.saleStartAt" placeholder="选择开始时间" />
+            <DateTimePicker
+              v-model="form.saleStartAt"
+              aria-label="选择票种售卖开始时间"
+              placeholder="选择开始时间"
+            />
           </div>
           <div class="grid gap-2">
             <Label>售卖结束时间</Label>
-            <DateTimePicker v-model="form.saleEndAt" placeholder="选择结束时间" />
+            <DateTimePicker
+              v-model="form.saleEndAt"
+              aria-label="选择票种售卖结束时间"
+              placeholder="选择结束时间"
+            />
           </div>
         </div>
         <div v-if="!isEditing" class="grid gap-2">

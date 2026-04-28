@@ -49,7 +49,12 @@ const columns = createVenueColumns({ openEdit, handleDelete })
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
-        <Input v-model="searchName" placeholder="搜索场馆名称" class="h-8 w-48" />
+        <Input
+          v-model="searchName"
+          placeholder="搜索场馆名称"
+          class="h-8 w-48"
+          aria-label="搜索场馆名称"
+        />
       </div>
     </template>
   </DataTableCrud>

@@ -31,19 +31,19 @@ const emit = defineEmits<{
 
 <template>
   <Dialog :open="open" @update:open="(val) => !val && emit('close')">
-    <DialogContent class="max-w-md">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-md sm:max-w-md">
       <DialogHeader>
         <DialogTitle>新建购票人</DialogTitle>
       </DialogHeader>
       <div class="space-y-4">
         <div>
-          <Label class="mb-2">姓名</Label>
-          <Input v-model="form.name" class="h-10" />
+          <Label for="profile-passenger-name" class="mb-2">姓名</Label>
+          <Input id="profile-passenger-name" v-model="form.name" class="h-10" />
         </div>
         <div>
-          <Label class="mb-2">证件类型</Label>
+          <Label id="profile-passenger-cert-type-label" class="mb-2">证件类型</Label>
           <Select v-model="form.certType">
-            <SelectTrigger class="h-10 w-full">
+            <SelectTrigger class="h-10 w-full" aria-labelledby="profile-passenger-cert-type-label">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -58,8 +58,8 @@ const emit = defineEmits<{
           </Select>
         </div>
         <div>
-          <Label class="mb-2">证件号</Label>
-          <Input v-model="form.certNo" class="h-10" />
+          <Label for="profile-passenger-cert-no" class="mb-2">证件号</Label>
+          <Input id="profile-passenger-cert-no" v-model="form.certNo" class="h-10" />
         </div>
         <p v-if="passengerError" class="text-sm text-destructive">{{ passengerError }}</p>
       </div>

@@ -6,6 +6,7 @@ import type {
   BannerVO,
   CategoryVO,
   CityVO,
+  EventVO,
   NoticeVO,
   ParticipantVO,
   SeriesEventVO,
@@ -13,9 +14,18 @@ import type {
   ServiceGuaranteeVO,
   VenueVO,
 } from '@/api/event'
+import type { AdminVO, UserVO } from '@/api/account'
+import type { WorkOrderVO } from '@/api/trade'
 import type { TicketVO } from '@/api/ticket/types'
-import { BOOLEAN_TYPE, NOTICE_TYPE_LABEL } from '@/constants'
-import { formatDateTime } from '@/utils/format'
+import {
+  BOOLEAN_TYPE,
+  EVENT_STATUS,
+  NOTICE_TYPE_LABEL,
+  USER_STATUS,
+  WORK_ORDER_STATUS,
+} from '@/constants'
+import { formatDateTime, formatPrice } from '@/utils/format'
+import { getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
 
 type RowAction<T> = (row: T) => void
 
@@ -43,6 +53,216 @@ const editDeleteActions = <T>(row: T, { openEdit, handleDelete }: CrudColumnActi
     actionButton('编辑', 'outline', (event) => stopAndRun(event, () => openEdit(row))),
     actionButton('删除', 'destructive', (event) => stopAndRun(event, () => handleDelete(row))),
   ])
+
+const accountStatusBadge = (status: number) =>
+  h(
+    Badge,
+    { variant: 'outline' },
+    { default: () => (status === USER_STATUS.NORMAL ? '正常' : '封禁') },
+  )
+
+const accountAvatarCell = (avatarUrl: string | undefined, alt: string) =>
+  avatarUrl
+    ? h('img', {
+        src: avatarUrl,
+        alt,
+        class: 'h-8 w-8 rounded-full object-cover',
+      })
+    : null
+
+export function createEventColumns(options: {
+  openEdit: RowAction<EventVO>
+  handleDelete: RowAction<EventVO>
+  handlePublish: RowAction<EventVO>
+  handleOffline: RowAction<EventVO>
+}): ColumnDef<EventVO>[] {
+  return [
+    {
+      accessorKey: 'id',
+      header: 'ID',
+      size: 100,
+    },
+    {
+      accessorKey: 'name',
+      header: '活动名称',
+    },
+    {
+      accessorKey: 'cityNameSnapshot',
+      header: '城市',
+      size: 100,
+    },
+    {
+      accessorKey: 'categoryNameSnapshot',
+      header: '分类',
+      size: 100,
+    },
+    {
+      accessorKey: 'minPrice',
+      header: '最低票价',
+      size: 120,
+      cell: ({ row }) => (row.original.minPrice != null ? formatPrice(row.original.minPrice) : '-'),
+    },
+    {
+      accessorKey: 'statusLabel',
+      header: '状态',
+      size: 100,
+      cell: ({ row }) => h(Badge, { variant: 'outline' }, () => row.original.statusLabel),
+    },
+    {
+      accessorKey: 'recommendWeight',
+      header: '推荐权重',
+      size: 100,
+      cell: ({ row }) => row.original.recommendWeight ?? '-',
+    },
+    {
+      id: 'actions',
+      header: '操作',
+      size: 280,
+      cell: ({ row }) =>
+        actionGroup([
+          actionButton('编辑', 'outline', (event) =>
+            stopAndRun(event, () => options.openEdit(row.original)),
+          ),
+          row.original.status === EVENT_STATUS.DRAFT
+            ? actionButton('发布', 'outline', (event) =>
+                stopAndRun(event, () => options.handlePublish(row.original)),
+              )
+            : null,
+          row.original.status === EVENT_STATUS.PUBLISHED
+            ? actionButton('下线', 'outline', (event) =>
+                stopAndRun(event, () => options.handleOffline(row.original)),
+              )
+            : null,
+          row.original.status === EVENT_STATUS.OFFLINE
+            ? actionButton('上线', 'outline', (event) =>
+                stopAndRun(event, () => options.handlePublish(row.original)),
+              )
+            : null,
+          actionButton('删除', 'destructive', (event) =>
+            stopAndRun(event, () => options.handleDelete(row.original)),
+          ),
+        ]),
+    },
+  ]
+}
+
+export function createAdminColumns(options: {
+  openEdit: RowAction<AdminVO>
+  toggleStatus: RowAction<AdminVO>
+}): ColumnDef<AdminVO>[] {
+  return [
+    { accessorKey: 'id', header: 'ID', size: 180 },
+    {
+      accessorKey: 'avatarUrl',
+      header: '头像',
+      size: 80,
+      cell: ({ row }) => accountAvatarCell(row.original.avatarUrl, `${row.original.username}头像`),
+    },
+    { accessorKey: 'username', header: '用户名' },
+    { accessorKey: 'mobile', header: '手机号' },
+    {
+      accessorKey: 'status',
+      header: '状态',
+      size: 100,
+      cell: ({ row }) => accountStatusBadge(row.original.status),
+    },
+    {
+      id: 'actions',
+      header: '操作',
+      size: 160,
+      cell: ({ row }) =>
+        actionGroup([
+          actionButton('编辑', 'outline', (event) =>
+            stopAndRun(event, () => options.openEdit(row.original)),
+          ),
+          actionButton(
+            row.original.status === USER_STATUS.NORMAL ? '封禁' : '解封',
+            row.original.status === USER_STATUS.NORMAL ? 'destructive' : 'default',
+            (event) => stopAndRun(event, () => options.toggleStatus(row.original)),
+          ),
+        ]),
+    },
+  ]
+}
+
+export function createUserColumns(options: {
+  toggleStatus: RowAction<UserVO>
+}): ColumnDef<UserVO>[] {
+  return [
+    { accessorKey: 'id', header: 'ID', size: 180 },
+    {
+      accessorKey: 'avatarUrl',
+      header: '头像',
+      size: 80,
+      cell: ({ row }) => accountAvatarCell(row.original.avatarUrl, `${row.original.username}头像`),
+    },
+    { accessorKey: 'username', header: '用户名' },
+    { accessorKey: 'mobile', header: '手机号' },
+    {
+      accessorKey: 'status',
+      header: '状态',
+      size: 100,
+      cell: ({ row }) => accountStatusBadge(row.original.status),
+    },
+    {
+      id: 'actions',
+      header: '操作',
+      size: 120,
+      cell: ({ row }) =>
+        actionButton(
+          row.original.status === USER_STATUS.NORMAL ? '封禁' : '解封',
+          row.original.status === USER_STATUS.NORMAL ? 'destructive' : 'default',
+          (event) => stopAndRun(event, () => options.toggleStatus(row.original)),
+        ),
+    },
+  ]
+}
+
+export function createWorkOrderColumns(options: {
+  openDetail: RowAction<WorkOrderVO>
+  requestClose: RowAction<WorkOrderVO>
+}): ColumnDef<WorkOrderVO>[] {
+  return [
+    { accessorKey: 'id', header: 'ID', size: 120 },
+    { accessorKey: 'workOrderNo', header: '工单号', size: 180 },
+    { accessorKey: 'title', header: '标题' },
+    { accessorKey: 'userId', header: '用户 ID', size: 120 },
+    { accessorKey: 'typeLabel', header: '类型', size: 120 },
+    {
+      accessorKey: 'status',
+      header: '状态',
+      size: 120,
+      cell: ({ row }) =>
+        h(
+          Badge,
+          { class: getWorkOrderStatusBadgeClass(row.original.status) },
+          () => row.original.statusLabel,
+        ),
+    },
+    {
+      accessorKey: 'lastReplyAt',
+      header: '最后回复',
+      size: 160,
+      cell: ({ row }) => formatDateTime(row.original.lastReplyAt, '-'),
+    },
+    {
+      id: 'actions',
+      header: '操作',
+      size: 180,
+      cell: ({ row }) =>
+        actionGroup([
+          actionButton('详情', 'outline', (event) =>
+            stopAndRun(event, () => options.openDetail(row.original)),
+          ),
+          row.original.status !== WORK_ORDER_STATUS.CLOSED
+            ? actionButton('关闭', 'destructive', (event) =>
+                stopAndRun(event, () => options.requestClose(row.original)),
+              )
+            : null,
+        ]),
+    },
+  ]
+}
 
 export function createBannerColumns(options: {
   citiesMap: Ref<Map<string, CityVO>>

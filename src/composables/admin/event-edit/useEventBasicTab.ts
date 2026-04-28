@@ -145,13 +145,24 @@ export function useEventBasicTab(options: UseEventBasicTabOptions) {
     },
   })
 
-  const buildSubmitData = () => ({
-    ...basicForm,
+  const buildSubmitData = (): EventCreateRequest => ({
+    categoryId: basicForm.categoryId,
+    venueId: basicForm.venueId,
+    cityId: basicForm.cityId,
+    name: basicForm.name,
+    coverUrl: basicForm.coverUrl,
+    recommendWeight: basicForm.recommendWeight,
     seriesId: basicForm.seriesId === 'none' ? undefined : basicForm.seriesId,
   })
 
   const save = async () => {
-    if (!basicForm.name || !basicForm.categoryId || !basicForm.venueId || !basicForm.cityId) {
+    if (
+      !basicForm.name ||
+      !basicForm.categoryId ||
+      !basicForm.venueId ||
+      !basicForm.cityId ||
+      !basicForm.coverUrl
+    ) {
       toast.error('请填写完整信息')
       return
     }
@@ -165,7 +176,7 @@ export function useEventBasicTab(options: UseEventBasicTabOptions) {
         return
       }
 
-      await createMutation.mutateAsync(submitData as EventCreateRequest)
+      await createMutation.mutateAsync(submitData)
     } finally {
       isLoading.value = false
     }

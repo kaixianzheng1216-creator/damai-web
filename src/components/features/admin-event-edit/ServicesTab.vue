@@ -84,7 +84,7 @@ const {
   </Card>
 
   <Dialog :open="showServiceDialog" @update:open="(v) => !v && (showServiceDialog = false)">
-    <DialogContent class="max-w-2xl">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-2xl sm:max-w-2xl">
       <DialogHeader class="pb-4">
         <DialogTitle class="text-lg font-semibold">选择服务保障</DialogTitle>
       </DialogHeader>
@@ -99,11 +99,15 @@ const {
           <div v-for="service in servicesData" :key="service.id" class="p-4 border rounded-lg">
             <div class="flex items-start gap-3">
               <Checkbox
+                :id="`service-option-${service.id}`"
                 :checked="isServiceSelected(service.id)"
+                :aria-label="`选择服务保障 ${service.name}`"
                 @update:checked="() => toggleService(service)"
               />
               <div class="flex-1">
-                <div class="font-medium">{{ service.name }}</div>
+                <Label :for="`service-option-${service.id}`" class="font-medium">
+                  {{ service.name }}
+                </Label>
                 <div v-if="service.options && service.options.length > 0" class="mt-3">
                   <RadioGroup
                     :value="getSelectedOption(service.id) || ''"

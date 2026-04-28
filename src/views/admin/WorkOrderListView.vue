@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { computed, h, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { type ColumnDef } from '@tanstack/vue-table'
+import { createWorkOrderColumns } from '@/components/admin/listPageColumns'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import WorkOrderDetailDialog from '@/components/admin/WorkOrderDetailDialog.vue'
-import { Badge } from '@/components/common/ui/badge'
-import { Button } from '@/components/common/ui/button'
 import { Input } from '@/components/common/ui/input'
 import {
   Select,
@@ -24,8 +22,6 @@ import {
 import type { WorkOrderVO } from '@/api/trade'
 import { WORK_ORDER_STATUS, queryKeys } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
-import { formatDateTime } from '@/utils/format'
-import { getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
 
 const queryClient = useQueryClient()
 const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
@@ -145,64 +141,7 @@ const requestClose = (row?: WorkOrderVO) => {
   )
 }
 
-const columns: ColumnDef<WorkOrderVO>[] = [
-  { accessorKey: 'id', header: 'ID', size: 120 },
-  { accessorKey: 'workOrderNo', header: '工单号', size: 180 },
-  { accessorKey: 'title', header: '标题' },
-  { accessorKey: 'userId', header: '用户 ID', size: 120 },
-  { accessorKey: 'typeLabel', header: '类型', size: 120 },
-  {
-    accessorKey: 'status',
-    header: '状态',
-    size: 120,
-    cell: ({ row }) =>
-      h(
-        Badge,
-        { class: getWorkOrderStatusBadgeClass(row.original.status) },
-        () => row.original.statusLabel,
-      ),
-  },
-  {
-    accessorKey: 'lastReplyAt',
-    header: '最后回复',
-    size: 160,
-    cell: ({ row }) => formatDateTime(row.original.lastReplyAt, '-'),
-  },
-  {
-    id: 'actions',
-    header: '操作',
-    size: 180,
-    cell: ({ row }) =>
-      h('div', { class: 'flex items-center gap-2' }, [
-        h(
-          Button,
-          {
-            variant: 'outline',
-            size: 'sm',
-            onClick: (event: Event) => {
-              event.stopPropagation()
-              openDetail(row.original)
-            },
-          },
-          () => '详情',
-        ),
-        row.original.status !== WORK_ORDER_STATUS.CLOSED
-          ? h(
-              Button,
-              {
-                variant: 'destructive',
-                size: 'sm',
-                onClick: (event: Event) => {
-                  event.stopPropagation()
-                  requestClose(row.original)
-                },
-              },
-              () => '关闭',
-            )
-          : null,
-      ]),
-  },
-]
+const columns = createWorkOrderColumns({ openDetail, requestClose })
 </script>
 
 <template>
@@ -223,7 +162,7 @@ const columns: ColumnDef<WorkOrderVO>[] = [
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
         <Select v-model="searchStatus">
-          <SelectTrigger class="h-8 w-28">
+          <SelectTrigger class="h-8 w-28" aria-label="筛选工单状态">
             <SelectValue placeholder="状态" />
           </SelectTrigger>
           <SelectContent>
@@ -232,7 +171,12 @@ const columns: ColumnDef<WorkOrderVO>[] = [
             </SelectItem>
           </SelectContent>
         </Select>
-        <Input v-model="searchUserId" placeholder="用户 ID" class="h-8 w-28" />
+        <Input
+          v-model="searchUserId"
+          placeholder="用户 ID"
+          class="h-8 w-28"
+          aria-label="搜索用户 ID"
+        />
       </div>
     </template>
   </DataTableCrud>

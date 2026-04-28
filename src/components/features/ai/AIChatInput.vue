@@ -51,6 +51,7 @@ void focus()
           ref="inputRef"
           v-model="value"
           :placeholder="AI_CHAT_COPY.inputPlaceholder"
+          :aria-label="AI_CHAT_COPY.inputPlaceholder"
           class="flex-1 rounded-full border-0 bg-muted px-4 py-2.5 focus-visible:ring-0 focus-visible:ring-offset-0"
           @keydown="handleKeydown"
         />

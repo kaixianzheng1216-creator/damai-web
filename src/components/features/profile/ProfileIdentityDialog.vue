@@ -23,18 +23,28 @@ const emit = defineEmits<{
 
 <template>
   <Dialog :open="open" @update:open="(val) => !val && emit('close')">
-    <DialogContent class="max-w-md">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-md sm:max-w-md">
       <DialogHeader>
         <DialogTitle>实名认证</DialogTitle>
       </DialogHeader>
       <div class="space-y-4">
         <div>
-          <Label class="mb-2">真实姓名</Label>
-          <Input v-model="form.realName" class="h-10" placeholder="请输入真实姓名" />
+          <Label for="profile-real-name" class="mb-2">真实姓名</Label>
+          <Input
+            id="profile-real-name"
+            v-model="form.realName"
+            class="h-10"
+            placeholder="请输入真实姓名"
+          />
         </div>
         <div>
-          <Label class="mb-2">身份证号</Label>
-          <Input v-model="form.idCard" class="h-10" placeholder="请输入身份证号" />
+          <Label for="profile-id-card" class="mb-2">身份证号</Label>
+          <Input
+            id="profile-id-card"
+            v-model="form.idCard"
+            class="h-10"
+            placeholder="请输入身份证号"
+          />
         </div>
         <p v-if="identityError" class="text-sm text-destructive">{{ identityError }}</p>
       </div>

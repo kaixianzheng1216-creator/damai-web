@@ -13,12 +13,16 @@ interface Props {
   minHeight?: number
   maxWidth?: number
   maxHeight?: number
+  previewAlt?: string
+  uploadLabel?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   aspectClass: 'aspect-video',
   acceptedTypes: () => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
   maxSizeMb: 10,
+  previewAlt: '图片预览',
+  uploadLabel: '上传图片',
 })
 const resolvedAspect = computed(() => props.aspectClass)
 const acceptedAttribute = computed(() => props.acceptedTypes.join(','))
@@ -94,8 +98,9 @@ const validateImageDimensions = ({ width, height }: ImageDimensions) => {
 
 const handleFileChange = async (e: Event) => {
   const target = e.target as HTMLInputElement
-  if (target.files && target.files.length > 0) {
-    await handleFile(target.files[0]!)
+  const file = target.files?.[0]
+  if (file) {
+    await handleFile(file)
   }
 }
 
@@ -149,8 +154,9 @@ const handleDrop = async (e: DragEvent) => {
   e.preventDefault()
   e.stopPropagation()
   isDragging.value = false
-  if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
-    await handleFile(e.dataTransfer.files[0]!)
+  const file = e.dataTransfer?.files[0]
+  if (file) {
+    await handleFile(file)
   }
 }
 
@@ -175,7 +181,7 @@ const handleDragLeave = (e: DragEvent) => {
     >
       <img
         :src="modelValue"
-        alt="Preview"
+        :alt="previewAlt"
         class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
       />
       <div
@@ -205,6 +211,7 @@ const handleDragLeave = (e: DragEvent) => {
         ]"
         role="button"
         tabindex="0"
+        :aria-label="uploadLabel"
         :aria-invalid="Boolean(uploadError)"
         :aria-describedby="uploadError ? uploadErrorId : uploadHelpId"
         @click="triggerUpload"
@@ -237,6 +244,7 @@ const handleDragLeave = (e: DragEvent) => {
       type="file"
       :accept="acceptedAttribute"
       :disabled="isUploading"
+      aria-label="上传图片文件"
       class="hidden"
       @change="handleFileChange"
     />

@@ -46,8 +46,13 @@ defineExpose({ save })
       <div class="flex gap-8 items-start">
         <!-- 左侧：封面（3:4 竖版） -->
         <div class="shrink-0 w-60 space-y-2">
-          <Label>封面</Label>
-          <ImageUpload v-model="basicForm.coverUrl" aspect-class="aspect-[3/4]" />
+          <Label id="event-basic-cover-label">封面</Label>
+          <ImageUpload
+            v-model="basicForm.coverUrl"
+            aspect-class="aspect-[3/4]"
+            preview-alt="活动封面预览"
+            upload-label="上传活动封面"
+          />
         </div>
 
         <!-- 右侧：表单 -->
@@ -67,9 +72,11 @@ defineExpose({ save })
               />
             </div>
             <div class="space-y-2">
-              <Label>城市 <span class="text-destructive">*</span></Label>
+              <Label id="event-basic-city-label"
+                >城市 <span class="text-destructive">*</span></Label
+              >
               <Select v-model="basicForm.cityId">
-                <SelectTrigger>
+                <SelectTrigger aria-labelledby="event-basic-city-label">
                   <SelectValue placeholder="请选择城市" />
                 </SelectTrigger>
                 <SelectContent>
@@ -80,9 +87,11 @@ defineExpose({ save })
               </Select>
             </div>
             <div class="space-y-2">
-              <Label>分类 <span class="text-destructive">*</span></Label>
+              <Label id="event-basic-category-label"
+                >分类 <span class="text-destructive">*</span></Label
+              >
               <Select v-model="basicForm.categoryId">
-                <SelectTrigger>
+                <SelectTrigger aria-labelledby="event-basic-category-label">
                   <SelectValue placeholder="请选择分类" />
                 </SelectTrigger>
                 <SelectContent>
@@ -97,9 +106,11 @@ defineExpose({ save })
               </Select>
             </div>
             <div class="space-y-2">
-              <Label>场馆 <span class="text-destructive">*</span></Label>
+              <Label id="event-basic-venue-label"
+                >场馆 <span class="text-destructive">*</span></Label
+              >
               <Select v-model="basicForm.venueId">
-                <SelectTrigger>
+                <SelectTrigger aria-labelledby="event-basic-venue-label">
                   <SelectValue placeholder="请选择场馆" />
                 </SelectTrigger>
                 <SelectContent>
@@ -110,9 +121,9 @@ defineExpose({ save })
               </Select>
             </div>
             <div class="space-y-2">
-              <Label>系列（可选）</Label>
+              <Label id="event-basic-series-label">系列（可选）</Label>
               <Select v-model="basicForm.seriesId">
-                <SelectTrigger>
+                <SelectTrigger aria-labelledby="event-basic-series-label">
                   <SelectValue placeholder="不属于任何系列" />
                 </SelectTrigger>
                 <SelectContent>

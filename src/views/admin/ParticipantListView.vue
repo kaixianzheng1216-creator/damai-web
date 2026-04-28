@@ -50,7 +50,12 @@ const columns = createParticipantColumns({ openEdit, handleDelete })
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
-        <Input v-model="searchName" placeholder="搜索参与方名称" class="h-8 w-48" />
+        <Input
+          v-model="searchName"
+          placeholder="搜索参与方名称"
+          class="h-8 w-48"
+          aria-label="搜索参与方名称"
+        />
       </div>
     </template>
   </DataTableCrud>
@@ -71,7 +76,11 @@ const columns = createParticipantColumns({ openEdit, handleDelete })
       </div>
       <div class="grid gap-2">
         <label class="text-sm font-medium">头像</label>
-        <ImageUpload v-model="form.avatarUrl" />
+        <ImageUpload
+          v-model="form.avatarUrl"
+          preview-alt="参与方头像预览"
+          upload-label="上传参与方头像"
+        />
       </div>
     </div>
   </AdminFormDialog>

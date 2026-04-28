@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, h, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useRouter } from 'vue-router'
-import { type ColumnDef } from '@tanstack/vue-table'
+import { createEventColumns } from '@/components/admin/listPageColumns'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
-import { Button } from '@/components/common/ui/button'
-import { Badge } from '@/components/common/ui/badge'
 import {
   Select,
   SelectContent,
@@ -18,9 +16,8 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { fetchAdminEventPage, deleteEvent, publishEvent, offlineEvent } from '@/api/event/event'
 import { fetchAdminCities } from '@/api/event/city'
 import { fetchAdminCategories } from '@/api/event/category'
-import { formatPrice } from '@/utils/format'
 import type { EventVO } from '@/api/event'
-import { EVENT_STATUS, queryKeys } from '@/constants'
+import { queryKeys } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 
 const router = useRouter()
@@ -43,131 +40,6 @@ const { data: categoriesData } = useQuery({
   queryKey: queryKeys.admin.list('categories'),
   queryFn: fetchAdminCategories,
 })
-
-const columns: ColumnDef<EventVO>[] = [
-  {
-    accessorKey: 'id',
-    header: 'ID',
-    size: 100,
-  },
-  {
-    accessorKey: 'name',
-    header: '活动名称',
-  },
-  {
-    accessorKey: 'cityNameSnapshot',
-    header: '城市',
-    size: 100,
-  },
-  {
-    accessorKey: 'categoryNameSnapshot',
-    header: '分类',
-    size: 100,
-  },
-  {
-    accessorKey: 'minPrice',
-    header: '最低票价',
-    size: 120,
-    cell: ({ row }) => {
-      return row.original.minPrice != null ? formatPrice(row.original.minPrice) : '-'
-    },
-  },
-  {
-    accessorKey: 'statusLabel',
-    header: '状态',
-    size: 100,
-    cell: ({ row }) => {
-      return h(Badge, { variant: 'outline' }, { default: () => row.original.statusLabel })
-    },
-  },
-  {
-    accessorKey: 'recommendWeight',
-    header: '推荐权重',
-    size: 100,
-    cell: ({ row }) => {
-      return row.original.recommendWeight ?? '-'
-    },
-  },
-  {
-    id: 'actions',
-    header: '操作',
-    size: 280,
-    cell: ({ row }) => {
-      return h(
-        'div',
-        { class: 'flex items-center gap-2' },
-        [
-          h(
-            Button,
-            {
-              variant: 'outline',
-              size: 'sm',
-              onClick: (e: Event) => {
-                e.stopPropagation()
-                openEdit(row.original)
-              },
-            },
-            () => '编辑',
-          ),
-          row.original.status === EVENT_STATUS.DRAFT
-            ? h(
-                Button,
-                {
-                  variant: 'outline',
-                  size: 'sm',
-                  onClick: (e: Event) => {
-                    e.stopPropagation()
-                    handlePublish(row.original)
-                  },
-                },
-                () => '发布',
-              )
-            : null,
-          row.original.status === EVENT_STATUS.PUBLISHED
-            ? h(
-                Button,
-                {
-                  variant: 'outline',
-                  size: 'sm',
-                  onClick: (e: Event) => {
-                    e.stopPropagation()
-                    handleOffline(row.original)
-                  },
-                },
-                () => '下线',
-              )
-            : null,
-          row.original.status === EVENT_STATUS.OFFLINE
-            ? h(
-                Button,
-                {
-                  variant: 'outline',
-                  size: 'sm',
-                  onClick: (e: Event) => {
-                    e.stopPropagation()
-                    handlePublish(row.original)
-                  },
-                },
-                () => '上线',
-              )
-            : null,
-          h(
-            Button,
-            {
-              variant: 'destructive',
-              size: 'sm',
-              onClick: (e: Event) => {
-                e.stopPropagation()
-                handleDelete(row.original)
-              },
-            },
-            () => '删除',
-          ),
-        ].filter(Boolean),
-      )
-    },
-  },
-]
 
 const queryKey = computed(() => [
   ...queryKeys.admin.list('events'),
@@ -240,6 +112,8 @@ const handleOffline = (row: EventVO) => {
     offlineMutation.mutateAsync(row.id),
   )
 }
+
+const columns = createEventColumns({ openEdit, handleDelete, handlePublish, handleOffline })
 </script>
 
 <template>
@@ -259,7 +133,7 @@ const handleOffline = (row: EventVO) => {
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
         <Select v-model="searchCityId">
-          <SelectTrigger class="h-8 w-28">
+          <SelectTrigger class="h-8 w-28" aria-label="筛选城市">
             <SelectValue placeholder="全部城市" />
           </SelectTrigger>
           <SelectContent>
@@ -270,7 +144,7 @@ const handleOffline = (row: EventVO) => {
           </SelectContent>
         </Select>
         <Select v-model="searchCategoryId">
-          <SelectTrigger class="h-8 w-28">
+          <SelectTrigger class="h-8 w-28" aria-label="筛选分类">
             <SelectValue placeholder="全部分类" />
           </SelectTrigger>
           <SelectContent>
@@ -280,7 +154,12 @@ const handleOffline = (row: EventVO) => {
             </SelectItem>
           </SelectContent>
         </Select>
-        <Input v-model="searchName" placeholder="搜索活动名称" class="h-8 w-48" />
+        <Input
+          v-model="searchName"
+          placeholder="搜索活动名称"
+          class="h-8 w-48"
+          aria-label="搜索活动名称"
+        />
       </div>
     </template>
   </DataTableCrud>

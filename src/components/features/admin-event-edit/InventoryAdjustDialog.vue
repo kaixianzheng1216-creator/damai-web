@@ -36,7 +36,7 @@ const { adjustQty, adjustInventoryMutation, handleAdjustInventory } = useInvento
 
 <template>
   <Dialog :open="open" @update:open="(v) => emit('update:open', v)">
-    <DialogContent class="max-w-md">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-md overflow-hidden sm:max-w-md">
       <DialogHeader>
         <DialogTitle>调整库存</DialogTitle>
       </DialogHeader>
