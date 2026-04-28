@@ -10,7 +10,7 @@ declare global {
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
-  const buildAIChatPrompt: typeof import('../composables/aiChatPrompt').buildAIChatPrompt
+  const buildAIChatPrompt: typeof import('../utils/aiChatPrompt').buildAIChatPrompt
   const clsx: typeof import('clsx').clsx
   const cn: typeof import('../utils/index').cn
   const computed: typeof import('vue').computed
@@ -141,7 +141,7 @@ declare global {
   const unref: typeof import('vue').unref
   const unrefElement: typeof import('@vueuse/core').unrefElement
   const until: typeof import('@vueuse/core').until
-  const useAIChat: typeof import('../composables/useAIChat').useAIChat
+  const useAIChat: typeof import('../composables/ai/useAIChat').useAIChat
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
   const useAnimate: typeof import('@vueuse/core').useAnimate
   const useArrayDifference: typeof import('@vueuse/core').useArrayDifference
@@ -305,7 +305,7 @@ declare global {
   const useVModel: typeof import('@vueuse/core').useVModel
   const useVModels: typeof import('@vueuse/core').useVModels
   const useVibrate: typeof import('@vueuse/core').useVibrate
-  const useViewMode: typeof import('../composables/useViewMode').useViewMode
+  const useViewMode: typeof import('../composables/common/useViewMode').useViewMode
   const useVirtualList: typeof import('@vueuse/core').useVirtualList
   const useWakeLock: typeof import('@vueuse/core').useWakeLock
   const useWebNotification: typeof import('@vueuse/core').useWebNotification
@@ -339,8 +339,8 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { ViewMode } from '../composables/useViewMode'
-  import('../composables/useViewMode')
+  export type { ViewMode } from '../composables/common/useViewMode'
+  import('../composables/common/useViewMode')
 }
 
 // for vue template auto import
@@ -352,7 +352,7 @@ declare module 'vue' {
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
-    readonly buildAIChatPrompt: UnwrapRef<typeof import('../composables/aiChatPrompt')['buildAIChatPrompt']>
+    readonly buildAIChatPrompt: UnwrapRef<typeof import('../utils/aiChatPrompt')['buildAIChatPrompt']>
     readonly clsx: UnwrapRef<typeof import('clsx')['clsx']>
     readonly cn: UnwrapRef<typeof import('../utils/index')['cn']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
@@ -483,7 +483,7 @@ declare module 'vue' {
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
-    readonly useAIChat: UnwrapRef<typeof import('../composables/useAIChat')['useAIChat']>
+    readonly useAIChat: UnwrapRef<typeof import('../composables/ai/useAIChat')['useAIChat']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>
@@ -647,7 +647,7 @@ declare module 'vue' {
     readonly useVModel: UnwrapRef<typeof import('@vueuse/core')['useVModel']>
     readonly useVModels: UnwrapRef<typeof import('@vueuse/core')['useVModels']>
     readonly useVibrate: UnwrapRef<typeof import('@vueuse/core')['useVibrate']>
-    readonly useViewMode: UnwrapRef<typeof import('../composables/useViewMode')['useViewMode']>
+    readonly useViewMode: UnwrapRef<typeof import('../composables/common/useViewMode')['useViewMode']>
     readonly useVirtualList: UnwrapRef<typeof import('@vueuse/core')['useVirtualList']>
     readonly useWakeLock: UnwrapRef<typeof import('@vueuse/core')['useWakeLock']>
     readonly useWebNotification: UnwrapRef<typeof import('@vueuse/core')['useWebNotification']>

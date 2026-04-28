@@ -4,7 +4,7 @@ import { useStorage } from '@vueuse/core'
 import { chatWithAI } from '@/api/ai'
 import type { ChatMessage } from '@/api/ai/types'
 import { COMMON_CONFIG } from '@/constants'
-import { buildAIChatPrompt } from './aiChatPrompt'
+import { buildAIChatPrompt } from '@/utils/aiChatPrompt'
 
 function generateSessionId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
