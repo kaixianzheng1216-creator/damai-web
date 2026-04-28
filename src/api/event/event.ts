@@ -15,6 +15,7 @@ import type {
   TicketTypeInventoryAdjustRequest,
   EventServiceBatchAddRequest,
   EventParticipantBatchAddRequest,
+  EventParticipantSortRequest,
   EventInfoCreateRequest,
   TicketTypeCopyRequest,
 } from './types'
@@ -125,5 +126,13 @@ export const batchAddParticipants = (
 ): Promise<void> =>
   request.post<void>(`/api/event/admin/events/${eventId}/participants/batch`, data)
 
+export const sortParticipants = (
+  eventId: string,
+  data: EventParticipantSortRequest,
+): Promise<void> => request.put<void>(`/api/event/admin/events/${eventId}/participants/sort`, data)
+
 export const copyTicketTypes = (eventId: string, data: TicketTypeCopyRequest): Promise<void> =>
   request.post<void>(`/api/event/admin/events/${eventId}/ticket-types/copy`, data)
+
+export const publishAllEvents = (): Promise<void> =>
+  request.put<void>('/api/event/admin/events/publish-all')

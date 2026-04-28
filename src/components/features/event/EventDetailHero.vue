@@ -170,7 +170,7 @@ const emit = defineEmits<{
               "
               @click="emit('update:selectedTicketTypeId', ticketType.id)"
             >
-              {{ ticketType.name }} ({{ formatPrice(ticketType.price) }})
+              {{ ticketType.name }} ({{ formatPrice(ticketType.salePrice ?? 0) }})
               <span v-if="!isTicketTypeOnSale(ticketType)" class="ml-1">不可售</span>
             </button>
           </div>
@@ -209,7 +209,7 @@ const emit = defineEmits<{
             <div class="text-right text-sm text-muted-foreground">
               <p>票档：{{ selectedTicketType?.name || '--' }}</p>
               <p class="mt-1">
-                单价：{{ formatPrice(selectedTicketType?.price || 0) }} × {{ ticketQuantity }}
+                单价：{{ formatPrice(selectedTicketType?.salePrice || 0) }} × {{ ticketQuantity }}
               </p>
             </div>
           </div>

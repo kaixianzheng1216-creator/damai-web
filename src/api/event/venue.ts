@@ -24,3 +24,8 @@ export const updateVenue = (id: string, data: VenueUpdateRequest): Promise<void>
 
 export const deleteVenue = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/venues/${id}`)
+
+// ─── Front ───────────────────────────────────────────────
+
+export const fetchVenueDetail = (id: string): Promise<VenueVO> =>
+  request.get<VenueVO>(`/api/event/front/venues/${id}`)

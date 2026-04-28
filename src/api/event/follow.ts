@@ -4,6 +4,7 @@ import type {
   UserFollowParticipantRequest,
   PageResponseUserFollowEventVO,
   PageResponseUserFollowParticipantVO,
+  PageResponseEventVO,
 } from './types'
 
 // ─── Event Follow ─────────────────────────────────────────
@@ -46,3 +47,11 @@ export const fetchFollowedParticipantsPage = (params?: {
       params,
     },
   )
+
+export const fetchFollowedParticipantEventsPage = (params?: {
+  page?: number
+  size?: number
+}): Promise<PageResponseEventVO> =>
+  request.get<PageResponseEventVO>('/api/event/front/user-follows/participants/events/page', {
+    params,
+  })

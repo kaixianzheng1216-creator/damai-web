@@ -29,3 +29,15 @@ export const fetchOrderById = (id: string): Promise<TicketOrderVO> => {
 export const fetchOrderStatus = (id: string): Promise<OrderStatusVO> => {
   return request.get<OrderStatusVO>(`/api/order/front/ticket-orders/${id}/status`)
 }
+
+// ─── Admin ───────────────────────────────────────────────
+
+export const fetchAdminOrderPage = (
+  params: TicketOrderPageRequest,
+): Promise<PageResponseTicketOrderVO> => {
+  return request.get<PageResponseTicketOrderVO>('/api/order/admin/ticket-orders', { params })
+}
+
+export const fetchAdminOrderById = (id: string): Promise<TicketOrderVO> => {
+  return request.get<TicketOrderVO>(`/api/order/admin/ticket-orders/${id}`)
+}

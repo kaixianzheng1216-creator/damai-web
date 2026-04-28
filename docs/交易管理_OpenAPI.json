@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://192.168.10.1:18084",
+      "url": "http://26.166.16.133:18084",
       "description": "Generated server url"
     }
   ],
@@ -1082,6 +1082,11 @@
             "format": "int64",
             "description": "工单 ID"
           },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户 ID"
+          },
           "workOrderNo": {
             "type": "string",
             "description": "工单编号"
@@ -1732,6 +1737,11 @@
             "type": "integer",
             "format": "int64",
             "description": "工单 ID"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户 ID"
           },
           "workOrderNo": {
             "type": "string",

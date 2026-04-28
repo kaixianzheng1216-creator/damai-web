@@ -1,10 +1,12 @@
 export interface AiChatItem {
+  type: string
   id: string
-  name: string
+  title: string
+  subtitle: string
   coverUrl: string
-  venueName: string
-  startTime: string
-  minPrice: number
+  status: string
+  amount: number
+  time: string
 }
 
 export interface AiChatRequest {

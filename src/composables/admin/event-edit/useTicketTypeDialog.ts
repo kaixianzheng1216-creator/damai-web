@@ -59,7 +59,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
       }
 
       form.name = ticketType.name
-      form.salePrice = ticketType.salePrice ?? ticketType.price ?? 0
+      form.salePrice = ticketType.salePrice ?? 0
       form.orderLimit = ticketType.orderLimit || 1
       form.accountLimit = ticketType.accountLimit || 1
       form.saleStartAt = formatDateTimeLocalInput(ticketType.saleStartAt)

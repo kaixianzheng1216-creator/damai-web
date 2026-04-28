@@ -9,7 +9,6 @@ const createTicketType = (overrides: Partial<TicketTypeVO> = {}): TicketTypeVO =
   id: 'ticket-1',
   sessionId: 'session-1',
   name: '看台',
-  price: 199,
   salePrice: 188,
   orderLimit: 2,
   accountLimit: 3,

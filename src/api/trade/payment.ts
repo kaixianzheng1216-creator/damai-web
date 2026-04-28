@@ -4,6 +4,8 @@ import type {
   PaymentCreateRequest,
   OrderStatusVO,
   PaymentVO,
+  RefundCreateRequest,
+  RefundVO,
 } from './types'
 
 export const createTicketOrder = (data: TicketOrderCreateRequest): Promise<OrderStatusVO> => {
@@ -16,4 +18,8 @@ export const createPayment = (id: string, data: PaymentCreateRequest): Promise<P
 
 export const cancelTicketOrder = (id: string): Promise<void> => {
   return request.post<void>(`/api/order/front/ticket-orders/${id}/cancel`)
+}
+
+export const createRefund = (id: string, data: RefundCreateRequest): Promise<RefundVO> => {
+  return request.post<RefundVO>(`/api/order/front/ticket-orders/${id}/refund`, data)
 }

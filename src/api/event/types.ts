@@ -7,6 +7,7 @@ export interface EventVO {
   seriesId?: string
   categoryId: string
   categoryNameSnapshot?: string
+  parentCategoryNameSnapshot?: string
   venueId: string
   venueNameSnapshot?: string
   cityId: string
@@ -18,6 +19,7 @@ export interface EventVO {
   firstSessionStartAt?: string
   lastSessionEndAt?: string
   recommendWeight?: number
+  followCount?: number
   status: number
   statusLabel?: string
   participants?: EventParticipantVO[]
@@ -134,6 +136,10 @@ export interface EventParticipantBatchAddRequest {
   participantIds: string[]
 }
 
+export interface EventParticipantSortRequest {
+  eventParticipantIds: string[]
+}
+
 export interface EventInfoCreateRequest {
   description?: string
   purchaseNotice?: NoticeItemVO[]
@@ -163,7 +169,6 @@ export interface TicketTypeVO {
   eventId?: string
   sessionId: string
   name: string
-  price: number
   salePrice?: number
   orderLimit: number
   accountLimit: number
@@ -270,6 +275,10 @@ export interface CityUpdateRequest {
   name?: string
   pinyin?: string
   firstLetter?: string
+}
+
+export interface FeaturedUpdateRequest {
+  isFeatured: number
 }
 
 // ─── Category ────────────────────────────────────────────
@@ -401,6 +410,8 @@ export interface ServiceGuaranteeOptionVO {
 
 export interface EventServiceGuaranteeVO {
   id: string
+  serviceGuaranteeId: string
+  serviceGuaranteeOptionId: string
   serviceGuarantee: ServiceGuaranteeVO
   serviceGuaranteeOption: ServiceGuaranteeOptionVO
 }

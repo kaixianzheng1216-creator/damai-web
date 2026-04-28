@@ -46,10 +46,7 @@ export const useEventTicketSelection = ({ detail, passengers }: UseEventTicketSe
   const ticketTypeIds = computed(() => availableTicketTypes.value.map((item) => item.id))
   const totalPrice = computed(() =>
     selectedTicketType.value
-      ? formatPrice(
-          (selectedTicketType.value.salePrice ?? selectedTicketType.value.price ?? 0) *
-            ticketQuantity.value,
-        )
+      ? formatPrice((selectedTicketType.value.salePrice ?? 0) * ticketQuantity.value)
       : '¥0.00',
   )
   const selectedPassengers = computed<PassengerItem[]>(() =>
