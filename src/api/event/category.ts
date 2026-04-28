@@ -1,4 +1,5 @@
 import { request } from '@/api/request'
+import { normalizeEntityId, type RawEntityId } from '@/api/types'
 import type {
   CategoryVO,
   CategoryCreateRequest,
@@ -22,11 +23,11 @@ export const fetchAdminCategoriesPage = (
 ): Promise<PageResponseCategoryVO> =>
   request.get<PageResponseCategoryVO>('/api/event/admin/categories/page', { params: query })
 
-export const createCategory = (data: CategoryCreateRequest): Promise<CategoryVO> =>
-  request.post<CategoryVO>('/api/event/admin/categories', data)
+export const createCategory = (data: CategoryCreateRequest): Promise<string> =>
+  request.post<RawEntityId>('/api/event/admin/categories', data).then(normalizeEntityId)
 
-export const updateCategory = (id: string, data: CategoryUpdateRequest): Promise<CategoryVO> =>
-  request.put<CategoryVO>(`/api/event/admin/categories/${id}`, data)
+export const updateCategory = (id: string, data: CategoryUpdateRequest): Promise<void> =>
+  request.put<void>(`/api/event/admin/categories/${id}`, data)
 
 export const deleteCategory = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/categories/${id}`)

@@ -1,4 +1,5 @@
 import { request } from '@/api/request'
+import { normalizeEntityId, type RawEntityId } from '@/api/types'
 import type {
   NoticeVO,
   NoticeCreateRequest,
@@ -15,11 +16,11 @@ export const fetchAdminNotices = (): Promise<NoticeVO[]> =>
 export const fetchAdminNoticesPage = (query?: NoticePageRequest): Promise<PageResponseNoticeVO> =>
   request.get<PageResponseNoticeVO>('/api/event/admin/notices/page', { params: query })
 
-export const createNotice = (data: NoticeCreateRequest): Promise<NoticeVO> =>
-  request.post<NoticeVO>('/api/event/admin/notices', data)
+export const createNotice = (data: NoticeCreateRequest): Promise<string> =>
+  request.post<RawEntityId>('/api/event/admin/notices', data).then(normalizeEntityId)
 
-export const updateNotice = (id: string, data: NoticeUpdateRequest): Promise<NoticeVO> =>
-  request.put<NoticeVO>(`/api/event/admin/notices/${id}`, data)
+export const updateNotice = (id: string, data: NoticeUpdateRequest): Promise<void> =>
+  request.put<void>(`/api/event/admin/notices/${id}`, data)
 
 export const deleteNotice = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/notices/${id}`)

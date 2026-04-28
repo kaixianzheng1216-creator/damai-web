@@ -1,4 +1,5 @@
 import { request } from '@/api/request'
+import { normalizeEntityId, type RawEntityId } from '@/api/types'
 import type {
   VenueVO,
   VenueCreateRequest,
@@ -15,11 +16,11 @@ export const fetchAdminVenues = (): Promise<VenueVO[]> =>
 export const fetchAdminVenuesPage = (query?: VenuePageRequest): Promise<PageResponseVenueVO> =>
   request.get<PageResponseVenueVO>('/api/event/admin/venues/page', { params: query })
 
-export const createVenue = (data: VenueCreateRequest): Promise<VenueVO> =>
-  request.post<VenueVO>('/api/event/admin/venues', data)
+export const createVenue = (data: VenueCreateRequest): Promise<string> =>
+  request.post<RawEntityId>('/api/event/admin/venues', data).then(normalizeEntityId)
 
-export const updateVenue = (id: string, data: VenueUpdateRequest): Promise<VenueVO> =>
-  request.put<VenueVO>(`/api/event/admin/venues/${id}`, data)
+export const updateVenue = (id: string, data: VenueUpdateRequest): Promise<void> =>
+  request.put<void>(`/api/event/admin/venues/${id}`, data)
 
 export const deleteVenue = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/venues/${id}`)

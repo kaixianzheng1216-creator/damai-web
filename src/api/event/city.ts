@@ -1,4 +1,5 @@
 import { request } from '@/api/request'
+import { normalizeEntityId, type RawEntityId } from '@/api/types'
 import type {
   CityVO,
   CityListVO,
@@ -24,14 +25,14 @@ export const fetchAdminCities = (): Promise<CityVO[]> =>
 export const fetchAdminCitiesPage = (query?: CityPageRequest): Promise<PageResponseCityVO> =>
   request.get<PageResponseCityVO>('/api/event/admin/cities/page', { params: query })
 
-export const createCity = (data: CityCreateRequest): Promise<CityVO> =>
-  request.post<CityVO>('/api/event/admin/cities', data)
+export const createCity = (data: CityCreateRequest): Promise<string> =>
+  request.post<RawEntityId>('/api/event/admin/cities', data).then(normalizeEntityId)
 
-export const updateCity = (id: string, data: CityUpdateRequest): Promise<CityVO> =>
-  request.put<CityVO>(`/api/event/admin/cities/${id}`, data)
+export const updateCity = (id: string, data: CityUpdateRequest): Promise<void> =>
+  request.put<void>(`/api/event/admin/cities/${id}`, data)
 
 export const deleteCity = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/cities/${id}`)
 
 export const updateCityFeatured = (id: string, isFeatured: number): Promise<void> =>
-  request.put<void>(`/api/event/admin/cities/${id}/featured`, { isFeatured })
+  request.patch<void>(`/api/event/admin/cities/${id}/featured`, { isFeatured })

@@ -1,4 +1,5 @@
 import { request } from '@/api/request'
+import { normalizeEntityId, type RawEntityId } from '@/api/types'
 import type {
   AdminVO,
   AdminCreateRequest,
@@ -13,11 +14,11 @@ export const fetchAdminPage = (params: AdminPageRequest): Promise<PageResponseAd
 export const fetchAdminInfo = (): Promise<AdminVO> =>
   request.get<AdminVO>('/api/account/admin/admin/info')
 
-export const createAdmin = (data: AdminCreateRequest): Promise<AdminVO> =>
-  request.post<AdminVO>('/api/account/admin/admin', data)
+export const createAdmin = (data: AdminCreateRequest): Promise<string> =>
+  request.post<RawEntityId>('/api/account/admin/admin', data).then(normalizeEntityId)
 
-export const updateAdmin = (id: string, data: AdminUpdateRequest): Promise<AdminVO> =>
-  request.put<AdminVO>(`/api/account/admin/admin/${id}`, data)
+export const updateAdmin = (id: string, data: AdminUpdateRequest): Promise<void> =>
+  request.put<void>(`/api/account/admin/admin/${id}`, data)
 
 export const updateAdminStatus = (id: string, status: number): Promise<void> =>
-  request.put<void>(`/api/account/admin/admin/${id}/status`, { status })
+  request.put<void>(`/api/account/admin/admin/${id}/status`, status)

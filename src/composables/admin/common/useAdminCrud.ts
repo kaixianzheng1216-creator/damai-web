@@ -1,39 +1,41 @@
-import { shallowRef, reactive, computed, watch } from 'vue'
+import { shallowRef, reactive, computed, watch, type UnwrapNestedRefs } from 'vue'
 import { useQuery, useMutation, useQueryClient, type QueryKey } from '@tanstack/vue-query'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 import type { PaginatedResponse } from '@/api/types'
 
-type AdminPageParams = {
+export type AdminCrudId = string
+
+export interface AdminPageParams {
   page?: number
   size?: number
   name?: string
 }
 
 export interface UseAdminCrudOptions<
-  TItem,
-  TForm extends Record<string, unknown>,
+  TItem extends { id: AdminCrudId },
+  TForm extends object,
   TCreateRequest = TForm,
   TUpdateRequest = Partial<TForm>,
 > {
   queryKeyBase: QueryKey
   fetchPage: (params: AdminPageParams) => Promise<PaginatedResponse<TItem>>
   createItem: (data: TCreateRequest) => Promise<unknown>
-  updateItem: (id: string, data: TUpdateRequest) => Promise<unknown>
-  deleteItem: (id: string) => Promise<unknown>
+  updateItem: (id: AdminCrudId, data: TUpdateRequest) => Promise<unknown>
+  deleteItem: (id: AdminCrudId) => Promise<unknown>
   initialForm: TForm
   defaultPageSize?: number
   getDeleteConfirmMessage?: (item: TItem) => { title: string; description: string }
 }
 
-interface UseAdminCrudSubmitOptions<TForm, TCreateRequest, TUpdateRequest> {
+interface UseAdminCrudSubmitOptions<TForm extends object, TCreateRequest, TUpdateRequest> {
   validate?: () => boolean | Promise<boolean>
-  getCreateData: (form: TForm) => TCreateRequest
-  getUpdateData: (form: TForm) => TUpdateRequest
+  getCreateData: (form: Readonly<UnwrapNestedRefs<TForm>>) => TCreateRequest
+  getUpdateData: (form: Readonly<UnwrapNestedRefs<TForm>>) => TUpdateRequest
 }
 
 export function useAdminCrud<
-  TItem extends { id: string },
-  TForm extends Record<string, unknown>,
+  TItem extends { id: AdminCrudId },
+  TForm extends object,
   TCreateRequest = TForm,
   TUpdateRequest = Partial<TForm>,
 >(options: UseAdminCrudOptions<TItem, TForm, TCreateRequest, TUpdateRequest>) {
@@ -77,13 +79,18 @@ export function useAdminCrud<
   const totalPages = computed(() => data.value?.totalPage ?? 1)
 
   const showDialog = shallowRef(false)
-  const editingId = shallowRef<string | null>(null)
-  const form = reactive({ ...initialForm }) as TForm
+  const editingId = shallowRef<AdminCrudId | null>(null)
+  const createInitialForm = (): TForm => ({ ...initialForm })
+  const form = reactive(createInitialForm()) as UnwrapNestedRefs<TForm>
 
   const dialogTitle = computed(() => (editingId.value ? '编辑' : '新建'))
 
   const resetForm = () => {
-    Object.assign(form, { ...initialForm })
+    Object.assign(form, createInitialForm())
+  }
+
+  const applyFormValues = (values: Partial<TForm>) => {
+    Object.assign(form, values)
   }
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeyBase })
@@ -97,9 +104,20 @@ export function useAdminCrud<
   const openEdit = (item: TItem, mapItemToForm?: (item: TItem) => Partial<TForm>) => {
     resetForm()
     if (mapItemToForm) {
-      Object.assign(form, mapItemToForm(item))
+      applyFormValues(mapItemToForm(item))
     } else {
-      Object.assign(form, item)
+      const nextValues = Object.keys(initialForm).reduce<Partial<TForm>>((values, key) => {
+        const itemRecord = item as Record<string, unknown>
+        if (key in itemRecord) {
+          return {
+            ...values,
+            [key]: itemRecord[key],
+          }
+        }
+
+        return values
+      }, {})
+      applyFormValues(nextValues)
     }
     editingId.value = item.id
     showDialog.value = true
@@ -114,7 +132,7 @@ export function useAdminCrud<
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: TUpdateRequest }) => updateItem(id, data),
+    mutationFn: ({ id, data }: { id: AdminCrudId; data: TUpdateRequest }) => updateItem(id, data),
     onSuccess: () => {
       invalidate()
       showDialog.value = false

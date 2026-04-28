@@ -5,6 +5,12 @@ export type { ApiResponse }
 
 export type EntityId = string
 
+export type RawEntityId = string | number | bigint
+
+export function normalizeEntityId(value: RawEntityId): EntityId {
+  return String(value)
+}
+
 export interface RequestConfig extends AxiosRequestConfig {
   showError?: boolean
   rawResponse?: boolean

@@ -1,4 +1,5 @@
 import { request } from '@/api/request'
+import { normalizeEntityId, type RawEntityId } from '@/api/types'
 import type {
   EventDetailVO,
   EventPageRequest,
@@ -37,7 +38,7 @@ export const fetchEventById = (id: string): Promise<EventDetailVO> =>
   request.get<EventDetailVO>(`/api/event/admin/events/${id}`)
 
 export const createEvent = (data: EventCreateRequest): Promise<string> =>
-  request.post<string>('/api/event/admin/events', data)
+  request.post<RawEntityId>('/api/event/admin/events', data).then(normalizeEntityId)
 
 export const updateEvent = (id: string, data: EventUpdateRequest): Promise<void> =>
   request.put<void>(`/api/event/admin/events/${id}`, data)
@@ -76,10 +77,12 @@ export const createTicketType = (
   sessionId: string,
   data: TicketTypeCreateRequest,
 ): Promise<string> =>
-  request.post<string>(
-    `/api/event/admin/events/${eventId}/sessions/${sessionId}/ticket-types`,
-    data,
-  )
+  request
+    .post<RawEntityId>(
+      `/api/event/admin/events/${eventId}/sessions/${sessionId}/ticket-types`,
+      data,
+    )
+    .then(normalizeEntityId)
 
 export const updateTicketType = (
   eventId: string,

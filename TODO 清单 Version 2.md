@@ -10,7 +10,7 @@
   - 部分旧组件仍可能与新实现重复存在，例如 `TicketTypesTab.vue`、`SessionsTab.vue`。
   - 前台复杂页面已完成 `CheckoutView.vue`、`AIChatView.vue`、`ProfileView.vue`、`EventSearchView.vue` 的首轮拆分；下一步重点转向 `EventDetailView` / `useEventDetailPage`。
   - 构建已无 500KB 大 chunk 提示，`EventEditView`、`TicketListView` 仍是后续深度拆包候选。
-  - 测试已覆盖 request transforms、Admin CRUD、Checkout、Profile section、AI prompt、Event Search、Event Detail 与活动编辑核心流程。
+  - 测试已覆盖 OpenAPI 契约、request transforms、Admin CRUD、Checkout、Profile section、AI prompt、Event Search、Event Detail 与活动编辑核心流程。
 
 ## 执行原则
 
@@ -40,14 +40,16 @@
   - 决策：前端领域模型 ID 全部用 `string`，API 边界做 `number/string` 归一化。
   - 验收：新增 `normalizeId` / `normalizeIdList` 测试；禁止页面里散落 `Number(id)` / `parseInt(id)`。
   - 审计：当前 `Number` / `parseInt` 残留集中在分页、状态枚举、日期时间、select 数字值；未发现页面级 ID 转数字。
-- [ ] 把 API 层类型从“手写可用”推进到“契约可验证”。
+- [x] 把 API 层类型从“手写可用”推进到“契约可验证”。
   - 方案 A：从 OpenAPI 生成类型，手写 API 函数引用生成类型。
   - 方案 B：保留手写类型，但补一层 request/transform 单测。
   - 验收：至少覆盖活动、订单、票务、账户四个核心域的请求参数与返回类型。
-- [ ] 收紧 `useAdminCrud` 泛型。
+  - 进展：采用方案 B，新增 `apiOpenApiContract.test.ts` 直接读取 `docs/` 最新 OpenAPI，覆盖活动、订单、票务、账户/认证核心端点的路径、方法、请求体 schema、查询参数和响应 schema；修正 `ApiResponseLong` 原始 ID 统一转 string、管理员状态请求体、热门城市 `PATCH`、服务选项更新路径等契约漂移。
+- [x] 收紧 `useAdminCrud` 泛型。
   - 重点：减少 `Record<string, unknown>` 逃逸，明确 `create/update/page` 类型。
   - 验收：现有后台列表页不增加类型断言；`no-explicit-any` 可逐步开启到非 shadcn 目录。
   - 进展：已补 `useAdminCrud` 单测，覆盖分页请求、搜索重置、创建/更新/删除缓存失效与删除确认。
+  - 进展：`TForm` 从 `Record<string, unknown>` 收紧为 `object`，显式导出 `AdminCrudId` / `AdminPageParams`，提交映射函数读取 `Readonly<UnwrapNestedRefs<TForm>>`；默认编辑回填只写入表单声明过的字段，避免把整条 row 混进表单状态。
 - [x] 统一 query key 使用。
   - 重点：替换残留 `queryKey: ['xxx']`。
   - 验收：业务代码 query key 均来自 `src/constants/queryKeys.ts`，测试可按 key 精确失效缓存。

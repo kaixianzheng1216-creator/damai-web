@@ -1,4 +1,5 @@
 import { request } from '@/api/request'
+import { normalizeEntityId, type RawEntityId } from '@/api/types'
 import type {
   SeriesEventVO,
   SeriesCreateRequest,
@@ -15,11 +16,11 @@ export const fetchAdminSeries = (): Promise<SeriesEventVO[]> =>
 export const fetchAdminSeriesPage = (query?: SeriesPageRequest): Promise<PageResponseSeriesVO> =>
   request.get<PageResponseSeriesVO>('/api/event/admin/series/page', { params: query })
 
-export const createSeries = (data: SeriesCreateRequest): Promise<SeriesEventVO> =>
-  request.post<SeriesEventVO>('/api/event/admin/series', data)
+export const createSeries = (data: SeriesCreateRequest): Promise<string> =>
+  request.post<RawEntityId>('/api/event/admin/series', data).then(normalizeEntityId)
 
-export const updateSeries = (id: string, data: SeriesUpdateRequest): Promise<SeriesEventVO> =>
-  request.put<SeriesEventVO>(`/api/event/admin/series/${id}`, data)
+export const updateSeries = (id: string, data: SeriesUpdateRequest): Promise<void> =>
+  request.put<void>(`/api/event/admin/series/${id}`, data)
 
 export const deleteSeries = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/series/${id}`)

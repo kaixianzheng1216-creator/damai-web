@@ -9,7 +9,7 @@ interface TestItem {
   name: string
 }
 
-interface TestForm extends Record<string, unknown> {
+interface TestForm {
   name: string
 }
 

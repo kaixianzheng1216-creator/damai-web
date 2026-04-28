@@ -1,4 +1,5 @@
 import { request } from '@/api/request'
+import { normalizeEntityId, type RawEntityId } from '@/api/types'
 import type {
   PassengerCreateRequest,
   PassengerUpdateRequest,
@@ -14,7 +15,7 @@ export const fetchPassengerPage = (
   request.get<PageResponsePassengerVO>('/api/account/front/passenger/page', { params })
 
 export const createPassenger = (data: PassengerCreateRequest): Promise<string> =>
-  request.post<string>('/api/account/front/passenger', data)
+  request.post<RawEntityId>('/api/account/front/passenger', data).then(normalizeEntityId)
 
 export const updatePassenger = (id: string, data: PassengerUpdateRequest): Promise<void> =>
   request.put<void>(`/api/account/front/passenger/${id}`, data)

@@ -1,4 +1,5 @@
 import { request } from '@/api/request'
+import { normalizeEntityId, type RawEntityId } from '@/api/types'
 import type {
   ParticipantVO,
   ParticipantCreateRequest,
@@ -19,13 +20,11 @@ export const fetchAdminParticipantsPage = (
 ): Promise<PageResponseParticipantVO> =>
   request.get<PageResponseParticipantVO>('/api/event/admin/participants/page', { params: query })
 
-export const createParticipant = (data: ParticipantCreateRequest): Promise<ParticipantVO> =>
-  request.post<ParticipantVO>('/api/event/admin/participants', data)
+export const createParticipant = (data: ParticipantCreateRequest): Promise<string> =>
+  request.post<RawEntityId>('/api/event/admin/participants', data).then(normalizeEntityId)
 
-export const updateParticipant = (
-  id: string,
-  data: ParticipantUpdateRequest,
-): Promise<ParticipantVO> => request.put<ParticipantVO>(`/api/event/admin/participants/${id}`, data)
+export const updateParticipant = (id: string, data: ParticipantUpdateRequest): Promise<void> =>
+  request.put<void>(`/api/event/admin/participants/${id}`, data)
 
 export const deleteParticipant = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/participants/${id}`)

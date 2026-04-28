@@ -162,6 +162,9 @@ export const request = {
   put: <T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig): Promise<T> =>
     send<T>(service.put<ApiResponse<T>, AxiosResponse<ApiResponse<T>>, D>(url, data, config)),
 
+  patch: <T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig): Promise<T> =>
+    send<T>(service.patch<ApiResponse<T>, AxiosResponse<ApiResponse<T>>, D>(url, data, config)),
+
   del: <T = unknown>(url: string, config?: RequestConfig): Promise<T> =>
     send<T>(service.delete<ApiResponse<T>>(url, config)),
 }
