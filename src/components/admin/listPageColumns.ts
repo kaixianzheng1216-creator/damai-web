@@ -15,7 +15,7 @@ import type {
   VenueVO,
 } from '@/api/event'
 import type { AdminVO, UserVO } from '@/api/account'
-import type { WorkOrderVO } from '@/api/trade'
+import type { TicketOrderVO, WorkOrderVO } from '@/api/trade'
 import type { TicketVO } from '@/api/ticket/types'
 import {
   BOOLEAN_TYPE,
@@ -25,7 +25,7 @@ import {
   WORK_ORDER_STATUS,
 } from '@/constants'
 import { formatDateTime, formatPrice } from '@/utils/format'
-import { getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
+import { getOrderStatusBadgeClass, getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
 
 type RowAction<T> = (row: T) => void
 
@@ -671,6 +671,67 @@ export function createTicketColumns(): ColumnDef<TicketVO>[] {
       header: '创建时间',
       size: 160,
       cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '--'),
+    },
+  ]
+}
+
+export function createOrderColumns(options: {
+  openDetail: RowAction<TicketOrderVO>
+}): ColumnDef<TicketOrderVO>[] {
+  return [
+    { accessorKey: 'orderNo', header: '订单号', size: 200 },
+    { accessorKey: 'eventNameSnapshot', header: '活动名称' },
+    {
+      accessorKey: 'userId',
+      header: '用户 ID',
+      size: 120,
+      cell: ({ row }) => String(row.getValue('userId') ?? ''),
+    },
+    {
+      accessorKey: 'statusLabel',
+      header: '状态',
+      size: 100,
+      cell: ({ row }) =>
+        h(
+          Badge,
+          { class: getOrderStatusBadgeClass(row.original.status) },
+          () => row.original.statusLabel,
+        ),
+    },
+    {
+      accessorKey: 'totalAmount',
+      header: '金额',
+      size: 120,
+      cell: ({ row }) => formatPrice(Number(row.getValue('totalAmount') ?? 0)),
+    },
+    {
+      accessorKey: 'quantity',
+      header: '数量',
+      size: 80,
+      cell: ({ row }) => `${row.getValue('quantity') ?? 0} 张`,
+    },
+    {
+      accessorKey: 'createAt',
+      header: '创建时间',
+      size: 170,
+      cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '--'),
+    },
+    {
+      accessorKey: 'payTime',
+      header: '支付时间',
+      size: 170,
+      cell: ({ row }) => (row.original.payTime ? formatDateTime(row.original.payTime) : '--'),
+    },
+    {
+      id: 'actions',
+      header: '操作',
+      size: 100,
+      cell: ({ row }) =>
+        actionGroup([
+          actionButton('查看', 'outline', (event) =>
+            stopAndRun(event, () => options.openDetail(row.original)),
+          ),
+        ]),
     },
   ]
 }

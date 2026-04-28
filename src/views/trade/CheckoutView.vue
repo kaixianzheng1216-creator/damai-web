@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { PAYMENT_COPY } from '@/constants'
 import { Button } from '@/components/common/ui/button'
 import {
@@ -7,7 +7,14 @@ import {
   CheckoutPaymentPanel,
   CheckoutQrDialog,
 } from '@/components/features/checkout'
+import RefundDialog from '@/components/features/checkout/RefundDialog.vue'
 import { useCheckoutPage } from '@/composables/trade/useCheckoutPage'
+import { createRefund } from '@/api/trade'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue3-toastify'
+import { ORDER_STATUS, queryKeys } from '@/constants'
+
+const queryClient = useQueryClient()
 
 const {
   order,
@@ -33,6 +40,16 @@ const {
 const isCreatingPayment = computed(() => createPaymentMutation.isPending.value)
 const isCancellingOrder = computed(() => cancelTicketOrderMutation.isPending.value)
 
+const showRefundDialog = ref(false)
+
+const canRefund = computed(() => {
+  if (!order.value) return false
+  const isPaidStatus = order.value.status === ORDER_STATUS.PAID
+  const sessionTime = new Date(order.value.sessionStartAtSnapshot ?? '').getTime()
+  const isBeforeSession = Number.isFinite(sessionTime) && sessionTime > Date.now()
+  return isPaidStatus && isBeforeSession
+})
+
 const handleCreatePayment = () => {
   if (!isPending.value || isCreatingPayment.value) {
     return
@@ -48,6 +65,18 @@ const handleCancelOrder = () => {
 
   cancelTicketOrderMutation.mutate()
 }
+
+const refundMutation = useMutation({
+  mutationFn: (reason: string) => createRefund(order.value!.id, { reason }),
+  onSuccess: () => {
+    toast.success('退款申请已提交')
+    showRefundDialog.value = false
+    queryClient.invalidateQueries({ queryKey: queryKeys.trade.order(order.value!.id) })
+  },
+  onError: () => {
+    toast.error('退款申请失败，请稍后重试')
+  },
+})
 </script>
 
 <template>
@@ -73,6 +102,7 @@ const handleCancelOrder = () => {
         :is-paid="isPaid"
         :is-cancelled="isCancelled"
         :is-closed="isClosed"
+        :refunds="order.refunds"
       />
 
       <CheckoutPaymentPanel
@@ -84,9 +114,11 @@ const handleCancelOrder = () => {
         :is-closed="isClosed"
         :is-creating-payment="isCreatingPayment"
         :is-cancelling-order="isCancellingOrder"
+        :can-refund="canRefund"
         @create-payment="handleCreatePayment"
         @cancel-order="handleCancelOrder"
         @go-orders="goOrders"
+        @refund="showRefundDialog = true"
       />
 
       <CheckoutQrDialog
@@ -96,5 +128,12 @@ const handleCancelOrder = () => {
         :trade-no="tradeNo"
       />
     </div>
+
+    <RefundDialog
+      :open="showRefundDialog"
+      :loading="refundMutation.isPending.value"
+      @submit="refundMutation.mutate"
+      @close="showRefundDialog = false"
+    />
   </div>
 </template>

@@ -21,6 +21,7 @@ const props = defineProps<{
   isClosed: boolean
   isCreatingPayment: boolean
   isCancellingOrder: boolean
+  canRefund?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -29,6 +30,7 @@ const emit = defineEmits<{
   createPayment: []
   cancelOrder: []
   goOrders: []
+  refund: []
 }>()
 
 const selectedMethodModel = computed({
@@ -131,6 +133,15 @@ const selectChannel = (value: number, disabled?: boolean) => {
       >
         <icon-lucide-loader2 v-if="isCancellingOrder" class="mr-2 h-4 w-4 animate-spin" />
         {{ PAYMENT_COPY.cancelOrder }}
+      </Button>
+      <Button
+        v-else-if="isPaid && canRefund"
+        variant="outline"
+        class="w-full"
+        @click="$emit('refund')"
+      >
+        <icon-lucide-undo-2 class="mr-2 h-4 w-4" />
+        申请退款
       </Button>
       <Button v-else variant="outline" class="w-full" disabled>
         <icon-lucide-check-circle class="mr-2 h-4 w-4" />

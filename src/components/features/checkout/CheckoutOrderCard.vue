@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { TicketOrderVO } from '@/api/trade'
+import type { TicketOrderVO, RefundVO } from '@/api/trade'
 import { PAYMENT_COPY } from '@/constants'
 import { formatDateTime, formatPrice } from '@/utils/format'
 import { Badge } from '@/components/common/ui/badge'
+import { Card, CardContent } from '@/components/common/ui/card'
 
 defineProps<{
   order: TicketOrderVO
@@ -12,6 +13,7 @@ defineProps<{
   isPaid: boolean
   isCancelled: boolean
   isClosed: boolean
+  refunds?: RefundVO[]
 }>()
 </script>
 
@@ -90,6 +92,36 @@ defineProps<{
       <p v-else-if="isCancelled || isClosed" class="mt-2 text-xs text-muted-foreground">
         {{ PAYMENT_COPY.closedDesc }}
       </p>
+    </div>
+
+    <div v-if="refunds?.length" class="mt-6 border-t border-border pt-6">
+      <p class="text-sm font-medium text-muted-foreground mb-3">退款记录</p>
+      <div class="space-y-3">
+        <Card v-for="refund in refunds" :key="refund.id" class="bg-muted/30 border-0">
+          <CardContent class="p-4 space-y-2 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">退款单号</span>
+              <span class="font-mono">{{ refund.refundNo }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">退款金额</span>
+              <span class="font-medium text-primary">{{ formatPrice(refund.amount) }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">退款状态</span>
+              <Badge variant="outline">{{ refund.statusLabel }}</Badge>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">申请时间</span>
+              <span>{{ formatDateTime(refund.createAt) }}</span>
+            </div>
+            <div v-if="refund.reason" class="pt-2 border-t border-border/50">
+              <span class="text-muted-foreground">退款原因</span>
+              <p class="mt-1 text-foreground">{{ refund.reason }}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   </section>
 </template>

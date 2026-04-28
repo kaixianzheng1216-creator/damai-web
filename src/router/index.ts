@@ -40,12 +40,6 @@ const router = createRouter({
           meta: { title: '结算', requiresAuth: true },
         },
         {
-          path: 'order/:id',
-          name: 'order-detail',
-          component: () => import('@/views/trade/OrderDetailView.vue'),
-          meta: { title: '订单详情', requiresAuth: true },
-        },
-        {
           path: 'ticket/:id',
           name: 'ticket-detail',
           component: () => import('@/views/ticket/TicketDetailView.vue'),
@@ -159,6 +153,12 @@ const router = createRouter({
           name: 'admin-tickets',
           component: () => import('@/views/admin/TicketListView.vue'),
           meta: { title: '电子票管理' },
+        },
+        {
+          path: 'orders',
+          name: 'admin-orders',
+          component: () => import('@/views/admin/OrderListView.vue'),
+          meta: { title: '订单管理' },
         },
         {
           path: 'work-orders',

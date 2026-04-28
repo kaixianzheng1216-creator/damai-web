@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   MapPin,
   MessageCircle,
+  ShoppingCart,
   Tags,
   Ticket,
   UserCircle,
@@ -111,6 +112,14 @@ export const adminModules: AdminModuleItem[] = [
     label: '电子票管理',
     path: '/admin/tickets',
     icon: Ticket,
+    showInDashboard: true,
+  },
+  {
+    key: 'orders',
+    title: '订单管理',
+    label: '订单管理',
+    path: '/admin/orders',
+    icon: ShoppingCart,
     showInDashboard: true,
   },
   {

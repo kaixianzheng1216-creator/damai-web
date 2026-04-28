@@ -1,4 +1,4 @@
-export type OrderFilterKey = 'all' | 'pending' | 'paid' | 'done' | 'cancel'
+export type OrderFilterKey = 'all' | 'pending' | 'paid' | 'done' | 'cancel' | 'refunded'
 export type WorkOrderFilterKey = 'all' | 'pending' | 'processing' | 'closed'
 
 export interface OrderFilterOption {
@@ -41,6 +41,7 @@ export const ORDER_FILTER_OPTIONS: OrderFilterOption[] = [
   { key: 'paid', label: '已支付' },
   { key: 'done', label: '已完成' },
   { key: 'cancel', label: '已取消' },
+  { key: 'refunded', label: '已退款' },
 ]
 
 export const ORDER_STATUS_BY_FILTER: Partial<Record<Exclude<OrderFilterKey, 'all'>, number>> = {
@@ -48,6 +49,7 @@ export const ORDER_STATUS_BY_FILTER: Partial<Record<Exclude<OrderFilterKey, 'all
   paid: ORDER_STATUS.PAID,
   done: ORDER_STATUS.REFUNDED,
   cancel: ORDER_STATUS.CANCELLED,
+  refunded: ORDER_STATUS.REFUNDED,
 }
 
 export const WORK_ORDER_FILTER_OPTIONS: WorkOrderFilterOption[] = [

@@ -1,12 +1,7 @@
 import { computed, reactive, ref } from 'vue'
 import { z } from 'zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import {
-  fetchPassengerPage,
-  createPassenger,
-  updatePassenger,
-  deletePassenger,
-} from '@/api/account'
+import { fetchPassengerPage, createPassenger, deletePassenger } from '@/api/account'
 import { PASSENGER_CERT_TYPES } from '@/constants'
 import { mapPassengerToPassengerItem } from '@/utils/mappers'
 import { queryKeys } from '@/constants'
@@ -25,7 +20,6 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
   const showPassengerModal = ref(false)
   const showDeletePassengerModal = ref(false)
 
-  const editingPassengerId = ref<string | null>(null)
   const deletingPassengerId = ref<string | null>(null)
 
   const passengerError = ref('')
@@ -80,20 +74,6 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
     },
   })
 
-  const updatePassengerMutation = useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string
-      data: { name: string; idType: number; idNo: string }
-    }) => updatePassenger(id, data),
-    onSuccess: refreshPassengerList,
-    onError: () => {
-      passengerError.value = '更新失败，请重试'
-    },
-  })
-
   const deletePassengerMutation = useMutation({
     mutationFn: deletePassenger,
     onSuccess: refreshPassengerList,
@@ -109,22 +89,10 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
       certNo: '',
     })
     passengerError.value = ''
-    editingPassengerId.value = null
   }
 
   const openCreatePassengerModal = () => {
     resetPassengerForm()
-    showPassengerModal.value = true
-  }
-
-  const openEditPassengerModal = (passenger: PassengerItem) => {
-    editingPassengerId.value = passenger.id
-    Object.assign(passengerForm, {
-      name: passenger.name,
-      certType: passenger.certType,
-      certNo: passenger.certNo,
-    })
-    passengerError.value = ''
     showPassengerModal.value = true
   }
 
@@ -147,14 +115,7 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
     }
 
     try {
-      if (editingPassengerId.value) {
-        await updatePassengerMutation.mutateAsync({
-          id: editingPassengerId.value,
-          data: requestData,
-        })
-      } else {
-        await createPassengerMutation.mutateAsync(requestData)
-      }
+      await createPassengerMutation.mutateAsync(requestData)
       closePassengerModal()
     } catch {
       // Error handled by mutation onError
@@ -195,11 +156,9 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
     passengerKeyword,
     showPassengerModal,
     showDeletePassengerModal,
-    editingPassengerId,
     passengerError,
     passengerForm,
     openCreatePassengerModal,
-    openEditPassengerModal,
     closePassengerModal,
     submitPassenger,
     openDeletePassengerModal,

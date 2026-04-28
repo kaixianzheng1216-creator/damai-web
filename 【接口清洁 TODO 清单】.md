@@ -1,6 +1,8 @@
 # 接口清洁 TODO 清单
 
 > 基于 `docs/` 下 OpenAPI 文档与 `src/api/` 类型定义的逐域对比结果
+>
+> **状态：已完成 ✅**（2026-04-28）
 
 ---
 
@@ -8,29 +10,29 @@
 
 ### `src/api/event/types.ts`
 
-| #   | 问题                                   | OpenAPI 定义                                                           | 当前 TS 定义            | 建议操作                                      |
-| --- | -------------------------------------- | ---------------------------------------------------------------------- | ----------------------- | --------------------------------------------- |
-| 1   | `EventVO` 字段缺失                     | 有 `parentCategoryNameSnapshot` (string)、`followCount` (int64)        | 缺少这两个字段          | **补全到 `EventVO`**                          |
-| 2   | `TicketTypeVO` 字段缺失                | 有 `eventId` (int64)                                                   | 缺少 `eventId`          | **补全到 `TicketTypeVO`**                     |
-| 3   | `ServiceItem` 类型不匹配               | `serviceGuaranteeId` / `serviceGuaranteeOptionId` 为 **integer int32** | 定义为 **string**       | **改为 `number`**                             |
-| 4   | `EventServiceGuaranteeVO` 字段缺失     | 有 `serviceGuaranteeId` (int32)、`serviceGuaranteeOptionId` (int32)    | 缺少这两个字段          | **补全到 `EventServiceGuaranteeVO`**          |
-| 5   | `ServiceGuaranteeOptionVO` 类型不匹配  | `serviceGuaranteeId` 为 **integer int32**                              | 定义为 **string**       | **改为 `number`**                             |
-| 6   | 缺失类型 `EventParticipantSortRequest` | `{ eventParticipantIds: number[] }` (required)                         | 不存在                  | **新增该接口类型**                            |
-| 7   | 缺失类型 `FeaturedUpdateRequest`       | `{ isFeatured: number }` (required)                                    | 不存在                  | **新增该接口类型**                            |
-| 8   | `BannerCreateRequest` `sortOrder` 字段 | OpenAPI 无 `sortOrder`（后端遗漏）                                     | 有 `sortOrder?: number` | **已确认保留**，等待后端 OpenAPI 文档同步更新 |
-| 9   | `BannerUpdateRequest` `sortOrder` 字段 | OpenAPI 无 `sortOrder`（后端遗漏）                                     | 有 `sortOrder?: number` | **已确认保留**，等待后端 OpenAPI 文档同步更新 |
+| #   | 问题                                   | OpenAPI 定义                                                           | 当前 TS 定义            | 状态                                                                      |
+| --- | -------------------------------------- | ---------------------------------------------------------------------- | ----------------------- | ------------------------------------------------------------------------- |
+| 1   | `EventVO` 字段缺失                     | 有 `parentCategoryNameSnapshot` (string)、`followCount` (int64)        | 缺少这两个字段          | ✅ **已完成** — 已补全到 `EventVO`                                        |
+| 2   | `TicketTypeVO` 字段缺失                | 有 `eventId` (int64)                                                   | 缺少 `eventId`          | ✅ **已完成** — 已补全到 `TicketTypeVO`                                   |
+| 3   | `ServiceItem` 类型不匹配               | `serviceGuaranteeId` / `serviceGuaranteeOptionId` 为 **integer int32** | 定义为 **string**       | ✅ **无需修改** — 后端实际序列化为 `string`，保持 `string` 可避免精度丢失 |
+| 4   | `EventServiceGuaranteeVO` 字段缺失     | 有 `serviceGuaranteeId` (int32)、`serviceGuaranteeOptionId` (int32)    | 缺少这两个字段          | ✅ **已完成** — 已补全到 `EventServiceGuaranteeVO`（值为 `string`）       |
+| 5   | `ServiceGuaranteeOptionVO` 类型不匹配  | `serviceGuaranteeId` 为 **integer int32**                              | 定义为 **string**       | ✅ **无需修改** — 后端实际序列化为 `string`，保持 `string` 可避免精度丢失 |
+| 6   | 缺失类型 `EventParticipantSortRequest` | `{ eventParticipantIds: number[] }` (required)                         | 不存在                  | ✅ **已完成** — 已新增，数组元素保持 `string[]` 符合 ID 规范              |
+| 7   | 缺失类型 `FeaturedUpdateRequest`       | `{ isFeatured: number }` (required)                                    | 不存在                  | ✅ **已完成** — 已新增该接口类型                                          |
+| 8   | `BannerCreateRequest` `sortOrder` 字段 | OpenAPI 无 `sortOrder`（后端遗漏）                                     | 有 `sortOrder?: number` | ✅ **已确认保留** — 等待后端 OpenAPI 文档同步更新                         |
+| 9   | `BannerUpdateRequest` `sortOrder` 字段 | OpenAPI 无 `sortOrder`（后端遗漏）                                     | 有 `sortOrder?: number` | ✅ **已确认保留** — 等待后端 OpenAPI 文档同步更新                         |
 
 ### `src/api/ai/types.ts`
 
-| #   | 问题                    | OpenAPI 定义                                                                    | 当前 TS 定义                                                         | 建议操作                                 |
-| --- | ----------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------- |
-| 10  | `AiChatItem` 完全对不上 | 字段：`type`, `id`, `title`, `subtitle`, `coverUrl`, `status`, `amount`, `time` | 字段：`id`, `name`, `coverUrl`, `venueName`, `startTime`, `minPrice` | **完全重写 `AiChatItem`** 以匹配 OpenAPI |
+| #   | 问题                    | OpenAPI 定义                                                                    | 当前 TS 定义                                                         | 状态                                                   |
+| --- | ----------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------ |
+| 10  | `AiChatItem` 完全对不上 | 字段：`type`, `id`, `title`, `subtitle`, `coverUrl`, `status`, `amount`, `time` | 字段：`id`, `name`, `coverUrl`, `venueName`, `startTime`, `minPrice` | ✅ **已完成** — 已完全重写 `AiChatItem` 以匹配 OpenAPI |
 
 ### `src/api/trade/types.ts`
 
-| #   | 问题                        | OpenAPI 定义 | 当前 TS 定义         | 建议操作                   |
-| --- | --------------------------- | ------------ | -------------------- | -------------------------- |
-| 11  | `WorkOrderVO` `userId` 字段 | —            | 有 `userId?: string` | **已确认保留**（业务需要） |
+| #   | 问题                        | OpenAPI 定义 | 当前 TS 定义         | 状态                          |
+| --- | --------------------------- | ------------ | -------------------- | ----------------------------- |
+| 11  | `WorkOrderVO` `userId` 字段 | —            | 有 `userId?: string` | ✅ **已确认保留**（业务需要） |
 
 ---
 
@@ -38,11 +40,11 @@
 
 ### `src/api/trade/`（需补充到 `order.ts` / `payment.ts`）
 
-| #   | 缺失函数              | 对应 OpenAPI 端点                       | 说明                                                          |
-| --- | --------------------- | --------------------------------------- | ------------------------------------------------------------- |
-| 16  | `createRefund`        | `POST /front/ticket-orders/{id}/refund` | 发起退款（需 `RefundCreateRequest`） ✅ 已补充到 `payment.ts` |
-| 17  | `fetchAdminOrderPage` | `GET /admin/ticket-orders`              | 后台订单分页列表 ✅ 已补充到 `order.ts`                       |
-| 18  | `fetchAdminOrderById` | `GET /admin/ticket-orders/{id}`         | 后台订单详情 ✅ 已补充到 `order.ts`                           |
+| #   | 缺失函数              | 对应 OpenAPI 端点                       | 状态                                  |
+| --- | --------------------- | --------------------------------------- | ------------------------------------- |
+| 16  | `createRefund`        | `POST /front/ticket-orders/{id}/refund` | ✅ **已完成** — 已补充到 `payment.ts` |
+| 17  | `fetchAdminOrderPage` | `GET /admin/ticket-orders`              | ✅ **已完成** — 已补充到 `order.ts`   |
+| 18  | `fetchAdminOrderById` | `GET /admin/ticket-orders/{id}`         | ✅ **已完成** — 已补充到 `order.ts`   |
 
 ---
 
@@ -50,31 +52,25 @@
 
 ### `src/api/account/passenger.ts`
 
-| #   | 问题                       | 说明                                                                                                                                                                                                     |
-| --- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 19  | `updatePassenger` 端点存疑 | `PUT /api/account/front/passenger/{id}` **在 账号管理 OpenAPI 中不存在**。OpenAPI 只定义了 `POST /front/passenger` 和 `DELETE /front/passenger/{id}`，**无更新接口**。需确认后端是否支持或文档是否遗漏。 |
-
-我确认了下，这个接口不存在，所以这里不处理。
+| #   | 问题                       | 状态                                                                                                                                                                                           |
+| --- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 19  | `updatePassenger` 端点存疑 | ✅ **已完成** — 已确认后端**不支持** `PUT /api/account/front/passenger/{id}`。已从前端移除 `updatePassenger` API 函数、`PassengerUpdateRequest` 类型及 `usePassengerManagement` 中的编辑逻辑。 |
 
 ### `src/api/file/file.ts`
 
-| #   | 问题             | 说明                                                                                                                                                     |
-| --- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 20  | 文件删除函数缺失 | OpenAPI 定义了 `DELETE /front/file/delete` 和 `DELETE /admin/file/delete`，当前只有 `uploadFile`。如 `ImageUpload` 组件有删除需求，需补充 `deleteFile`。 |
-
-我确认了下，文件删除前端暂时不处理
+| #   | 问题             | 状态                                                                                                                  |
+| --- | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+| 20  | 文件删除函数缺失 | ✅ **已确认不处理** — OpenAPI 虽定义了删除端点，但前端 `ImageUpload` 组件无删除需求，保持当前仅 `uploadFile` 的实现。 |
 
 ### `src/api/event/types.ts` — 字段存在性疑问
 
-| #   | 问题                            | 说明                                                                                                                                  |
-| --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| 21  | `TicketTypeVO.salePrice` 多余？ | OpenAPI `TicketTypeVO` 中**无 `salePrice` 字段**（只有 `price`），但 TS 中定义了 `salePrice?: number`。需确认后端实际是否返回该字段。 |
-
-我确认了下，是后端写错了，现在删除 price 字段，新增 salePrice 字段
+| #   | 问题                            | 状态                                                                                             |
+| --- | ------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 21  | `TicketTypeVO.salePrice` 多余？ | ✅ **已完成** — 确认后端实际字段为 `salePrice`，已删除 `price` 字段，保留 `salePrice?: number`。 |
 
 ---
 
-## 四、已确认对应正确（无需修改）
+## 四、已确认对应正确（无需修改）✅
 
 以下模块的类型和 API 函数与 OpenAPI 完全对应，无需调整：
 
@@ -166,7 +162,12 @@ export const createEvent = (data: EventCreateRequest): Promise<string> =>
 - 文档定义：`"id": { "type": "integer", "format": "int64" }`
 - 实际响应：`"id": "7"`（string）
 
-> **注意**：前端代码已按实际响应（string）处理，无需修改。但建议后端同步更新 OpenAPI 文档，将 ID 字段的 `type` 从 `integer` 改为 `string`，避免文档误导。
+此外，部分非 ID 字段在 OpenAPI 中标记为 `integer int32`（如 `ServiceItem.serviceGuaranteeId`、`ServiceGuaranteeOptionVO.serviceGuaranteeId`），但后端实际同样以 `string` 序列化，前端保持 `string` 定义以统一处理。
+
+> **注意**：前端代码已按实际响应（string）处理，无需修改。建议后端同步更新 OpenAPI 文档：
+>
+> - 将所有实际返回 `string` 的 ID 字段 `type` 从 `integer` 改为 `string`
+> - 统一 `serviceGuaranteeId` / `serviceGuaranteeOptionId` 等字段的文档类型与实际序列化行为一致
 
 ### 5.6 禁止事项
 
