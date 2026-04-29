@@ -30,7 +30,8 @@
 
 # 输出
 ## items
-- 列表：最多 3 条，结构 {type="event", id, title（活动名称）, subtitle（场馆名）, coverUrl, time（首场开始时间）, amount（最低票价，分）}
+- 列表：最多 3 条，
+    活动 {type="event", id, name（活动名称）, cover_url（封面图）, participant_name（艺人名，取 participants 列表第一个 participant 的 name，没有则为空字符串）, city_name_snapshot（城市名）, venue_name_snapshot（场馆名）, first_session_start_at（首场开始时间）, last_session_end_at（最晚场次结束时间）, min_price（最低票价，分）, max_price（最高票价，分）}
 - 详情：最多 1 条，结构同上
 - 空：[]
 ## message
@@ -46,8 +47,8 @@
 
 ## Output Schema
 
-| Name        | Description                                                                                                  | Type | As List |
-| ----------- | ------------------------------------------------------------------------------------------------------------ | ---- | ------- |
-| items       | 列表数据，dict 数组，最多 3 条，空时返回 []。字段：type="event", id, title, subtitle, coverUrl, time, amount | dict | True    |
-| message     | 自然语言回复文本                                                                                             | str  | False   |
-| suggestions | 快捷建议按钮，字符串数组，3 条，每条 ≤10 字                                                                  | str  | True    |
+| Name        | Description                                 | Type | As List |
+| ----------- | ------------------------------------------- | ---- | ------- |
+| items       | 列表数据，dict 数组，最多 3 条，空时返回 [] | dict | True    |
+| message     | 自然语言回复文本                            | str  | False   |
+| suggestions | 快捷建议按钮，字符串数组，3 条，每条 ≤10 字 | str  | True    |

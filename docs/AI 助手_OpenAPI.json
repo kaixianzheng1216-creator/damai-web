@@ -52,20 +52,17 @@
           "flowName": {
             "type": "string",
             "description": "Flow 名称: assistant-首页助手, support-客服工单",
-            "minLength": 1,
-            "refType": null
+            "minLength": 1
           },
           "message": {
             "type": "string",
             "description": "用户消息",
-            "minLength": 1,
-            "refType": null
+            "minLength": 1
           },
           "sessionId": {
             "type": "string",
             "description": "会话 ID，同一会话需传入相同值",
-            "minLength": 1,
-            "refType": null
+            "minLength": 1
           }
         },
         "required": [
@@ -74,77 +71,28 @@
           "sessionId"
         ]
       },
-      "AiChatItem": {
-        "type": "object",
-        "description": "AI 返回的条目",
-        "properties": {
-          "type": {
-            "type": "string",
-            "description": "条目类型: event-活动, order-订单, ticket-电子票",
-            "refType": null
-          },
-          "id": {
-            "type": "string",
-            "description": "ID",
-            "refType": null
-          },
-          "title": {
-            "type": "string",
-            "description": "标题（活动名称/订单关联活动名）",
-            "refType": null
-          },
-          "subtitle": {
-            "type": "string",
-            "description": "副标题（场馆名/订单号/票号）",
-            "refType": null
-          },
-          "coverUrl": {
-            "type": "string",
-            "description": "封面图 URL",
-            "refType": null
-          },
-          "status": {
-            "type": "string",
-            "description": "状态标签",
-            "refType": null
-          },
-          "amount": {
-            "type": "integer",
-            "format": "int32",
-            "description": "金额（分）",
-            "refType": null
-          },
-          "time": {
-            "type": "string",
-            "description": "时间（场次开始时间等）",
-            "refType": null
-          }
-        }
-      },
       "AiChatResponse": {
         "type": "object",
         "description": "AI 对话响应",
         "properties": {
           "message": {
             "type": "string",
-            "description": "AI 回复消息",
-            "refType": null
+            "description": "AI 回复消息"
           },
           "items": {
             "type": "array",
-            "description": "相关活动",
+            "description": "列表数据",
             "items": {
-              "$ref": "#/components/schemas/AiChatItem"
-            },
-            "refType": "AiChatItem"
+              "type": "object",
+              "additionalProperties": {}
+            }
           },
           "suggestions": {
             "type": "array",
             "description": "建议选项按钮",
             "items": {
               "type": "string"
-            },
-            "refType": "string"
+            }
           }
         }
       },
