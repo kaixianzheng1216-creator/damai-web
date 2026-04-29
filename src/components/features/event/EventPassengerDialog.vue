@@ -22,7 +22,7 @@ interface PassengerSlot {
   passengerId: string | null
 }
 
-defineProps<{
+const props = defineProps<{
   open: boolean
   passengers: PassengerItem[]
   passengerKeyword: string
@@ -45,11 +45,20 @@ const handleUpdateSlot = (index: number, value: unknown) => {
   const id = value ? String(value) : null
   emit('update-slot', { index, passengerId: id })
 }
+
+const handleOpenChange = (value: boolean) => {
+  if (!value && !props.isSubmitting) {
+    emit('close')
+  }
+}
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="(val) => !val && emit('close')">
-    <DialogContent class="w-[calc(100vw-2rem)] max-w-lg sm:max-w-lg">
+  <Dialog :open="open" @update:open="handleOpenChange">
+    <DialogContent
+      class="w-[calc(100vw-2rem)] max-w-lg sm:max-w-lg"
+      :show-close-button="!isSubmitting"
+    >
       <DialogHeader>
         <DialogTitle>选择购票人</DialogTitle>
         <DialogDescription>请确认本次订单对应的实名购票人。</DialogDescription>
@@ -117,8 +126,11 @@ const handleUpdateSlot = (index: number, value: unknown) => {
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="emit('close')">取消</Button>
+        <Button type="button" variant="outline" :disabled="isSubmitting" @click="emit('close')">
+          取消
+        </Button>
         <Button
+          type="button"
           :disabled="
             isSubmitting ||
             !canSubmitOrder ||

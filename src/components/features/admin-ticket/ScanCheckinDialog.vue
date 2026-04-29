@@ -107,6 +107,9 @@ const resetAndRestart = () => {
 }
 
 const handleOpen = (val: boolean) => {
+  if (!val && isSubmitting.value) {
+    return
+  }
   if (!val) {
     stopScanner()
   }
@@ -133,7 +136,11 @@ onUnmounted(stopScanner)
 
 <template>
   <Dialog :open="open" @update:open="handleOpen">
-    <DialogContent class="w-[calc(100vw-2rem)] max-w-md" @open-auto-focus.prevent>
+    <DialogContent
+      class="w-[calc(100vw-2rem)] max-w-md"
+      :show-close-button="!isSubmitting"
+      @open-auto-focus.prevent
+    >
       <DialogHeader>
         <DialogTitle>扫码检票</DialogTitle>
       </DialogHeader>

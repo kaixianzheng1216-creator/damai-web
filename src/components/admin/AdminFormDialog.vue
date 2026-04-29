@@ -40,15 +40,21 @@ const contentClass = computed(() =>
   cn('w-[calc(100vw-2rem)] max-w-md overflow-hidden sm:max-w-md', props.contentClass),
 )
 
-const handleCancel = () => {
-  open.value = false
-  emit('cancel')
+const handleOpenChange = (value: boolean) => {
+  if (!value && props.isSaving) {
+    return
+  }
+
+  open.value = value
+  if (!value) {
+    emit('cancel')
+  }
 }
 </script>
 
 <template>
-  <Dialog v-model:open="open">
-    <DialogContent :class="contentClass">
+  <Dialog :open="open" @update:open="handleOpenChange">
+    <DialogContent :class="contentClass" :show-close-button="!isSaving">
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription :class="description ? undefined : 'sr-only'">
@@ -61,7 +67,12 @@ const handleCancel = () => {
       </div>
 
       <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <Button type="button" variant="outline" :disabled="isSaving" @click="handleCancel">
+        <Button
+          type="button"
+          variant="outline"
+          :disabled="isSaving"
+          @click="handleOpenChange(false)"
+        >
           {{ cancelText }}
         </Button>
         <Button type="button" :disabled="isSaving" @click="emit('submit')">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
 import { Label } from '@/components/common/ui/label'
 import { Checkbox } from '@/components/common/ui/checkbox'
@@ -8,9 +9,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/common/ui/dialog'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import type { EventServiceGuaranteeVO } from '@/api/event'
 import { useEventServicesTab } from '@/composables/admin'
@@ -45,6 +48,14 @@ const {
   eventServices: () => props.eventServices,
   onUpdated: () => emit('updated'),
 })
+
+const isSavingServices = computed(() => batchAddServicesMutation.isPending.value)
+
+const handleServiceDialogOpenChange = (value: boolean) => {
+  if (!value && !isSavingServices.value) {
+    showServiceDialog.value = false
+  }
+}
 </script>
 
 <template>
@@ -56,9 +67,7 @@ const {
       </div>
     </CardHeader>
     <CardContent>
-      <div v-if="eventServices.length === 0" class="text-center py-4 text-muted-foreground">
-        暂无服务保障
-      </div>
+      <EmptyState v-if="eventServices.length === 0" class="min-h-32" title="暂无服务保障" />
       <div v-else class="space-y-3">
         <div
           v-for="service in eventServices"
@@ -83,10 +92,14 @@ const {
     </CardContent>
   </Card>
 
-  <Dialog :open="showServiceDialog" @update:open="(v) => !v && (showServiceDialog = false)">
-    <DialogContent class="w-[calc(100vw-2rem)] max-w-2xl sm:max-w-2xl">
+  <Dialog :open="showServiceDialog" @update:open="handleServiceDialogOpenChange">
+    <DialogContent
+      class="w-[calc(100vw-2rem)] max-w-2xl sm:max-w-2xl"
+      :show-close-button="!isSavingServices"
+    >
       <DialogHeader class="pb-4">
         <DialogTitle class="text-lg font-semibold">选择服务保障</DialogTitle>
+        <DialogDescription>为活动配置前台展示的服务保障和说明选项。</DialogDescription>
       </DialogHeader>
       <div class="max-h-[60vh] overflow-y-auto pr-1">
         <div
@@ -135,13 +148,16 @@ const {
         </div>
       </div>
       <DialogFooter class="pt-4">
-        <Button type="button" variant="outline" @click="showServiceDialog = false">取消</Button>
         <Button
           type="button"
-          :disabled="batchAddServicesMutation.isPending.value"
-          @click="handleSaveServices"
+          variant="outline"
+          :disabled="isSavingServices"
+          @click="handleServiceDialogOpenChange(false)"
         >
-          {{ batchAddServicesMutation.isPending.value ? '保存中...' : '保存' }}
+          取消
+        </Button>
+        <Button type="button" :disabled="isSavingServices" @click="handleSaveServices">
+          {{ isSavingServices ? '保存中...' : '保存' }}
         </Button>
       </DialogFooter>
     </DialogContent>

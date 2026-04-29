@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
 import { useHomePage } from '@/composables/home/useHomePage'
+import ErrorState from '@/components/common/ErrorState.vue'
 
 const AIAssistant = defineAsyncComponent(() => import('@/components/common/AIAssistant.vue'))
 
@@ -14,9 +15,7 @@ const { banners, categories, eventSections, isLoading, isError } = useHomePage()
       <p class="animate-pulse text-muted-foreground">正在为您加载精彩演出...</p>
     </div>
 
-    <div v-else-if="isError" class="flex h-[60vh] items-center justify-center text-destructive">
-      加载失败，请稍后重试
-    </div>
+    <ErrorState v-else-if="isError" class="min-h-[60vh]" />
 
     <template v-else>
       <HomeBanner :banners="banners" />

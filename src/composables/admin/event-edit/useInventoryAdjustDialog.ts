@@ -17,6 +17,7 @@ interface UseInventoryAdjustDialogOptions {
 export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOptions) {
   const queryClient = useQueryClient()
   const adjustQty = ref(0)
+  const adjustError = ref('')
 
   const invalidateAll = () => {
     queryClient.invalidateQueries({
@@ -29,6 +30,7 @@ export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOption
     ([open]) => {
       if (open) {
         adjustQty.value = 0
+        adjustError.value = ''
       }
     },
   )
@@ -43,11 +45,13 @@ export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOption
     }) => adjustTicketTypeInventory(toValue(options.eventId), ticketTypeId, data),
     onSuccess: () => {
       toast.success('库存调整成功')
+      adjustError.value = ''
       options.onOpenChange(false)
       invalidateAll()
       options.onSaved()
     },
     onError: () => {
+      adjustError.value = '调整失败，请重试'
       toast.error('调整失败')
     },
   })
@@ -55,10 +59,12 @@ export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOption
   const handleAdjustInventory = async () => {
     const ticketType = toValue(options.ticketType)
     if (!ticketType || adjustQty.value === 0) {
+      adjustError.value = '请输入非 0 的调整数量'
       toast.error('请输入调整数量')
       return
     }
 
+    adjustError.value = ''
     await adjustInventoryMutation.mutateAsync({
       ticketTypeId: ticketType.id,
       data: { adjustQty: adjustQty.value },
@@ -67,6 +73,7 @@ export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOption
 
   return {
     adjustQty,
+    adjustError,
     adjustInventoryMutation,
     handleAdjustInventory,
   }

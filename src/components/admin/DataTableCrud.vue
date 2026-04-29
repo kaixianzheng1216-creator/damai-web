@@ -20,6 +20,7 @@ import {
   TableRow,
 } from '@/components/common/ui/table'
 import { Card, CardContent } from '@/components/common/ui/card'
+import EmptyState from '@/components/common/EmptyState.vue'
 
 interface Props<TData> {
   data: TData[]
@@ -182,10 +183,7 @@ const handleLastPage = () => {
           </template>
           <TableRow v-else-if="!loading">
             <TableCell :colspan="table.getAllColumns().length" class="py-16 text-center">
-              <div class="flex flex-col items-center gap-2">
-                <icon-lucide-inbox class="h-10 w-10 opacity-30" />
-                <span class="text-muted-sm">暂无数据</span>
-              </div>
+              <EmptyState class="min-h-36 py-0" title="暂无数据" />
             </TableCell>
           </TableRow>
         </TableBody>
@@ -228,10 +226,7 @@ const handleLastPage = () => {
         </slot>
       </template>
       <div v-else-if="!loading" class="flex min-h-80 flex-center">
-        <div class="text-center text-muted-foreground">
-          <icon-lucide-inbox class="mx-auto h-12 w-12 mb-2" />
-          <p>暂无数据</p>
-        </div>
+        <EmptyState class="min-h-80" title="暂无数据" />
       </div>
     </div>
 

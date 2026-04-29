@@ -10,6 +10,8 @@ import {
 } from '@/components/common/ui/pagination'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar'
 import { Button } from '@/components/common/ui/button'
+import EmptyState from '@/components/common/EmptyState.vue'
+import ErrorState from '@/components/common/ErrorState.vue'
 import SearchResultListItem from '@/components/features/search/SearchResultListItem.vue'
 
 const {
@@ -30,12 +32,12 @@ const {
       <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
     </div>
 
-    <div
+    <ErrorState
       v-else-if="participantQuery.isError.value"
-      class="flex min-h-[200px] flex-center text-destructive"
-    >
-      加载失败，请稍后重试
-    </div>
+      class="min-h-[200px]"
+      title="参与方加载失败"
+      description="请稍后重试"
+    />
 
     <template v-else-if="participantQuery.data.value">
       <section class="mb-8">
@@ -90,19 +92,18 @@ const {
             <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
           </div>
 
-          <div
+          <ErrorState
             v-else-if="eventsQuery.isError.value"
-            class="flex min-h-[420px] flex-center text-destructive"
-          >
-            加载失败，请稍后重试
-          </div>
+            class="min-h-[420px]"
+            title="活动加载失败"
+            description="请稍后重试"
+          />
 
-          <div
+          <EmptyState
             v-else-if="!eventsQuery.data.value?.records.length"
-            class="flex min-h-[420px] flex-center text-muted-foreground"
-          >
-            暂无相关活动
-          </div>
+            class="min-h-[420px]"
+            title="暂无相关活动"
+          />
 
           <div v-else class="px-4">
             <SearchResultListItem

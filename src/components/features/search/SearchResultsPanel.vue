@@ -11,6 +11,8 @@ import {
 } from '@/components/common/ui/pagination'
 import SearchResultListItem from './SearchResultListItem.vue'
 import type { SearchOption } from './types'
+import EmptyState from '@/components/common/EmptyState.vue'
+import ErrorState from '@/components/common/ErrorState.vue'
 
 defineProps<{
   records: ReadonlyArray<EventVO>
@@ -56,13 +58,14 @@ defineEmits<{
       <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
     </div>
 
-    <div v-else-if="isError" class="flex min-h-[420px] flex-center text-destructive">
-      加载失败，请稍后重试
-    </div>
+    <ErrorState v-else-if="isError" class="min-h-[420px]" />
 
-    <div v-else-if="!records.length" class="flex min-h-[420px] flex-center text-muted-foreground">
-      没有找到符合条件的演出
-    </div>
+    <EmptyState
+      v-else-if="!records.length"
+      class="min-h-[420px]"
+      title="没有找到符合条件的演出"
+      description="可以尝试切换城市、分类或日期条件。"
+    />
 
     <div v-else class="px-4">
       <SearchResultListItem v-for="item in records" :key="item.id" :item="item" />

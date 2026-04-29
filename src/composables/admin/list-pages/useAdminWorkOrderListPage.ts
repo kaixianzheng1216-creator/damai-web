@@ -80,6 +80,9 @@ export function useAdminWorkOrderListPage() {
       replyError.value = ''
       await invalidateWorkOrders()
     },
+    onError: () => {
+      replyError.value = '回复失败，请稍后重试'
+    },
   })
 
   const closeMutation = useMutation({
@@ -106,10 +109,12 @@ export function useAdminWorkOrderListPage() {
       return
     }
 
-    if (
-      !selectedWorkOrderId.value ||
-      selectedWorkOrder.value?.status === WORK_ORDER_STATUS.CLOSED
-    ) {
+    if (!selectedWorkOrderId.value) {
+      return
+    }
+
+    if (selectedWorkOrder.value?.status === WORK_ORDER_STATUS.CLOSED) {
+      replyError.value = '工单已关闭，无法继续回复'
       return
     }
 

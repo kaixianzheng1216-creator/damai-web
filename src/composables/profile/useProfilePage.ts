@@ -126,6 +126,7 @@ export const useProfilePage = () => {
     passengerError: passengerManagement.passengerError,
     passengerForm: passengerManagement.passengerForm,
     passengerListQuery: passengerManagement.passengerListQuery,
+    createPassengerMutation: passengerManagement.createPassengerMutation,
     deletePassengerMutation: passengerManagement.deletePassengerMutation,
     openCreatePassengerModal: passengerManagement.openCreatePassengerModal,
     closePassengerModal: passengerManagement.closePassengerModal,

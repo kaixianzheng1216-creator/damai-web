@@ -11,7 +11,8 @@ import {
 } from '@/components/common/ui/dialog'
 import { Badge } from '@/components/common/ui/badge'
 import { Button } from '@/components/common/ui/button'
-import { Label } from '@/components/common/ui/label'
+import ErrorState from '@/components/common/ErrorState.vue'
+import TextareaField from '@/components/common/TextareaField.vue'
 import { WORK_ORDER_STATUS } from '@/constants'
 import { formatDateTime } from '@/utils/format'
 import { getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
@@ -35,17 +36,25 @@ const emit = defineEmits<{
 
 const replies = computed(() => props.workOrder?.replies ?? [])
 const isClosed = computed(() => props.workOrder?.status === WORK_ORDER_STATUS.CLOSED)
+const isProcessing = computed(() => Boolean(props.isReplying || props.isClosing))
 const canSubmitReply = computed(
   () => replyContent.value.trim().length > 0 && !isClosed.value && !props.isReplying,
 )
 
 const isUserReply = (reply: WorkOrderReplyVO) => reply.senderType === 0
+
+const handleOpenChange = (value: boolean) => {
+  if (!value && !isProcessing.value) {
+    emit('close')
+  }
+}
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="(val) => !val && emit('close')">
+  <Dialog :open="open" @update:open="handleOpenChange">
     <DialogScrollContent
       class="my-4 flex max-h-[calc(100vh-2rem)] w-[calc(100vw-1.5rem)] max-w-3xl flex-col gap-4 overflow-hidden p-4 sm:my-8 sm:max-h-[calc(100vh-4rem)] sm:p-6"
+      :show-close-button="!isProcessing"
     >
       <DialogHeader class="shrink-0 space-y-2 pr-8">
         <div class="flex flex-wrap items-start justify-between gap-2">
@@ -66,13 +75,12 @@ const isUserReply = (reply: WorkOrderReplyVO) => reply.senderType === 0
           <icon-lucide-loader2 class="size-8 animate-spin text-primary" />
         </div>
 
-        <div
+        <ErrorState
           v-else-if="!workOrder"
-          class="flex min-h-80 flex-col items-center justify-center gap-2"
-        >
-          <icon-lucide-inbox class="size-10 text-muted-foreground/50" />
-          <p class="text-sm text-muted-foreground">工单详情加载失败</p>
-        </div>
+          class="min-h-80"
+          title="工单详情加载失败"
+          description="请关闭弹窗后重新打开。"
+        />
 
         <div v-else class="space-y-4">
           <div
@@ -156,21 +164,17 @@ const isUserReply = (reply: WorkOrderReplyVO) => reply.senderType === 0
       </div>
 
       <template v-if="workOrder && !isLoading">
-        <div v-if="!isClosed" class="space-y-2">
-          <Label for="work-order-reply">回复内容</Label>
-          <textarea
-            id="work-order-reply"
-            v-model="replyContent"
-            maxlength="2000"
-            rows="3"
-            class="min-h-20 w-full resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            placeholder="输入回复内容"
-          />
-          <div class="flex items-center justify-between gap-3 text-xs">
-            <p class="text-destructive">{{ replyError }}</p>
-            <span class="ml-auto text-muted-foreground">{{ replyContent.length }}/2000</span>
-          </div>
-        </div>
+        <TextareaField
+          v-if="!isClosed"
+          id="work-order-reply"
+          v-model="replyContent"
+          label="回复内容"
+          placeholder="输入回复内容"
+          :max-length="2000"
+          :rows="3"
+          :disabled="isProcessing"
+          :error="replyError"
+        />
 
         <div
           v-else
@@ -182,9 +186,12 @@ const isUserReply = (reply: WorkOrderReplyVO) => reply.senderType === 0
         <DialogFooter
           class="shrink-0 border-t border-border pt-3 flex-col-reverse gap-2 sm:flex-row sm:justify-end"
         >
-          <Button variant="outline" @click="emit('close')">返回</Button>
+          <Button type="button" variant="outline" :disabled="isProcessing" @click="emit('close')">
+            返回
+          </Button>
           <Button
             v-if="!isClosed"
+            type="button"
             variant="outline"
             :disabled="isClosing"
             @click="emit('close-work-order')"
@@ -192,7 +199,12 @@ const isUserReply = (reply: WorkOrderReplyVO) => reply.senderType === 0
             <icon-lucide-lock class="mr-1.5 size-4" />
             关闭工单
           </Button>
-          <Button v-if="!isClosed" :disabled="!canSubmitReply" @click="emit('submit-reply')">
+          <Button
+            v-if="!isClosed"
+            type="button"
+            :disabled="!canSubmitReply"
+            @click="emit('submit-reply')"
+          >
             <icon-lucide-send class="mr-1.5 size-4" />
             {{ isReplying ? '发送中' : '发送回复' }}
           </Button>

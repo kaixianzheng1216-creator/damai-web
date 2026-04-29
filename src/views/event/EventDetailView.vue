@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/common/ui/tabs'
 import EventPassengerDialog from '@/components/features/event/EventPassengerDialog.vue'
 import EventDetailHero from '@/components/features/event/EventDetailHero.vue'
 import EventDetailSidebar from '@/components/features/event/EventDetailSidebar.vue'
+import ErrorState from '@/components/common/ErrorState.vue'
 import { useEventDetailPage } from '@/composables/event/useEventDetailPage'
 
 const {
@@ -60,9 +61,12 @@ const sanitizedDescription = computed(() =>
       <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
     </div>
 
-    <div v-else-if="isError || !detail" class="flex min-h-[520px] flex-center text-destructive">
-      详情加载失败，请稍后重试
-    </div>
+    <ErrorState
+      v-else-if="isError || !detail"
+      class="min-h-[520px]"
+      title="详情加载失败"
+      description="请稍后重试"
+    />
 
     <div
       v-else

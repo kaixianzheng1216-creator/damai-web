@@ -5,13 +5,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/common/ui/dialog'
+import { FieldError } from '@/components/common/ui/field'
 import type { IdentityFormData } from '@/api/account'
 
-defineProps<{
-  open: boolean
-  identityError: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    open: boolean
+    identityError: string
+    isSaving?: boolean
+  }>(),
+  {
+    isSaving: false,
+  },
+)
 
 const form = defineModel<IdentityFormData>('form', { required: true })
 
@@ -19,13 +27,20 @@ const emit = defineEmits<{
   close: []
   submit: []
 }>()
+
+const handleOpenChange = (value: boolean) => {
+  if (!value && !props.isSaving) {
+    emit('close')
+  }
+}
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="(val) => !val && emit('close')">
-    <DialogContent class="w-[calc(100vw-2rem)] max-w-md sm:max-w-md">
+  <Dialog :open="open" @update:open="handleOpenChange">
+    <DialogContent class="w-[calc(100vw-2rem)] max-w-md sm:max-w-md" :show-close-button="!isSaving">
       <DialogHeader>
         <DialogTitle>实名认证</DialogTitle>
+        <DialogDescription>请填写与证件一致的实名信息。</DialogDescription>
       </DialogHeader>
       <div class="space-y-4">
         <div>
@@ -35,6 +50,8 @@ const emit = defineEmits<{
             v-model="form.realName"
             class="h-10"
             placeholder="请输入真实姓名"
+            :disabled="isSaving"
+            :aria-invalid="Boolean(identityError) || undefined"
           />
         </div>
         <div>
@@ -44,13 +61,20 @@ const emit = defineEmits<{
             v-model="form.idCard"
             class="h-10"
             placeholder="请输入身份证号"
+            :disabled="isSaving"
+            :aria-invalid="Boolean(identityError) || undefined"
           />
         </div>
-        <p v-if="identityError" class="text-sm text-destructive">{{ identityError }}</p>
+        <FieldError v-if="identityError">{{ identityError }}</FieldError>
       </div>
       <DialogFooter>
-        <Button variant="outline" @click="emit('close')">取消</Button>
-        <Button @click="emit('submit')">保存</Button>
+        <Button type="button" variant="outline" :disabled="isSaving" @click="emit('close')">
+          取消
+        </Button>
+        <Button type="button" :disabled="isSaving" @click="emit('submit')">
+          <icon-lucide-loader2 v-if="isSaving" class="mr-2 h-4 w-4 animate-spin" />
+          {{ isSaving ? '保存中...' : '保存' }}
+        </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

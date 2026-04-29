@@ -284,6 +284,7 @@ declare module 'vue' {
     TabsContent: typeof import('./../components/common/ui/tabs/TabsContent.vue')['default']
     TabsList: typeof import('./../components/common/ui/tabs/TabsList.vue')['default']
     TabsTrigger: typeof import('./../components/common/ui/tabs/TabsTrigger.vue')['default']
+    Textarea: typeof import('./../components/common/ui/textarea/Textarea.vue')['default']
     TicketTypeCopyDialog: typeof import('./../components/features/admin-event-edit/TicketTypeCopyDialog.vue')['default']
     TicketTypeDialog: typeof import('./../components/features/admin-event-edit/TicketTypeDialog.vue')['default']
     Tooltip: typeof import('./../components/common/ui/tooltip/Tooltip.vue')['default']

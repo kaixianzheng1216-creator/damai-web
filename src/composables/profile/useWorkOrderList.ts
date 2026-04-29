@@ -86,6 +86,9 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
       replyError.value = ''
       await invalidateWorkOrders()
     },
+    onError: () => {
+      replyError.value = '回复失败，请稍后重试'
+    },
   })
 
   const closeWorkOrderMutation = useMutation({
@@ -116,7 +119,12 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
       return
     }
 
-    if (!selectedWorkOrderId.value || selectedWorkOrderClosed.value) {
+    if (!selectedWorkOrderId.value) {
+      return
+    }
+
+    if (selectedWorkOrderClosed.value) {
+      replyError.value = '工单已关闭，无法继续回复'
       return
     }
 

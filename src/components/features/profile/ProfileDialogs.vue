@@ -17,6 +17,7 @@ const profile = useProfilePageContext()
     v-model:form="profile.passengerForm"
     :open="profile.showPassengerModal.value"
     :passenger-error="profile.passengerError.value"
+    :is-saving="profile.createPassengerMutation.isPending.value"
     @close="profile.closePassengerModal"
     @submit="profile.submitPassenger"
   />

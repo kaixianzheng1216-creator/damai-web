@@ -2,6 +2,7 @@
 import { formatDateTime } from '@/utils/format'
 import { getTicketStatusClass } from '@/utils/statusMappers'
 import { Badge } from '@/components/common/ui/badge'
+import ErrorState from '@/components/common/ErrorState.vue'
 import { useTicketDetailPage } from '@/composables/ticket'
 
 const { ticket, isLoading, isError, isEmpty, goBack } = useTicketDetailPage()
@@ -20,13 +21,16 @@ const { ticket, isLoading, isError, isEmpty, goBack } = useTicketDetailPage()
           <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
         </div>
 
-        <div v-else-if="isError || isEmpty" class="section-card text-center p-8">
-          <icon-lucide-alert-circle class="h-12 w-12 mx-auto text-destructive mb-4" />
-          <p class="text-destructive">
-            {{ isEmpty ? '电子票不存在或链接已失效' : '电子票加载失败，请稍后重试' }}
-          </p>
-          <Button variant="outline" @click="goBack" class="mt-4"> 返回 </Button>
-        </div>
+        <ErrorState
+          v-else-if="isError || isEmpty"
+          class="section-card min-h-64"
+          :title="isEmpty ? '电子票不存在或链接已失效' : '电子票加载失败'"
+          :description="isEmpty ? '请确认链接是否正确，或返回上一页重新进入。' : '请稍后重试。'"
+        >
+          <template #action>
+            <Button variant="outline" @click="goBack">返回</Button>
+          </template>
+        </ErrorState>
 
         <template v-else-if="ticket">
           <div class="rounded-2xl border border-border bg-background p-6 shadow-sm">

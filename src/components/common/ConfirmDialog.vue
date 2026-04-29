@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/common/ui/button'
 import type { ConfirmDialogVariant } from '@/composables/common/useConfirmDialog'
 
-defineProps<{
+const props = defineProps<{
   open: boolean
   title: string
   description: string
@@ -24,10 +24,16 @@ const emit = defineEmits<{
   close: []
   confirm: []
 }>()
+
+const handleOpenChange = (value: boolean) => {
+  if (!value && !props.loading) {
+    emit('close')
+  }
+}
 </script>
 
 <template>
-  <AlertDialog :open="open" @update:open="(val) => !val && emit('close')">
+  <AlertDialog :open="open" @update:open="handleOpenChange">
     <AlertDialogContent class="max-h-[calc(100dvh-2rem)] overflow-y-auto">
       <AlertDialogHeader>
         <AlertDialogTitle>{{ title }}</AlertDialogTitle>

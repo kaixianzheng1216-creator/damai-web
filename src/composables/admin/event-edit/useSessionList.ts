@@ -25,6 +25,7 @@ export function useSessionList(options: UseSessionListOptions) {
 
   const showSessionDialog = ref(false)
   const editingSessionId = ref<string | null>(null)
+  const sessionError = ref('')
 
   const sessionForm = reactive<SessionItem & Partial<SessionUpdateRequest>>({
     name: '',
@@ -53,6 +54,7 @@ export function useSessionList(options: UseSessionListOptions) {
   const openSessionCreate = () => {
     batchSessionRows.value = [{ name: '', startAt: '', endAt: '' }]
     editingSessionId.value = null
+    sessionError.value = ''
     showSessionDialog.value = true
   }
 
@@ -61,6 +63,7 @@ export function useSessionList(options: UseSessionListOptions) {
     sessionForm.startAt = formatDateTimeLocalInput(session.startAt)
     sessionForm.endAt = formatDateTimeLocalInput(session.endAt)
     editingSessionId.value = session.id
+    sessionError.value = ''
     showSessionDialog.value = true
   }
 
@@ -69,11 +72,13 @@ export function useSessionList(options: UseSessionListOptions) {
       batchAddSessions(toValue(options.eventId), { sessions }),
     onSuccess: () => {
       toast.success('场次添加成功')
+      sessionError.value = ''
       showSessionDialog.value = false
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
+      sessionError.value = '添加失败，请重试'
       toast.error('添加失败')
     },
   })
@@ -83,11 +88,13 @@ export function useSessionList(options: UseSessionListOptions) {
       updateSession(toValue(options.eventId), sessionId, data),
     onSuccess: () => {
       toast.success('场次更新成功')
+      sessionError.value = ''
       showSessionDialog.value = false
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
+      sessionError.value = '更新失败，请重试'
       toast.error('更新失败')
     },
   })
@@ -107,9 +114,11 @@ export function useSessionList(options: UseSessionListOptions) {
   const handleSaveSession = async () => {
     if (editingSessionId.value) {
       if (!sessionForm.name) {
+        sessionError.value = '请填写场次名称'
         toast.error('请填写场次名称')
         return
       }
+      sessionError.value = ''
       await updateSessionMutation.mutateAsync({
         sessionId: editingSessionId.value,
         data: sessionForm,
@@ -119,9 +128,11 @@ export function useSessionList(options: UseSessionListOptions) {
 
     const validRows = batchSessionRows.value.filter((row) => row.name)
     if (validRows.length === 0) {
+      sessionError.value = '请至少填写一个场次名称'
       toast.error('请至少填写一个场次名称')
       return
     }
+    sessionError.value = ''
     await batchAddSessionsMutation.mutateAsync(validRows)
   }
 
@@ -135,10 +146,13 @@ export function useSessionList(options: UseSessionListOptions) {
     confirmDialog,
     showSessionDialog,
     editingSessionId,
+    sessionError,
     sessionForm,
     batchSessionRows,
     addBatchRow,
     removeBatchRow,
+    batchAddSessionsMutation,
+    updateSessionMutation,
     openSessionCreate,
     openSessionEdit,
     handleSaveSession,

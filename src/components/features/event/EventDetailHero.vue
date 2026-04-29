@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { formatPrice, formatDateTime } from '@/utils/format'
 import type { EventDetailVO, TicketTypeVO, SeriesEventVO } from '@/api/event'
 import {
@@ -11,7 +12,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar'
 import { Button } from '@/components/common/ui/button'
 
-defineProps<{
+const props = defineProps<{
   detail: EventDetailVO
   selectedSessionId: string | null
   selectedTicketTypeId: string | null
@@ -39,6 +40,19 @@ const emit = defineEmits<{
   'buy-now': []
   'toggle-follow': []
 }>()
+
+const hasSessions = computed(() => props.detail.sessions.length > 0)
+const hasTicketTypes = computed(() => props.availableTicketTypes.length > 0)
+const purchaseDisabledReason = computed(() => {
+  if (!hasSessions.value) return '暂无可售场次'
+  if (!hasTicketTypes.value) return '暂无可售票档'
+  if (!props.selectedTicketType) return '请选择票档'
+  if (!props.isSelectedTicketTypeOnSale) return '当前票档不可售'
+  if (props.maxTicketQuantity <= 0) return '库存不足'
+  if (props.isUserAccountLimitReached) return '已达限购上限'
+  return ''
+})
+const canBuyNow = computed(() => !props.isCreatingOrder && !purchaseDisabledReason.value)
 </script>
 
 <template>
@@ -150,6 +164,9 @@ const emit = defineEmits<{
               {{ session.name }}
             </button>
           </div>
+          <p v-if="!hasSessions" class="mt-2 text-sm text-muted-foreground">
+            当前活动暂无可选场次。
+          </p>
         </div>
 
         <div>
@@ -174,6 +191,9 @@ const emit = defineEmits<{
               <span v-if="!isTicketTypeOnSale(ticketType)" class="ml-1">不可售</span>
             </button>
           </div>
+          <p v-if="!hasTicketTypes" class="mt-2 text-sm text-muted-foreground">
+            当前场次暂无可售票档。
+          </p>
           <p class="mt-2 text-sm text-muted-foreground">
             当前票档单笔限购 {{ selectedTicketTypeLimit }} 张
             <span v-if="selectedTicketTypeAccountLimit > 0">
@@ -218,16 +238,11 @@ const emit = defineEmits<{
         <div class="pt-2">
           <Button
             class="w-full md:min-w-[124px] md:w-auto"
-            :disabled="
-              isCreatingOrder ||
-              !selectedTicketType ||
-              !isSelectedTicketTypeOnSale ||
-              isUserAccountLimitReached
-            "
+            :disabled="!canBuyNow"
             @click="emit('buy-now')"
           >
             <icon-lucide-loader2 v-if="isCreatingOrder" class="mr-2 h-4 w-4 animate-spin" />
-            {{ isUserAccountLimitReached ? '已达限购上限' : '立即购票' }}
+            {{ purchaseDisabledReason || '立即购票' }}
           </Button>
         </div>
       </div>

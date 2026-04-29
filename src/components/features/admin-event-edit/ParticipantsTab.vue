@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
 import { Label } from '@/components/common/ui/label'
 import { Checkbox } from '@/components/common/ui/checkbox'
@@ -7,9 +8,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/common/ui/dialog'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import { Input } from '@/components/common/ui/input'
 import type { EventParticipantVO } from '@/api/event'
@@ -46,6 +49,14 @@ const {
   eventParticipants: () => props.eventParticipants,
   onUpdated: () => emit('updated'),
 })
+
+const isAddingParticipants = computed(() => batchAddParticipantsMutation.isPending.value)
+
+const handleParticipantDialogOpenChange = (value: boolean) => {
+  if (!value && !isAddingParticipants.value) {
+    showParticipantDialog.value = false
+  }
+}
 </script>
 
 <template>
@@ -57,9 +68,7 @@ const {
       </div>
     </CardHeader>
     <CardContent>
-      <div v-if="eventParticipants.length === 0" class="text-center py-4 text-muted-foreground">
-        暂无参与方
-      </div>
+      <EmptyState v-if="eventParticipants.length === 0" class="min-h-32" title="暂无参与方" />
       <div v-else class="space-y-3">
         <div
           v-for="participant in eventParticipants"
@@ -87,10 +96,14 @@ const {
     </CardContent>
   </Card>
 
-  <Dialog :open="showParticipantDialog" @update:open="(v) => !v && (showParticipantDialog = false)">
-    <DialogContent class="w-[calc(100vw-2rem)] max-w-2xl sm:max-w-2xl">
+  <Dialog :open="showParticipantDialog" @update:open="handleParticipantDialogOpenChange">
+    <DialogContent
+      class="w-[calc(100vw-2rem)] max-w-2xl sm:max-w-2xl"
+      :show-close-button="!isAddingParticipants"
+    >
       <DialogHeader class="pb-4">
         <DialogTitle class="text-lg font-semibold">选择参与方</DialogTitle>
+        <DialogDescription>勾选参与本活动的艺人、球队或主办方。</DialogDescription>
       </DialogHeader>
 
       <!-- Search -->
@@ -164,15 +177,16 @@ const {
       </div>
 
       <DialogFooter class="pt-4">
-        <Button type="button" variant="outline" @click="showParticipantDialog = false">
-          取消
-        </Button>
         <Button
           type="button"
-          :disabled="batchAddParticipantsMutation.isPending.value"
-          @click="handleAddParticipants"
+          variant="outline"
+          :disabled="isAddingParticipants"
+          @click="handleParticipantDialogOpenChange(false)"
         >
-          {{ batchAddParticipantsMutation.isPending.value ? '添加中...' : '添加' }}
+          取消
+        </Button>
+        <Button type="button" :disabled="isAddingParticipants" @click="handleAddParticipants">
+          {{ isAddingParticipants ? '添加中...' : '添加' }}
         </Button>
       </DialogFooter>
     </DialogContent>

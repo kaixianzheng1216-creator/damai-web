@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
 import { Input } from '@/components/common/ui/input'
 import { Label } from '@/components/common/ui/label'
+import { FieldError } from '@/components/common/ui/field'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/common/ui/dialog'
 import {
@@ -16,6 +19,7 @@ import {
   DropdownMenuItem,
 } from '@/components/common/ui/dropdown-menu'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import { formatDateTime } from '@/utils/format'
 import DateTimePicker from '@/components/common/DateTimePicker.vue'
@@ -42,8 +46,11 @@ const {
   confirmDialog,
   showSessionDialog,
   editingSessionId,
+  sessionError,
   sessionForm,
   batchSessionRows,
+  batchAddSessionsMutation,
+  updateSessionMutation,
   addBatchRow,
   removeBatchRow,
   openSessionCreate,
@@ -56,6 +63,16 @@ const {
   eventId: () => props.eventId,
   onUpdated: () => emit('updated'),
 })
+
+const isSavingSession = computed(
+  () => batchAddSessionsMutation.isPending.value || updateSessionMutation.isPending.value,
+)
+
+const handleSessionOpenChange = (value: boolean) => {
+  if (!value && !isSavingSession.value) {
+    showSessionDialog.value = false
+  }
+}
 </script>
 
 <template>
@@ -67,12 +84,12 @@ const {
     </div>
 
     <!-- Empty -->
-    <div
+    <EmptyState
       v-if="!sessions || sessions.length === 0"
-      class="text-center py-10 text-muted-foreground border rounded-lg"
-    >
-      暂无场次，点击右上角添加
-    </div>
+      class="min-h-40 rounded-lg border border-border"
+      title="暂无场次"
+      description="点击右上角添加场次后再配置票种。"
+    />
 
     <!-- Session Cards -->
     <div v-else class="space-y-3">
@@ -158,17 +175,27 @@ const {
   </div>
 
   <!-- Session Dialog -->
-  <Dialog :open="showSessionDialog" @update:open="(v) => !v && (showSessionDialog = false)">
-    <DialogContent class="w-[calc(100vw-2rem)] max-w-2xl sm:max-w-2xl">
+  <Dialog :open="showSessionDialog" @update:open="handleSessionOpenChange">
+    <DialogContent
+      class="w-[calc(100vw-2rem)] max-w-2xl sm:max-w-2xl"
+      :show-close-button="!isSavingSession"
+    >
       <DialogHeader>
         <DialogTitle>{{ editingSessionId ? '编辑场次' : '批量添加场次' }}</DialogTitle>
+        <DialogDescription>场次名称必填，时间会用于前台购票和检票展示。</DialogDescription>
       </DialogHeader>
 
       <!-- Edit mode: single row form -->
       <div v-if="editingSessionId" class="grid gap-4 py-4">
         <div class="grid gap-2">
           <Label for="session-name">场次名称 <span class="text-destructive">*</span></Label>
-          <Input id="session-name" v-model="sessionForm.name" placeholder="请输入场次名称" />
+          <Input
+            id="session-name"
+            v-model="sessionForm.name"
+            placeholder="请输入场次名称"
+            :disabled="isSavingSession"
+            :aria-invalid="Boolean(sessionError) || undefined"
+          />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="grid gap-2">
@@ -177,6 +204,7 @@ const {
               v-model="sessionForm.startAt"
               aria-label="选择场次开始时间"
               placeholder="选择开始时间"
+              :disabled="isSavingSession"
             />
           </div>
           <div class="grid gap-2">
@@ -185,6 +213,7 @@ const {
               v-model="sessionForm.endAt"
               aria-label="选择场次结束时间"
               placeholder="选择结束时间"
+              :disabled="isSavingSession"
             />
           </div>
         </div>
@@ -206,6 +235,8 @@ const {
               v-model="row.name"
               :aria-label="`第 ${idx + 1} 行场次名称`"
               placeholder="请输入场次名称"
+              :disabled="isSavingSession"
+              :aria-invalid="Boolean(sessionError) || undefined"
             />
           </div>
           <div class="grid gap-1">
@@ -215,6 +246,7 @@ const {
               v-model="row.startAt"
               type="datetime-local"
               :aria-label="`第 ${idx + 1} 行开始时间`"
+              :disabled="isSavingSession"
             />
           </div>
           <div class="grid gap-1">
@@ -224,6 +256,7 @@ const {
               v-model="row.endAt"
               type="datetime-local"
               :aria-label="`第 ${idx + 1} 行结束时间`"
+              :disabled="isSavingSession"
             />
           </div>
           <Button
@@ -236,12 +269,30 @@ const {
             删除
           </Button>
         </div>
-        <Button variant="outline" size="sm" @click="addBatchRow">+ 添加一行</Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          :disabled="isSavingSession"
+          @click="addBatchRow"
+        >
+          + 添加一行
+        </Button>
+        <FieldError v-if="sessionError">{{ sessionError }}</FieldError>
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="showSessionDialog = false">取消</Button>
-        <Button @click="handleSaveSession">保存</Button>
+        <Button
+          type="button"
+          variant="outline"
+          :disabled="isSavingSession"
+          @click="handleSessionOpenChange(false)"
+        >
+          取消
+        </Button>
+        <Button type="button" :disabled="isSavingSession" @click="handleSaveSession">
+          {{ isSavingSession ? '保存中...' : '保存' }}
+        </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

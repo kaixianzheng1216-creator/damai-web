@@ -1,4 +1,4 @@
-import { computed, reactive, toValue, watch } from 'vue'
+import { computed, reactive, ref, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
@@ -29,6 +29,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
     saleEndAt: '',
     totalQty: 0,
   })
+  const formError = ref('')
 
   const editingTicketType = computed(() => toValue(options.editingTicketType))
   const isEditing = computed(() => Boolean(editingTicketType.value))
@@ -48,6 +49,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
     form.saleStartAt = ''
     form.saleEndAt = ''
     form.totalQty = 0
+    formError.value = ''
   }
 
   watch(
@@ -78,11 +80,13 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
     },
     onSuccess: () => {
       toast.success('票种创建成功')
+      formError.value = ''
       options.onOpenChange(false)
       invalidateAll()
       options.onSaved()
     },
     onError: () => {
+      formError.value = '创建失败，请重试'
       toast.error('创建失败')
     },
   })
@@ -92,23 +96,27 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
       updateTicketType(toValue(options.eventId), ticketTypeId, data),
     onSuccess: () => {
       toast.success('票种更新成功')
+      formError.value = ''
       options.onOpenChange(false)
       invalidateAll()
       options.onSaved()
     },
     onError: () => {
+      formError.value = '更新失败，请重试'
       toast.error('更新失败')
     },
   })
 
   const handleSaveTicketType = async () => {
     if (!form.name || form.salePrice <= 0) {
+      formError.value = '请填写票种名称和有效售价'
       toast.error('请填写完整信息')
       return
     }
 
     const ticketType = editingTicketType.value
     if (ticketType) {
+      formError.value = ''
       await updateTicketTypeMutation.mutateAsync({
         ticketTypeId: ticketType.id,
         data: {
@@ -124,10 +132,12 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
     }
 
     if (form.totalQty <= 0) {
+      formError.value = '请填写大于 0 的总库存'
       toast.error('请填写总库存')
       return
     }
 
+    formError.value = ''
     await createTicketTypeMutation.mutateAsync({
       name: form.name,
       salePrice: form.salePrice,
@@ -141,6 +151,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
 
   return {
     form,
+    formError,
     isEditing,
     dialogTitle,
     createTicketTypeMutation,

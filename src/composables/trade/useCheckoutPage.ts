@@ -12,6 +12,7 @@ import {
   queryKeys,
 } from '@/constants'
 import { fetchOrderById, fetchOrderStatus, createPayment, cancelTicketOrder } from '@/api/trade'
+import type { OrderStatusVO } from '@/api/trade'
 import {
   formatRemainText,
   getCheckoutStatusFlags,
@@ -46,7 +47,12 @@ export const useCheckoutPage = () => {
     queryKey: queryKeys.trade.orderStatus(orderId),
     queryFn: () => fetchOrderStatus(orderId.value),
     enabled: computed(() => !!orderId.value),
-    refetchInterval: CHECKOUT_CONFIG.STATUS_REFETCH_INTERVAL_MS,
+    refetchInterval: (query) => {
+      const current = (query.state.data as OrderStatusVO | undefined)?.status ?? order.value?.status
+      return showQrCodeDialog.value && getCheckoutStatusFlags(current ?? 0).isPending
+        ? CHECKOUT_CONFIG.STATUS_REFETCH_INTERVAL_MS
+        : false
+    },
     refetchIntervalInBackground: false,
   })
 
@@ -75,11 +81,16 @@ export const useCheckoutPage = () => {
   })
 
   const createPaymentMutation = useMutation({
-    mutationFn: () =>
-      createPayment(orderId.value, {
+    mutationFn: () => {
+      if (!isPending.value) {
+        return Promise.reject(new Error('Order is not pending'))
+      }
+
+      return createPayment(orderId.value, {
         channel: selectedChannel.value,
         payMethod: selectedMethod.value,
-      }),
+      })
+    },
     onSuccess: async (data) => {
       paymentData.value = data
       showQrCodeDialog.value = true

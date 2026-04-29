@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
 import { Checkbox } from '@/components/common/ui/checkbox'
 import { Label } from '@/components/common/ui/label'
@@ -7,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/common/ui/dialog'
 import type { SessionVO } from '@/api/event'
@@ -39,13 +41,25 @@ const {
   onOpenChange: (open) => emit('update:open', open),
   onCopied: () => emit('copied'),
 })
+
+const isCopying = computed(() => copyTicketTypesMutation.isPending.value)
+
+const handleOpenChange = (value: boolean) => {
+  if (!value && !isCopying.value) {
+    emit('update:open', false)
+  }
+}
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="(v) => emit('update:open', v)">
-    <DialogContent class="w-[calc(100vw-2rem)] max-w-md overflow-hidden sm:max-w-md">
+  <Dialog :open="open" @update:open="handleOpenChange">
+    <DialogContent
+      class="w-[calc(100vw-2rem)] max-w-md overflow-hidden sm:max-w-md"
+      :show-close-button="!isCopying"
+    >
       <DialogHeader>
         <DialogTitle>复制票种到其他场次</DialogTitle>
+        <DialogDescription>选择目标场次后，会复制当前场次下的全部票种配置。</DialogDescription>
       </DialogHeader>
       <div class="grid gap-4 py-4">
         <div class="text-sm text-muted-foreground">
@@ -72,13 +86,16 @@ const {
         </div>
       </div>
       <DialogFooter>
-        <Button type="button" variant="outline" @click="emit('update:open', false)">取消</Button>
         <Button
           type="button"
-          :disabled="copyTicketTypesMutation.isPending.value"
-          @click="handleCopyTicketTypes"
+          variant="outline"
+          :disabled="isCopying"
+          @click="handleOpenChange(false)"
         >
-          确认复制
+          取消
+        </Button>
+        <Button type="button" :disabled="isCopying" @click="handleCopyTicketTypes">
+          {{ isCopying ? '复制中...' : '确认复制' }}
         </Button>
       </DialogFooter>
     </DialogContent>

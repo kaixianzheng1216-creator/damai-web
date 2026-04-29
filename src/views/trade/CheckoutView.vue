@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { PAYMENT_COPY } from '@/constants'
 import { Button } from '@/components/common/ui/button'
+import ErrorState from '@/components/common/ErrorState.vue'
 import {
   CheckoutOrderCard,
   CheckoutPaymentPanel,
@@ -61,13 +62,16 @@ const handleCancelOrder = () => {
       <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
     </div>
 
-    <div
+    <ErrorState
       v-else-if="isError || !order"
-      class="flex min-h-[520px] flex-col items-center justify-center gap-3"
+      class="min-h-[520px]"
+      :title="PAYMENT_COPY.loadFailed"
+      description="请返回活动详情后重新进入结算。"
     >
-      <p class="text-destructive">{{ PAYMENT_COPY.loadFailed }}</p>
-      <Button variant="outline" @click="goDetail">{{ PAYMENT_COPY.backHome }}</Button>
-    </div>
+      <template #action>
+        <Button variant="outline" @click="goDetail">{{ PAYMENT_COPY.backHome }}</Button>
+      </template>
+    </ErrorState>
 
     <div v-else class="grid items-start gap-4 lg:grid-cols-[1fr_360px]">
       <CheckoutOrderCard

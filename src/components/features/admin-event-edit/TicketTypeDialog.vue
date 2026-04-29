@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
 import { Input } from '@/components/common/ui/input'
 import { Label } from '@/components/common/ui/label'
+import { FieldError } from '@/components/common/ui/field'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/common/ui/dialog'
 import DateTimePicker from '@/components/common/DateTimePicker.vue'
@@ -29,6 +32,7 @@ const emit = defineEmits<{
 
 const {
   form,
+  formError,
   isEditing,
   dialogTitle,
   createTicketTypeMutation,
@@ -41,18 +45,38 @@ const {
   onOpenChange: (open) => emit('update:open', open),
   onSaved: () => emit('saved'),
 })
+
+const isSaving = computed(
+  () => createTicketTypeMutation.isPending.value || updateTicketTypeMutation.isPending.value,
+)
+
+const handleOpenChange = (value: boolean) => {
+  if (!value && !isSaving.value) {
+    emit('update:open', false)
+  }
+}
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="(v) => emit('update:open', v)">
-    <DialogContent class="w-[calc(100vw-2rem)] max-w-md overflow-hidden sm:max-w-md">
+  <Dialog :open="open" @update:open="handleOpenChange">
+    <DialogContent
+      class="w-[calc(100vw-2rem)] max-w-md overflow-hidden sm:max-w-md"
+      :show-close-button="!isSaving"
+    >
       <DialogHeader>
         <DialogTitle>{{ dialogTitle }}</DialogTitle>
+        <DialogDescription>设置票种价格、限购规则和售卖时间。</DialogDescription>
       </DialogHeader>
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
           <Label for="ticket-type-name">票种名称 <span class="text-destructive">*</span></Label>
-          <Input id="ticket-type-name" v-model="form.name" placeholder="请输入票种名称" />
+          <Input
+            id="ticket-type-name"
+            v-model="form.name"
+            placeholder="请输入票种名称"
+            :disabled="isSaving"
+            :aria-invalid="Boolean(formError) || undefined"
+          />
         </div>
         <div class="grid gap-2">
           <Label for="ticket-type-sale-price"
@@ -63,6 +87,8 @@ const {
             v-model.number="form.salePrice"
             type="number"
             placeholder="请输入售价（单位：分）"
+            :disabled="isSaving"
+            :aria-invalid="Boolean(formError) || undefined"
           />
         </div>
         <div class="grid grid-cols-2 gap-4">
@@ -73,6 +99,7 @@ const {
               v-model.number="form.orderLimit"
               type="number"
               placeholder="每单限购数量"
+              :disabled="isSaving"
             />
           </div>
           <div class="grid gap-2">
@@ -82,6 +109,7 @@ const {
               v-model.number="form.accountLimit"
               type="number"
               placeholder="每人限购数量"
+              :disabled="isSaving"
             />
           </div>
         </div>
@@ -92,6 +120,7 @@ const {
               v-model="form.saleStartAt"
               aria-label="选择票种售卖开始时间"
               placeholder="选择开始时间"
+              :disabled="isSaving"
             />
           </div>
           <div class="grid gap-2">
@@ -100,6 +129,7 @@ const {
               v-model="form.saleEndAt"
               aria-label="选择票种售卖结束时间"
               placeholder="选择结束时间"
+              :disabled="isSaving"
             />
           </div>
         </div>
@@ -110,19 +140,23 @@ const {
             v-model.number="form.totalQty"
             type="number"
             placeholder="请输入总库存"
+            :disabled="isSaving"
+            :aria-invalid="Boolean(formError) || undefined"
           />
         </div>
+        <FieldError v-if="formError">{{ formError }}</FieldError>
       </div>
       <DialogFooter>
-        <Button type="button" variant="outline" @click="emit('update:open', false)">取消</Button>
         <Button
           type="button"
-          :disabled="
-            createTicketTypeMutation.isPending.value || updateTicketTypeMutation.isPending.value
-          "
-          @click="handleSaveTicketType"
+          variant="outline"
+          :disabled="isSaving"
+          @click="handleOpenChange(false)"
         >
-          保存
+          取消
+        </Button>
+        <Button type="button" :disabled="isSaving" @click="handleSaveTicketType">
+          {{ isSaving ? '保存中...' : '保存' }}
         </Button>
       </DialogFooter>
     </DialogContent>
