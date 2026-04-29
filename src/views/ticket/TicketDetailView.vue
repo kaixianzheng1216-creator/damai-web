@@ -1,31 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useQuery } from '@tanstack/vue-query'
-import { fetchTicketById } from '@/api/ticket'
 import { formatDateTime } from '@/utils/format'
 import { getTicketStatusClass } from '@/utils/statusMappers'
 import { Badge } from '@/components/common/ui/badge'
-import { queryKeys } from '@/constants'
+import { useTicketDetailPage } from '@/composables/ticket'
 
-const route = useRoute()
-const router = useRouter()
-
-const ticketId = computed(() => route.params.id as string)
-
-const {
-  data: ticket,
-  isLoading,
-  isError,
-} = useQuery({
-  queryKey: queryKeys.ticket.detail(ticketId),
-  queryFn: () => fetchTicketById(ticketId.value),
-  enabled: computed(() => !!ticketId.value),
-})
-
-const goBack = () => {
-  router.back()
-}
+const { ticket, isLoading, isError, isEmpty, goBack } = useTicketDetailPage()
 </script>
 
 <template>
@@ -41,9 +20,11 @@ const goBack = () => {
           <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
         </div>
 
-        <div v-else-if="isError" class="section-card text-center p-8">
+        <div v-else-if="isError || isEmpty" class="section-card text-center p-8">
           <icon-lucide-alert-circle class="h-12 w-12 mx-auto text-destructive mb-4" />
-          <p class="text-destructive">电子票加载失败，请稍后重试</p>
+          <p class="text-destructive">
+            {{ isEmpty ? '电子票不存在或链接已失效' : '电子票加载失败，请稍后重试' }}
+          </p>
           <Button variant="outline" @click="goBack" class="mt-4"> 返回 </Button>
         </div>
 

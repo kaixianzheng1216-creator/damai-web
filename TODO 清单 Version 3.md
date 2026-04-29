@@ -31,43 +31,54 @@
 
 ## P0：收敛剩余页面层业务逻辑
 
-- [ ] 抽离 `src/views/admin/AdminListView.vue`。
+- [x] 抽离 `src/views/admin/AdminListView.vue`。
   - 建议：新增 `useAdminListPage`，收敛管理员分页、创建、更新、启停、缓存失效。
   - 验收：视图只保留列定义绑定、表格渲染和弹窗组件编排；补 composable 单测。
-- [ ] 抽离 `src/views/admin/UserListView.vue`。
+  - 进展：新增 `useAdminListPage`，管理员分页、搜索、新建/编辑、启停和 `admin-admins` 精确失效已移出视图，并补 P0 列表页单测。
+- [x] 抽离 `src/views/admin/UserListView.vue`。
   - 建议：新增 `useAdminUserListPage`，统一用户分页、搜索、启停状态。
   - 验收：用户状态变更成功后只失效用户列表 query key；页面无直接 `useQuery` / `useMutation`。
-- [ ] 抽离 `src/views/admin/EventListView.vue`。
+  - 进展：新增 `useAdminUserListPage`，用户列表查询、搜索复位和启停状态变更集中到 composable；状态变更只失效 `admin-users`。
+- [x] 抽离 `src/views/admin/EventListView.vue`。
   - 建议：新增 `useAdminEventListPage`，把城市/分类选项、活动分页、发布、下线、删除集中管理。
   - 验收：筛选变化正确回到第一页；发布/下线/删除后缓存失效精确。
-- [ ] 抽离 `src/views/admin/WorkOrderListView.vue`。
+  - 进展：新增 `useAdminEventListPage`，城市/分类选项、活动分页、发布/下线/删除确认与 `admin-events` 失效均收敛到 composable；筛选变化会回到第一页。
+- [x] 抽离 `src/views/admin/WorkOrderListView.vue`。
   - 建议：新增 `useAdminWorkOrderListPage`，保留详情弹窗按需加载，收敛回复、关闭、详情 query enabled 策略。
   - 验收：详情只在选中工单时请求；回复/关闭后列表和详情缓存一致。
-- [ ] 抽离 `src/views/ticket/TicketDetailView.vue`。
+  - 进展：新增 `useAdminWorkOrderListPage`，工单列表、详情 enabled、回复/关闭、确认弹窗和列表/详情双缓存失效已移出视图；测试覆盖未选中时不请求详情。
+- [x] 抽离 `src/views/ticket/TicketDetailView.vue`。
   - 建议：新增 `useTicketDetailPage`，处理路由 ID、详情查询、加载/错误/空态。
   - 验收：页面无直接 API import；缺失或非法 ID 有明确空态或返回路径。
-- [ ] 收敛 `src/views/trade/CheckoutView.vue` 中剩余退款 mutation。
+  - 进展：新增 `useTicketDetailPage`，路由 ID 归一化、详情查询 enabled、加载/错误/缺失空态和返回动作均由 composable 承担。
+- [x] 收敛 `src/views/trade/CheckoutView.vue` 中剩余退款 mutation。
   - 建议：迁移到 `useCheckoutPage` 或独立 `useRefundDialog`。
   - 验收：退款成功后的订单/支付相关 query key 失效有测试覆盖。
-- [ ] 评估登录页是否需要页面级 composable。
+  - 进展：新增 `useRefundDialog`，退款可用性、弹窗开关、提交、toast 与 `ticket-order` / `order-status` 失效集中管理，并补单测。
+- [x] 评估登录页是否需要页面级 composable。
   - 范围：`src/views/auth/LoginView.vue`、`src/views/admin/LoginView.vue`。
   - 决策：如果仍保持在 view 内，需记录“登录页逻辑足够轻量”的原因；如果抽离，统一验证码、登录中状态、错误提示与跳转。
+  - 进展：选择抽离，新增共享 `useLoginPage`，用户端和管理端通过 accountType、保存会话和跳转策略配置差异；两个登录页不再直接调用认证 API。
 
 ## P0：缓存、类型与契约防线
 
-- [ ] 审计所有 mutation 成功后的 query invalidation。
+- [x] 审计所有 mutation 成功后的 query invalidation。
   - 范围：后台列表、活动编辑、个人中心、结算/退款、工单回复。
   - 验收：每个 mutation 有明确失效目标；没有用过大的全局失效掩盖缓存问题。
-- [ ] 扩展 `apiOpenApiContract.test.ts` 覆盖长尾接口。
+  - 进展：后台管理员/用户/活动/工单、活动编辑、个人中心、结算/退款等 mutation 均保留明确 query key；退款新增失效 `ticket-order` 和 `order-status`，工单回复/关闭失效列表和详情。
+- [x] 扩展 `apiOpenApiContract.test.ts` 覆盖长尾接口。
   - 优先：后台工单、退款、检票、服务保障、关注、通知。
   - 验收：新增接口或 OpenAPI 变更时，测试能指出路径、方法、请求体或响应结构差异。
-- [ ] 明确 OpenAPI 类型生成路线。
+  - 进展：契约测试新增后台工单列表/详情/回复/关闭、退款、服务保障列表/创建/选项创建、关注/取消关注/关注检查、须知分页/创建；检票端点已在 V2 契约测试覆盖。
+- [x] 明确 OpenAPI 类型生成路线。
   - 方案 A：引入生成类型，只让 API 函数引用生成类型。
   - 方案 B：继续手写类型，但新增差异报告脚本。
   - 验收：形成一条可重复命令，并写入 `docs/openapi-workflow.md`。
-- [ ] 增加 ID 策略回归扫描脚本。
+  - 进展：采用方案 B，新增 `npm run openapi:report` 扫描 `src/api` 调用与 `docs/*_OpenAPI.json` path/method 差异；已写入 `docs/openapi-workflow.md` 并纳入 `npm run ci`。
+- [x] 增加 ID 策略回归扫描脚本。
   - 建议：把当前 `Number(id)` / `parseInt(id)` / `+id` 搜索固化为 `npm` 脚本或文档命令。
   - 验收：CI 或本地检查能快速发现新增 ID 转 number。
+  - 进展：新增 `npm run audit:ids`，扫描 `src/views` 与 `src/composables` 中 ID 转 number 风险，并纳入 `npm run ci`。
 
 ## P1：表单、控件与可访问性收口
 
@@ -86,9 +97,10 @@
 
 ## P1：测试覆盖继续补强
 
-- [ ] 为 P0 新增页面级 composable 补单测。
+- [x] 为 P0 新增页面级 composable 补单测。
   - 优先顺序：`useAdminEventListPage`、`useAdminWorkOrderListPage`、`useTicketDetailPage`、`useRefundDialog`。
   - 验收：测试覆盖 query key、enabled、参数变化、mutation 成功分支。
+  - 进展：新增 P0 列表页、票详情、退款弹窗和登录页 composable 测试，覆盖筛选复位、详情 enabled、mutation 失效、缺失路由 ID 与登录跳转。
 - [ ] 扩展组件 smoke test。
   - 优先：后台事件列表操作、工单详情弹窗、退款弹窗、票务详情页面。
   - 验收：能 mount、关键文案存在、主要按钮 emit 或触发 mutation 回调。

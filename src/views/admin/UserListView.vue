@@ -1,57 +1,21 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createUserColumns } from '@/components/admin/listPageColumns'
 import { Input } from '@/components/common/ui/input'
-import { fetchAdminUserPage, updateAdminUserStatus } from '@/api/account/user'
-import type { UserVO } from '@/api/account'
-import { USER_STATUS, queryKeys } from '@/constants'
+import { useAdminUserListPage } from '@/composables/admin/list-pages'
 
-const queryClient = useQueryClient()
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchUsername = ref('')
-const searchMobile = ref('')
-
-const queryKey = computed(() => [
-  ...queryKeys.admin.list('users'),
-  currentPage.value,
-  pageSize.value,
-  searchUsername.value,
-  searchMobile.value,
-])
-
-const { data, isLoading } = useQuery({
-  queryKey,
-  queryFn: () =>
-    fetchAdminUserPage({
-      page: currentPage.value,
-      size: pageSize.value,
-      username: searchUsername.value || undefined,
-      mobile: searchMobile.value || undefined,
-    }),
-})
-
-const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
-const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
-
-const handleSearch = () => {
-  currentPage.value = 1
-}
-
-const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.list('users') })
-
-const statusMutation = useMutation({
-  mutationFn: ({ id, status }: { id: string; status: number }) => updateAdminUserStatus(id, status),
-  onSuccess: invalidate,
-})
-
-const toggleStatus = (row: UserVO) => {
-  const newStatus = row.status === USER_STATUS.NORMAL ? USER_STATUS.BANNED : USER_STATUS.NORMAL
-  statusMutation.mutate({ id: row.id, status: newStatus })
-}
+const {
+  currentPage,
+  pageSize,
+  searchUsername,
+  searchMobile,
+  isLoading,
+  list,
+  totalRow,
+  totalPages,
+  handleSearch,
+  toggleStatus,
+} = useAdminUserListPage()
 
 const columns = createUserColumns({ toggleStatus })
 </script>

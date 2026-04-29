@@ -1,94 +1,34 @@
 <script setup lang="ts">
-import { sendVerifyCode, login } from '@/api/account'
-import { AUTH_COPY, PROFILE_CONFIG, VALIDATION_PATTERNS } from '@/constants'
+import { AUTH_COPY } from '@/constants'
 import { useAuthSession } from '@/composables/common/useAuthSession'
-import { useCountdown } from '@/composables/common'
+import { useLoginPage } from '@/composables/auth'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
 import { Field, FieldGroup, FieldLabel } from '@/components/common/ui/field'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/common/ui/input-otp'
 import AuthPageShell from '@/components/features/auth/AuthPageShell.vue'
 
-const router = useRouter()
 const { saveSession } = useAuthSession()
 
-const isLoading = ref(false)
-const isSendingCode = ref(false)
-const errorMsg = ref('')
-
-const form = reactive({
-  mobile: '',
-  code: '',
-})
-
-const schema = z.object({
-  mobile: z.string().regex(VALIDATION_PATTERNS.MOBILE, AUTH_COPY.mobileRequired),
-  code: z.string().regex(VALIDATION_PATTERNS.CODE, AUTH_COPY.codeRequired),
-})
-
 const {
-  countdown,
-  isRunning: isCountdownRunning,
-  start: startCountdown,
-} = useCountdown(PROFILE_CONFIG.SMS_VERIFICATION_COUNTDOWN)
-
-const countdownText = computed(() =>
-  countdown.value > 0 ? `${countdown.value}s ${AUTH_COPY.resendCodeSuffix}` : AUTH_COPY.sendCode,
-)
-
-const handleSendCode = async () => {
-  errorMsg.value = ''
-  const mobileCheck = z
-    .string()
-    .regex(VALIDATION_PATTERNS.MOBILE, AUTH_COPY.mobileRequired)
-    .safeParse(form.mobile)
-  if (!mobileCheck.success) {
-    errorMsg.value = mobileCheck.error.issues[0]?.message || AUTH_COPY.mobileFormatError
-    return
-  }
-
-  if (isCountdownRunning.value) {
-    return
-  }
-
-  try {
-    isSendingCode.value = true
-    await sendVerifyCode({ mobile: form.mobile, accountType: 'user' })
-    startCountdown()
-  } catch {
-    errorMsg.value = AUTH_COPY.sendCodeFailed
-  } finally {
-    isSendingCode.value = false
-  }
-}
-
-const handleLogin = async () => {
-  errorMsg.value = ''
-
-  const validated = schema.safeParse(form)
-  if (!validated.success) {
-    errorMsg.value = validated.error.issues[0]?.message || AUTH_COPY.validationFailed
-    return
-  }
-
-  try {
-    isLoading.value = true
-    const response = await login({
-      mobile: form.mobile,
-      code: form.code,
-      accountType: 'user',
-    })
-    saveSession(response)
-
-    const redirect = router.currentRoute.value.query.redirect
-    const redirectPath = typeof redirect === 'string' ? redirect : '/'
-    await router.push(redirectPath)
-  } catch {
-    errorMsg.value = AUTH_COPY.loginFailed
-  } finally {
-    isLoading.value = false
-  }
-}
+  form,
+  isLoading,
+  isSendingCode,
+  isCountdownRunning,
+  errorMsg,
+  countdownText,
+  handleSendCode,
+  handleLogin,
+} = useLoginPage({
+  accountType: 'user',
+  sendCodeText: AUTH_COPY.sendCode,
+  resendCodeText: (seconds) => `${seconds}s ${AUTH_COPY.resendCodeSuffix}`,
+  saveSession,
+  resolveRedirect: (route) => {
+    const redirect = route.query.redirect
+    return typeof redirect === 'string' ? redirect : '/'
+  },
+})
 </script>
 
 <template>

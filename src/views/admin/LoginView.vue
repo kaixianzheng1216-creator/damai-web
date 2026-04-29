@@ -1,96 +1,31 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { z } from 'zod'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
 import { Field, FieldGroup, FieldLabel } from '@/components/common/ui/field'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/common/ui/input-otp'
-import { sendVerifyCode, login } from '@/api/account'
 import { ADMIN_AUTH_COPY } from '@/constants/admin'
-import { AUTH_COPY } from '@/constants/auth'
-import { VALIDATION_PATTERNS } from '@/constants/validation'
-import { PROFILE_CONFIG } from '@/constants/profile'
 import { useAdminAuth } from '@/composables/admin'
-import { useCountdown } from '@/composables/common'
+import { useLoginPage } from '@/composables/auth'
 import AuthPageShell from '@/components/features/auth/AuthPageShell.vue'
 
-const router = useRouter()
 const { saveAdminSession } = useAdminAuth()
 
-const isLoading = ref(false)
-const isSendingCode = ref(false)
-const errorMsg = ref('')
-
-const form = reactive({
-  mobile: '',
-  code: '',
-})
-
-const schema = z.object({
-  mobile: z.string().regex(VALIDATION_PATTERNS.MOBILE, AUTH_COPY.mobileRequired),
-  code: z.string().length(6, AUTH_COPY.codeRequired),
-})
-
 const {
-  countdown,
-  isRunning: isCountdownRunning,
-  start: startCountdown,
-} = useCountdown(PROFILE_CONFIG.SMS_VERIFICATION_COUNTDOWN)
-
-const countdownText = computed(() =>
-  countdown.value > 0 ? `${countdown.value}s 后重试` : ADMIN_AUTH_COPY.sendCodeButton,
-)
-
-const handleSendCode = async () => {
-  errorMsg.value = ''
-  const mobileCheck = z
-    .string()
-    .regex(VALIDATION_PATTERNS.MOBILE, AUTH_COPY.mobileRequired)
-    .safeParse(form.mobile)
-
-  if (!mobileCheck.success) {
-    errorMsg.value = mobileCheck.error.issues[0]?.message || AUTH_COPY.mobileFormatError
-    return
-  }
-
-  if (isCountdownRunning.value) return
-
-  try {
-    isSendingCode.value = true
-    await sendVerifyCode({ mobile: form.mobile, accountType: 'admin' })
-    startCountdown()
-  } catch {
-    errorMsg.value = AUTH_COPY.sendCodeFailed
-  } finally {
-    isSendingCode.value = false
-  }
-}
-
-const handleLogin = async () => {
-  errorMsg.value = ''
-
-  const validated = schema.safeParse(form)
-  if (!validated.success) {
-    errorMsg.value = validated.error.issues[0]?.message || AUTH_COPY.validationFailed
-    return
-  }
-
-  try {
-    isLoading.value = true
-    const response = await login({
-      mobile: form.mobile,
-      code: form.code,
-      accountType: 'admin',
-    })
-    saveAdminSession(response)
-    await router.push('/admin')
-  } catch {
-    errorMsg.value = AUTH_COPY.loginFailed
-  } finally {
-    isLoading.value = false
-  }
-}
+  form,
+  isLoading,
+  isSendingCode,
+  isCountdownRunning,
+  errorMsg,
+  countdownText,
+  handleSendCode,
+  handleLogin,
+} = useLoginPage({
+  accountType: 'admin',
+  sendCodeText: ADMIN_AUTH_COPY.sendCodeButton,
+  resendCodeText: (seconds) => `${seconds}s 后重试`,
+  saveSession: saveAdminSession,
+  resolveRedirect: () => '/admin',
+})
 </script>
 
 <template>

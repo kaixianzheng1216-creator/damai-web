@@ -120,6 +120,8 @@ src/api/<domain>/foo.ts
 - 表格数据、分页、loading 来自 composable。
 - 搜索项通过 `v-model` 绑定 composable 状态。
 - 新建/编辑/删除调用 composable action。
+- 查询、mutation、确认弹窗状态、缓存失效目标放在页面级 composable 中。
+- 新增列表页优先补 `useXxxListPage.test.ts`，覆盖查询参数、分页复位和 mutation 成功后的 query key 失效。
 - 详情或表单弹窗尽量按打开状态懒加载。
 
 ## 8. 错误、加载与空态

@@ -40,7 +40,18 @@ docs/AI 助手_OpenAPI.json
 - API 函数位于 `src/api/<domain>/*.ts`。
 - 契约测试读取 `docs/` 下 OpenAPI JSON，校验核心端点是否存在且 schema 关键字段一致。
 
-后续如果引入 OpenAPI 类型生成，仍建议保留契约测试，至少覆盖核心链路，避免生成配置或文档漂移悄悄破坏业务。
+V3 阶段继续采用方案 B：保留手写类型，但增加一条可重复的差异报告命令。
+
+```bash
+npm run openapi:report
+```
+
+该命令会扫描 `src/api` 中的 `request.*` 调用，并与 `docs/*_OpenAPI.json` 的 path/method 做对照：
+
+- 前端已经调用但 OpenAPI 不存在的接口会直接失败。
+- OpenAPI 中存在但前端尚未实现的接口会作为报告输出，不阻塞构建。
+
+后续如果引入 OpenAPI 类型生成，仍建议保留契约测试和差异报告，至少覆盖核心链路，避免生成配置或文档漂移悄悄破坏业务。
 
 ## 4. ID 规范
 
@@ -75,3 +86,4 @@ docs/AI 助手_OpenAPI.json
 - [ ] API 函数命名能表达前台/后台和业务动作，例如 `fetchAdminOrderPage`。
 - [ ] Query 使用 `queryKeys`，Mutation 成功后失效正确缓存。
 - [ ] `apiOpenApiContract.test.ts` 覆盖关键端点。
+- [ ] `npm run openapi:report` 没有发现前端调用但文档缺失的接口。

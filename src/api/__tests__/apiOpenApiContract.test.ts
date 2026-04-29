@@ -15,22 +15,46 @@ import {
 } from '@/api/account'
 import {
   createEvent,
+  createNotice,
+  createService,
+  createServiceOption,
   createTicketType,
+  fetchAdminNoticesPage,
+  fetchAdminServices,
   fetchEventPage,
+  followEvent,
+  checkIsFollowedEvent,
+  unfollowEvent,
   updateCityFeatured,
   updateServiceOption,
   type EventCreateRequest,
   type EventPageRequest,
+  type NoticeCreateRequest,
+  type NoticePageRequest,
+  type PageResponseNoticeVO,
   type PageResponseEventVO,
+  type ServiceGuaranteeCreateRequest,
+  type ServiceOptionCreateRequest,
   type TicketTypeCreateRequest,
   type ServiceOptionUpdateRequest,
 } from '@/api/event'
 import {
+  closeAdminWorkOrder,
   createTicketOrder,
+  createRefund,
+  fetchAdminWorkOrderById,
+  fetchAdminWorkOrderPage,
   fetchUserPurchaseCounts,
+  replyAdminWorkOrder,
   type OrderStatusVO,
+  type PageResponseWorkOrderVO,
   type PaymentCreateRequest,
+  type RefundCreateRequest,
+  type RefundVO,
   type TicketOrderCreateRequest,
+  type WorkOrderDetailVO,
+  type WorkOrderPageRequest,
+  type WorkOrderReplyCreateRequest,
 } from '@/api/trade'
 import {
   checkinTicket,
@@ -418,6 +442,209 @@ describe('API OpenAPI contracts', () => {
       docPath: '/admin/tickets/checkin/{qrCodeToken}',
       pathParams: { qrCodeToken: 'qr-token' },
       responseSchema: 'ApiResponseVoid',
+    })
+  })
+
+  it('covers admin work order and refund endpoints', async () => {
+    const workOrderPageParams = {
+      page: 1,
+      size: 10,
+      userId: 'user-1',
+      status: 1,
+      sortField: 'lastReplyAt',
+      sortOrder: 'desc',
+    } satisfies WorkOrderPageRequest
+    const replyBody = {
+      content: '已处理，请刷新查看',
+    } satisfies WorkOrderReplyCreateRequest
+    const refundBody = {
+      reason: '行程冲突',
+    } satisfies RefundCreateRequest
+
+    const workOrderPagePromise = fetchAdminWorkOrderPage(workOrderPageParams)
+    expectTypeOf(workOrderPagePromise).toEqualTypeOf<Promise<PageResponseWorkOrderVO>>()
+    await workOrderPagePromise
+    expectRequestMatchesOpenApi({
+      service: 'order',
+      method: 'get',
+      docPath: '/admin/work-orders',
+      query: workOrderPageParams,
+      responseSchema: 'ApiResponsePageResponseWorkOrderVO',
+    })
+
+    vi.clearAllMocks()
+    const detailPromise = fetchAdminWorkOrderById('work-order-1')
+    expectTypeOf(detailPromise).toEqualTypeOf<Promise<WorkOrderDetailVO>>()
+    await detailPromise
+    expectRequestMatchesOpenApi({
+      service: 'order',
+      method: 'get',
+      docPath: '/admin/work-orders/{id}',
+      pathParams: { id: 'work-order-1' },
+      responseSchema: 'ApiResponseWorkOrderDetailVO',
+    })
+
+    vi.clearAllMocks()
+    await replyAdminWorkOrder('work-order-1', replyBody)
+    expectRequestMatchesOpenApi({
+      service: 'order',
+      method: 'post',
+      docPath: '/admin/work-orders/{id}/replies',
+      pathParams: { id: 'work-order-1' },
+      body: replyBody,
+      requestSchema: 'WorkOrderReplyCreateRequest',
+      responseSchema: 'ApiResponseVoid',
+    })
+
+    vi.clearAllMocks()
+    await closeAdminWorkOrder('work-order-1')
+    expectRequestMatchesOpenApi({
+      service: 'order',
+      method: 'post',
+      docPath: '/admin/work-orders/{id}/close',
+      pathParams: { id: 'work-order-1' },
+      responseSchema: 'ApiResponseVoid',
+    })
+
+    vi.clearAllMocks()
+    const refundResponse: RefundVO = {
+      id: 'refund-1',
+      refundNo: 'REF-1',
+      paymentId: 'payment-1',
+      orderId: 'order-1',
+      userId: 'user-1',
+      amount: 199,
+      reason: '行程冲突',
+      channel: 1,
+      channelLabel: '支付宝',
+      outRefundNo: 'OUT-1',
+      channelRefundNo: '',
+      status: 0,
+      statusLabel: '退款中',
+      createAt: '2026-04-28T10:00:00.000Z',
+    }
+    requestMock.post.mockResolvedValueOnce(refundResponse)
+    const refundPromise = createRefund('order-1', refundBody)
+    expectTypeOf(refundPromise).toEqualTypeOf<Promise<RefundVO>>()
+    await expect(refundPromise).resolves.toEqual(refundResponse)
+    expectRequestMatchesOpenApi({
+      service: 'order',
+      method: 'post',
+      docPath: '/front/ticket-orders/{id}/refund',
+      pathParams: { id: 'order-1' },
+      body: refundBody,
+      requestSchema: 'RefundCreateRequest',
+      responseSchema: 'ApiResponseRefundVO',
+    })
+  })
+
+  it('covers service guarantee, follow, and notice endpoints', async () => {
+    const serviceBody = {
+      name: '安心退',
+      sortOrder: 1,
+    } satisfies ServiceGuaranteeCreateRequest
+    const optionBody = {
+      name: '可退',
+      description: '支持限时退票',
+      isBooleanType: 1,
+    } satisfies ServiceOptionCreateRequest
+    const noticeBody = {
+      type: 1,
+      name: '实名购票',
+      sortOrder: 1,
+    } satisfies NoticeCreateRequest
+    const noticePageParams = {
+      page: 1,
+      size: 10,
+      type: 1,
+    } satisfies NoticePageRequest
+
+    await fetchAdminServices()
+    expectRequestMatchesOpenApi({
+      service: 'event',
+      method: 'get',
+      docPath: '/admin/services',
+      responseSchema: 'ApiResponseListServiceGuaranteeVO',
+    })
+
+    vi.clearAllMocks()
+    requestMock.post.mockResolvedValueOnce(202)
+    await expect(createService(serviceBody)).resolves.toBe('202')
+    expectRequestMatchesOpenApi({
+      service: 'event',
+      method: 'post',
+      docPath: '/admin/services',
+      body: serviceBody,
+      requestSchema: 'ServiceGuaranteeCreateRequest',
+      responseSchema: 'ApiResponseLong',
+    })
+
+    vi.clearAllMocks()
+    requestMock.post.mockResolvedValueOnce(303)
+    await expect(createServiceOption('service-1', optionBody)).resolves.toBe('303')
+    expectRequestMatchesOpenApi({
+      service: 'event',
+      method: 'post',
+      docPath: '/admin/services/{serviceId}/options',
+      pathParams: { serviceId: 'service-1' },
+      body: optionBody,
+      requestSchema: 'ServiceGuaranteeOptionCreateRequest',
+      responseSchema: 'ApiResponseLong',
+    })
+
+    vi.clearAllMocks()
+    await followEvent({ eventId: 'event-1' })
+    expectRequestMatchesOpenApi({
+      service: 'event',
+      method: 'post',
+      docPath: '/front/user-follows/events',
+      body: { eventId: 'event-1' },
+      requestSchema: 'UserFollowEventRequest',
+      responseSchema: 'ApiResponseVoid',
+    })
+
+    vi.clearAllMocks()
+    await checkIsFollowedEvent('event-1')
+    expectRequestMatchesOpenApi({
+      service: 'event',
+      method: 'get',
+      docPath: '/front/user-follows/events/{eventId}/check',
+      pathParams: { eventId: 'event-1' },
+      responseSchema: 'ApiResponseBoolean',
+    })
+
+    vi.clearAllMocks()
+    await unfollowEvent('event-1')
+    expectRequestMatchesOpenApi({
+      service: 'event',
+      method: 'del',
+      docPath: '/front/user-follows/events/{eventId}',
+      pathParams: { eventId: 'event-1' },
+      responseSchema: 'ApiResponseVoid',
+    })
+
+    vi.clearAllMocks()
+    const noticePagePromise = fetchAdminNoticesPage(noticePageParams)
+    expectTypeOf(noticePagePromise).toEqualTypeOf<Promise<PageResponseNoticeVO>>()
+    await noticePagePromise
+    expectRequestMatchesOpenApi({
+      service: 'event',
+      method: 'get',
+      docPath: '/admin/notices/page',
+      query: noticePageParams,
+      responseSchema: 'ApiResponsePageResponseNoticeVO',
+    })
+
+    vi.clearAllMocks()
+    requestMock.post.mockResolvedValueOnce(404)
+    await expect(createNotice(noticeBody)).resolves.toBe('404')
+    expectRequestMatchesOpenApi({
+      service: 'event',
+      method: 'post',
+      docPath: '/admin/notices',
+      body: noticeBody,
+      requestSchema: 'NoticeCreateRequest',
+      responseSchema: 'ApiResponseLong',
     })
   })
 

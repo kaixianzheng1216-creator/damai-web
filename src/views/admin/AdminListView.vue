@@ -1,126 +1,32 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createAdminColumns } from '@/components/admin/listPageColumns'
 import { Input } from '@/components/common/ui/input'
 import ImageUpload from '@/components/common/ImageUpload.vue'
-import { fetchAdminPage, createAdmin, updateAdmin, updateAdminStatus } from '@/api/account/admin'
-import type { AdminVO, AdminCreateRequest, AdminUpdateRequest } from '@/api/account'
-import { USER_STATUS, queryKeys } from '@/constants'
+import { useAdminListPage } from '@/composables/admin/list-pages'
 
-const queryClient = useQueryClient()
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchUsername = ref('')
-const searchMobile = ref('')
-
-const queryKey = computed(() => [
-  ...queryKeys.admin.list('admins'),
-  currentPage.value,
-  pageSize.value,
-  searchUsername.value,
-  searchMobile.value,
-])
-
-const { data, isLoading } = useQuery({
-  queryKey,
-  queryFn: () =>
-    fetchAdminPage({
-      page: currentPage.value,
-      size: pageSize.value,
-      username: searchUsername.value || undefined,
-      mobile: searchMobile.value || undefined,
-    }),
-})
-
-const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
-const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
-
-const handleSearch = () => {
-  currentPage.value = 1
-}
-
-const showDialog = ref(false)
-const editingId = ref<string | null>(null)
-const form = reactive<AdminCreateRequest & AdminUpdateRequest>({
-  mobile: '',
-  username: '',
-  avatarUrl: '',
-})
-
-const dialogTitle = computed(() => (editingId.value ? '编辑管理员' : '新建管理员'))
-
-const resetForm = () => {
-  form.mobile = ''
-  form.username = ''
-  form.avatarUrl = ''
-}
-
-const openCreate = () => {
-  resetForm()
-  editingId.value = null
-  showDialog.value = true
-}
-
-const openEdit = (row: AdminVO) => {
-  form.mobile = row.mobile
-  form.username = row.username
-  form.avatarUrl = row.avatarUrl
-  editingId.value = row.id
-  showDialog.value = true
-}
-
-const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.list('admins') })
-
-const createMutation = useMutation({
-  mutationFn: (data: AdminCreateRequest) => createAdmin(data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const updateMutation = useMutation({
-  mutationFn: ({ id, data }: { id: string; data: AdminUpdateRequest }) => updateAdmin(id, data),
-  onSuccess: () => {
-    invalidate()
-    showDialog.value = false
-  },
-})
-
-const statusMutation = useMutation({
-  mutationFn: ({ id, status }: { id: string; status: number }) => updateAdminStatus(id, status),
-  onSuccess: invalidate,
-})
-
-const handleSubmit = async () => {
-  if (editingId.value) {
-    await updateMutation.mutateAsync({
-      id: editingId.value,
-      data: {
-        username: form.username || undefined,
-        mobile: form.mobile || undefined,
-        avatarUrl: form.avatarUrl || undefined,
-      },
-    })
-  } else {
-    if (!form.mobile) return
-    await createMutation.mutateAsync({
-      mobile: form.mobile,
-      username: form.username || undefined,
-    })
-  }
-}
-
-const handleDelete = (_row: AdminVO) => {}
-
-const toggleStatus = (row: AdminVO) => {
-  const newStatus = row.status === USER_STATUS.NORMAL ? USER_STATUS.BANNED : USER_STATUS.NORMAL
-  statusMutation.mutate({ id: row.id, status: newStatus })
-}
+const {
+  currentPage,
+  pageSize,
+  searchUsername,
+  searchMobile,
+  isLoading,
+  list,
+  totalRow,
+  totalPages,
+  showDialog,
+  editingId,
+  form,
+  dialogTitle,
+  isSaving,
+  handleSearch,
+  openCreate,
+  openEdit,
+  handleSubmit,
+  handleDelete,
+  toggleStatus,
+} = useAdminListPage()
 
 const columns = createAdminColumns({ openEdit, toggleStatus })
 </script>
@@ -166,7 +72,7 @@ const columns = createAdminColumns({ openEdit, toggleStatus })
     v-model:open="showDialog"
     :title="dialogTitle"
     description="维护管理员手机号、用户名和头像"
-    :is-saving="createMutation.isPending.value || updateMutation.isPending.value"
+    :is-saving="isSaving"
     @submit="handleSubmit"
   >
     <div class="grid gap-4">

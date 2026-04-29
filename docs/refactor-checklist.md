@@ -27,6 +27,7 @@
 - [ ] 没有新增 `Number(id)`、`parseInt(id)`、`+id` 等 ID 转 number 逻辑。
 - [ ] 创建接口返回原始 ID 时使用 `normalizeEntityId`。
 - [ ] 新增 OpenAPI 差异已补契约测试或记录原因。
+- [ ] `npm run audit:ids` 和 `npm run openapi:report` 通过，或已记录合理例外。
 
 ## 4. UI 与可访问性
 
@@ -66,6 +67,8 @@ npm run ci
 npm run type-check
 npm run lint:check
 npm run lint:oxlint
+npm run audit:ids
+npm run openapi:report
 npm run test
 npm run format:check
 npm run build
