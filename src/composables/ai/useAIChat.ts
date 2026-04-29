@@ -1,4 +1,5 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch, toRef, toValue } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
 import { useStorage } from '@vueuse/core'
 import { chatWithAI } from '@/api/ai'
@@ -16,27 +17,44 @@ export interface UseAIChatOptions {
   enableCityContext?: boolean
 }
 
-export function useAIChat(options: UseAIChatOptions = {}) {
-  const {
-    flowName = 'assistant',
-    welcomeMessage = '你好！我是 Damai 智能助手，可以帮你找演出、推荐活动、解答购票问题。请问有什么可以帮你的？',
-    enableCityContext = true,
-  } = options
+export function useAIChat(options: MaybeRefOrGetter<UseAIChatOptions> = {}) {
+  const optionsRef = toRef(options)
+
+  const flowNameRef = computed(() => optionsRef.value.flowName ?? 'assistant')
+  const welcomeMessageRef = computed(
+    () =>
+      optionsRef.value.welcomeMessage ??
+      '你好！我是 Damai 智能助手，可以帮你找演出、推荐活动、解答购票问题。请问有什么可以帮你的？',
+  )
+  const enableCityContext = toValue(options).enableCityContext ?? true
 
   const selectedCity = useStorage('selected-city', COMMON_CONFIG.DEFAULT_CITY)
 
   const sessionId = ref<string>(generateSessionId())
-  const messages = ref<ChatMessage[]>([
-    {
-      role: 'ai',
-      content: welcomeMessage,
-    },
-  ])
+  const messages = ref<ChatMessage[]>([])
+
+  const resetSession = () => {
+    sessionId.value = generateSessionId()
+    messages.value = [
+      {
+        role: 'ai',
+        content: welcomeMessageRef.value,
+      },
+    ]
+  }
+
+  // Initialize with welcome message
+  resetSession()
+
+  // Watch flowName changes and auto-reset session
+  watch(flowNameRef, () => {
+    resetSession()
+  })
 
   const { mutate: sendMessage, isPending } = useMutation({
     mutationFn: (message: string) =>
       chatWithAI({
-        flowName,
+        flowName: flowNameRef.value,
         message,
         sessionId: sessionId.value,
       }),
@@ -69,16 +87,6 @@ export function useAIChat(options: UseAIChatOptions = {}) {
 
     messages.value.push({ role: 'user', content: trimmed })
     sendMessage(sendContent)
-  }
-
-  const resetSession = () => {
-    sessionId.value = generateSessionId()
-    messages.value = [
-      {
-        role: 'ai',
-        content: welcomeMessage,
-      },
-    ]
   }
 
   const lastSuggestions = computed(() => {

@@ -39,7 +39,7 @@ const chatSubtitle = computed(() =>
   isSupportMode.value ? '为你查询订单、解答售后问题' : AI_CHAT_COPY.subtitle,
 )
 
-const { messages, isPending, submit, resetSession } = useAIChat(chatOptions.value)
+const { messages, isPending, submit, resetSession } = useAIChat(chatOptions)
 
 const hasChatStarted = computed(() => messages.value.some((message) => message.role === 'user'))
 
