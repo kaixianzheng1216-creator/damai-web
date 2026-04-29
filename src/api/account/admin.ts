@@ -14,6 +14,9 @@ export const fetchAdminPage = (params: AdminPageRequest): Promise<PageResponseAd
 export const fetchAdminInfo = (): Promise<AdminVO> =>
   request.get<AdminVO>('/api/account/admin/admin/info')
 
+export const fetchAdminById = (id: string): Promise<AdminVO> =>
+  request.get<AdminVO>(`/api/account/admin/admin/${id}`)
+
 export const createAdmin = (data: AdminCreateRequest): Promise<string> =>
   request.post<RawEntityId>('/api/account/admin/admin', data).then(normalizeEntityId)
 

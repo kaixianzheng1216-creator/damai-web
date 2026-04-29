@@ -14,5 +14,8 @@ export const updateUserInfo = (data: UserUpdateRequest): Promise<void> =>
 export const fetchAdminUserPage = (params: UserPageRequest): Promise<PageResponseUserVO> =>
   request.get<PageResponseUserVO>('/api/account/admin/user/page', { params })
 
+export const fetchUserById = (id: string): Promise<UserVO> =>
+  request.get<UserVO>(`/api/account/admin/user/${id}`)
+
 export const updateAdminUserStatus = (id: string, status: number): Promise<void> =>
   request.put<void>(`/api/account/admin/user/${id}/status`, status)

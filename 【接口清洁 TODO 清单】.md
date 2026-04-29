@@ -198,3 +198,59 @@ export const createEvent = (data: EventCreateRequest): Promise<number> =>
 | `src/api/requestTransforms.ts`                | `normalizeId`、`normalizeIdList`、`normalizeResponseFields` |
 | `src/api/request.ts`                          | 在 `unwrapApiResponse` 中调用 `normalizeResponseFields`     |
 | `src/api/__tests__/requestTransforms.test.ts` | 单元测试覆盖超大数字和 bigint 的转换                        |
+
+---
+
+## 六、全量复核记录（2026-04-28）
+
+> 用户要求全面复核前端接口定义与 OpenAPI 文档的一致性。以下记录已完成的复核结果及未完成的工作。
+
+### 6.1 已完成复核的模块
+
+#### ✅ account + auth（账号管理 + 认证管理）
+
+**发现的问题：**
+
+| 类别     | 问题                                            | 说明                                                                                               | 建议                                                  |
+| -------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 类型差异 | `UserPageRequest` 缺少 `sortField`、`sortOrder` | OpenAPI `/admin/user/page` 查询参数包含这两个字段，前端缺少                                        | **补充到 `UserPageRequest`**                          |
+| 类型差异 | `PassengerUpdateRequest` 在 OpenAPI 中不存在    | 前端有 `updatePassenger`，但 OpenAPI 账号管理文档无此 endpoint                                     | **已确认不处理**（前端实际使用，后端文档遗漏）        |
+| 类型差异 | `UserVO` 字段不一致                             | 认证管理 OpenAPI 只定义 `id/username/mobile/avatarUrl`，账号管理 OpenAPI 包含 `status/statusLabel` | **前端以账号管理为准**（`status`/`statusLabel` 保留） |
+| API 差异 | `fetchAdminById` 缺失                           | `GET /admin/admin/{id}` 在前端 `admin.ts` 中无对应函数                                             | ✅ **已完成**                                         |
+| API 差异 | `fetchUserById` 缺失                            | `GET /admin/user/{id}` 在前端 `user.ts` 中无对应函数                                               | ✅ **已完成**                                         |
+
+### 6.2 待复核的模块（回家后续做）
+
+以下模块的复核任务已启动但尚未返回完整结果，需继续完成：
+
+- [ ] **活动管理 (event)** — `docs/活动管理_OpenAPI.json` vs `src/api/event/*`
+  - 最大的模块，需重点检查 `EventVO`、`TicketTypeVO`、`SessionVO`、各类 Request/Response 和 CRUD 函数
+- [ ] **交易管理 (trade)** — `docs/交易管理_OpenAPI.json` vs `src/api/trade/*`
+  - 重点检查 `TicketOrderVO`、`PaymentVO`、`RefundVO`、`WorkOrderVO` 及前台/后台/内部接口
+- [ ] **电子票管理 (ticket)** — `docs/电子票管理_OpenAPI.json` vs `src/api/ticket/*`
+  - 重点检查 `TicketVO` 所有字段、检票接口、生成/退票内部接口
+- [ ] **AI 助手 (ai)** — `docs/AI 助手_OpenAPI.json` vs `src/api/ai/*`
+  - `AiChatRequest`、`AiChatItem`、`AiChatResponse`（`AiChatItem` 已重写，需确认是否完全对齐）
+- [ ] **文件管理 (file)** — `docs/文件管理_OpenAPI.json` vs `src/api/file/*`
+  - 上传/删除接口的 URL 和参数
+
+### 6.3 回家后续待办清单
+
+1. **完成剩余 5 个模块的全量复核**，逐 schema 对比字段名、类型、必填性、API 函数。
+2. **修复 account 模块发现的问题**：
+   - 在 `src/api/account/types.ts` 的 `UserPageRequest` 中补充 `sortField?: string` 和 `sortOrder?: string`
+   - 在 `src/api/account/admin.ts` 中补充 `fetchAdminById(id: string)`
+   - 在 `src/api/account/user.ts` 中补充 `fetchUserById(id: string)`
+3. **修复 event 模块可能存在的问题**：
+   - 等待复核结果后统一修复
+4. **修复 trade/ticket/ai/file 模块可能存在的问题**：
+   - 等待复核结果后统一修复
+5. **运行 `npm run type-check` 和 `npm run test`** 验证所有修改
+
+### 6.4 当前项目状态快照（离开时）
+
+- `type-check`: ✅ 通过
+- `test`: ✅ 44 个测试全部通过
+- `TicketTypeVO.price`: ✅ 已删除，相关引用已迁移到 `salePrice`
+- `ServiceItem`/`ServiceGuaranteeOptionVO`/`EventServiceGuaranteeVO` 的 `serviceGuaranteeId`/`serviceGuaranteeOptionId`: ✅ 已统一为 `string`
+- 已补充的 API 函数：`createRefund`、`fetchAdminOrderPage`、`fetchAdminOrderById`、`sortParticipants`、`publishAllEvents`、`fetchFollowedParticipantEventsPage`、`fetchVenueDetail`
