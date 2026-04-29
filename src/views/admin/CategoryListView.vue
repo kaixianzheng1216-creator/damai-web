@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AdminFormDialog from '@/components/admin/AdminFormDialog.vue'
+import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import {
   createCategoryChildColumns,
@@ -82,6 +82,7 @@ const childColumns = createCategoryChildColumns({
   </DataTableCrud>
 
   <AdminFormDialog
+    v-if="showDialog"
     v-model:open="showDialog"
     :title="dialogTitle"
     description="维护一级分类"
@@ -129,6 +130,7 @@ const childColumns = createCategoryChildColumns({
   </Dialog>
 
   <AdminFormDialog
+    v-if="showChildDialog"
     v-model:open="showChildDialog"
     :title="childDialogTitle"
     description="维护子分类"

@@ -1,5 +1,7 @@
 # TODO 清单 Version 2
 
+> 归档提示：Version 2 已完成，后续执行以 [TODO 清单 Version 3](<./TODO 清单 Version 3.md>) 为准。
+
 > 目标：把纯 Vibe Coding 累积下来的“能跑但边界松”的代码，整理成更可维护、更可验证、更符合 Vue 3 / TypeScript / TanStack Query 最佳实践的前端工程。
 
 ## 当前基线
@@ -143,36 +145,40 @@
   - 方向：扫码检票、富文本编辑器、图表、AI 助手、复杂弹窗改 lazy import。
   - 验收：`vite build` 无 500KB chunk warning，或有明确 `manualChunks/chunkSizeWarningLimit` 策略。
   - 进展：`CategoryNav` 改为 lucide 白名单导入，避免整包图标进入首页；`HomeView` chunk 从约 915KB 降至约 41KB，`vite build` 已无 500KB chunk warning。
-- [ ] 懒加载重组件。
+- [x] 懒加载重组件。
   - 重点：`ScanCheckinDialog`、`RichTextEditor`、AI assistant 图片/模块、后台编辑弹窗。
   - 验收：首屏路由不加载非当前路径的重依赖。
-  - 进展：已将首页 AI 悬浮入口改为异步组件，AI 助手图改为压缩 WebP；其余重组件仍待继续。
+  - 进展：已将首页 AI 悬浮入口改为异步组件，AI 助手图改为压缩 WebP；`ScanCheckinDialog`、`RichTextEditor`、活动编辑票种/库存/复制弹窗、后台 `AdminFormDialog`、订单详情与工单详情均改为按打开状态加载。
 - [x] 优化首页资源。
   - 重点：`assistant-*.png` 体积约 1.3MB。
   - 验收：图片压缩或按需加载；首页首屏包明显下降。
   - 进展：`assistant.png` 已替换为 360px 宽 `assistant.webp`，源资源体积约从 1.3MB 降到 12KB。
-- [ ] 检查 TanStack Query enabled 策略。
+- [x] 检查 TanStack Query enabled 策略。
   - 验收：弹窗数据只在打开时拉取；隐藏 tab 不预取不必要数据。
+  - 进展：活动编辑隐藏 tab 通过 `currentTab` + async component 延迟挂载；参与方/服务弹窗查询继续使用 `enabled`；个人中心各 section 保留 lazy query；工单详情仅选中 ID 后拉取；后台电子票 query key 已统一到 `queryKeys`。
 
 ## P2：测试与质量门禁
 
-- [ ] 补 composable 单测。
+- [x] 补 composable 单测。
   - 优先：`requestTransforms`、`useAdminCrud`、`useEventBasicTab`、`useTicketTypeDialog`、`useCheckoutPage`。
   - 验收：核心提交/校验/缓存失效逻辑可测试。
-  - 进展：已补 `requestTransforms`、`useAdminCrud`、`useCheckoutPage`、`checkoutState`、`useProfileSection`、`aiChatPrompt`、`useEventSearchPage`、`useEventSearchDateDialog`、`eventDetailState`、`useEventTicketSelection`、`useEventDetailPage`、活动编辑核心流程测试；后续可继续补组件 smoke test。
-- [ ] 补关键组件 smoke test。
+  - 进展：已补 `requestTransforms`、`useAdminCrud`、`useCheckoutPage`、`checkoutState`、`useProfileSection`、`aiChatPrompt`、`useEventSearchPage`、`useEventSearchDateDialog`、`eventDetailState`、`useEventTicketSelection`、`useEventDetailPage`、`useOrderListPage`、活动编辑核心流程测试。
+- [x] 补关键组件 smoke test。
   - 优先：活动编辑、结算、个人中心、后台列表。
   - 验收：主要页面能 mount，核心按钮能触发预期事件。
-- [ ] 增加 CI 脚本。
+  - 进展：`componentSmoke.test.ts` 覆盖后台列表、结算支付面板、搜索筛选、个人资料与订单详情弹窗的关键渲染/事件。
+- [x] 增加 CI 脚本。
   - 建议命令：`type-check`、`lint:check`、`lint:oxlint`、`test`、`format:check`、`build`。
   - 验收：本地和 CI 使用同一套质量门禁。
-- [ ] 分阶段开启更严格 lint。
+  - 进展：`package.json` 已提供 `npm run ci` 串联 `type-check`、`lint:check`、`lint:oxlint`、`test`、`format:check`、`build`；GitHub Actions 调用同一条命令。
+- [x] 分阶段开启更严格 lint。
   - 顺序：业务源码禁 `any` -> 禁未处理 promise -> 更严格 Vue 模板规则。
   - 验收：只对自有业务目录开启，shadcn 生成组件可单独豁免。
+  - 进展：ESLint 已对 `src/**/*.{vue,ts}` 开启业务源码禁 `any`，并排除 `src/components/common/ui/**` 生成组件；Oxlint correctness 作为额外静态检查纳入 CI。
 
 ## P2：目录与命名治理
 
-- [ ] 重新划分 `components`。
+- [x] 重新划分 `components`。
   - 建议：
     - `components/common/ui`: shadcn 基础组件。
     - `components/common`: 通用业务组件。
@@ -180,26 +186,33 @@
     - `components/admin`: 后台 shell/table/sidebar。
     - `components/features/admin-*`: 后台具体业务 feature。
   - 验收：业务组件不再都堆在 `views` 或 `admin` 根目录。
-- [ ] 重新划分 `composables`。
+  - 进展：前台功能组件已按 `features/home|search|event|checkout|profile|ai` 分桶；后台具体业务组件已按 `features/admin-event-edit|admin-ticket|admin-work-order|admin-order` 分桶，并补齐 admin feature barrel exports。
+- [x] 重新划分 `composables`。
   - 建议按领域建桶：`admin/list-pages`、`admin/event-edit`、`profile`、`trade`、`event`。
   - 验收：单目录文件数下降；导入路径能表达业务域。
-- [ ] 命名统一。
+  - 进展：`composables/admin` 已按 `auth`、`common`、`event-edit`、`list-pages` 分组；新增订单管理逻辑收敛为页面级 `useOrderListPage`，并纳入 `admin/list-pages` barrel。
+- [x] 命名统一。
   - 规则：页面级 `useXxxPage`，弹窗级 `useXxxDialog`，tab 级 `useXxxTab`，纯工具不用 `use`。
   - 验收：新代码按规则；旧代码逐步迁移。
+  - 进展：新增与已重构代码遵循页面级 `useXxxPage`、弹窗级 `useXxxDialog`、tab 级 `useXxxTab` 命名；订单管理页从 view 内联状态迁移到 `useOrderListPage`。
 
 ## P3：文档与开发体验
 
-- [ ] 更新 `TODO 清单.md` 或归档为 V1。
+- [x] 更新 `TODO 清单.md` 或归档为 V1。
   - 验收：README 指向 Version 2，不再让后来者误以为 V1 是当前状态。
-- [ ] 增补架构说明。
+  - 进展：`TODO 清单.md` 已加 V1 归档提示；README 已指向 `TODO 清单 Version 2.md` 和当前项目文档。
+- [x] 增补架构说明。
   - 内容：API 层、Query Key、页面/composable/组件边界、错误处理、认证头。
   - 验收：新开发者能按文档新增一个后台 CRUD 页面。
-- [ ] 增补重构检查清单。
+  - 进展：新增 `docs/architecture.md`，覆盖分层边界、API/request、ID、queryKeys、认证、错误处理、后台 CRUD 模式和质量门禁。
+- [x] 增补重构检查清单。
   - 内容：是否有 loading/error/success、是否有 label/id、是否使用 queryKeys、是否有测试。
   - 验收：每次 PR 可直接照单检查。
-- [ ] 整理 OpenAPI 使用说明。
+  - 进展：新增 `docs/refactor-checklist.md`，按范围边界、数据请求、API 类型、UI 可访问性、性能、测试和命令分组。
+- [x] 整理 OpenAPI 使用说明。
   - 内容：文档来源、同步流程、生成/校验策略。
   - 验收：API 变更后前端类型不会靠手改猜测。
+  - 进展：新增 `docs/openapi-workflow.md`，明确 `docs/` 为契约输入、后端同步流程、手写类型 + 契约测试策略、ID 规范和新增接口检查项。
 
 ## 推荐执行顺序
 

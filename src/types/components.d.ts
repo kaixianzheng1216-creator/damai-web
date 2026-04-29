@@ -181,7 +181,6 @@ declare module 'vue' {
     NumberFieldIncrement: typeof import('./../components/common/ui/number-field/NumberFieldIncrement.vue')['default']
     NumberFieldInput: typeof import('./../components/common/ui/number-field/NumberFieldInput.vue')['default']
     OrderDetailDialog: typeof import('./../components/features/admin-order/OrderDetailDialog.vue')['default']
-    OrderDetailDrawer: typeof import('./../components/features/admin-order/OrderDetailDrawer.vue')['default']
     Pagination: typeof import('./../components/common/ui/pagination/Pagination.vue')['default']
     PaginationContent: typeof import('./../components/common/ui/pagination/PaginationContent.vue')['default']
     PaginationEllipsis: typeof import('./../components/common/ui/pagination/PaginationEllipsis.vue')['default']

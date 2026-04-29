@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
+import { defineComponent } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import CheckoutPaymentPanel from '@/components/features/checkout/CheckoutPaymentPanel.vue'
+import OrderDetailDialog from '@/components/features/admin-order/OrderDetailDialog.vue'
 import SearchFilterPanel from '@/components/features/search/SearchFilterPanel.vue'
 import ProfileInfoSection from '@/components/features/profile/ProfileInfoSection.vue'
+import type { TicketOrderVO } from '@/api/trade'
 import type { ProfileInfo } from '@/api/account'
 import { PAYMENT_CHANNELS, PAYMENT_COPY, PAYMENT_METHODS } from '@/constants'
 
@@ -15,6 +18,23 @@ const findButtonByText = (wrapper: VueWrapper, text: string) => {
   }
   return button
 }
+
+const DialogStub = defineComponent({
+  props: {
+    open: { type: Boolean, default: false },
+  },
+  emits: ['update:open'],
+  template: `
+    <section v-if="open">
+      <button type="button" aria-label="关闭弹窗" @click="$emit('update:open', false)">关闭</button>
+      <slot />
+    </section>
+  `,
+})
+
+const passthroughStub = defineComponent({
+  template: '<div><slot /></div>',
+})
 
 describe('component smoke coverage', () => {
   it('renders an admin table and emits create / row-click events', async () => {
@@ -127,5 +147,50 @@ describe('component smoke coverage', () => {
     await input.trigger('change')
 
     expect(wrapper.emitted('avatar-selected')?.[0]).toEqual([avatar])
+  })
+
+  it('renders admin order details and emits close from the dialog shell', async () => {
+    const order: TicketOrderVO = {
+      id: 'order-1',
+      orderNo: 'NO20260501001',
+      userId: 'user-1',
+      eventNameSnapshot: '测试演唱会',
+      venueNameSnapshot: '上海体育馆',
+      sessionNameSnapshot: '周六晚场',
+      ticketTypeNameSnapshot: '看台',
+      status: 1,
+      statusLabel: '已支付',
+      unitPrice: 188,
+      quantity: 2,
+      totalAmount: 376,
+      createAt: '2026-05-01T10:00:00.000Z',
+      payments: [],
+      refunds: [],
+    }
+
+    const wrapper = mount(OrderDetailDialog, {
+      props: {
+        open: true,
+        order,
+      },
+      global: {
+        stubs: {
+          Dialog: DialogStub,
+          DialogContent: passthroughStub,
+          DialogHeader: passthroughStub,
+          DialogTitle: passthroughStub,
+          DialogDescription: passthroughStub,
+        },
+      },
+    })
+
+    expect(wrapper.text()).toContain('订单详情')
+    expect(wrapper.text()).toContain('测试演唱会')
+    expect(wrapper.text()).toContain('上海体育馆')
+    expect(wrapper.text()).toContain('已支付')
+
+    await wrapper.get('button[aria-label="关闭弹窗"]').trigger('click')
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
   })
 })

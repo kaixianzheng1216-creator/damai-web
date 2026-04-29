@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { createWorkOrderColumns } from '@/components/admin/listPageColumns'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import WorkOrderDetailDialog from '@/components/features/admin-work-order/WorkOrderDetailDialog.vue'
 import { Input } from '@/components/common/ui/input'
 import {
   Select,
@@ -22,6 +21,10 @@ import {
 import type { WorkOrderVO } from '@/api/trade'
 import { WORK_ORDER_STATUS, queryKeys } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+
+const WorkOrderDetailDialog = defineAsyncComponent(
+  () => import('@/components/features/admin-work-order/WorkOrderDetailDialog.vue'),
+)
 
 const queryClient = useQueryClient()
 const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
@@ -182,6 +185,7 @@ const columns = createWorkOrderColumns({ openDetail, requestClose })
   </DataTableCrud>
 
   <WorkOrderDetailDialog
+    v-if="selectedWorkOrderId"
     v-model:reply-content="replyContent"
     :open="!!selectedWorkOrderId"
     :work-order="selectedWorkOrder"

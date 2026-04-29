@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
+import { defineAsyncComponent } from 'vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createOrderColumns } from '@/components/admin/listPageColumns'
 import { Input } from '@/components/common/ui/input'
@@ -11,64 +10,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/common/ui/select'
-import OrderDetailDialog from '@/components/features/admin-order/OrderDetailDialog.vue'
-import { fetchAdminOrderPage } from '@/api/trade'
-import { ORDER_STATUS, queryKeys } from '@/constants'
-import type { TicketOrderPageRequest, TicketOrderVO } from '@/api/trade'
+import { useOrderListPage } from '@/composables/admin'
 
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchUserId = ref('')
-const searchStatus = ref<string>('')
-const showDetailDrawer = ref(false)
-const selectedOrder = ref<TicketOrderVO | null>(null)
+const OrderDetailDialog = defineAsyncComponent(
+  () => import('@/components/features/admin-order/OrderDetailDialog.vue'),
+)
 
-const statusOptions = [
-  { label: '全部状态', value: '' },
-  { label: '待付款', value: String(ORDER_STATUS.PENDING) },
-  { label: '已支付', value: String(ORDER_STATUS.PAID) },
-  { label: '已取消', value: String(ORDER_STATUS.CANCELLED) },
-  { label: '已关闭', value: String(ORDER_STATUS.CLOSED) },
-  { label: '已退款', value: String(ORDER_STATUS.REFUNDED) },
-]
-
-const queryKey = computed(() => [
-  ...queryKeys.admin.list('orders'),
-  currentPage.value,
-  pageSize.value,
-  searchUserId.value,
-  searchStatus.value,
-])
-
-const { data, isLoading } = useQuery({
-  queryKey,
-  queryFn: () =>
-    fetchAdminOrderPage({
-      page: currentPage.value,
-      size: pageSize.value,
-      userId: searchUserId.value || undefined,
-      status: searchStatus.value !== '' ? Number(searchStatus.value) : undefined,
-    } as TicketOrderPageRequest),
-})
-
-const list = computed(() => data.value?.records ?? [])
-const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
-const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
-
-const handleSearch = () => {
-  currentPage.value = 1
-}
-
-const openDetail = (row: TicketOrderVO) => {
-  selectedOrder.value = row
-  showDetailDrawer.value = true
-}
+const {
+  currentPage,
+  pageSize,
+  searchUserId,
+  searchStatus,
+  showDetailDialog,
+  selectedOrder,
+  statusOptions,
+  isLoading,
+  list,
+  totalRow,
+  totalPages,
+  handleSearch,
+  openDetail,
+  closeDetail,
+} = useOrderListPage()
 
 const columns = createOrderColumns({ openDetail })
-
-watch([searchUserId], () => {
-  currentPage.value = 1
-})
 </script>
 
 <template>
@@ -109,8 +74,9 @@ watch([searchUserId], () => {
   </DataTableCrud>
 
   <OrderDetailDialog
+    v-if="showDetailDialog"
     :order="selectedOrder"
-    :open="showDetailDrawer"
-    @close="showDetailDrawer = false"
+    :open="showDetailDialog"
+    @close="closeDetail"
   />
 </template>

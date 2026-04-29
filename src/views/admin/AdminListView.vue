@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import AdminFormDialog from '@/components/admin/AdminFormDialog.vue'
+import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createAdminColumns } from '@/components/admin/listPageColumns'
 import { Input } from '@/components/common/ui/input'
@@ -162,6 +162,7 @@ const columns = createAdminColumns({ openEdit, toggleStatus })
   </DataTableCrud>
 
   <AdminFormDialog
+    v-if="showDialog"
     v-model:open="showDialog"
     :title="dialogTitle"
     description="维护管理员手机号、用户名和头像"

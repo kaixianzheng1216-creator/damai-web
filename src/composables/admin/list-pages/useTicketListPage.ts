@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { fetchAdminTicketPage } from '@/api/ticket/ticket'
-import { TICKET_STATUS } from '@/constants'
+import { TICKET_STATUS, queryKeys } from '@/constants'
 
 export const TICKET_STATUS_OPTIONS = [
   { label: '全部', value: 'all' },
@@ -22,7 +22,7 @@ export function useTicketListPage() {
   const showScanDialog = ref(false)
 
   const queryKey = computed(() => [
-    'admin-ticket-list',
+    ...queryKeys.admin.list('tickets'),
     currentPage.value,
     pageSize.value,
     searchUserId.value,

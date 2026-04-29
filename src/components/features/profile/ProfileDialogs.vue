@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { PROFILE_DIALOG_COPY } from '@/constants'
 import ProfilePassengerDialog from './ProfilePassengerDialog.vue'
-import ProfileWorkOrderDetailDialog from './ProfileWorkOrderDetailDialog.vue'
 import { useProfilePageContext } from './profilePageContext'
+
+const ProfileWorkOrderDetailDialog = defineAsyncComponent(
+  () => import('./ProfileWorkOrderDetailDialog.vue'),
+)
 
 const profile = useProfilePageContext()
 </script>
@@ -29,6 +33,7 @@ const profile = useProfilePageContext()
   />
 
   <ProfileWorkOrderDetailDialog
+    v-if="profile.selectedWorkOrderId.value"
     v-model:reply-content="profile.replyContent.value"
     :open="!!profile.selectedWorkOrderId.value"
     :work-order="profile.selectedWorkOrder.value"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AdminFormDialog from '@/components/admin/AdminFormDialog.vue'
+import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createParticipantColumns } from '@/components/admin/listPageColumns'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
@@ -61,6 +61,7 @@ const columns = createParticipantColumns({ openEdit, handleDelete })
   </DataTableCrud>
 
   <AdminFormDialog
+    v-if="showDialog"
     v-model:open="showDialog"
     :title="dialogTitle"
     description="维护参与方名称与头像"

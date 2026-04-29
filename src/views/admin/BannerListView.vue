@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AdminFormDialog from '@/components/admin/AdminFormDialog.vue'
+import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createBannerColumns } from '@/components/admin/listPageColumns'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
@@ -84,6 +84,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
   </DataTableCrud>
 
   <AdminFormDialog
+    v-if="showDialog"
     v-model:open="showDialog"
     :title="dialogTitle"
     :description="dialogDescription"
