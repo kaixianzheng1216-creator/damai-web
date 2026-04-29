@@ -2,6 +2,17 @@
 import { AI_CHAT_COPY } from '@/constants'
 import { Button } from '@/components/common/ui/button'
 
+withDefaults(
+  defineProps<{
+    title?: string
+    subtitle?: string
+  }>(),
+  {
+    title: AI_CHAT_COPY.title,
+    subtitle: AI_CHAT_COPY.subtitle,
+  },
+)
+
 defineEmits<{
   back: []
   reset: []
@@ -21,8 +32,8 @@ defineEmits<{
             <icon-lucide-sparkles class="h-4 w-4 text-primary" />
           </div>
           <div>
-            <h1 class="text-base font-semibold leading-tight">{{ AI_CHAT_COPY.title }}</h1>
-            <p class="text-xs text-muted-foreground">{{ AI_CHAT_COPY.subtitle }}</p>
+            <h1 class="text-base font-semibold leading-tight">{{ title }}</h1>
+            <p class="text-xs text-muted-foreground">{{ subtitle }}</p>
           </div>
         </div>
       </div>

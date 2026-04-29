@@ -10,22 +10,33 @@ function generateSessionId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
-export function useAIChat() {
+export interface UseAIChatOptions {
+  flowName?: string
+  welcomeMessage?: string
+  enableCityContext?: boolean
+}
+
+export function useAIChat(options: UseAIChatOptions = {}) {
+  const {
+    flowName = 'assistant',
+    welcomeMessage = '你好！我是 Damai 智能助手，可以帮你找演出、推荐活动、解答购票问题。请问有什么可以帮你的？',
+    enableCityContext = true,
+  } = options
+
   const selectedCity = useStorage('selected-city', COMMON_CONFIG.DEFAULT_CITY)
 
   const sessionId = ref<string>(generateSessionId())
   const messages = ref<ChatMessage[]>([
     {
       role: 'ai',
-      content:
-        '你好！我是 Damai 智能助手，可以帮你找演出、推荐活动、解答购票问题。请问有什么可以帮你的？',
+      content: welcomeMessage,
     },
   ])
 
   const { mutate: sendMessage, isPending } = useMutation({
     mutationFn: (message: string) =>
       chatWithAI({
-        flowName: 'assistant',
+        flowName,
         message,
         sessionId: sessionId.value,
       }),
@@ -52,7 +63,7 @@ export function useAIChat() {
     const isFirstUserMessage = !messages.value.some((m) => m.role === 'user')
 
     let sendContent = trimmed
-    if (isFirstUserMessage) {
+    if (isFirstUserMessage && enableCityContext) {
       sendContent = buildAIChatPrompt(trimmed, selectedCity.value)
     }
 
@@ -65,8 +76,7 @@ export function useAIChat() {
     messages.value = [
       {
         role: 'ai',
-        content:
-          '你好！我是 Damai 智能助手，可以帮你找演出、推荐活动、解答购票问题。请问有什么可以帮你的？',
+        content: welcomeMessage,
       },
     ]
   }

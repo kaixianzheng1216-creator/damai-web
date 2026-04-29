@@ -339,6 +339,9 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
+  export type { UseAIChatOptions } from '../composables/ai/useAIChat'
+  import('../composables/ai/useAIChat')
+  // @ts-ignore
   export type { ViewMode } from '../composables/common/useViewMode'
   import('../composables/common/useViewMode')
 }

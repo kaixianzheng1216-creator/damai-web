@@ -55,6 +55,15 @@ const showCitySelector = computed(() => route.name !== 'category')
 
       <HeaderSearchBar v-model="searchQuery" @submit="handleSearch" />
 
+      <div class="ml-4 hidden items-center space-x-4 text-sm font-medium md:flex">
+        <RouterLink
+          to="/ai?mode=support"
+          class="text-foreground transition-colors hover:text-primary"
+        >
+          客服
+        </RouterLink>
+      </div>
+
       <div class="hidden md:block">
         <HeaderUserMenu
           :is-logged-in="isLoggedIn"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { AI_QUICK_PROMPTS } from '@/constants'
+import { useRoute, useRouter } from 'vue-router'
+import { AI_QUICK_PROMPTS, AI_SUPPORT_QUICK_PROMPTS, AI_CHAT_COPY } from '@/constants'
 import {
   AIChatEmptyState,
   AIChatHeader,
@@ -12,10 +12,34 @@ import { useAIChat } from '@/composables/useAIChat'
 import assistantAvatar from '@/assets/assistant/assistant.webp'
 
 const router = useRouter()
+const route = useRoute()
 const inputValue = ref('')
 const inputRef = ref<InstanceType<typeof AIChatInput>>()
 
-const { messages, isPending, submit, resetSession } = useAIChat()
+const isSupportMode = computed(() => route.query.mode === 'support')
+
+const chatOptions = computed(() =>
+  isSupportMode.value
+    ? {
+        flowName: 'support',
+        welcomeMessage:
+          '你好！我是 Damai 客服助手，可以帮你查订单、查电子票、或者提交工单给人工客服。请问有什么可以帮你的？',
+        enableCityContext: false,
+      }
+    : {},
+)
+
+const quickPrompts = computed(() =>
+  isSupportMode.value ? AI_SUPPORT_QUICK_PROMPTS : AI_QUICK_PROMPTS,
+)
+
+const chatTitle = computed(() => (isSupportMode.value ? 'Damai 客服助手' : AI_CHAT_COPY.title))
+
+const chatSubtitle = computed(() =>
+  isSupportMode.value ? '为你查询订单、解答售后问题' : AI_CHAT_COPY.subtitle,
+)
+
+const { messages, isPending, submit, resetSession } = useAIChat(chatOptions.value)
 
 const hasChatStarted = computed(() => messages.value.some((message) => message.role === 'user'))
 
@@ -41,7 +65,11 @@ const handleReset = () => {
 
 const goBack = () => {
   resetSession()
-  router.back()
+  if (isSupportMode.value) {
+    router.push('/profile')
+  } else {
+    router.back()
+  }
 }
 </script>
 
@@ -49,12 +77,12 @@ const goBack = () => {
   <div
     class="grid grid-rows-[auto_1fr_auto] overflow-hidden bg-muted/40 h-[calc(100dvh-var(--layout-header)-var(--layout-mobile-nav))] md:h-[calc(100vh-var(--layout-header-desktop))]"
   >
-    <AIChatHeader @back="goBack" @reset="handleReset" />
+    <AIChatHeader :title="chatTitle" :subtitle="chatSubtitle" @back="goBack" @reset="handleReset" />
 
     <AIChatEmptyState
       v-if="!hasChatStarted"
       :assistant-avatar="assistantAvatar"
-      :quick-prompts="AI_QUICK_PROMPTS"
+      :quick-prompts="quickPrompts"
       @prompt="handleSubmit"
     />
     <AIChatMessageList

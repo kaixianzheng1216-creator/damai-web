@@ -4,13 +4,37 @@ import { AI_CHAT_COPY } from '@/constants'
 import { Button } from '@/components/common/ui/button'
 import { formatPrice } from '@/utils/format'
 
-defineProps<{
+const props = defineProps<{
   item: AiChatItem
 }>()
+
+const linkTarget = computed(() => {
+  switch (props.item.type) {
+    case 'order':
+      return `/checkout/${props.item.id}`
+    case 'ticket':
+      return `/ticket/${props.item.id}`
+    case 'event':
+    default:
+      return `/detail/${props.item.id}`
+  }
+})
+
+const actionLabel = computed(() => {
+  switch (props.item.type) {
+    case 'order':
+      return AI_CHAT_COPY.viewOrder
+    case 'ticket':
+      return AI_CHAT_COPY.viewTicket
+    case 'event':
+    default:
+      return AI_CHAT_COPY.buyTicket
+  }
+})
 </script>
 
 <template>
-  <RouterLink :to="`/detail/${item.id}`" class="flex gap-3 rounded-xl bg-card p-3 hover:shadow-md">
+  <RouterLink :to="linkTarget" class="flex gap-3 rounded-xl bg-card p-3 hover:shadow-md">
     <img
       :src="item.coverUrl"
       :alt="item.title"
@@ -33,7 +57,7 @@ defineProps<{
       <div class="flex items-end justify-between">
         <p class="text-lg font-bold text-primary">{{ formatPrice(item.amount) }}</p>
         <Button size="sm" class="h-auto rounded px-3 py-1 text-xs">
-          {{ AI_CHAT_COPY.buyTicket }}
+          {{ actionLabel }}
         </Button>
       </div>
     </div>
