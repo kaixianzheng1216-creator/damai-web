@@ -45,9 +45,11 @@ declare global {
   const formatDate: typeof import('../utils/format').formatDate
   const formatDateTime: typeof import('../utils/format').formatDateTime
   const formatDateTimeLocalInput: typeof import('../utils/format').formatDateTimeLocalInput
+  const formatDateTimeRange: typeof import('../utils/format').formatDateTimeRange
   const formatDateTimeWithWeekday: typeof import('../utils/format').formatDateTimeWithWeekday
   const formatDateTimeWithoutWeekday: typeof import('../utils/format').formatDateTimeWithoutWeekday
   const formatPrice: typeof import('../utils/format').formatPrice
+  const formatPriceRange: typeof import('../utils/format').formatPriceRange
   const getActivePinia: typeof import('pinia').getActivePinia
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
@@ -390,9 +392,11 @@ declare module 'vue' {
     readonly formatDate: UnwrapRef<typeof import('../utils/format')['formatDate']>
     readonly formatDateTime: UnwrapRef<typeof import('../utils/format')['formatDateTime']>
     readonly formatDateTimeLocalInput: UnwrapRef<typeof import('../utils/format')['formatDateTimeLocalInput']>
+    readonly formatDateTimeRange: UnwrapRef<typeof import('../utils/format')['formatDateTimeRange']>
     readonly formatDateTimeWithWeekday: UnwrapRef<typeof import('../utils/format')['formatDateTimeWithWeekday']>
     readonly formatDateTimeWithoutWeekday: UnwrapRef<typeof import('../utils/format')['formatDateTimeWithoutWeekday']>
     readonly formatPrice: UnwrapRef<typeof import('../utils/format')['formatPrice']>
+    readonly formatPriceRange: UnwrapRef<typeof import('../utils/format')['formatPriceRange']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>

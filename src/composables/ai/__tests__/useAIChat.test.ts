@@ -172,7 +172,21 @@ describe('useAIChat', () => {
   it('preserves user messages and adds AI response on success', async () => {
     mockChatWithAI.mockResolvedValue({
       message: '找到了！',
-      items: [{ type: 'event', id: '1', title: '测试活动' }],
+      items: [
+        {
+          type: 'event',
+          id: '1',
+          name: '测试活动',
+          coverUrl: 'https://example.com/cover.jpg',
+          participantName: '测试艺人',
+          cityNameSnapshot: '北京',
+          venueNameSnapshot: '测试场馆',
+          firstSessionStartAt: '2026-05-01T19:30:00',
+          lastSessionEndAt: '2026-05-01T22:00:00',
+          minPrice: 12800,
+          maxPrice: 28000,
+        },
+      ],
       suggestions: ['更多推荐'],
     })
 

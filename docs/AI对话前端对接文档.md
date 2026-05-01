@@ -34,13 +34,13 @@ AI 角色：小麦，活泼热情的票务助手。
 
 - `id`：活动 ID
 - `name`：活动名称
-- `cover_url`：封面图
-- `participant_name`：艺人名（取第一个艺人）
-- `city_name_snapshot`：城市
-- `venue_name_snapshot`：场馆
-- `first_session_start_at`：首场开始时间
-- `last_session_end_at`：最晚场次结束时间
-- `min_price` / `max_price`：最低/最高票价（分）
+- `coverUrl`：封面图
+- `participantName`：艺人名（取第一个艺人）
+- `cityNameSnapshot`：城市
+- `venueNameSnapshot`：场馆
+- `firstSessionStartAt`：首场开始时间
+- `lastSessionEndAt`：最晚场次结束时间
+- `minPrice` / `maxPrice`：最低/最高票价（分）
 
 **卡片示意**：
 
@@ -68,15 +68,15 @@ AI 角色：小达，冷静专业的在线客服。
 **字段**：
 
 - `id`：订单 ID
-- `event_name_snapshot`：活动名称
-- `event_cover_url_snapshot`：活动封面图
-- `venue_name_snapshot`：场馆名
-- `session_start_at_snapshot`：场次开始时间
-- `total_amount`：订单总金额（分）
+- `eventNameSnapshot`：活动名称
+- `eventCoverUrlSnapshot`：活动封面图
+- `venueNameSnapshot`：场馆名
+- `sessionStartAtSnapshot`：场次开始时间
+- `totalAmount`：订单总金额（分）
 - `quantity`：购票数量
 - `status`：订单状态码
-- `status_label`：订单状态中文（待支付/已支付/已取消/已关闭/已退款）
-- `order_no`：订单号
+- `statusLabel`：订单状态中文（待支付/已支付/已取消/已关闭/已退款）
+- `orderNo`：订单号
 
 **卡片示意**：
 
@@ -99,14 +99,14 @@ AI 角色：小达，冷静专业的在线客服。
 **字段**：
 
 - `id`：电子票 ID
-- `event_name_snapshot`：活动名称
-- `event_cover_url_snapshot`：活动封面图
-- `venue_name_snapshot`：场馆名
-- `session_start_at_snapshot`：场次开始时间
-- `passenger_name_snapshot`：购票人姓名
+- `eventNameSnapshot`：活动名称
+- `eventCoverUrlSnapshot`：活动封面图
+- `venueNameSnapshot`：场馆名
+- `sessionStartAtSnapshot`：场次开始时间
+- `passengerNameSnapshot`：购票人姓名
 - `status`：电子票状态码
-- `status_label`：电子票状态中文（未使用/已使用/已作废/已退票）
-- `ticket_no`：票号
+- `statusLabel`：电子票状态中文（未使用/已使用/已作废/已退票）
+- `ticketNo`：票号
 
 **卡片示意**：
 
@@ -126,7 +126,7 @@ AI 角色：小达，冷静专业的在线客服。
 
 ## 通用说明
 
-1. **价格单位**：所有金额字段（`min_price`、`max_price`、`total_amount`）单位都是**分**，前端展示前需 ÷100。
-2. **时间格式**：`first_session_start_at`、`session_start_at_snapshot` 等是 ISO 8601 字符串，前端按需格式化。
-3. **状态标签**：`status_label` 已经是中文，可直接展示；`status` 是数字码，如需自定义颜色可据此判断。
+1. **价格单位**：所有金额字段（`minPrice`、`maxPrice`、`totalAmount`）单位都是**分**，前端展示前需 ÷100。
+2. **时间格式**：`firstSessionStartAt`、`sessionStartAtSnapshot` 等是 ISO 8601 字符串，前端按需格式化。
+3. **状态标签**：`statusLabel` 已经是中文，可直接展示；`status` 是数字码，如需自定义颜色可据此判断。
 4. **空数据**：`items` 可能为空数组，此时只展示 `message` 和 `suggestions` 即可。

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
-import type { ChatMessage } from '@/api/ai/types'
+import type { ChatMessage, AiChatItem } from '@/api/ai/types'
 import { AI_CHAT_COPY, AVATAR_PLACEHOLDERS } from '@/constants'
 import { useUserStore } from '@/stores/user'
-import AIEventRecommendationCard from './AIEventRecommendationCard.vue'
+import AIChatEventCard from './AIChatEventCard.vue'
+import AIChatOrderCard from './AIChatOrderCard.vue'
+import AIChatTicketCard from './AIChatTicketCard.vue'
 
 const props = defineProps<{
   messages: ChatMessage[]
@@ -30,6 +32,19 @@ watch(
   () => scrollToBottom(),
   { immediate: true },
 )
+
+const renderCard = (item: AiChatItem) => {
+  switch (item.type) {
+    case 'event':
+      return h(AIChatEventCard, { item })
+    case 'order':
+      return h(AIChatOrderCard, { item })
+    case 'ticket':
+      return h(AIChatTicketCard, { item })
+    default:
+      return null
+  }
+}
 </script>
 
 <template>
@@ -78,7 +93,7 @@ watch(
           <div v-if="msg.role === 'ai' && msg.items?.length" class="mt-5 space-y-3">
             <p class="text-xs text-muted-foreground">{{ AI_CHAT_COPY.recommended }}</p>
             <div class="space-y-3">
-              <AIEventRecommendationCard v-for="item in msg.items" :key="item.id" :item="item" />
+              <component :is="renderCard(item)" v-for="item in msg.items" :key="item.id" />
             </div>
           </div>
         </div>

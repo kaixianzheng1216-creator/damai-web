@@ -27,4 +27,5 @@ export const AI_CHAT_COPY = {
   back: '返回',
   reset: '清空对话',
   send: '发送',
+  passenger: '购票人',
 } as const
