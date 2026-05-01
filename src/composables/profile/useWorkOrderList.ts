@@ -136,7 +136,7 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
   }
 
   const openCloseWorkOrderModal = () => {
-    if (!selectedWorkOrderId.value || selectedWorkOrderClosed.value) {
+    if (!selectedWorkOrderId.value) {
       return
     }
     showCloseWorkOrderModal.value = true
