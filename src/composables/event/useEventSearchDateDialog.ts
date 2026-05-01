@@ -1,6 +1,7 @@
-import { computed, ref, shallowRef } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { CalendarDate } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
+import { useDialog } from '@/composables/common'
 
 interface UseEventSearchDateDialogOptions {
   getCurrentDate: () => string | undefined
@@ -29,7 +30,7 @@ export const useEventSearchDateDialog = ({
   getCurrentDate,
   onConfirm,
 }: UseEventSearchDateDialogOptions) => {
-  const isOpen = ref(false)
+  const { open: isOpen, openDialog, closeDialog } = useDialog()
   const selectedDate = shallowRef<CalendarDate | undefined>()
 
   const dateModel = computed<DateValue | undefined>(
@@ -38,11 +39,7 @@ export const useEventSearchDateDialog = ({
 
   const open = () => {
     selectedDate.value = parseCalendarDate(getCurrentDate())
-    isOpen.value = true
-  }
-
-  const close = () => {
-    isOpen.value = false
+    openDialog()
   }
 
   const confirm = async () => {
@@ -50,7 +47,7 @@ export const useEventSearchDateDialog = ({
       return
     }
 
-    isOpen.value = false
+    closeDialog()
     await onConfirm(formatCalendarDate(selectedDate.value))
   }
 
@@ -59,7 +56,7 @@ export const useEventSearchDateDialog = ({
     selectedDate,
     dateModel,
     open,
-    close,
+    close: closeDialog,
     confirm,
   }
 }

@@ -720,6 +720,84 @@ Wave FINAL (After ALL — 4 parallel reviews):
 
 ---
 
+- [ ] T10. 修复客服卡片封面图比例被挤压问题
+
+  **What to do**:
+  - 修改三个卡片组件中的封面图结构，给 `<img>` 外层包裹 `<div class="shrink-0">`
+  - 从 `img` 上移除 `shrink-0`，移到外层 `div`
+  - 确保图片的 `aspect-[3/4]` 不受右侧 flex 内容高度影响
+
+  **修复前** (当前问题代码):
+
+  ```vue
+  <img
+    :src="item.coverUrl || ''"
+    class="aspect-[3/4] h-auto w-20 shrink-0 rounded-lg object-cover"
+  />
+  ```
+
+  **修复后**:
+
+  ```vue
+  <div class="shrink-0">
+    <img
+      :src="item.coverUrl || ''"
+      class="aspect-[3/4] h-auto w-20 rounded-lg object-cover"
+    />
+  </div>
+  ```
+
+  **需要修改的文件**:
+  - `src/components/features/ai/AIChatEventCard.vue`
+  - `src/components/features/ai/AIChatOrderCard.vue`
+  - `src/components/features/ai/AIChatTicketCard.vue`
+
+  **Why this works**:
+  - 原代码中 `shrink-0` 在 `img` 上，但 `h-auto` 在 flex 子元素中高度计算会受父容器 stretch 影响
+  - 右侧内容（订单号、状态标签）将卡片撑高后，`img` 的 `aspect-[3/4]` 计算异常
+  - 将 `shrink-0` 移到外层 `div`，创建独立的 BFC，图片宽高比不再受 flex 布局影响
+
+  **Recommended Agent Profile**:
+  - **Category**: `quick`
+  - **Skills**: `vue-best-practices`
+
+  **Parallelization**:
+  - **Can Run In Parallel**: NO
+  - **Parallel Group**: Hotfix (after Wave 3)
+  - **Blocked By**: T4, T5, T6
+
+  **Acceptance Criteria**:
+  - [ ] 三个卡片组件的图片结构统一修复
+  - [ ] 活动卡片和客服卡片的封面图比例视觉上完全一致
+  - [ ] `npm run type-check` 通过
+  - [ ] `npm run lint:check` 通过
+  - [ ] `npm run build` 成功
+
+  **QA Scenarios**:
+
+  ```
+  Scenario: All card images have consistent aspect ratio
+    Tool: Playwright
+    Preconditions: Dev server running
+    Steps:
+      1. Navigate to /ai (助手模式)
+      2. Mock response with event items
+      3. Screenshot event card
+      4. Navigate to /ai?mode=support (客服模式)
+      5. Mock response with order items
+      6. Screenshot order card
+      7. Compare image dimensions: both should be 80px width with same height (~106px)
+    Expected Result: Event and order card images have identical dimensions
+    Failure Indicators: Order card image shorter/taller than event card
+    Evidence: .sisyphus/evidence/t10-image-ratio-comparison.png
+  ```
+
+  **Commit**: YES
+  - Message: `fix(ai): isolate card image from flex stretch to preserve aspect ratio`
+  - Files: `src/components/features/ai/AIChatEventCard.vue`, `src/components/features/ai/AIChatOrderCard.vue`, `src/components/features/ai/AIChatTicketCard.vue`
+
+---
+
 ## Final Verification Wave
 
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.

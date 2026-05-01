@@ -60,7 +60,6 @@ const columns = createVenueColumns({ openEdit, handleDelete })
   </DataTableCrud>
 
   <AdminFormDialog
-    v-if="showDialog"
     v-model:open="showDialog"
     :title="dialogTitle"
     description="维护场馆基础信息与地址"

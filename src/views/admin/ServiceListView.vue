@@ -87,7 +87,6 @@ const optionColumns = createServiceOptionColumns({
   </DataTableCrud>
 
   <AdminFormDialog
-    v-if="showServiceDialog"
     v-model:open="showServiceDialog"
     :title="serviceDialogTitle"
     description="维护服务保障名称和排序"
@@ -132,7 +131,6 @@ const optionColumns = createServiceOptionColumns({
   </Dialog>
 
   <AdminFormDialog
-    v-if="showOptionDialog"
     v-model:open="showOptionDialog"
     :title="optionDialogTitle"
     description="维护服务保障选项"

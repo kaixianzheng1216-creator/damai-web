@@ -30,21 +30,21 @@ const replyContent = defineModel<string>('replyContent', { required: true })
 
 const emit = defineEmits<{
   close: []
-  'submit-reply': []
+  reply: []
   'close-work-order': []
 }>()
 
 const replies = computed(() => props.workOrder?.replies ?? [])
 const isClosed = computed(() => props.workOrder?.status === WORK_ORDER_STATUS.CLOSED)
 const isProcessing = computed(() => Boolean(props.isReplying || props.isClosing))
-const canSubmitReply = computed(
+const canReply = computed(
   () => replyContent.value.trim().length > 0 && !isClosed.value && !props.isReplying,
 )
 
 const isUserReply = (reply: WorkOrderReplyVO) => reply.senderType === 0
 
 const handleOpenChange = (value: boolean) => {
-  if (!value && !isProcessing.value) {
+  if (!value && !isProcessing.value && props.open) {
     emit('close')
   }
 }
@@ -199,12 +199,7 @@ const handleOpenChange = (value: boolean) => {
             <icon-lucide-lock class="mr-1.5 size-4" />
             关闭工单
           </Button>
-          <Button
-            v-if="!isClosed"
-            type="button"
-            :disabled="!canSubmitReply"
-            @click="emit('submit-reply')"
-          >
+          <Button v-if="!isClosed" type="button" :disabled="!canReply" @click="emit('reply')">
             <icon-lucide-send class="mr-1.5 size-4" />
             {{ isReplying ? '发送中' : '发送回复' }}
           </Button>

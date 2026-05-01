@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { AI_CHAT_COPY } from '@/constants'
 
-defineProps<{
-  assistantAvatar: string
-  quickPrompts: readonly string[]
-}>()
+withDefaults(
+  defineProps<{
+    assistantAvatar: string
+    quickPrompts: readonly string[]
+    emptyTitle?: string
+    emptyDescription?: string
+  }>(),
+  {
+    emptyTitle: AI_CHAT_COPY.emptyTitle,
+    emptyDescription: AI_CHAT_COPY.emptyDescription,
+  },
+)
 
 defineEmits<{
   prompt: [text: string]
@@ -21,10 +29,10 @@ defineEmits<{
       class="mb-6 h-auto max-h-36 w-auto object-contain"
     />
     <h2 class="mb-2 text-center text-2xl font-bold text-foreground">
-      {{ AI_CHAT_COPY.emptyTitle }}
+      {{ emptyTitle }}
     </h2>
     <p class="mb-10 text-center text-base text-muted-foreground">
-      {{ AI_CHAT_COPY.emptyDescription }}
+      {{ emptyDescription }}
     </p>
     <div class="flex flex-wrap justify-center gap-3">
       <button

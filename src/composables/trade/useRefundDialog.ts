@@ -1,8 +1,9 @@
-import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { createRefund, type TicketOrderVO } from '@/api/trade'
 import { ORDER_STATUS, queryKeys } from '@/constants'
+import { useDialog } from '@/composables/common'
 
 interface UseRefundDialogOptions {
   order: MaybeRefOrGetter<TicketOrderVO | null | undefined>
@@ -10,7 +11,7 @@ interface UseRefundDialogOptions {
 
 export function useRefundDialog(options: UseRefundDialogOptions) {
   const queryClient = useQueryClient()
-  const showRefundDialog = ref(false)
+  const { open: showRefundDialog, openDialog, closeDialog } = useDialog()
   const currentOrder = computed(() => toValue(options.order))
 
   const canRefund = computed(() => {
@@ -27,12 +28,8 @@ export function useRefundDialog(options: UseRefundDialogOptions) {
 
   const openRefundDialog = () => {
     if (canRefund.value) {
-      showRefundDialog.value = true
+      openDialog()
     }
-  }
-
-  const closeRefundDialog = () => {
-    showRefundDialog.value = false
   }
 
   const refundMutation = useMutation({
@@ -47,7 +44,7 @@ export function useRefundDialog(options: UseRefundDialogOptions) {
     onSuccess: async (_refund, _reason) => {
       const orderId = currentOrder.value?.id
       toast.success('退款申请已提交')
-      showRefundDialog.value = false
+      closeDialog()
 
       if (!orderId) {
         return
@@ -68,6 +65,6 @@ export function useRefundDialog(options: UseRefundDialogOptions) {
     canRefund,
     refundMutation,
     openRefundDialog,
-    closeRefundDialog,
+    closeRefundDialog: closeDialog,
   }
 }

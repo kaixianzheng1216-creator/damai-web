@@ -18,6 +18,15 @@
       "agent": "Sisyphus-Junior",
       "category": "quick",
       "updated_at": "2026-05-01T14:55:28.345Z"
+    },
+    "todo:2": {
+      "task_key": "todo:2",
+      "task_label": "2",
+      "task_title": "useWorkOrderList.ts — 修复 closeWorkOrderMutation onSuccess",
+      "session_id": "ses_21bf4e0e2ffevM0ewNeuS5KIoy",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-01T14:58:12.950Z"
     }
   }
 }

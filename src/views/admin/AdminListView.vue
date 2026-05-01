@@ -68,7 +68,6 @@ const columns = createAdminColumns({ openEdit, toggleStatus })
   </DataTableCrud>
 
   <AdminFormDialog
-    v-if="showDialog"
     v-model:open="showDialog"
     :title="dialogTitle"
     description="维护管理员手机号、用户名和头像"

@@ -34,7 +34,6 @@ const profile = useProfilePageContext()
   />
 
   <ProfileWorkOrderDetailDialog
-    v-if="profile.selectedWorkOrderId.value"
     v-model:reply-content="profile.replyContent.value"
     :open="!!profile.selectedWorkOrderId.value"
     :work-order="profile.selectedWorkOrder.value"
@@ -43,18 +42,7 @@ const profile = useProfilePageContext()
     :is-closing="profile.closeWorkOrderMutation.isPending.value"
     :reply-error="profile.replyError.value"
     @close="profile.closeWorkOrderDetail"
-    @submit-reply="profile.submitWorkOrderReply"
-    @close-work-order="profile.openCloseWorkOrderModal"
-  />
-
-  <ConfirmDialog
-    :open="profile.showCloseWorkOrderModal.value"
-    :title="PROFILE_DIALOG_COPY.closeWorkOrderTitle"
-    :description="PROFILE_DIALOG_COPY.closeWorkOrderDescription"
-    :confirm-text="PROFILE_DIALOG_COPY.closeWorkOrderConfirmText"
-    confirm-variant="destructive"
-    :loading="profile.closeWorkOrderMutation.isPending.value"
-    @close="profile.closeCloseWorkOrderModal"
-    @confirm="profile.confirmCloseWorkOrder"
+    @reply="profile.submitWorkOrderReply"
+    @close-work-order="profile.confirmCloseWorkOrder"
   />
 </template>

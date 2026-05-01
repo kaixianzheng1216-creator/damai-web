@@ -84,7 +84,6 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
   </DataTableCrud>
 
   <AdminFormDialog
-    v-if="showDialog"
     v-model:open="showDialog"
     :title="dialogTitle"
     :description="dialogDescription"

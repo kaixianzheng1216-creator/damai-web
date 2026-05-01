@@ -61,7 +61,6 @@ const columns = createParticipantColumns({ openEdit, handleDelete })
   </DataTableCrud>
 
   <AdminFormDialog
-    v-if="showDialog"
     v-model:open="showDialog"
     :title="dialogTitle"
     description="维护参与方名称与头像"

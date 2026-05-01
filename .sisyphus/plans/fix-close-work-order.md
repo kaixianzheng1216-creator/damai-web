@@ -110,7 +110,7 @@ Wave 1:
   - [ ] `queryKeys.admin.workOrderDetail()` 返回 `['admin-work-order-detail']`
   - [ ] `npm run type-check` 通过
 
-- [ ] 2. useWorkOrderList.ts — 修复 closeWorkOrderMutation onSuccess
+- [x] 2. useWorkOrderList.ts — 修复 closeWorkOrderMutation onSuccess
 
   **What to do**:
   - 修改 `src/composables/profile/useWorkOrderList.ts`
@@ -149,10 +149,10 @@ Wave 1:
 
 ## Final Verification Wave
 
-- [ ] F1. **构建检查** — `unspecified-high`
+- [x] F1. **构建检查** — `unspecified-high`
       运行 `npm run type-check` → PASS，运行 `npm run build` → PASS
 
-- [ ] F2. **代码审查** — `unspecified-high`
+- [x] F2. **代码审查** — `unspecified-high`
       确认 `closeWorkOrderMutation.onSuccess` 调用了 `closeWorkOrderDetail()`
       确认 `queryKeys.profile.workOrderDetail()` 返回单元素数组
 

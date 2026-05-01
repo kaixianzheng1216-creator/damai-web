@@ -83,6 +83,10 @@ const goBack = () => {
       v-if="!hasChatStarted"
       :assistant-avatar="assistantAvatar"
       :quick-prompts="quickPrompts"
+      :empty-title="isSupportMode ? '你好！我是 Damai 客服助手' : undefined"
+      :empty-description="
+        isSupportMode ? '我可以帮你查订单、查电子票、或者提交工单给人工客服。' : undefined
+      "
       @prompt="handleSubmit"
     />
     <AIChatMessageList

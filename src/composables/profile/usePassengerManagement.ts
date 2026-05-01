@@ -5,7 +5,12 @@ import { fetchPassengerPage, createPassenger, deletePassenger } from '@/api/acco
 import { PASSENGER_CERT_TYPES } from '@/constants'
 import { mapPassengerToPassengerItem } from '@/utils/mappers'
 import { queryKeys } from '@/constants'
-import { usePagination, useQueryEnabled, type QueryEnabledOptions } from '@/composables/common'
+import {
+  usePagination,
+  useQueryEnabled,
+  type QueryEnabledOptions,
+  useDialog,
+} from '@/composables/common'
 import type { PassengerItem, PassengerFormData, PageResponsePassengerVO } from '@/api/account'
 
 const passengerSchema = z.object({
@@ -17,8 +22,17 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
   const enabled = useQueryEnabled(options.enabled)
   const queryClient = useQueryClient()
 
-  const showPassengerModal = ref(false)
-  const showDeletePassengerModal = ref(false)
+  const {
+    open: showPassengerModal,
+    openDialog: openPassengerDialog,
+    closeDialog: closePassengerModal,
+  } = useDialog()
+
+  const {
+    open: showDeletePassengerModal,
+    openDialog: openDeleteDialog,
+    closeDialog: closeDeleteDialog,
+  } = useDialog()
 
   const deletingPassengerId = ref<string | null>(null)
 
@@ -93,11 +107,11 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
 
   const openCreatePassengerModal = () => {
     resetPassengerForm()
-    showPassengerModal.value = true
+    openPassengerDialog()
   }
 
-  const closePassengerModal = () => {
-    showPassengerModal.value = false
+  const closePassengerModalSafe = () => {
+    closePassengerModal()
     resetPassengerForm()
   }
 
@@ -116,7 +130,7 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
 
     try {
       await createPassengerMutation.mutateAsync(requestData)
-      closePassengerModal()
+      closePassengerModalSafe()
     } catch {
       // Error handled by mutation onError
     }
@@ -124,11 +138,11 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
 
   const openDeletePassengerModal = (passengerId: string) => {
     deletingPassengerId.value = passengerId
-    showDeletePassengerModal.value = true
+    openDeleteDialog()
   }
 
   const closeDeletePassengerModal = () => {
-    showDeletePassengerModal.value = false
+    closeDeleteDialog()
     deletingPassengerId.value = null
   }
 
@@ -160,7 +174,7 @@ export const usePassengerManagement = (options: QueryEnabledOptions = {}) => {
     passengerError,
     passengerForm,
     openCreatePassengerModal,
-    closePassengerModal,
+    closePassengerModal: closePassengerModalSafe,
     submitPassenger,
     openDeletePassengerModal,
     closeDeletePassengerModal,

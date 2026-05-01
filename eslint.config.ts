@@ -37,6 +37,21 @@ export default defineConfigWithVueTs(
     },
   },
 
+  {
+    name: 'app/dialog-no-vif-with-open',
+    files: ['src/**/*.vue'],
+    rules: {
+      'vue/no-restricted-syntax': [
+        'error',
+        {
+          selector: 'VElement[name=/Dialog/] > VStartTag > VAttribute[name.name="v-if"]',
+          message:
+            '禁止在 Dialog 组件上使用 v-if，请使用 :open 控制显示。详见 docs/ui-guidelines.md',
+        },
+      ],
+    },
+  },
+
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
 
   skipFormatting,

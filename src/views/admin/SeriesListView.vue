@@ -60,7 +60,6 @@ const columns = createSeriesColumns({ openEdit, handleDelete })
   </DataTableCrud>
 
   <AdminFormDialog
-    v-if="showDialog"
     v-model:open="showDialog"
     :title="dialogTitle"
     description="维护活动系列名称"

@@ -100,5 +100,5 @@ const columns = createTicketColumns()
     </template>
   </DataTableCrud>
 
-  <ScanCheckinDialog v-if="showScanDialog" v-model:open="showScanDialog" />
+  <ScanCheckinDialog v-model:open="showScanDialog" />
 </template>

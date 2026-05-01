@@ -24,7 +24,6 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
   const selectedWorkOrderId = ref<string | null>(null)
   const replyContent = ref('')
   const replyError = ref('')
-  const showCloseWorkOrderModal = ref(false)
 
   const {
     page: workOrderPage,
@@ -94,8 +93,6 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
   const closeWorkOrderMutation = useMutation({
     mutationFn: closeWorkOrder,
     onSuccess: async () => {
-      showCloseWorkOrderModal.value = false
-      closeWorkOrderDetail()
       await invalidateWorkOrders()
     },
   })
@@ -110,7 +107,6 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
     selectedWorkOrderId.value = null
     replyContent.value = ''
     replyError.value = ''
-    showCloseWorkOrderModal.value = false
   }
 
   const submitWorkOrderReply = async () => {
@@ -135,23 +131,14 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
     })
   }
 
-  const openCloseWorkOrderModal = () => {
-    if (!selectedWorkOrderId.value) {
-      return
-    }
-    showCloseWorkOrderModal.value = true
-  }
-
-  const closeCloseWorkOrderModal = () => {
-    showCloseWorkOrderModal.value = false
-  }
-
   const confirmCloseWorkOrder = async () => {
     if (!selectedWorkOrderId.value) {
       return
     }
 
-    await closeWorkOrderMutation.mutateAsync(selectedWorkOrderId.value)
+    const id = selectedWorkOrderId.value
+    closeWorkOrderDetail()
+    await closeWorkOrderMutation.mutateAsync(id)
   }
 
   return {
@@ -169,14 +156,11 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
     replyError,
     replyMutation,
     closeWorkOrderMutation,
-    showCloseWorkOrderModal,
     updateWorkOrderPage,
     updateWorkOrderPageSize,
     openWorkOrderDetail,
     closeWorkOrderDetail,
     submitWorkOrderReply,
-    openCloseWorkOrderModal,
-    closeCloseWorkOrderModal,
     confirmCloseWorkOrder,
   }
 }

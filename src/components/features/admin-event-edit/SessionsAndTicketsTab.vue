@@ -60,7 +60,6 @@ const {
     />
 
     <TicketTypeDialog
-      v-if="showTicketTypeDialog"
       v-model:open="showTicketTypeDialog"
       :event-id="eventId"
       :editing-ticket-type="editingTicketType"
@@ -69,7 +68,6 @@ const {
     />
 
     <InventoryAdjustDialog
-      v-if="showInventoryDialog"
       v-model:open="showInventoryDialog"
       :event-id="eventId"
       :ticket-type="inventoryTicketType"
@@ -77,7 +75,6 @@ const {
     />
 
     <TicketTypeCopyDialog
-      v-if="showCopyDialog"
       v-model:open="showCopyDialog"
       :event-id="eventId"
       :source-session="copySourceSession"

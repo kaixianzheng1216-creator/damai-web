@@ -1,21 +1,14 @@
-import { computed, reactive, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { fetchUserInfo, updateUserInfo } from '@/api/account'
-import type { UserVO } from '@/api/account'
-import { PROFILE_CONFIG, queryKeys } from '@/constants'
+import { computed } from 'vue'
 import { useProfileSection } from './useProfileSection'
 import { usePassengerManagement } from './usePassengerManagement'
 import { useOrderList } from './useOrderList'
 import { useTicketList } from './useTicketList'
 import { useWorkOrderList } from './useWorkOrderList'
-import { useAvatarUpload } from './useAvatarUpload'
 import { useFollowList } from './useFollowList'
+import { useProfileUserInfo } from './useProfileUserInfo'
 
 export const useProfilePage = () => {
-  const queryClient = useQueryClient()
-
   const profileSection = useProfileSection()
-  const isInfoSection = computed(() => profileSection.activeSection.value === 'info')
   const isPassengersSection = computed(() => profileSection.activeSection.value === 'passengers')
   const isOrdersSection = computed(() => profileSection.activeSection.value === 'orders')
   const isTicketsSection = computed(() => profileSection.activeSection.value === 'tickets')
@@ -31,29 +24,16 @@ export const useProfilePage = () => {
   const orderList = useOrderList({ enabled: isOrdersSection })
   const ticketList = useTicketList({ enabled: isTicketsSection })
   const workOrderList = useWorkOrderList({ enabled: isWorkOrdersSection })
-  const avatarUpload = useAvatarUpload()
+  const userInfo = useProfileUserInfo()
   const followList = useFollowList({
     events: { enabled: isFollowedEventsSection },
     participants: { enabled: isFollowedParticipantsSection },
   })
 
-  const userInfoQuery = useQuery<UserVO>({
-    queryKey: queryKeys.profile.userInfo(),
-    queryFn: fetchUserInfo,
-    enabled: isInfoSection,
-  })
-
-  const updateUserInfoMutation = useMutation({
-    mutationFn: updateUserInfo,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.profile.userInfo() })
-    },
-  })
-
   const activeSectionLoading = computed(() => {
     switch (profileSection.activeSection.value) {
       case 'info':
-        return userInfoQuery.isLoading.value
+        return userInfo.userInfoQuery.isLoading.value
       case 'passengers':
         return passengerManagement.passengerListQuery.isLoading.value
       case 'orders':
@@ -71,38 +51,6 @@ export const useProfilePage = () => {
     }
   })
 
-  const years = Array.from({ length: PROFILE_CONFIG.YEAR_RANGE }, (_, i) =>
-    String(PROFILE_CONFIG.START_YEAR - i),
-  )
-  const months = Array.from({ length: PROFILE_CONFIG.MONTH_COUNT }, (_, i) => String(i + 1))
-  const days = Array.from({ length: PROFILE_CONFIG.DAY_COUNT }, (_, i) => String(i + 1))
-
-  const infoForm = reactive({
-    nickname: userInfoQuery.data.value?.username ?? '',
-    gender: PROFILE_CONFIG.GENDER_DEFAULT,
-    birthYear: PROFILE_CONFIG.BIRTH_YEAR_DEFAULT,
-    birthMonth: PROFILE_CONFIG.BIRTH_MONTH_DEFAULT,
-    birthDay: PROFILE_CONFIG.BIRTH_DAY_DEFAULT,
-  })
-
-  watch(
-    () => userInfoQuery.data.value,
-    (data) => {
-      if (!data) {
-        return
-      }
-      infoForm.nickname = data.username
-    },
-    { immediate: true },
-  )
-
-  const saveInfo = async () => {
-    await updateUserInfoMutation.mutateAsync({
-      username: infoForm.nickname,
-      avatarUrl: avatarUpload.avatarUrl.value || userInfoQuery.data.value?.avatarUrl,
-    })
-  }
-
   return {
     activeSection: profileSection.activeSection,
     tradeSections: profileSection.tradeSections,
@@ -110,11 +58,17 @@ export const useProfilePage = () => {
     currentTitle: profileSection.currentTitle,
     openSection: profileSection.openSection,
     activeSectionLoading,
-    infoForm,
-    saveInfo,
-    years,
-    months,
-    days,
+    // User info
+    infoForm: userInfo.infoForm,
+    saveInfo: userInfo.saveInfo,
+    years: userInfo.years,
+    months: userInfo.months,
+    days: userInfo.days,
+    userInfoQuery: userInfo.userInfoQuery,
+    updateUserInfoMutation: userInfo.updateUserInfoMutation,
+    displayAvatar: userInfo.displayAvatar,
+    updateAvatar: userInfo.updateAvatar,
+    // Passenger
     passengerList: passengerManagement.passengerList,
     passengerPage: passengerManagement.passengerPage,
     passengerPageSize: passengerManagement.passengerPageSize,
@@ -137,6 +91,7 @@ export const useProfilePage = () => {
     updatePassengerPage: passengerManagement.updatePassengerPage,
     updatePassengerPageSize: passengerManagement.updatePassengerPageSize,
     updatePassengerKeyword: passengerManagement.updatePassengerKeyword,
+    // Order
     orderFilter: orderList.orderFilter,
     orderPage: orderList.orderPage,
     orderPageSize: orderList.orderPageSize,
@@ -146,6 +101,7 @@ export const useProfilePage = () => {
     orderTotalRow: orderList.orderTotalRow,
     updateOrderPage: orderList.updateOrderPage,
     updateOrderPageSize: orderList.updateOrderPageSize,
+    // Ticket
     ticketPage: ticketList.ticketPage,
     ticketPageSize: ticketList.ticketPageSize,
     myTicketPageQuery: ticketList.myTicketPageQuery,
@@ -154,6 +110,7 @@ export const useProfilePage = () => {
     ticketTotalRow: ticketList.ticketTotalRow,
     updateTicketPage: ticketList.updateTicketPage,
     updateTicketPageSize: ticketList.updateTicketPageSize,
+    // Work order
     workOrderFilter: workOrderList.workOrderFilter,
     workOrderPage: workOrderList.workOrderPage,
     workOrderPageSize: workOrderList.workOrderPageSize,
@@ -168,19 +125,13 @@ export const useProfilePage = () => {
     replyError: workOrderList.replyError,
     replyMutation: workOrderList.replyMutation,
     closeWorkOrderMutation: workOrderList.closeWorkOrderMutation,
-    showCloseWorkOrderModal: workOrderList.showCloseWorkOrderModal,
     updateWorkOrderPage: workOrderList.updateWorkOrderPage,
     updateWorkOrderPageSize: workOrderList.updateWorkOrderPageSize,
     openWorkOrderDetail: workOrderList.openWorkOrderDetail,
     closeWorkOrderDetail: workOrderList.closeWorkOrderDetail,
     submitWorkOrderReply: workOrderList.submitWorkOrderReply,
-    openCloseWorkOrderModal: workOrderList.openCloseWorkOrderModal,
-    closeCloseWorkOrderModal: workOrderList.closeCloseWorkOrderModal,
     confirmCloseWorkOrder: workOrderList.confirmCloseWorkOrder,
-    userInfoQuery,
-    displayAvatar: avatarUpload.displayAvatar,
-    updateAvatar: avatarUpload.updateAvatar,
-    // Follow List (直接导出整个对象以避免参数蔓延)
+    // Follow
     followList,
   }
 }
