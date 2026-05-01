@@ -12,13 +12,15 @@ const linkTarget = computed(() => `/checkout/${props.item.id}`)
 </script>
 
 <template>
-  <RouterLink :to="linkTarget" class="flex gap-3 rounded-xl bg-card p-3 hover:shadow-md">
-    <img
-      :src="item.eventCoverUrlSnapshot || ''"
-      :alt="item.eventNameSnapshot"
-      class="aspect-[3/4] h-auto w-20 shrink-0 rounded-lg object-cover"
-    />
-    <div class="flex flex-1 flex-col justify-between py-0.5">
+  <RouterLink :to="linkTarget" class="flex gap-5 rounded-xl bg-card p-5 hover:shadow-md">
+    <div class="shrink-0">
+      <img
+        :src="item.eventCoverUrlSnapshot || ''"
+        :alt="item.eventNameSnapshot"
+        class="aspect-[3/4] h-auto w-24 rounded-lg object-cover"
+      />
+    </div>
+    <div class="flex flex-1 flex-col justify-between py-1">
       <div class="space-y-1">
         <p class="line-clamp-2 text-sm font-bold text-foreground">{{ item.eventNameSnapshot }}</p>
         <div class="space-y-0.5">

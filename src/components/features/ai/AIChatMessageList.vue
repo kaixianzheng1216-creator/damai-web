@@ -92,7 +92,7 @@ const renderCard = (item: AiChatItem) => {
 
           <div v-if="msg.role === 'ai' && msg.items?.length" class="mt-5 space-y-3">
             <p class="text-xs text-muted-foreground">{{ AI_CHAT_COPY.recommended }}</p>
-            <div class="space-y-3">
+            <div class="space-y-5">
               <component :is="renderCard(item)" v-for="item in msg.items" :key="item.id" />
             </div>
           </div>
