@@ -39,9 +39,11 @@ const linkTarget = computed(() => `/ticket/${props.item.id}`)
           {{ AI_CHAT_COPY.passenger }}：{{ item.passengerNameSnapshot }}
         </p>
         <div class="border-t border-border pt-2">
-          <div class="flex items-center justify-between">
-            <p class="text-xs font-mono text-muted-foreground">{{ item.ticketNo }}</p>
-            <span class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+          <div class="flex items-start justify-between gap-2">
+            <p class="break-all text-xs font-mono text-muted-foreground">{{ item.ticketNo }}</p>
+            <span
+              class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
+            >
               {{ item.statusLabel }}
             </span>
           </div>
