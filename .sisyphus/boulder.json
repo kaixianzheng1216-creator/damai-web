@@ -1,0 +1,23 @@
+{
+  "active_plan": "F:\\workspace4graduationproject\\damai-web\\.sisyphus\\plans\\fix-close-work-order.md",
+  "started_at": "2026-05-01T14:49:23.653Z",
+  "session_ids": [
+    "ses_21c37a907ffeqnuk5k2ABCPTo7"
+  ],
+  "session_origins": {
+    "ses_21c37a907ffeqnuk5k2ABCPTo7": "direct"
+  },
+  "plan_name": "fix-close-work-order",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "queryKeys.ts — 修复 workOrderDetail / admin.workOrderDetail queryKey 构造",
+      "session_id": "ses_21bf78532ffe0FfDw6EgnFjIBP",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-01T14:55:28.345Z"
+    }
+  }
+}

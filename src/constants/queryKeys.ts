@@ -10,7 +10,8 @@ export const queryKeys = {
     detail: (name: string, id?: QueryKeyPart) => key(`admin-${name}-detail`, id),
     eventDetail: (id?: QueryKeyPart) => key('admin-event-detail', id),
     workOrderList: () => key('admin-work-order-list'),
-    workOrderDetail: (id?: QueryKeyPart) => key('admin-work-order-detail', id),
+    workOrderDetail: (id?: QueryKeyPart) =>
+      id !== undefined ? key('admin-work-order-detail', id) : key('admin-work-order-detail'),
   },
   ai: {
     chat: () => key('ai-chat'),
@@ -34,7 +35,8 @@ export const queryKeys = {
     orders: (...parts: QueryKeyPart[]) => key('my-order-page', ...parts),
     tickets: (...parts: QueryKeyPart[]) => key('my-ticket-page', ...parts),
     workOrders: (...parts: QueryKeyPart[]) => key('my-work-order-page', ...parts),
-    workOrderDetail: (id?: QueryKeyPart) => key('my-work-order-detail', id),
+    workOrderDetail: (id?: QueryKeyPart) =>
+      id !== undefined ? key('my-work-order-detail', id) : key('my-work-order-detail'),
     followedEvents: (...parts: QueryKeyPart[]) => key('followed-events', ...parts),
     followedParticipants: (...parts: QueryKeyPart[]) => key('followed-participants', ...parts),
   },

@@ -95,6 +95,7 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
     mutationFn: closeWorkOrder,
     onSuccess: async () => {
       showCloseWorkOrderModal.value = false
+      closeWorkOrderDetail()
       await invalidateWorkOrders()
     },
   })
