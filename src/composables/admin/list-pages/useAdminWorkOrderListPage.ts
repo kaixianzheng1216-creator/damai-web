@@ -1,15 +1,12 @@
 import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import {
-  closeAdminWorkOrder,
-  fetchAdminWorkOrderById,
-  fetchAdminWorkOrderPage,
-  submitAdminWorkOrderReply,
-} from '@/api/trade'
+import { closeAdminWorkOrder, fetchAdminWorkOrderById, fetchAdminWorkOrderPage } from '@/api/trade'
 import type { WorkOrderVO } from '@/api/trade'
 import { queryKeys, WORK_ORDER_STATUS } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import { useWorkOrderChat } from '@/composables/common/useWorkOrderChat'
+import { useAdminStore } from '@/stores/admin'
 
 export const ADMIN_WORK_ORDER_STATUS_OPTIONS = [
   { label: '全部', value: 'all' },
@@ -33,10 +30,7 @@ export function useAdminWorkOrderListPage(): {
   totalPages: ComputedRef<number>
   selectedWorkOrder: ComputedRef<WorkOrderVO | undefined>
   workOrderDetailQuery: ReturnType<typeof useQuery>
-  replyMutation: {
-    mutateAsync: (vars: { id: string; content: string }) => Promise<unknown>
-    isPending: Ref<boolean>
-  }
+  isChatConnected: Ref<boolean>
   closeMutation: { mutateAsync: (id: string) => Promise<unknown>; isPending: Ref<boolean> }
   confirmDialog: Ref<ConfirmDialogState>
   openDetail: (row: WorkOrderVO) => void
@@ -48,6 +42,8 @@ export function useAdminWorkOrderListPage(): {
 } {
   const queryClient = useQueryClient()
   const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const chat = useWorkOrderChat()
+  const adminStore = useAdminStore()
 
   const currentPage = ref(1)
   const pageSize = ref(10)
@@ -56,6 +52,42 @@ export function useAdminWorkOrderListPage(): {
   const selectedWorkOrderId = ref<string | null>(null)
   const replyContent = ref('')
   const replyError = ref('')
+
+  watch(
+    () => adminStore.adminToken,
+    (token) => {
+      if (token) chat.connect(token)
+    },
+    { immediate: true },
+  )
+
+  // Auto-sync history after WS reconnect
+  chat.onReconnect(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.admin.workOrderDetail() })
+    // Re-subscribe to current work order if one is open
+    if (selectedWorkOrderId.value) {
+      chat.subscribe(
+        selectedWorkOrderId.value,
+        (reply) => {
+          queryClient.setQueryData(
+            queryKeys.admin.workOrderDetail(selectedWorkOrderId.value),
+            (old: typeof workOrderDetailQuery.data.value) => {
+              if (!old) return old
+              const existing = [...(old.replies ?? [])]
+              if (!existing.some((r) => r.id === reply.id)) {
+                existing.push(reply)
+                return { ...old, replies: existing }
+              }
+              return old
+            },
+          )
+        },
+        (error) => {
+          replyError.value = error
+        },
+      )
+    }
+  })
 
   const queryKey = computed(() => [
     ...queryKeys.admin.workOrderList(),
@@ -73,7 +105,7 @@ export function useAdminWorkOrderListPage(): {
         size: pageSize.value,
         userId: searchUserId.value || undefined,
         status: searchStatus.value !== 'all' ? Number(searchStatus.value) : undefined,
-        sortField: 'lastReplyAt',
+        sortField: 'createAt',
         sortOrder: 'desc',
       }),
   })
@@ -100,19 +132,6 @@ export function useAdminWorkOrderListPage(): {
     ])
   }
 
-  const replyMutation = useMutation({
-    mutationFn: ({ id, content }: { id: string; content: string }) =>
-      submitAdminWorkOrderReply(id, { content }),
-    onSuccess: async () => {
-      replyContent.value = ''
-      replyError.value = ''
-      await invalidateWorkOrders()
-    },
-    onError: () => {
-      replyError.value = '回复失败，请稍后重试'
-    },
-  })
-
   const closeMutation = useMutation({
     mutationFn: closeAdminWorkOrder,
     onSuccess: invalidateWorkOrders,
@@ -122,9 +141,33 @@ export function useAdminWorkOrderListPage(): {
     selectedWorkOrderId.value = row.id
     replyContent.value = ''
     replyError.value = ''
+
+    chat.subscribe(
+      row.id,
+      (reply) => {
+        queryClient.setQueryData(
+          queryKeys.admin.workOrderDetail(selectedWorkOrderId.value),
+          (old: typeof workOrderDetailQuery.data.value) => {
+            if (!old) return old
+            const existing = [...(old.replies ?? [])]
+            if (!existing.some((r) => r.id === reply.id)) {
+              existing.push(reply)
+              return { ...old, replies: existing }
+            }
+            return old
+          },
+        )
+      },
+      (error) => {
+        replyError.value = error
+      },
+    )
   }
 
   const closeDetail = () => {
+    if (selectedWorkOrderId.value) {
+      chat.unsubscribe(selectedWorkOrderId.value)
+    }
     selectedWorkOrderId.value = null
     replyContent.value = ''
     replyError.value = ''
@@ -146,10 +189,9 @@ export function useAdminWorkOrderListPage(): {
       return
     }
 
-    await replyMutation.mutateAsync({
-      id: selectedWorkOrderId.value,
-      content,
-    })
+    chat.sendMessage(selectedWorkOrderId.value, content)
+    replyContent.value = ''
+    replyError.value = ''
   }
 
   const requestClose = (row?: WorkOrderVO) => {
@@ -180,7 +222,7 @@ export function useAdminWorkOrderListPage(): {
     totalPages,
     selectedWorkOrder,
     workOrderDetailQuery,
-    replyMutation,
+    isChatConnected: chat.isConnected,
     closeMutation,
     confirmDialog,
     openDetail,

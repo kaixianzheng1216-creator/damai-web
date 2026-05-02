@@ -32,7 +32,7 @@ const {
   totalPages,
   selectedWorkOrder,
   workOrderDetailQuery,
-  replyMutation,
+  isChatConnected,
   closeMutation,
   confirmDialog,
   openDetail,
@@ -89,8 +89,8 @@ const columns = createWorkOrderColumns({ openDetail, requestClose })
     :open="!!selectedWorkOrderId"
     :work-order="selectedWorkOrder"
     :is-loading="workOrderDetailQuery.isLoading.value"
-    :is-replying="replyMutation.isPending.value"
     :is-closing="closeMutation.isPending.value"
+    :is-connected="isChatConnected"
     :reply-error="replyError"
     @close="closeDetail"
     @reply="submitReply"

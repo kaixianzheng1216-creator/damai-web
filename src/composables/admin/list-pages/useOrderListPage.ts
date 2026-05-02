@@ -5,7 +5,7 @@ import { ORDER_STATUS, queryKeys } from '@/constants'
 import type { TicketOrderPageRequest, TicketOrderVO } from '@/api/trade'
 
 const ORDER_STATUS_OPTIONS = [
-  { label: '全部状态', value: '' },
+  { label: '全部状态', value: 'all' },
   { label: '待付款', value: String(ORDER_STATUS.PENDING) },
   { label: '已支付', value: String(ORDER_STATUS.PAID) },
   { label: '已取消', value: String(ORDER_STATUS.CANCELLED) },
@@ -32,7 +32,7 @@ export function useOrderListPage(): {
   const currentPage = ref(1)
   const pageSize = ref(10)
   const searchUserId = ref('')
-  const searchStatus = ref('')
+  const searchStatus = ref('all')
   const showDetailDialog = ref(false)
   const selectedOrder = ref<TicketOrderVO | null>(null)
 
@@ -48,7 +48,7 @@ export function useOrderListPage(): {
     page: currentPage.value,
     size: pageSize.value,
     userId: searchUserId.value || undefined,
-    status: searchStatus.value !== '' ? Number(searchStatus.value) : undefined,
+    status: searchStatus.value !== 'all' ? Number(searchStatus.value) : undefined,
   }))
 
   const { data, isLoading } = useQuery({

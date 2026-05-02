@@ -55,17 +55,17 @@ const linkTarget = computed(() => props.to || `/ticket/${props.id}`)
     <template #bottomLeft>
       <p class="text-xs text-muted-foreground">{{ ticketNo }}</p>
     </template>
+    <template #topRight>
+      <span
+        class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
+      >
+        {{ statusLabel }}
+      </span>
+    </template>
     <template #bottomRight>
-      <div class="flex items-center gap-2">
-        <span
-          class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
-        >
-          {{ statusLabel }}
-        </span>
-        <Button v-if="showButton" size="sm" class="h-auto rounded px-3 py-1 text-xs">
-          {{ AI_CHAT_COPY.viewTicket }}
-        </Button>
-      </div>
+      <Button v-if="showButton" size="sm" class="h-auto rounded px-3 py-1 text-xs">
+        {{ AI_CHAT_COPY.viewTicket }}
+      </Button>
     </template>
   </CardListItem>
 </template>

@@ -14,10 +14,6 @@ export interface WorkOrderVO {
   relatedTicketId?: string
   title: string
   content?: string
-  lastReplyPreview?: string
-  lastReplyAt?: string | null
-  userHasUnread?: number
-  adminHasUnread?: number
   createAt?: string
   closedByType?: number
   closedBy?: string

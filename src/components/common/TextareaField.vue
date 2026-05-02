@@ -35,6 +35,10 @@ const props = withDefaults(
   },
 )
 
+const emit = defineEmits<{
+  keydown: [e: KeyboardEvent]
+}>()
+
 const descriptionId = computed(() => `${props.id}-description`)
 const errorId = computed(() => `${props.id}-error`)
 const describedBy = computed(() => {
@@ -61,6 +65,7 @@ const describedBy = computed(() => {
       :aria-invalid="Boolean(error) || undefined"
       :aria-describedby="describedBy"
       :class="cn('max-h-44 min-h-24 resize-none sm:max-h-60', textareaClass)"
+      @keydown="emit('keydown', $event)"
     />
     <div class="flex items-start justify-between gap-3 text-xs">
       <div class="min-w-0">

@@ -45,7 +45,6 @@ import {
   fetchAdminWorkOrderById,
   fetchAdminWorkOrderPage,
   fetchMyPurchaseCounts,
-  submitAdminWorkOrderReply,
   type OrderStatusVO,
   type PageResponseWorkOrderVO,
   type PaymentCreateRequest,
@@ -54,7 +53,6 @@ import {
   type TicketOrderCreateRequest,
   type WorkOrderDetailVO,
   type WorkOrderPageRequest,
-  type WorkOrderReplyCreateRequest,
 } from '@/api/trade'
 import {
   adminCheckinTicket,
@@ -451,12 +449,9 @@ describe('API OpenAPI contracts', () => {
       size: 10,
       userId: 'user-1',
       status: 1,
-      sortField: 'lastReplyAt',
+      sortField: 'createAt',
       sortOrder: 'desc',
     } satisfies WorkOrderPageRequest
-    const replyBody = {
-      content: '已处理，请刷新查看',
-    } satisfies WorkOrderReplyCreateRequest
     const refundBody = {
       reason: '行程冲突',
     } satisfies RefundCreateRequest
@@ -482,18 +477,6 @@ describe('API OpenAPI contracts', () => {
       docPath: '/admin/work-orders/{id}',
       pathParams: { id: 'work-order-1' },
       responseSchema: 'ApiResponseWorkOrderDetailVO',
-    })
-
-    vi.clearAllMocks()
-    await submitAdminWorkOrderReply('work-order-1', replyBody)
-    expectRequestMatchesOpenApi({
-      service: 'order',
-      method: 'post',
-      docPath: '/admin/work-orders/{id}/replies',
-      pathParams: { id: 'work-order-1' },
-      body: replyBody,
-      requestSchema: 'WorkOrderReplyCreateRequest',
-      responseSchema: 'ApiResponseVoid',
     })
 
     vi.clearAllMocks()

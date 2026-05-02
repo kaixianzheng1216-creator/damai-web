@@ -72,21 +72,23 @@ const emit = defineEmits<{
             <p class="flex items-center gap-1 text-xs text-muted-foreground">
               <icon-lucide-tags class="h-3 w-3 shrink-0" />{{ workOrder.typeLabel || '其他' }}
             </p>
-            <p class="text-xs text-muted-foreground">
-              {{ formatDateTime(workOrder.lastReplyAt || workOrder.createAt, '-') }}
+            <p class="flex items-center gap-1 text-xs text-muted-foreground">
+              <icon-lucide-clock class="h-3 w-3 shrink-0" />{{
+                formatDateTime(workOrder.createAt, '-')
+              }}
             </p>
           </template>
           <template #middle>
             <hr class="border-border" />
           </template>
-          <template #bottomLeft>
-            <p class="text-xs text-muted-foreground">{{ workOrder.workOrderNo || workOrder.id }}</p>
-          </template>
-          <template #bottomRight>
+          <template #topRight>
             <span
               class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
               >{{ workOrder.statusLabel }}</span
             >
+          </template>
+          <template #bottomLeft>
+            <p class="text-xs text-muted-foreground">{{ workOrder.workOrderNo || workOrder.id }}</p>
           </template>
         </CardListItem>
       </div>

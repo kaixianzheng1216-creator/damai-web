@@ -21,6 +21,7 @@ import {
   BOOLEAN_TYPE,
   EVENT_STATUS,
   NOTICE_TYPE_LABEL,
+  PASSENGER_CERT_TYPES,
   USER_STATUS,
   WORK_ORDER_STATUS,
 } from '@/constants'
@@ -83,6 +84,17 @@ export function createEventColumns(options: {
       size: 100,
     },
     {
+      accessorKey: 'coverUrl',
+      header: '封面',
+      size: 80,
+      cell: ({ row }) => {
+        const url = row.original.coverUrl
+        return url
+          ? h('img', { src: url, class: 'h-10 w-auto rounded object-cover', alt: '封面' })
+          : '-'
+      },
+    },
+    {
       accessorKey: 'name',
       header: '活动名称',
     },
@@ -94,13 +106,43 @@ export function createEventColumns(options: {
     {
       accessorKey: 'categoryNameSnapshot',
       header: '分类',
-      size: 100,
+      size: 120,
+      cell: ({ row }) => {
+        const parent = row.original.parentCategoryNameSnapshot
+        const child = row.original.categoryNameSnapshot
+        return parent && child ? `${parent} / ${child}` : child || parent || '-'
+      },
+    },
+    {
+      accessorKey: 'venueNameSnapshot',
+      header: '场馆',
+      size: 120,
     },
     {
       accessorKey: 'minPrice',
-      header: '最低票价',
-      size: 120,
-      cell: ({ row }) => (row.original.minPrice != null ? formatPrice(row.original.minPrice) : '-'),
+      header: '票价',
+      size: 140,
+      cell: ({ row }) => {
+        const min = row.original.minPrice
+        const max = row.original.maxPrice
+        if (min == null && max == null) return '-'
+        if (min != null && max != null && min !== max) {
+          return `${formatPrice(min)} - ${formatPrice(max)}`
+        }
+        return formatPrice(min ?? max ?? 0)
+      },
+    },
+    {
+      accessorKey: 'firstSessionStartAt',
+      header: '首场时间',
+      size: 160,
+      cell: ({ row }) => formatDateTime(row.original.firstSessionStartAt, '-'),
+    },
+    {
+      accessorKey: 'followCount',
+      header: '关注人数',
+      size: 100,
+      cell: ({ row }) => row.original.followCount ?? '-',
     },
     {
       accessorKey: 'statusLabel',
@@ -240,10 +282,36 @@ export function createWorkOrderColumns(options: {
         ),
     },
     {
-      accessorKey: 'lastReplyAt',
-      header: '最后回复',
+      accessorKey: 'createAt',
+      header: '创建时间',
       size: 160,
-      cell: ({ row }) => formatDateTime(row.original.lastReplyAt, '-'),
+      cell: ({ row }) => formatDateTime(row.original.createAt, '-'),
+    },
+
+    {
+      accessorKey: 'related',
+      header: '关联',
+      size: 140,
+      cell: ({ row }) => {
+        const orderId = row.original.relatedOrderId
+        const ticketId = row.original.relatedTicketId
+        const parts: string[] = []
+        if (orderId && orderId !== '0') parts.push(`订单:${orderId}`)
+        if (ticketId && ticketId !== '0') parts.push(`票券:${ticketId}`)
+        return parts.length > 0 ? parts.join(' ') : '-'
+      },
+    },
+    {
+      accessorKey: 'closedBy',
+      header: '关闭者',
+      size: 120,
+      cell: ({ row }) => {
+        if (row.original.status !== WORK_ORDER_STATUS.CLOSED) return '-'
+        const type = row.original.closedByType
+        const by = row.original.closedBy
+        if (type == null || by == null) return '-'
+        return `${type === 1 ? '用户' : '客服'}:${by}`
+      },
     },
     {
       id: 'actions',
@@ -281,12 +349,53 @@ export function createBannerColumns(options: {
       header: '标题',
     },
     {
+      accessorKey: 'imageUrl',
+      header: 'PC 封面',
+      size: 120,
+      cell: ({ row }) => {
+        const url = row.original.imageUrl
+        return url
+          ? h('img', { src: url, class: 'h-10 w-auto rounded object-cover', alt: 'PC 封面' })
+          : '-'
+      },
+    },
+    {
+      accessorKey: 'mobileImageUrl',
+      header: '移动端封面',
+      size: 120,
+      cell: ({ row }) => {
+        const url = row.original.mobileImageUrl
+        return url
+          ? h('img', { src: url, class: 'h-10 w-auto rounded object-cover', alt: '移动端封面' })
+          : '-'
+      },
+    },
+    {
       accessorKey: 'cityId',
       header: '城市',
       size: 100,
       cell: ({ row }) => {
         const cityId = String(row.getValue('cityId'))
         return options.citiesMap.value.get(cityId)?.name ?? cityId
+      },
+    },
+    {
+      accessorKey: 'jumpUrl',
+      header: '跳转链接',
+      size: 160,
+      cell: ({ row }) => {
+        const url = row.original.jumpUrl
+        return url
+          ? h(
+              'a',
+              {
+                href: url,
+                target: '_blank',
+                class: 'text-primary hover:underline truncate block max-w-[140px]',
+              },
+              url,
+            )
+          : '-'
       },
     },
     {
@@ -620,6 +729,12 @@ export function createParticipantColumns(
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
+      accessorKey: 'followCount',
+      header: '关注人数',
+      size: 100,
+      cell: ({ row }) => row.original.followCount ?? '-',
+    },
+    {
       id: 'actions',
       header: '操作',
       size: 160,
@@ -657,14 +772,36 @@ export function createTicketColumns(): ColumnDef<TicketVO>[] {
     { accessorKey: 'id', header: 'ID', size: 100 },
     { accessorKey: 'ticketNo', header: '票号', size: 200 },
     { accessorKey: 'eventNameSnapshot', header: '活动' },
+    { accessorKey: 'venueNameSnapshot', header: '场馆', size: 120 },
     { accessorKey: 'sessionNameSnapshot', header: '场次' },
     { accessorKey: 'ticketTypeNameSnapshot', header: '票档', size: 100 },
     { accessorKey: 'passengerNameSnapshot', header: '购票人', size: 100 },
+    {
+      accessorKey: 'passengerIdTypeSnapshot',
+      header: '证件信息',
+      size: 180,
+      cell: ({ row }) => {
+        const typeValue = row.original.passengerIdTypeSnapshot
+        const typeLabel = typeValue
+          ? Object.values(PASSENGER_CERT_TYPES).find((t) => t.value === typeValue)?.label
+          : undefined
+        const certNo = row.original.passengerIdNoMaskedSnapshot
+        if (!typeLabel && !certNo) return '-'
+        return `${typeLabel || ''} ${certNo || ''}`.trim()
+      },
+    },
+    { accessorKey: 'orderNo', header: '订单号', size: 200 },
     {
       accessorKey: 'status',
       header: '状态',
       size: 100,
       cell: ({ row }) => h(Badge, { variant: 'outline' }, () => row.original.statusLabel),
+    },
+    {
+      accessorKey: 'usedAt',
+      header: '使用时间',
+      size: 160,
+      cell: ({ row }) => (row.original.usedAt ? formatDateTime(row.original.usedAt) : '--'),
     },
     {
       accessorKey: 'createAt',

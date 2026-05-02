@@ -64,7 +64,7 @@ const linkTarget = computed(() => props.to || `/checkout/${props.id}`)
     <template #bottomLeft>
       <p class="text-xs text-muted-foreground">{{ orderNo }}</p>
     </template>
-    <template #bottomRight>
+    <template #topRight>
       <span
         class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
       >

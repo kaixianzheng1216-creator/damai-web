@@ -52,10 +52,10 @@ const emit = defineEmits<{
           </template>
           <template #details>
             <p class="flex items-center gap-1 text-xs text-muted-foreground">
-              证件类型: {{ passenger.certType }}
+              <icon-lucide-id-card class="h-3 w-3 shrink-0" />证件类型: {{ passenger.certType }}
             </p>
             <p class="flex items-center gap-1 text-xs text-muted-foreground">
-              证件号: {{ passenger.certNo }}
+              <icon-lucide-hash class="h-3 w-3 shrink-0" />证件号: {{ passenger.certNo }}
             </p>
           </template>
           <template #bottomRight>

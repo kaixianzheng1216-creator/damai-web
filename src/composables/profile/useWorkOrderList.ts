@@ -1,11 +1,6 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import {
-  closeMyWorkOrder,
-  fetchMyWorkOrderPage,
-  fetchMyWorkOrderById,
-  submitMyWorkOrderReply,
-} from '@/api/trade'
+import { closeMyWorkOrder, fetchMyWorkOrderPage, fetchMyWorkOrderById } from '@/api/trade'
 import {
   WORK_ORDER_PAGE_SIZE,
   WORK_ORDER_STATUS,
@@ -14,11 +9,52 @@ import {
   type WorkOrderFilterKey,
 } from '@/constants'
 import { usePagination, useQueryEnabled, type QueryEnabledOptions } from '@/composables/common'
+import { useWorkOrderChat } from '@/composables/common/useWorkOrderChat'
+import { useUserStore } from '@/stores/user'
 import type { WorkOrderVO } from '@/api/trade'
 
 export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
   const enabled = useQueryEnabled(options.enabled)
   const queryClient = useQueryClient()
+  const chat = useWorkOrderChat()
+  const userStore = useUserStore()
+
+  // Connect WebSocket when token is available
+  watch(
+    () => userStore.token,
+    (token) => {
+      if (token) chat.connect(token)
+    },
+    { immediate: true },
+  )
+
+  // Auto-sync history after WS reconnect
+  chat.onReconnect(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.profile.workOrderDetail() })
+    // Re-subscribe to current work order if one is open
+    if (selectedWorkOrderId.value) {
+      chat.subscribe(
+        selectedWorkOrderId.value,
+        (reply) => {
+          queryClient.setQueryData(
+            queryKeys.profile.workOrderDetail(selectedWorkOrderId.value),
+            (old: typeof workOrderDetailQuery.data.value) => {
+              if (!old) return old
+              const existing = [...(old.replies ?? [])]
+              if (!existing.some((r) => r.id === reply.id)) {
+                existing.push(reply)
+                return { ...old, replies: existing }
+              }
+              return old
+            },
+          )
+        },
+        (error) => {
+          replyError.value = error
+        },
+      )
+    }
+  })
 
   const workOrderFilter = ref<WorkOrderFilterKey>('all')
   const selectedWorkOrderId = ref<string | null>(null)
@@ -49,7 +85,7 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
       fetchMyWorkOrderPage({
         ...getPaginationParams(),
         status: requestStatus.value,
-        sortField: 'lastReplyAt',
+        sortField: 'createAt',
         sortOrder: 'desc',
       }),
     enabled,
@@ -77,19 +113,6 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
     ])
   }
 
-  const replyMutation = useMutation({
-    mutationFn: ({ id, content }: { id: string; content: string }) =>
-      submitMyWorkOrderReply(id, { content }),
-    onSuccess: async () => {
-      replyContent.value = ''
-      replyError.value = ''
-      await invalidateWorkOrders()
-    },
-    onError: () => {
-      replyError.value = '回复失败，请稍后重试'
-    },
-  })
-
   const closeWorkOrderMutation = useMutation({
     mutationFn: closeMyWorkOrder,
     onSuccess: async () => {
@@ -101,9 +124,35 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
     selectedWorkOrderId.value = String(workOrder.id)
     replyContent.value = ''
     replyError.value = ''
+
+    chat.subscribe(
+      String(workOrder.id),
+      (reply) => {
+        // Append incoming WS message to replies array
+        queryClient.setQueryData(
+          queryKeys.profile.workOrderDetail(selectedWorkOrderId.value),
+          (old: typeof workOrderDetailQuery.data.value) => {
+            if (!old) return old
+            const existing = [...(old.replies ?? [])]
+            // Prevent duplicates: check if this message already exists
+            if (!existing.some((r) => r.id === reply.id)) {
+              existing.push(reply)
+              return { ...old, replies: existing }
+            }
+            return old
+          },
+        )
+      },
+      (error) => {
+        replyError.value = error
+      },
+    )
   }
 
   const closeWorkOrderDetail = () => {
+    if (selectedWorkOrderId.value) {
+      chat.unsubscribe(selectedWorkOrderId.value)
+    }
     selectedWorkOrderId.value = null
     replyContent.value = ''
     replyError.value = ''
@@ -125,10 +174,9 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
       return
     }
 
-    await replyMutation.mutateAsync({
-      id: selectedWorkOrderId.value,
-      content,
-    })
+    chat.sendMessage(selectedWorkOrderId.value, content)
+    replyContent.value = ''
+    replyError.value = ''
   }
 
   const confirmCloseWorkOrder = async () => {
@@ -154,7 +202,7 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
     workOrderDetailQuery,
     replyContent,
     replyError,
-    replyMutation,
+    isChatConnected: chat.isConnected,
     closeWorkOrderMutation,
     updateWorkOrderPage,
     updateWorkOrderPageSize,

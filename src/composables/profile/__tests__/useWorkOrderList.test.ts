@@ -1,20 +1,40 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createApp, effectScope, nextTick, type EffectScope } from 'vue'
+import { createApp, effectScope, nextTick, ref, type EffectScope } from 'vue'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
-import {
-  closeMyWorkOrder,
-  fetchMyWorkOrderPage,
-  fetchMyWorkOrderById,
-  submitMyWorkOrderReply,
-} from '@/api/trade'
+import { closeMyWorkOrder, fetchMyWorkOrderPage, fetchMyWorkOrderById } from '@/api/trade'
 import { WORK_ORDER_STATUS } from '@/constants'
 import { useWorkOrderList } from '../useWorkOrderList'
 import type { PageResponseWorkOrderVO, WorkOrderDetailVO, WorkOrderVO } from '@/api/trade'
 
+const mockChatSendMessage = vi.fn()
+const mockChatSubscribe = vi.fn()
+const mockChatUnsubscribe = vi.fn()
+const mockChatConnect = vi.fn()
+const mockIsConnected = ref(false)
+
+vi.mock('@/composables/common/useWorkOrderChat', () => ({
+  useWorkOrderChat: () => ({
+    isConnected: mockIsConnected,
+    connect: mockChatConnect,
+    subscribe: mockChatSubscribe,
+    unsubscribe: mockChatUnsubscribe,
+    sendMessage: mockChatSendMessage,
+    disconnect: vi.fn(),
+    onReconnect: vi.fn(),
+    onError: vi.fn(),
+  }),
+}))
+
+vi.mock('@/stores/user', () => ({
+  useUserStore: () => ({
+    token: ref(null),
+    isLoggedIn: ref(false),
+  }),
+}))
+
 vi.mock('@/api/trade', () => ({
   fetchMyWorkOrderPage: vi.fn(),
   fetchMyWorkOrderById: vi.fn(),
-  submitMyWorkOrderReply: vi.fn(),
   closeMyWorkOrder: vi.fn(),
 }))
 
@@ -78,6 +98,10 @@ afterEach(() => {
   cleanup?.()
   cleanup = undefined
   vi.clearAllMocks()
+  mockChatSendMessage.mockClear()
+  mockChatSubscribe.mockClear()
+  mockChatUnsubscribe.mockClear()
+  mockChatConnect.mockClear()
 })
 
 describe('useWorkOrderList', () => {
@@ -92,7 +116,7 @@ describe('useWorkOrderList', () => {
         page: 1,
         size: 10,
         status: undefined,
-        sortField: 'lastReplyAt',
+        sortField: 'createAt',
         sortOrder: 'desc',
       })
     })
@@ -121,18 +145,17 @@ describe('useWorkOrderList', () => {
         page: 1,
         size: 10,
         status: WORK_ORDER_STATUS.CLOSED,
-        sortField: 'lastReplyAt',
+        sortField: 'createAt',
         sortOrder: 'desc',
       })
     })
   })
 
-  it('opens detail, loads detail, submits reply, and invalidates queries', async () => {
+  it('opens detail, loads detail, submits reply via WebSocket', async () => {
     const workOrder = createWorkOrder()
     const detail = createDetail({ id: 'wo-1', replies: [] })
     vi.mocked(fetchMyWorkOrderPage).mockResolvedValue(createPage([workOrder]))
     vi.mocked(fetchMyWorkOrderById).mockResolvedValue(detail)
-    vi.mocked(submitMyWorkOrderReply).mockResolvedValue(undefined)
     const harness = setupWorkOrderList()
     cleanup = harness.cleanup
 
@@ -143,23 +166,22 @@ describe('useWorkOrderList', () => {
     await vi.waitFor(() => {
       expect(fetchMyWorkOrderById).toHaveBeenCalledWith('wo-1')
     })
+    expect(mockChatSubscribe).toHaveBeenCalledWith(
+      'wo-1',
+      expect.any(Function),
+      expect.any(Function),
+    )
     expect(harness.result.selectedWorkOrder.value).toEqual(detail)
 
     harness.result.replyContent.value = '   '
     await harness.result.submitWorkOrderReply()
     expect(harness.result.replyError.value).toBe('请输入回复内容')
-    expect(submitMyWorkOrderReply).not.toHaveBeenCalled()
+    expect(mockChatSendMessage).not.toHaveBeenCalled()
 
     harness.result.replyContent.value = '已为你处理'
     await harness.result.submitWorkOrderReply()
 
-    expect(submitMyWorkOrderReply).toHaveBeenCalledWith('wo-1', { content: '已为你处理' })
-    expect(harness.invalidateSpy).toHaveBeenCalledWith({
-      queryKey: ['my-work-order-page'],
-    })
-    expect(harness.invalidateSpy).toHaveBeenCalledWith({
-      queryKey: ['my-work-order-detail'],
-    })
+    expect(mockChatSendMessage).toHaveBeenCalledWith('wo-1', '已为你处理')
     expect(harness.result.replyContent.value).toBe('')
   })
 
@@ -178,7 +200,7 @@ describe('useWorkOrderList', () => {
     await harness.result.submitWorkOrderReply()
 
     expect(harness.result.replyError.value).toBe('工单已关闭，无法继续回复')
-    expect(submitMyWorkOrderReply).not.toHaveBeenCalled()
+    expect(mockChatSendMessage).not.toHaveBeenCalled()
   })
 
   it('closes work order and invalidates queries', async () => {

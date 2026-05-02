@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createApp, effectScope, nextTick, type EffectScope } from 'vue'
+import { createApp, effectScope, nextTick, ref, type EffectScope } from 'vue'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
 import { USER_STATUS, WORK_ORDER_STATUS } from '@/constants'
 import { useAdminEventListPage } from '../useAdminEventListPage'
@@ -9,6 +9,32 @@ import { useAdminWorkOrderListPage } from '../useAdminWorkOrderListPage'
 import type { AdminVO, PageResponseAdminVO, PageResponseUserVO, UserVO } from '@/api/account'
 import type { AdminPageResponseEventVO, EventVO } from '@/api/event'
 import type { PageResponseWorkOrderVO, WorkOrderDetailVO, WorkOrderVO } from '@/api/trade'
+
+const mockChatSendMessage = vi.fn()
+const mockChatSubscribe = vi.fn()
+const mockChatUnsubscribe = vi.fn()
+const mockChatConnect = vi.fn()
+const mockIsConnected = ref(true)
+
+vi.mock('@/composables/common/useWorkOrderChat', () => ({
+  useWorkOrderChat: () => ({
+    isConnected: mockIsConnected,
+    connect: mockChatConnect,
+    subscribe: mockChatSubscribe,
+    unsubscribe: mockChatUnsubscribe,
+    sendMessage: mockChatSendMessage,
+    disconnect: vi.fn(),
+    onReconnect: vi.fn(),
+    onError: vi.fn(),
+  }),
+}))
+
+vi.mock('@/stores/admin', () => ({
+  useAdminStore: () => ({
+    adminToken: ref('mock-token'),
+    isLoggedIn: ref(true),
+  }),
+}))
 
 const accountAdminMocks = vi.hoisted(() => ({
   fetchAdminPage: vi.fn(),
@@ -34,7 +60,6 @@ const eventMocks = vi.hoisted(() => ({
 const tradeMocks = vi.hoisted(() => ({
   fetchAdminWorkOrderPage: vi.fn(),
   fetchAdminWorkOrderById: vi.fn(),
-  submitAdminWorkOrderReply: vi.fn(),
   closeAdminWorkOrder: vi.fn(),
 }))
 
@@ -146,6 +171,10 @@ afterEach(() => {
   cleanup?.()
   cleanup = undefined
   vi.clearAllMocks()
+  mockChatSendMessage.mockClear()
+  mockChatSubscribe.mockClear()
+  mockChatUnsubscribe.mockClear()
+  mockChatConnect.mockClear()
 })
 
 describe('P0 admin list page composables', () => {
@@ -252,14 +281,13 @@ describe('P0 admin list page composables', () => {
     expect(harness.invalidateSpy).toHaveBeenCalledWith({ queryKey: ['admin-events'] })
   })
 
-  it('loads work order detail only after selection and keeps reply cache invalidation precise', async () => {
+  it('loads work order detail only after selection and sends reply via WebSocket', async () => {
     const workOrder = createWorkOrder()
     const detail: WorkOrderDetailVO = { ...workOrder, replies: [] }
     tradeMocks.fetchAdminWorkOrderPage.mockResolvedValue(
       createPage([workOrder]) satisfies PageResponseWorkOrderVO,
     )
     tradeMocks.fetchAdminWorkOrderById.mockResolvedValue(detail)
-    tradeMocks.submitAdminWorkOrderReply.mockResolvedValue(undefined)
     const harness = setupComposable(() => useAdminWorkOrderListPage())
     cleanup = harness.cleanup
 
@@ -272,6 +300,11 @@ describe('P0 admin list page composables', () => {
     await vi.waitFor(() => {
       expect(tradeMocks.fetchAdminWorkOrderById).toHaveBeenCalledWith('work-order-1')
     })
+    expect(mockChatSubscribe).toHaveBeenCalledWith(
+      'work-order-1',
+      expect.any(Function),
+      expect.any(Function),
+    )
 
     await harness.result.submitReply()
     expect(harness.result.replyError.value).toBe('请输入回复内容')
@@ -279,14 +312,7 @@ describe('P0 admin list page composables', () => {
     harness.result.replyContent.value = '已为你处理'
     await harness.result.submitReply()
 
-    expect(tradeMocks.submitAdminWorkOrderReply).toHaveBeenCalledWith('work-order-1', {
-      content: '已为你处理',
-    })
-    expect(harness.invalidateSpy).toHaveBeenCalledWith({
-      queryKey: ['admin-work-order-list'],
-    })
-    expect(harness.invalidateSpy).toHaveBeenCalledWith({
-      queryKey: ['admin-work-order-detail'],
-    })
+    expect(mockChatSendMessage).toHaveBeenCalledWith('work-order-1', '已为你处理')
+    expect(harness.result.replyContent.value).toBe('')
   })
 })

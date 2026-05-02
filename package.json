@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.12.1",
+    "@stomp/stompjs": "^7.3.0",
     "@tanstack/vue-query": "^5.92.9",
     "@tanstack/vue-table": "^8.21.3",
     "@tiptap/core": "^3.22.3",

@@ -123,7 +123,7 @@ export const useProfilePage = () => {
     workOrderDetailQuery: workOrderList.workOrderDetailQuery,
     replyContent: workOrderList.replyContent,
     replyError: workOrderList.replyError,
-    replyMutation: workOrderList.replyMutation,
+    isChatConnected: workOrderList.isChatConnected,
     closeWorkOrderMutation: workOrderList.closeWorkOrderMutation,
     updateWorkOrderPage: workOrderList.updateWorkOrderPage,
     updateWorkOrderPageSize: workOrderList.updateWorkOrderPageSize,

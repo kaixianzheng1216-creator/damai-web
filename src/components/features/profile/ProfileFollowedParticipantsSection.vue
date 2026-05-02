@@ -58,13 +58,19 @@ const handleUnfollowClick = (participantId: string) => {
               <p class="line-clamp-1 text-sm font-bold text-foreground">
                 {{ item.participant.name }}
               </p>
-              <p v-if="item.participant.followCount != null" class="text-xs text-muted-foreground">
-                {{ item.participant.followCount }} 人关注
+              <p
+                v-if="item.participant.followCount != null"
+                class="flex items-center gap-1 text-xs text-muted-foreground"
+              >
+                <icon-lucide-users class="h-3 w-3 shrink-0" />{{ item.participant.followCount }}
+                人关注
               </p>
             </template>
-            <template #bottomLeft>
-              <p class="text-xs text-muted-foreground">
-                {{ formatDateTime(item.createAt, '-') }}
+            <template #details>
+              <p class="flex items-center gap-1 text-xs text-muted-foreground">
+                <icon-lucide-clock class="h-3 w-3 shrink-0" />{{
+                  formatDateTime(item.createAt, '-')
+                }}
               </p>
             </template>
             <template #bottomRight>

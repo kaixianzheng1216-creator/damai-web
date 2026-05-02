@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="TData">
 import {
+  FlexRender,
   getCoreRowModel,
   getSortedRowModel,
   useVueTable,
@@ -79,7 +80,66 @@ const table = useVueTable({
       <template #actions><slot name="actions" /></template>
     </TableToolbar>
 
+    <!-- Table mode: render when columns are defined -->
+    <template v-if="columns.length > 0">
+      <div class="relative">
+        <div
+          v-if="loading"
+          class="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-sm"
+        >
+          <icon-lucide-loader2 class="h-6 w-6 animate-spin text-primary" />
+        </div>
+        <div class="overflow-auto" :class="{ 'opacity-60': loading }">
+          <table class="w-full border">
+            <thead>
+              <tr
+                v-for="headerGroup in table.getHeaderGroups()"
+                :key="headerGroup.id"
+                class="bg-muted"
+              >
+                <th
+                  v-for="header in headerGroup.headers"
+                  :key="header.id"
+                  class="px-4 py-3 text-left text-sm font-medium text-foreground"
+                >
+                  <FlexRender
+                    :render="header.column.columnDef.header"
+                    :props="header.getContext()"
+                  />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-if="data.length">
+                <tr
+                  v-for="row in table.getRowModel().rows"
+                  :key="row.id"
+                  class="border-t hover:bg-muted/50 cursor-pointer"
+                  @click="emit('row-click', row.original)"
+                >
+                  <td
+                    v-for="cell in row.getVisibleCells()"
+                    :key="cell.id"
+                    class="px-4 py-3 text-sm"
+                  >
+                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+                  </td>
+                </tr>
+              </template>
+              <tr v-else>
+                <td :colspan="columns.length" class="px-4 py-16 text-center text-muted-foreground">
+                  暂无数据
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </template>
+
+    <!-- Card mode: render when no columns (profile sections with cardTemplate) -->
     <TableCardView
+      v-else
       :loading="loading"
       :data="data"
       :rows="table.getRowModel().rows"

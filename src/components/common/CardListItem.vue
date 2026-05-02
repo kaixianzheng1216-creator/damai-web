@@ -19,7 +19,12 @@ defineEmits<{
       </div>
       <div class="flex flex-1 flex-col justify-between py-1">
         <div class="space-y-1">
-          <slot name="title" />
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <slot name="title" />
+            </div>
+            <slot name="topRight"><div /></slot>
+          </div>
           <div class="space-y-0.5">
             <slot name="details" />
           </div>
@@ -38,7 +43,12 @@ defineEmits<{
     </div>
     <div class="flex flex-1 flex-col justify-between py-1">
       <div class="space-y-1">
-        <slot name="title" />
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <slot name="title" />
+          </div>
+          <slot name="topRight"><div /></slot>
+        </div>
         <div class="space-y-0.5">
           <slot name="details" />
         </div>

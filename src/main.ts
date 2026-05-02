@@ -30,4 +30,17 @@ app.use(Vue3Toastify, {
   autoClose: 3000,
 } as ToastContainerOptions)
 
+// Suppress known harmless Vue warnings from @tanstack/vue-table + shadcn-vue
+const originalWarn = console.warn
+console.warn = (...args: Parameters<typeof console.warn>) => {
+  const msg = String(args[0] || '')
+  if (
+    msg.includes('Slot "default" invoked outside of the render function') ||
+    msg.includes('invoke the slot function inside the render function')
+  ) {
+    return
+  }
+  originalWarn.apply(console, args)
+}
+
 app.mount('#app')
