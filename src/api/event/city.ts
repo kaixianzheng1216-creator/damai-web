@@ -11,16 +11,25 @@ import type {
 
 // ─── Front ───────────────────────────────────────────────
 
-export const fetchGroupedCities = (): Promise<CityListVO> =>
+export const fetchGroupedCityList = (): Promise<CityListVO> =>
   request.get<CityListVO>('/api/event/front/cities')
 
-export const fetchCitiesList = (): Promise<CityVO[]> =>
+/** @deprecated Use fetchGroupedCityList instead */
+export const fetchGroupedCities = fetchGroupedCityList
+
+export const fetchCityList = (): Promise<CityVO[]> =>
   request.get<CityVO[]>('/api/event/front/cities/list')
+
+/** @deprecated Use fetchCityList instead */
+export const fetchCitiesList = fetchCityList
 
 // ─── Admin ───────────────────────────────────────────────
 
-export const fetchAdminCities = (): Promise<CityVO[]> =>
+export const fetchAdminCityList = (): Promise<CityVO[]> =>
   request.get<CityVO[]>('/api/event/admin/cities')
+
+/** @deprecated Use fetchAdminCityList instead */
+export const fetchAdminCities = fetchAdminCityList
 
 export const fetchAdminCitiesPage = (query?: CityPageRequest): Promise<PageResponseCityVO> =>
   request.get<PageResponseCityVO>('/api/event/admin/cities/page', { params: query })

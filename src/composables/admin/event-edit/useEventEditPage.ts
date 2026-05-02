@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import { fetchEventById, offlineEvent, publishEvent } from '@/api/event/event'
-import { queryKeys } from '@/constants'
+import { queryKeys, TOAST_COPY } from '@/constants'
 
 export function useEventEditPage() {
   const route = useRoute()
@@ -47,22 +47,22 @@ export function useEventEditPage() {
   const publishMutation = useMutation({
     mutationFn: () => publishEvent(requireEventId()),
     onSuccess: () => {
-      toast.success('活动发布成功')
+      toast.success(TOAST_COPY.eventPublished)
       invalidateEventDetail()
     },
     onError: () => {
-      toast.error('发布失败')
+      toast.error(TOAST_COPY.eventPublishFailed)
     },
   })
 
   const offlineMutation = useMutation({
     mutationFn: () => offlineEvent(requireEventId()),
     onSuccess: () => {
-      toast.success('活动已下线')
+      toast.success(TOAST_COPY.eventOfflined)
       invalidateEventDetail()
     },
     onError: () => {
-      toast.error('下线失败')
+      toast.error(TOAST_COPY.eventOfflineFailed)
     },
   })
 

@@ -10,8 +10,11 @@ import type {
 
 // ─── Admin ───────────────────────────────────────────────
 
-export const fetchAdminSeries = (): Promise<SeriesEventVO[]> =>
+export const fetchAdminSeriesList = (): Promise<SeriesEventVO[]> =>
   request.get<SeriesEventVO[]>('/api/event/admin/series')
+
+/** @deprecated Use fetchAdminSeriesList instead */
+export const fetchAdminSeries = fetchAdminSeriesList
 
 export const fetchAdminSeriesPage = (query?: SeriesPageRequest): Promise<PageResponseSeriesVO> =>
   request.get<PageResponseSeriesVO>('/api/event/admin/series/page', { params: query })

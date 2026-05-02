@@ -11,12 +11,14 @@ export interface AdminPageParams {
   name?: string
 }
 
-export interface UseAdminCrudOptions<
+type FormCb<TForm, TResult> = (form: Readonly<UnwrapNestedRefs<TForm>>) => TResult
+
+export function useAdminCrud<
   TItem extends { id: AdminCrudId },
   TForm extends object,
   TCreateRequest = TForm,
   TUpdateRequest = Partial<TForm>,
-> {
+>(options: {
   queryKeyBase: QueryKey
   fetchPage: (params: AdminPageParams) => Promise<PaginatedResponse<TItem>>
   createItem: (data: TCreateRequest) => Promise<unknown>
@@ -25,20 +27,7 @@ export interface UseAdminCrudOptions<
   initialForm: TForm
   defaultPageSize?: number
   getDeleteConfirmMessage?: (item: TItem) => { title: string; description: string }
-}
-
-interface UseAdminCrudSubmitOptions<TForm extends object, TCreateRequest, TUpdateRequest> {
-  validate?: () => boolean | Promise<boolean>
-  getCreateData: (form: Readonly<UnwrapNestedRefs<TForm>>) => TCreateRequest
-  getUpdateData: (form: Readonly<UnwrapNestedRefs<TForm>>) => TUpdateRequest
-}
-
-export function useAdminCrud<
-  TItem extends { id: AdminCrudId },
-  TForm extends object,
-  TCreateRequest = TForm,
-  TUpdateRequest = Partial<TForm>,
->(options: UseAdminCrudOptions<TItem, TForm, TCreateRequest, TUpdateRequest>) {
+}) {
   const {
     queryKeyBase,
     fetchPage,
@@ -80,17 +69,12 @@ export function useAdminCrud<
 
   const showDialog = shallowRef(false)
   const editingId = shallowRef<AdminCrudId | null>(null)
-  const createInitialForm = (): TForm => ({ ...initialForm })
-  const form = reactive(createInitialForm()) as UnwrapNestedRefs<TForm>
+  const form = reactive({ ...initialForm }) as UnwrapNestedRefs<TForm>
 
   const dialogTitle = computed(() => (editingId.value ? '编辑' : '新建'))
 
   const resetForm = () => {
-    Object.assign(form, createInitialForm())
-  }
-
-  const applyFormValues = (values: Partial<TForm>) => {
-    Object.assign(form, values)
+    Object.assign(form, { ...initialForm })
   }
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeyBase })
@@ -103,22 +87,13 @@ export function useAdminCrud<
 
   const openEdit = (item: TItem, mapItemToForm?: (item: TItem) => Partial<TForm>) => {
     resetForm()
-    if (mapItemToForm) {
-      applyFormValues(mapItemToForm(item))
-    } else {
-      const nextValues = Object.keys(initialForm).reduce<Partial<TForm>>((values, key) => {
-        const itemRecord = item as Record<string, unknown>
-        if (key in itemRecord) {
-          return {
-            ...values,
-            [key]: itemRecord[key],
-          }
-        }
-
-        return values
-      }, {})
-      applyFormValues(nextValues)
-    }
+    const values = mapItemToForm
+      ? mapItemToForm(item)
+      : Object.keys(initialForm).reduce<Partial<TForm>>((acc, key) => {
+          const record = item as Record<string, unknown>
+          return key in record ? { ...acc, [key]: record[key] } : acc
+        }, {})
+    Object.assign(form, values)
     editingId.value = item.id
     showDialog.value = true
   }
@@ -148,22 +123,20 @@ export function useAdminCrud<
     currentPage.value = 1
   })
 
-  const handleSubmit = async (
-    options: UseAdminCrudSubmitOptions<TForm, TCreateRequest, TUpdateRequest>,
-  ) => {
-    const { validate, getCreateData, getUpdateData } = options
-
-    if (validate && !(await validate())) {
-      return
-    }
+  const handleSubmit = async (opts: {
+    validate?: () => boolean | Promise<boolean>
+    getCreateData: FormCb<TForm, TCreateRequest>
+    getUpdateData: FormCb<TForm, TUpdateRequest>
+  }) => {
+    if (opts.validate && !(await opts.validate())) return
 
     if (editingId.value) {
       await updateMutation.mutateAsync({
         id: editingId.value,
-        data: getUpdateData(form),
+        data: opts.getUpdateData(form),
       })
     } else {
-      await createMutation.mutateAsync(getCreateData(form))
+      await createMutation.mutateAsync(opts.getCreateData(form))
     }
   }
 

@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import { useUserStore } from '@/stores/user'
 import { uploadFile } from '@/api/file'
-import { AVATAR_PLACEHOLDERS } from '@/constants'
+import { AVATAR_PLACEHOLDERS, TOAST_COPY } from '@/constants'
 
 export const useAvatarUpload = () => {
   const userStore = useUserStore()
@@ -33,7 +33,7 @@ export const useAvatarUpload = () => {
         )
       }
     } catch {
-      toast.error('头像上传失败，请重试')
+      toast.error(TOAST_COPY.avatarUploadFailed)
     } finally {
       uploading.value = false
     }

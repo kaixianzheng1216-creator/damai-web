@@ -19,6 +19,16 @@ export const ORDER_STATUS = {
   REFUNDED: 4,
 } as const
 
+export type OrderStatusValue = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS]
+
+export const ORDER_STATUS_LABEL = {
+  [ORDER_STATUS.PENDING]: '待付款',
+  [ORDER_STATUS.PAID]: '已支付',
+  [ORDER_STATUS.CANCELLED]: '已取消',
+  [ORDER_STATUS.CLOSED]: '已关闭',
+  [ORDER_STATUS.REFUNDED]: '已退款',
+} as const satisfies Record<OrderStatusValue, string>
+
 export const TICKET_STATUS = {
   UNUSED: 0,
   USED: 1,
@@ -26,11 +36,28 @@ export const TICKET_STATUS = {
   REFUNDED: 3,
 } as const
 
+export type TicketStatusValue = (typeof TICKET_STATUS)[keyof typeof TICKET_STATUS]
+
+export const TICKET_STATUS_LABEL = {
+  [TICKET_STATUS.UNUSED]: '未使用',
+  [TICKET_STATUS.USED]: '已使用',
+  [TICKET_STATUS.VOIDED]: '已作废',
+  [TICKET_STATUS.REFUNDED]: '已退款',
+} as const satisfies Record<TicketStatusValue, string>
+
 export const WORK_ORDER_STATUS = {
   PENDING: 0,
   PROCESSING: 1,
   CLOSED: 3,
 } as const
+
+export type WorkOrderStatusValue = (typeof WORK_ORDER_STATUS)[keyof typeof WORK_ORDER_STATUS]
+
+export const WORK_ORDER_STATUS_LABEL = {
+  [WORK_ORDER_STATUS.PENDING]: '待处理',
+  [WORK_ORDER_STATUS.PROCESSING]: '处理中',
+  [WORK_ORDER_STATUS.CLOSED]: '已关闭',
+} as const satisfies Record<WorkOrderStatusValue, string>
 
 export const ORDER_PAGE_SIZE = 10
 export const WORK_ORDER_PAGE_SIZE = 10

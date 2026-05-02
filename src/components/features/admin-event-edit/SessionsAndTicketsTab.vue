@@ -9,12 +9,10 @@ const TicketTypeDialog = defineAsyncComponent(() => import('./TicketTypeDialog.v
 const InventoryAdjustDialog = defineAsyncComponent(() => import('./InventoryAdjustDialog.vue'))
 const TicketTypeCopyDialog = defineAsyncComponent(() => import('./TicketTypeCopyDialog.vue'))
 
-interface Props {
+const props = defineProps<{
   eventId: string
   sessions: SessionVO[] | undefined
-}
-
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits<{
   updated: []

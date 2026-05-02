@@ -2,14 +2,14 @@ import { computed, ref } from 'vue'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchPassengerPage } from '@/api/account'
-import { fetchEventDetailById, followEvent, unfollowEvent, checkIsFollowedEvent } from '@/api/event'
+import { fetchEventDetailById } from '@/api/event'
 import { createTicketOrder, fetchUserPurchaseCounts } from '@/api/trade'
 import { queryKeys } from '@/constants'
 import type { PassengerItem, PageResponsePassengerVO } from '@/api/account'
 import { useUserStore } from '@/stores/user'
 import { mapPassengerToPassengerItem } from '@/utils/mappers'
-import { useFollowToggle } from '@/composables/common/useFollowToggle'
 import { calculateMaxTicketQuantity, getUserPurchasedCount } from './eventDetailState'
+import { useEventFollow } from './useEventFollow'
 import { useEventTicketSelection } from './useEventTicketSelection'
 
 export const useEventDetailPage = () => {
@@ -35,15 +35,7 @@ export const useEventDetailPage = () => {
     toggleFollow,
     isFollowed,
     isFollowLoading,
-  } = useFollowToggle({
-    id: () => eventId.value,
-    followQueryKey: queryKeys.event.followed,
-    entityQueryKey: queryKeys.event.detail,
-    checkIsFollowed: checkIsFollowedEvent,
-    follow: followEvent,
-    unfollow: unfollowEvent,
-    buildFollowRequest: (id) => ({ eventId: id }),
-  })
+  } = useEventFollow(() => eventId.value)
 
   const passengerListQuery = useQuery<PageResponsePassengerVO>({
     queryKey: queryKeys.profile.passengers(1, 100, passengerKeyword),

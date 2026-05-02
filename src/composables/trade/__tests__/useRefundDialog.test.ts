@@ -70,7 +70,7 @@ afterEach(() => {
 })
 
 describe('useRefundDialog', () => {
-  it('submits refunds and invalidates order plus status queries', async () => {
+  it('opens dialog, submits refund, and closes on success while invalidating queries', async () => {
     vi.mocked(createRefund).mockResolvedValue({
       id: 'refund-1',
       refundNo: 'REF-1',
@@ -102,12 +102,51 @@ describe('useRefundDialog', () => {
     expect(harness.invalidateSpy).toHaveBeenCalledWith({ queryKey: ['order-status', 'order-1'] })
   })
 
-  it('keeps the dialog closed when the current order is not refundable', () => {
+  it('prevents opening the dialog when the order is not refundable', () => {
     const harness = setupRefundDialog(ref(createOrder({ status: ORDER_STATUS.CANCELLED })))
     cleanup = harness.cleanup
 
     expect(harness.result.canRefund.value).toBe(false)
     harness.result.openRefundDialog()
     expect(harness.result.showRefundDialog.value).toBe(false)
+  })
+
+  it('prevents opening the dialog when the session has already started', () => {
+    const harness = setupRefundDialog(
+      ref(
+        createOrder({
+          sessionStartAtSnapshot: '2000-01-01T00:00:00.000Z',
+        }),
+      ),
+    )
+    cleanup = harness.cleanup
+
+    expect(harness.result.canRefund.value).toBe(false)
+    harness.result.openRefundDialog()
+    expect(harness.result.showRefundDialog.value).toBe(false)
+  })
+
+  it('throws when submitting refund without an order', async () => {
+    const orderRef = ref<TicketOrderVO | null>(createOrder())
+    const harness = setupRefundDialog(orderRef)
+    cleanup = harness.cleanup
+
+    harness.result.openRefundDialog()
+    orderRef.value = null
+
+    await expect(harness.result.refundMutation.mutateAsync('行程冲突')).rejects.toThrow(
+      'Order is required before creating a refund',
+    )
+  })
+
+  it('calls toast.error when the refund mutation fails', async () => {
+    vi.mocked(createRefund).mockRejectedValue(new Error('Refund failed'))
+    const harness = setupRefundDialog()
+    cleanup = harness.cleanup
+
+    harness.result.openRefundDialog()
+    await expect(harness.result.refundMutation.mutateAsync('行程冲突')).rejects.toThrow()
+
+    expect(harness.result.showRefundDialog.value).toBe(true)
   })
 })

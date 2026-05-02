@@ -12,8 +12,11 @@ import type {
 
 // ─── Admin ───────────────────────────────────────────────
 
-export const fetchAdminParticipants = (): Promise<ParticipantVO[]> =>
+export const fetchAdminParticipantList = (): Promise<ParticipantVO[]> =>
   request.get<ParticipantVO[]>('/api/event/admin/participants')
+
+/** @deprecated Use fetchAdminParticipantList instead */
+export const fetchAdminParticipants = fetchAdminParticipantList
 
 export const fetchAdminParticipantsPage = (
   query?: ParticipantPageRequest,
@@ -31,8 +34,11 @@ export const deleteParticipant = (id: string): Promise<void> =>
 
 // ─── Front ───────────────────────────────────────────────
 
-export const fetchParticipantDetail = (id: string): Promise<ParticipantVO> =>
+export const fetchParticipantById = (id: string): Promise<ParticipantVO> =>
   request.get<ParticipantVO>(`/api/event/front/participants/${id}`)
+
+/** @deprecated Use fetchParticipantById instead */
+export const fetchParticipantDetail = fetchParticipantById
 
 export const fetchParticipantEventsPage = (
   id: string,

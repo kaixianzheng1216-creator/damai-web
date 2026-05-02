@@ -18,12 +18,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui
 import type { EventServiceGuaranteeVO } from '@/api/event'
 import { useEventServicesTab } from '@/composables/admin'
 
-interface Props {
+const props = defineProps<{
   eventId: string
   eventServices: EventServiceGuaranteeVO[]
-}
-
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits<{
   updated: []

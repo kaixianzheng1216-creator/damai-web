@@ -8,12 +8,10 @@ import { useEventInfoTab } from '@/composables/admin'
 
 const RichTextEditor = defineAsyncComponent(() => import('@/components/common/RichTextEditor.vue'))
 
-interface Props {
+const props = defineProps<{
   eventId: string
   eventInfo?: EventInfoVO
-}
-
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits<{
   updated: []

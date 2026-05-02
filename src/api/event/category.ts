@@ -10,13 +10,19 @@ import type {
 
 // ─── Front ───────────────────────────────────────────────
 
-export const fetchCategories = (): Promise<CategoryVO[]> =>
+export const fetchCategoryList = (): Promise<CategoryVO[]> =>
   request.get<CategoryVO[]>('/api/event/front/categories')
+
+/** @deprecated Use fetchCategoryList instead */
+export const fetchCategories = fetchCategoryList
 
 // ─── Admin ───────────────────────────────────────────────
 
-export const fetchAdminCategories = (): Promise<CategoryVO[]> =>
+export const fetchAdminCategoryList = (): Promise<CategoryVO[]> =>
   request.get<CategoryVO[]>('/api/event/admin/categories')
+
+/** @deprecated Use fetchAdminCategoryList instead */
+export const fetchAdminCategories = fetchAdminCategoryList
 
 export const fetchAdminCategoriesPage = (
   query?: CategoryPageRequest,

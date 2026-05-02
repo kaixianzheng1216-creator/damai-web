@@ -10,8 +10,11 @@ import type {
 
 // ─── Admin ───────────────────────────────────────────────
 
-export const fetchAdminNotices = (): Promise<NoticeVO[]> =>
+export const fetchAdminNoticeList = (): Promise<NoticeVO[]> =>
   request.get<NoticeVO[]>('/api/event/admin/notices')
+
+/** @deprecated Use fetchAdminNoticeList instead */
+export const fetchAdminNotices = fetchAdminNoticeList
 
 export const fetchAdminNoticesPage = (query?: NoticePageRequest): Promise<PageResponseNoticeVO> =>
   request.get<PageResponseNoticeVO>('/api/event/admin/notices/page', { params: query })

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
+import { createAuthStore } from '@/composables/common/useAuthStore'
 
 export interface UserInfo {
   id: string
@@ -13,10 +13,8 @@ export interface UserInfo {
 }
 
 export const useUserStore = defineStore('user', () => {
-  const token = useStorage<string | null>('token', null)
-  const userInfo = useStorage<UserInfo | null>('user-info', null)
+  const { token, info: userInfo, isLoggedIn } = createAuthStore<UserInfo>('token', 'user-info')
 
-  const isLoggedIn = computed(() => !!token.value)
   const userToken = computed(() => token.value)
 
   const setUserInfo = (data: UserInfo, newToken?: string) => {

@@ -1,17 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
-import { Input } from '@/components/common/ui/input'
-import { Label } from '@/components/common/ui/label'
-import { FieldError } from '@/components/common/ui/field'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/common/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -22,16 +11,14 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import { formatDateTime } from '@/utils/format'
-import DateTimePicker from '@/components/common/DateTimePicker.vue'
 import type { SessionVO, TicketTypeVO } from '@/api/event'
 import { useSessionList } from '@/composables/admin'
+import SessionDialog from './SessionDialog.vue'
 
-interface Props {
+const props = defineProps<{
   eventId: string
   sessions: SessionVO[] | undefined
-}
-
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits<{
   updated: []
@@ -68,10 +55,12 @@ const isSavingSession = computed(
   () => batchAddSessionsMutation.isPending.value || updateSessionMutation.isPending.value,
 )
 
-const handleSessionOpenChange = (value: boolean) => {
-  if (!value && !isSavingSession.value) {
-    showSessionDialog.value = false
-  }
+const handleUpdateSessionForm = (form: { name: string; startAt?: string; endAt?: string }) => {
+  Object.assign(sessionForm, form)
+}
+
+const handleUpdateBatchRows = (rows: { name: string; startAt: string; endAt: string }[]) => {
+  batchSessionRows.value = rows
 }
 </script>
 
@@ -174,128 +163,19 @@ const handleSessionOpenChange = (value: boolean) => {
     </div>
   </div>
 
-  <!-- Session Dialog -->
-  <Dialog :open="showSessionDialog" @update:open="handleSessionOpenChange">
-    <DialogContent
-      class="w-[calc(100vw-2rem)] max-w-2xl sm:max-w-2xl"
-      :show-close-button="!isSavingSession"
-    >
-      <DialogHeader>
-        <DialogTitle>{{ editingSessionId ? '编辑场次' : '批量添加场次' }}</DialogTitle>
-        <DialogDescription>场次名称必填，时间会用于前台购票和检票展示。</DialogDescription>
-      </DialogHeader>
-
-      <!-- Edit mode: single row form -->
-      <div v-if="editingSessionId" class="grid gap-4 py-4">
-        <div class="grid gap-2">
-          <Label for="session-name">场次名称 <span class="text-destructive">*</span></Label>
-          <Input
-            id="session-name"
-            v-model="sessionForm.name"
-            placeholder="请输入场次名称"
-            :disabled="isSavingSession"
-            :aria-invalid="Boolean(sessionError) || undefined"
-          />
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="grid gap-2">
-            <Label>开始时间</Label>
-            <DateTimePicker
-              v-model="sessionForm.startAt"
-              aria-label="选择场次开始时间"
-              placeholder="选择开始时间"
-              :disabled="isSavingSession"
-            />
-          </div>
-          <div class="grid gap-2">
-            <Label>结束时间</Label>
-            <DateTimePicker
-              v-model="sessionForm.endAt"
-              aria-label="选择场次结束时间"
-              placeholder="选择结束时间"
-              :disabled="isSavingSession"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Create mode: batch rows -->
-      <div v-else class="py-4 space-y-3">
-        <div
-          v-for="(row, idx) in batchSessionRows"
-          :key="idx"
-          class="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-end"
-        >
-          <div class="grid gap-1">
-            <Label v-if="idx === 0" :for="`batch-session-name-${idx}`"
-              >场次名称 <span class="text-destructive">*</span></Label
-            >
-            <Input
-              :id="`batch-session-name-${idx}`"
-              v-model="row.name"
-              :aria-label="`第 ${idx + 1} 行场次名称`"
-              placeholder="请输入场次名称"
-              :disabled="isSavingSession"
-              :aria-invalid="Boolean(sessionError) || undefined"
-            />
-          </div>
-          <div class="grid gap-1">
-            <Label v-if="idx === 0" :for="`batch-session-start-${idx}`">开始时间</Label>
-            <Input
-              :id="`batch-session-start-${idx}`"
-              v-model="row.startAt"
-              type="datetime-local"
-              :aria-label="`第 ${idx + 1} 行开始时间`"
-              :disabled="isSavingSession"
-            />
-          </div>
-          <div class="grid gap-1">
-            <Label v-if="idx === 0" :for="`batch-session-end-${idx}`">结束时间</Label>
-            <Input
-              :id="`batch-session-end-${idx}`"
-              v-model="row.endAt"
-              type="datetime-local"
-              :aria-label="`第 ${idx + 1} 行结束时间`"
-              :disabled="isSavingSession"
-            />
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            class="text-destructive hover:text-destructive"
-            :disabled="batchSessionRows.length <= 1"
-            @click="removeBatchRow(idx)"
-          >
-            删除
-          </Button>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          :disabled="isSavingSession"
-          @click="addBatchRow"
-        >
-          + 添加一行
-        </Button>
-        <FieldError v-if="sessionError">{{ sessionError }}</FieldError>
-      </div>
-
-      <DialogFooter>
-        <Button
-          type="button"
-          variant="outline"
-          :disabled="isSavingSession"
-          @click="handleSessionOpenChange(false)"
-        >
-          取消
-        </Button>
-        <Button type="button" :disabled="isSavingSession" @click="handleSaveSession">
-          {{ isSavingSession ? '保存中...' : '保存' }}
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+  <SessionDialog
+    v-model:open="showSessionDialog"
+    :editing-session-id="editingSessionId"
+    :session-error="sessionError"
+    :session-form="sessionForm"
+    :batch-session-rows="batchSessionRows"
+    :is-saving="isSavingSession"
+    @update:session-form="handleUpdateSessionForm"
+    @update:batch-session-rows="handleUpdateBatchRows"
+    @save="handleSaveSession"
+    @add-batch-row="addBatchRow"
+    @remove-batch-row="removeBatchRow"
+  />
 
   <ConfirmDialog
     :open="confirmDialog.open"

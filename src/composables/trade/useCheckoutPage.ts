@@ -10,6 +10,7 @@ import {
   TIME_UNITS,
   CHECKOUT_CONFIG,
   queryKeys,
+  TOAST_COPY,
 } from '@/constants'
 import { fetchOrderById, fetchOrderStatus, createPayment, cancelTicketOrder } from '@/api/trade'
 import type { OrderStatusVO } from '@/api/trade'
@@ -98,7 +99,7 @@ export const useCheckoutPage = () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.trade.order(orderId) })
     },
     onError: () => {
-      toast.error('创建支付失败，请重试')
+      toast.error(TOAST_COPY.paymentCreateFailed)
     },
   })
 
@@ -109,7 +110,7 @@ export const useCheckoutPage = () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.trade.order(orderId) })
     },
     onError: () => {
-      toast.error('取消订单失败，请重试')
+      toast.error(TOAST_COPY.orderCancelFailed)
     },
   })
 

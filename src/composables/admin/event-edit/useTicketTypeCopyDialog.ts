@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { copyTicketTypes } from '@/api/event/event'
 import type { SessionVO } from '@/api/event'
-import { queryKeys } from '@/constants'
+import { queryKeys, TOAST_COPY } from '@/constants'
 
 interface UseTicketTypeCopyDialogOptions {
   eventId: MaybeRefOrGetter<string>
@@ -54,13 +54,13 @@ export function useTicketTypeCopyDialog(options: UseTicketTypeCopyDialogOptions)
       targetSessionIds: string[]
     }) => copyTicketTypes(toValue(options.eventId), { sourceSessionId, targetSessionIds }),
     onSuccess: () => {
-      toast.success('票种复制成功')
+      toast.success(TOAST_COPY.ticketTypesCopied)
       options.onOpenChange(false)
       invalidateAll()
       options.onCopied()
     },
     onError: () => {
-      toast.error('复制失败')
+      toast.error(TOAST_COPY.ticketTypesCopyFailed)
     },
   })
 
@@ -69,7 +69,7 @@ export function useTicketTypeCopyDialog(options: UseTicketTypeCopyDialogOptions)
     if (!sourceSession) return
 
     if (copyTargetSessionIds.value.length === 0) {
-      toast.error('请选择目标场次')
+      toast.error(TOAST_COPY.selectTargetSession)
       return
     }
 

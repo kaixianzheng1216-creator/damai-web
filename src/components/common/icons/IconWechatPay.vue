@@ -8,11 +8,12 @@
 </template>
 
 <script setup lang="ts">
-interface Props {
-  size?: number | string
-}
-
-withDefaults(defineProps<Props>(), {
-  size: 24,
-})
+withDefaults(
+  defineProps<{
+    size?: number | string
+  }>(),
+  {
+    size: 24,
+  },
+)
 </script>

@@ -15,13 +15,11 @@ import {
 import type { TicketTypeVO } from '@/api/event'
 import { useInventoryAdjustDialog } from '@/composables/admin'
 
-interface Props {
+const props = defineProps<{
   open: boolean
   eventId: string
   ticketType: TicketTypeVO | null
-}
-
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits<{
   'update:open': [value: boolean]

@@ -4,26 +4,27 @@ import { toast } from 'vue3-toastify'
 import { Button } from '@/components/common/ui/button'
 import { uploadFile } from '@/api/file/index'
 
-interface Props {
-  modelValue?: string
-  aspectClass?: string
-  acceptedTypes?: string[]
-  maxSizeMb?: number
-  minWidth?: number
-  minHeight?: number
-  maxWidth?: number
-  maxHeight?: number
-  previewAlt?: string
-  uploadLabel?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  aspectClass: 'aspect-video',
-  acceptedTypes: () => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-  maxSizeMb: 10,
-  previewAlt: '图片预览',
-  uploadLabel: '上传图片',
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string
+    aspectClass?: string
+    acceptedTypes?: string[]
+    maxSizeMb?: number
+    minWidth?: number
+    minHeight?: number
+    maxWidth?: number
+    maxHeight?: number
+    previewAlt?: string
+    uploadLabel?: string
+  }>(),
+  {
+    aspectClass: 'aspect-video',
+    acceptedTypes: () => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+    maxSizeMb: 10,
+    previewAlt: '图片预览',
+    uploadLabel: '上传图片',
+  },
+)
 const resolvedAspect = computed(() => props.aspectClass)
 const acceptedAttribute = computed(() => props.acceptedTypes.join(','))
 const acceptedLabel = computed(() =>

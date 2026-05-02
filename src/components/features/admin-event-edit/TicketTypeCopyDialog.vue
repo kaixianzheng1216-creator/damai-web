@@ -14,14 +14,12 @@ import {
 import type { SessionVO } from '@/api/event'
 import { useTicketTypeCopyDialog } from '@/composables/admin'
 
-interface Props {
+const props = defineProps<{
   open: boolean
   eventId: string
   sourceSession: SessionVO | null
   allSessions: SessionVO[] | undefined
-}
-
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits<{
   'update:open': [value: boolean]

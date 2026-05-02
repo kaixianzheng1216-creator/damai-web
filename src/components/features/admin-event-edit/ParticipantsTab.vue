@@ -18,12 +18,10 @@ import { Input } from '@/components/common/ui/input'
 import type { EventParticipantVO } from '@/api/event'
 import { useEventParticipantsTab } from '@/composables/admin'
 
-interface Props {
+const props = defineProps<{
   eventId: string
   eventParticipants: EventParticipantVO[]
-}
-
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits<{
   updated: []

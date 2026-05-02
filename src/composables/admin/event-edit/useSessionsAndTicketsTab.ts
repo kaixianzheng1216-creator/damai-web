@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { deleteTicketType } from '@/api/event/event'
 import type { SessionVO, TicketTypeVO } from '@/api/event'
-import { queryKeys } from '@/constants'
+import { queryKeys, TOAST_COPY } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 
 interface UseSessionsAndTicketsTabOptions {
@@ -34,12 +34,12 @@ export function useSessionsAndTicketsTab(options: UseSessionsAndTicketsTabOption
   const deleteTicketTypeMutation = useMutation({
     mutationFn: (ticketTypeId: string) => deleteTicketType(toValue(options.eventId), ticketTypeId),
     onSuccess: () => {
-      toast.success('票种删除成功')
+      toast.success(TOAST_COPY.ticketTypeDeleted)
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
-      toast.error('删除失败')
+      toast.error(TOAST_COPY.ticketTypeDeleteFailed)
     },
   })
 

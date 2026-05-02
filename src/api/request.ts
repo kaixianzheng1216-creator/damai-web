@@ -154,19 +154,34 @@ service.interceptors.request.use((config: InternalRequestConfig) => {
 
 export const request = {
   get: <T = unknown>(url: string, config?: RequestConfig): Promise<T> =>
-    send<T>(service.get<ApiResponse<T>>(url, config)),
+    send<T>(service.get<ApiResponse<T>>(url, { showError: true, ...config })),
 
   post: <T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig): Promise<T> =>
-    send<T>(service.post<ApiResponse<T>, AxiosResponse<ApiResponse<T>>, D>(url, data, config)),
+    send<T>(
+      service.post<ApiResponse<T>, AxiosResponse<ApiResponse<T>>, D>(url, data, {
+        showError: false,
+        ...config,
+      }),
+    ),
 
   put: <T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig): Promise<T> =>
-    send<T>(service.put<ApiResponse<T>, AxiosResponse<ApiResponse<T>>, D>(url, data, config)),
+    send<T>(
+      service.put<ApiResponse<T>, AxiosResponse<ApiResponse<T>>, D>(url, data, {
+        showError: false,
+        ...config,
+      }),
+    ),
 
   patch: <T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig): Promise<T> =>
-    send<T>(service.patch<ApiResponse<T>, AxiosResponse<ApiResponse<T>>, D>(url, data, config)),
+    send<T>(
+      service.patch<ApiResponse<T>, AxiosResponse<ApiResponse<T>>, D>(url, data, {
+        showError: false,
+        ...config,
+      }),
+    ),
 
   del: <T = unknown>(url: string, config?: RequestConfig): Promise<T> =>
-    send<T>(service.delete<ApiResponse<T>>(url, config)),
+    send<T>(service.delete<ApiResponse<T>>(url, { showError: false, ...config })),
 }
 
 export const uploadFormData = <T = unknown>(url: string, file: File): Promise<T> => {

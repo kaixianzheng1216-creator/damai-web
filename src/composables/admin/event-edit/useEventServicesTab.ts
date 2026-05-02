@@ -9,7 +9,7 @@ import type {
   EventServiceGuaranteeVO,
   ServiceGuaranteeVO,
 } from '@/api/event'
-import { queryKeys } from '@/constants'
+import { queryKeys, TOAST_COPY } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 import { useQueryEnabled } from '@/composables/common/useQueryEnabled'
 
@@ -60,32 +60,32 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
       return batchAddServices(toValue(options.eventId), payload)
     },
     onSuccess: () => {
-      toast.success('服务保障保存成功')
+      toast.success(TOAST_COPY.servicesSaved)
       showServiceDialog.value = false
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
-      toast.error('保存失败')
+      toast.error(TOAST_COPY.servicesSaveFailed)
     },
   })
 
   const removeServiceMutation = useMutation({
     mutationFn: (eventServiceId: string) => removeService(toValue(options.eventId), eventServiceId),
     onSuccess: () => {
-      toast.success('服务保障移除成功')
+      toast.success(TOAST_COPY.serviceRemoved)
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
-      toast.error('移除失败')
+      toast.error(TOAST_COPY.serviceRemoveFailed)
     },
   })
 
   const handleSaveServices = async () => {
     const hasMissingOption = selectedServices.value.some((item) => !item.optionId)
     if (hasMissingOption) {
-      toast.error('请为每个选中的服务保障选择一个选项')
+      toast.error(TOAST_COPY.selectServiceOption)
       return
     }
 

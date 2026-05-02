@@ -64,8 +64,8 @@ describe('eventDetailState', () => {
 
     expect(isTicketTypeOnSale(onSale, now)).toBe(true)
     expect(isTicketTypeOnSale(offSale, now)).toBe(false)
-    expect(resolveSelectedTicketTypeId([offSale, onSale], null)).toBe('on-sale')
-    expect(resolveSelectedTicketTypeId([onSale], 'on-sale')).toBe('on-sale')
+    expect(resolveSelectedTicketTypeId([offSale, onSale], null, now)).toBe('on-sale')
+    expect(resolveSelectedTicketTypeId([onSale], 'on-sale', now)).toBe('on-sale')
   })
 
   it('fills passenger selection without duplicates and derives selected passengers', () => {

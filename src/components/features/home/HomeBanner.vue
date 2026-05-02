@@ -11,11 +11,9 @@ import {
 import Autoplay from 'embla-carousel-autoplay'
 import type { HomeBannerItem } from '@/api/event'
 
-interface Props {
+defineProps<{
   banners: HomeBannerItem[]
-}
-
-defineProps<Props>()
+}>()
 
 const api = ref<CarouselApi>()
 const currentIndex = ref(0)

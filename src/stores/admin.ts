@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { useStorage } from '@vueuse/core'
+import { createAuthStore } from '@/composables/common/useAuthStore'
 
 export interface AdminInfo {
   id: string
@@ -11,8 +11,11 @@ export interface AdminInfo {
 }
 
 export const useAdminStore = defineStore('admin', () => {
-  const adminToken = useStorage<string | null>('admin-token', null)
-  const adminInfo = useStorage<AdminInfo | null>('admin-info', null)
+  const {
+    token: adminToken,
+    info: adminInfo,
+    isLoggedIn,
+  } = createAuthStore<AdminInfo>('admin-token', 'admin-info')
 
   const setAdminInfo = (data: AdminInfo, newToken: string) => {
     adminInfo.value = data
@@ -27,6 +30,7 @@ export const useAdminStore = defineStore('admin', () => {
   return {
     adminInfo,
     adminToken,
+    isLoggedIn,
     setAdminInfo,
     clearAdminInfo,
   }

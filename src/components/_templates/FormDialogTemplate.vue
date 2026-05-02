@@ -9,19 +9,20 @@ import {
 } from '@/components/common/ui/dialog'
 import { Button } from '@/components/common/ui/button'
 
-interface Props {
-  open: boolean
-  title: string
-  description?: string
-  isSaving?: boolean
-  isEditing?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  description: '',
-  isSaving: false,
-  isEditing: false,
-})
+const props = withDefaults(
+  defineProps<{
+    open: boolean
+    title: string
+    description?: string
+    isSaving?: boolean
+    isEditing?: boolean
+  }>(),
+  {
+    description: '',
+    isSaving: false,
+    isEditing: false,
+  },
+)
 
 const emit = defineEmits<{
   close: []

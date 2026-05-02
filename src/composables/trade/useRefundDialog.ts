@@ -2,7 +2,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { createRefund, type TicketOrderVO } from '@/api/trade'
-import { ORDER_STATUS, queryKeys } from '@/constants'
+import { ORDER_STATUS, queryKeys, TOAST_COPY } from '@/constants'
 import { useDialog } from '@/composables/common'
 
 interface UseRefundDialogOptions {
@@ -43,7 +43,7 @@ export function useRefundDialog(options: UseRefundDialogOptions) {
     },
     onSuccess: async (_refund, _reason) => {
       const orderId = currentOrder.value?.id
-      toast.success('退款申请已提交')
+      toast.success(TOAST_COPY.refundSubmitted)
       closeDialog()
 
       if (!orderId) {
@@ -56,7 +56,7 @@ export function useRefundDialog(options: UseRefundDialogOptions) {
       ])
     },
     onError: () => {
-      toast.error('退款申请失败，请稍后重试')
+      toast.error(TOAST_COPY.refundFailed)
     },
   })
 

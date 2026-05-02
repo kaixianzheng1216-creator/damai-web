@@ -16,14 +16,12 @@ import DateTimePicker from '@/components/common/DateTimePicker.vue'
 import type { TicketTypeVO } from '@/api/event'
 import { useTicketTypeDialog } from '@/composables/admin'
 
-interface Props {
+const props = defineProps<{
   open: boolean
   eventId: string
   editingTicketType: TicketTypeVO | null
   sessionId: string | null
-}
-
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits<{
   'update:open': [value: boolean]

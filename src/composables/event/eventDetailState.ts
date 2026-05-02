@@ -32,13 +32,14 @@ export const resolveInitialSessionId = (detail: EventDetailVO | undefined) =>
 export const resolveSelectedTicketTypeId = (
   ticketTypes: TicketTypeVO[],
   currentTicketTypeId: string | null,
+  now?: Dayjs,
 ) => {
   const currentTicketType = ticketTypes.find((item) => item.id === currentTicketTypeId)
-  if (currentTicketType && isTicketTypeOnSale(currentTicketType)) {
+  if (currentTicketType && isTicketTypeOnSale(currentTicketType, now)) {
     return currentTicketType.id
   }
 
-  return ticketTypes.find((item) => isTicketTypeOnSale(item))?.id ?? null
+  return ticketTypes.find((item) => isTicketTypeOnSale(item, now))?.id ?? null
 }
 
 export const buildPassengerSelection = (

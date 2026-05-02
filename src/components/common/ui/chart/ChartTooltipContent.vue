@@ -12,7 +12,7 @@ const props = withDefaults(
     nameKey?: string
     labelKey?: string
     labelFormatter?: (d: number | Date) => string
-    payload?: Record<string, any>
+    payload?: Record<string, unknown>
     config?: ChartConfig
     class?: HTMLAttributes['class']
     color?: string
@@ -25,15 +25,14 @@ const props = withDefaults(
   },
 )
 
-// TODO: currently we use `createElement` and `render` to render the
-// const chartContext = useChart(null)
-
 const payload = computed(() => {
   return Object.entries(props.payload)
     .map(([key, value]) => {
       // const key = `${props.nameKey || item.name || item.dataKey || "value"}`
       const itemConfig = props.config[key]
-      const indicatorColor = props.config[key]?.color ?? props.payload.fill
+      const rawFill = props.payload['fill']
+      const indicatorColor =
+        props.config[key]?.color ?? (typeof rawFill === 'string' ? rawFill : undefined)
 
       return { key, value, itemConfig, indicatorColor }
     })
@@ -49,7 +48,7 @@ const tooltipLabel = computed(() => {
     return props.labelFormatter(props.x)
   }
   return props.labelKey
-    ? props.config[props.labelKey]?.label || props.payload[props.labelKey]
+    ? props.config[props.labelKey]?.label || String(props.payload[props.labelKey] ?? '')
     : props.x
 })
 </script>
@@ -113,7 +112,7 @@ const tooltipLabel = computed(() => {
               </span>
             </div>
             <span v-if="value" class="text-foreground font-mono font-medium tabular-nums">
-              {{ value.toLocaleString() }}
+              {{ typeof value === 'number' ? value.toLocaleString() : String(value) }}
             </span>
           </div>
         </div>

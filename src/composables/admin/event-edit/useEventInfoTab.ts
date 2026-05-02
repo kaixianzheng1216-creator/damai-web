@@ -5,7 +5,7 @@ import { toast } from 'vue3-toastify'
 import { saveEventInfo } from '@/api/event/event'
 import { fetchAdminNotices } from '@/api/event/notice'
 import type { EventInfoCreateRequest, EventInfoVO } from '@/api/event'
-import { NOTICE_TYPE, queryKeys } from '@/constants'
+import { NOTICE_TYPE, queryKeys, TOAST_COPY } from '@/constants'
 
 interface UseEventInfoTabOptions {
   eventId: MaybeRefOrGetter<string>
@@ -66,14 +66,14 @@ export function useEventInfoTab(options: UseEventInfoTabOptions) {
     mutationFn: (payload: EventInfoCreateRequest) =>
       saveEventInfo(toValue(options.eventId), payload),
     onSuccess: () => {
-      toast.success('详情信息保存成功')
+      toast.success(TOAST_COPY.infoSaved)
       queryClient.invalidateQueries({
         queryKey: queryKeys.admin.eventDetail(toValue(options.eventId)),
       })
       options.onUpdated()
     },
     onError: () => {
-      toast.error('保存失败')
+      toast.error(TOAST_COPY.infoSaveFailed)
     },
   })
 

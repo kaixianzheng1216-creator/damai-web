@@ -13,13 +13,11 @@ import {
 import type { EventVO } from '@/api/event'
 import { useEventBasicTab } from '@/composables/admin'
 
-interface Props {
+const props = defineProps<{
   eventId?: string
   isEdit: boolean
   eventData?: EventVO
-}
-
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits<{
   created: [eventId: string]

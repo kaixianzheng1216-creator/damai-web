@@ -1,4 +1,5 @@
 export * from './useAuthSession'
+export * from './useAuthStore'
 export * from './useDialog'
 export * from './useHeaderState'
 export * from './useCountdown'

@@ -9,21 +9,22 @@ import {
 } from '@/components/common/ui/dialog'
 import { Button } from '@/components/common/ui/button'
 
-interface Props {
-  open: boolean
-  title: string
-  description?: string
-  loading?: boolean
-  confirmText?: string
-  confirmDisabled?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  description: '',
-  loading: false,
-  confirmText: '确认',
-  confirmDisabled: false,
-})
+const props = withDefaults(
+  defineProps<{
+    open: boolean
+    title: string
+    description?: string
+    loading?: boolean
+    confirmText?: string
+    confirmDisabled?: boolean
+  }>(),
+  {
+    description: '',
+    loading: false,
+    confirmText: '确认',
+    confirmDisabled: false,
+  },
+)
 
 const emit = defineEmits<{
   close: []

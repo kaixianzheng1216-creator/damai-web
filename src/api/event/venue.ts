@@ -10,8 +10,11 @@ import type {
 
 // ─── Admin ───────────────────────────────────────────────
 
-export const fetchAdminVenues = (): Promise<VenueVO[]> =>
+export const fetchAdminVenueList = (): Promise<VenueVO[]> =>
   request.get<VenueVO[]>('/api/event/admin/venues')
+
+/** @deprecated Use fetchAdminVenueList instead */
+export const fetchAdminVenues = fetchAdminVenueList
 
 export const fetchAdminVenuesPage = (query?: VenuePageRequest): Promise<PageResponseVenueVO> =>
   request.get<PageResponseVenueVO>('/api/event/admin/venues/page', { params: query })
@@ -27,5 +30,8 @@ export const deleteVenue = (id: string): Promise<void> =>
 
 // ─── Front ───────────────────────────────────────────────
 
-export const fetchVenueDetail = (id: string): Promise<VenueVO> =>
+export const fetchVenueById = (id: string): Promise<VenueVO> =>
   request.get<VenueVO>(`/api/event/front/venues/${id}`)
+
+/** @deprecated Use fetchVenueById instead */
+export const fetchVenueDetail = fetchVenueById

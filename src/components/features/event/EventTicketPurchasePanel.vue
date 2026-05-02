@@ -1,0 +1,178 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { formatPrice } from '@/utils/format'
+import type { EventDetailVO, TicketTypeVO, SeriesEventVO } from '@/api/event'
+import {
+  NumberField,
+  NumberFieldContent,
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput,
+} from '@/components/common/ui/number-field'
+import { Button } from '@/components/common/ui/button'
+
+const props = defineProps<{
+  detail: EventDetailVO
+  selectedSessionId: string | null
+  selectedTicketTypeId: string | null
+  ticketQuantity: number
+  selectedTicketTypeLimit: number
+  selectedTicketTypeAccountLimit: number
+  isSelectedTicketTypeOnSale: boolean
+  isTicketTypeOnSale: (ticketType: TicketTypeVO) => boolean
+  isUserAccountLimitReached: boolean
+  maxTicketQuantity: number
+  totalPrice: string
+  isCreatingOrder: boolean
+  availableTicketTypes: TicketTypeVO[]
+  selectedTicketType?: TicketTypeVO
+  seriesEvents: SeriesEventVO[]
+}>()
+
+const emit = defineEmits<{
+  'switch-event': [id: string]
+  'update:selectedSessionId': [value: string | null]
+  'update:selectedTicketTypeId': [value: string | null]
+  'update:ticketQuantity': [value: number]
+  'buy-now': []
+}>()
+
+const hasSessions = computed(() => props.detail.sessions.length > 0)
+const hasTicketTypes = computed(() => props.availableTicketTypes.length > 0)
+const purchaseDisabledReason = computed(() => {
+  if (!hasSessions.value) return '暂无可售场次'
+  if (!hasTicketTypes.value) return '暂无可售票档'
+  if (!props.selectedTicketType) return '请选择票档'
+  if (!props.isSelectedTicketTypeOnSale) return '当前票档不可售'
+  if (props.maxTicketQuantity <= 0) return '库存不足'
+  if (props.isUserAccountLimitReached) return '已达限购上限'
+  return ''
+})
+const canBuyNow = computed(() => !props.isCreatingOrder && !purchaseDisabledReason.value)
+</script>
+
+<template>
+  <div class="mt-6 space-y-5">
+    <div v-if="seriesEvents.length > 0">
+      <p class="text-sm text-muted-foreground">同系列活动</p>
+      <div class="mt-2 flex flex-wrap gap-2">
+        <button
+          type="button"
+          v-for="event in seriesEvents"
+          :key="event.id"
+          :class="
+            cn(
+              'rounded-sm border px-3 py-1 text-sm transition-colors',
+              event.id === detail.event.id
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-border text-foreground hover:border-primary/40 hover:text-primary',
+            )
+          "
+          @click="emit('switch-event', event.id)"
+        >
+          {{ event.name }}
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <p class="text-sm text-muted-foreground">场次</p>
+      <div class="mt-2 flex max-w-[760px] flex-wrap gap-2">
+        <button
+          type="button"
+          v-for="session in detail.sessions"
+          :key="session.id"
+          :class="
+            cn(
+              'rounded-sm border px-3 py-1 text-sm transition-colors',
+              session.id === selectedSessionId
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-border text-foreground hover:border-primary/40 hover:text-primary',
+            )
+          "
+          @click="emit('update:selectedSessionId', session.id)"
+        >
+          {{ session.name }}
+        </button>
+      </div>
+      <p v-if="!hasSessions" class="mt-2 text-sm text-muted-foreground">当前活动暂无可选场次。</p>
+    </div>
+
+    <div>
+      <p class="text-sm text-muted-foreground">票档</p>
+      <div class="mt-2 flex max-w-[760px] flex-wrap gap-2">
+        <button
+          type="button"
+          v-for="ticketType in availableTicketTypes"
+          :key="ticketType.id"
+          :disabled="!isTicketTypeOnSale(ticketType)"
+          :class="
+            cn(
+              'rounded-sm border px-3 py-1 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+              ticketType.id === selectedTicketTypeId
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-border text-foreground hover:border-primary/40 hover:text-primary',
+            )
+          "
+          @click="emit('update:selectedTicketTypeId', ticketType.id)"
+        >
+          {{ ticketType.name }} ({{ formatPrice(ticketType.salePrice ?? 0) }})
+          <span v-if="!isTicketTypeOnSale(ticketType)" class="ml-1">不可售</span>
+        </button>
+      </div>
+      <p v-if="!hasTicketTypes" class="mt-2 text-sm text-muted-foreground">
+        当前场次暂无可售票档。
+      </p>
+      <p class="mt-2 text-sm text-muted-foreground">
+        当前票档单笔限购 {{ selectedTicketTypeLimit }} 张
+        <span v-if="selectedTicketTypeAccountLimit > 0">
+          ，单用户限购 {{ selectedTicketTypeAccountLimit }} 张
+        </span>
+        。
+      </p>
+    </div>
+
+    <div>
+      <p class="text-sm text-muted-foreground">数量</p>
+      <NumberField
+        class="w-40"
+        :model-value="ticketQuantity"
+        :min="1"
+        :max="maxTicketQuantity"
+        @update:model-value="(val) => val !== undefined && emit('update:ticketQuantity', val)"
+      >
+        <NumberFieldContent>
+          <NumberFieldDecrement />
+          <NumberFieldInput />
+          <NumberFieldIncrement />
+        </NumberFieldContent>
+      </NumberField>
+    </div>
+
+    <div class="section-card-muted">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="text-sm text-muted-foreground">当前合计</p>
+          <p class="mt-1 text-2xl font-semibold text-primary">{{ totalPrice }}</p>
+        </div>
+        <div class="text-right text-sm text-muted-foreground">
+          <p>票档：{{ selectedTicketType?.name || '--' }}</p>
+          <p class="mt-1">
+            单价：{{ formatPrice(selectedTicketType?.salePrice || 0) }} × {{ ticketQuantity }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-2">
+      <Button
+        class="w-full md:min-w-[124px] md:w-auto"
+        :disabled="!canBuyNow"
+        @click="emit('buy-now')"
+      >
+        <icon-lucide-loader2 v-if="isCreatingOrder" class="mr-2 h-4 w-4 animate-spin" />
+        {{ purchaseDisabledReason || '立即购票' }}
+      </Button>
+    </div>
+  </div>
+</template>

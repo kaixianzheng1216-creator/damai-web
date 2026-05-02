@@ -69,11 +69,11 @@ const handleOpenChange = (value: boolean) => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem
-                v-for="certType in PASSENGER_CERT_TYPES"
-                :key="certType"
-                :value="certType"
+                v-for="certType in Object.values(PASSENGER_CERT_TYPES)"
+                :key="certType.label"
+                :value="certType.label"
               >
-                {{ certType }}
+                {{ certType.label }}
               </SelectItem>
             </SelectContent>
           </Select>

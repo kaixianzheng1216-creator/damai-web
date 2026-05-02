@@ -5,7 +5,7 @@ import { toast } from 'vue3-toastify'
 import { batchAddParticipants, removeParticipant } from '@/api/event/event'
 import { fetchAdminParticipantsPage } from '@/api/event/participant'
 import type { EventParticipantBatchAddRequest, EventParticipantVO } from '@/api/event'
-import { queryKeys } from '@/constants'
+import { queryKeys, TOAST_COPY } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 import { useQueryEnabled } from '@/composables/common/useQueryEnabled'
 
@@ -67,13 +67,13 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
     mutationFn: (payload: EventParticipantBatchAddRequest) =>
       batchAddParticipants(toValue(options.eventId), payload),
     onSuccess: () => {
-      toast.success('参与方添加成功')
+      toast.success(TOAST_COPY.participantsAdded)
       showParticipantDialog.value = false
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
-      toast.error('添加失败')
+      toast.error(TOAST_COPY.participantsAddFailed)
     },
   })
 
@@ -81,12 +81,12 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
     mutationFn: (eventParticipantId: string) =>
       removeParticipant(toValue(options.eventId), eventParticipantId),
     onSuccess: () => {
-      toast.success('参与方移除成功')
+      toast.success(TOAST_COPY.participantsRemoved)
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
-      toast.error('移除失败')
+      toast.error(TOAST_COPY.participantsRemoveFailed)
     },
   })
 

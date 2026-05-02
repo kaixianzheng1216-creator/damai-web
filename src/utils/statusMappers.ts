@@ -1,21 +1,17 @@
-import { ORDER_STATUS, TICKET_STATUS, WORK_ORDER_STATUS } from '@/constants'
+import { ORDER_STATUS, ORDER_STATUS_LABEL, TICKET_STATUS, WORK_ORDER_STATUS } from '@/constants'
 
 export const mapOrderStatus = (
   status: number,
 ): '待付款' | '已支付' | '已完成' | '已取消' | '已退款' => {
-  switch (status) {
-    case ORDER_STATUS.PENDING:
-      return '待付款'
-    case ORDER_STATUS.PAID:
-      return '已支付'
-    case ORDER_STATUS.CANCELLED:
-    case ORDER_STATUS.CLOSED:
-      return '已取消'
-    case ORDER_STATUS.REFUNDED:
-      return '已退款'
-    default:
-      return '已完成'
+  if (status === ORDER_STATUS.CLOSED) {
+    return ORDER_STATUS_LABEL[ORDER_STATUS.CANCELLED]
   }
+  return (ORDER_STATUS_LABEL[status as keyof typeof ORDER_STATUS_LABEL] ?? '已完成') as
+    | '待付款'
+    | '已支付'
+    | '已完成'
+    | '已取消'
+    | '已退款'
 }
 
 export const getTicketStatusClass = (status: number): string => {

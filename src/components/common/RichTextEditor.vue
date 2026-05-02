@@ -3,15 +3,16 @@ import { ref, watch } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 
-interface Props {
-  modelValue?: string
-  ariaLabel?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: '',
-  ariaLabel: '富文本内容',
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string
+    ariaLabel?: string
+  }>(),
+  {
+    modelValue: '',
+    ariaLabel: '富文本内容',
+  },
+)
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]

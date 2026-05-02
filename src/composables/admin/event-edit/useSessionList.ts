@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { batchAddSessions, deleteSession, updateSession } from '@/api/event/event'
 import type { SessionItem, SessionUpdateRequest, SessionVO } from '@/api/event'
-import { queryKeys } from '@/constants'
+import { queryKeys, TOAST_COPY, FORM_COPY } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
 import { formatDateTimeLocalInput } from '@/utils/format'
 
@@ -71,15 +71,15 @@ export function useSessionList(options: UseSessionListOptions) {
     mutationFn: (sessions: SessionItem[]) =>
       batchAddSessions(toValue(options.eventId), { sessions }),
     onSuccess: () => {
-      toast.success('场次添加成功')
+      toast.success(TOAST_COPY.sessionAdded)
       sessionError.value = ''
       showSessionDialog.value = false
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
-      sessionError.value = '添加失败，请重试'
-      toast.error('添加失败')
+      sessionError.value = FORM_COPY.sessionAddFailedRetry
+      toast.error(TOAST_COPY.sessionAddFailed)
     },
   })
 
@@ -87,35 +87,35 @@ export function useSessionList(options: UseSessionListOptions) {
     mutationFn: ({ sessionId, data }: { sessionId: string; data: SessionUpdateRequest }) =>
       updateSession(toValue(options.eventId), sessionId, data),
     onSuccess: () => {
-      toast.success('场次更新成功')
+      toast.success(TOAST_COPY.sessionUpdated)
       sessionError.value = ''
       showSessionDialog.value = false
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
-      sessionError.value = '更新失败，请重试'
-      toast.error('更新失败')
+      sessionError.value = FORM_COPY.sessionUpdateFailedRetry
+      toast.error(TOAST_COPY.sessionUpdateFailed)
     },
   })
 
   const deleteSessionMutation = useMutation({
     mutationFn: (sessionId: string) => deleteSession(toValue(options.eventId), sessionId),
     onSuccess: () => {
-      toast.success('场次删除成功')
+      toast.success(TOAST_COPY.sessionDeleted)
       invalidateAll()
       options.onUpdated()
     },
     onError: () => {
-      toast.error('删除失败')
+      toast.error(TOAST_COPY.sessionDeleteFailed)
     },
   })
 
   const handleSaveSession = async () => {
     if (editingSessionId.value) {
       if (!sessionForm.name) {
-        sessionError.value = '请填写场次名称'
-        toast.error('请填写场次名称')
+        sessionError.value = FORM_COPY.fillSessionName
+        toast.error(TOAST_COPY.fillSessionName)
         return
       }
       sessionError.value = ''
@@ -128,8 +128,8 @@ export function useSessionList(options: UseSessionListOptions) {
 
     const validRows = batchSessionRows.value.filter((row) => row.name)
     if (validRows.length === 0) {
-      sessionError.value = '请至少填写一个场次名称'
-      toast.error('请至少填写一个场次名称')
+      sessionError.value = FORM_COPY.fillAtLeastOneSession
+      toast.error(TOAST_COPY.fillAtLeastOneSession)
       return
     }
     sessionError.value = ''

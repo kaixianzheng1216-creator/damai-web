@@ -30,7 +30,12 @@ export const HEADER_PROFILE_MENU_ITEMS: Array<{ section: ProfileSectionKey; labe
     label,
   }))
 
-export const PASSENGER_CERT_TYPES = ['身份证'] as const
+export const PASSENGER_CERT_TYPES = {
+  ID_CARD: { value: 1, label: '身份证' },
+} as const
+
+export type PassengerCertType =
+  (typeof PASSENGER_CERT_TYPES)[keyof typeof PASSENGER_CERT_TYPES]['value']
 
 export const PROFILE_DIALOG_COPY = {
   deletePassengerTitle: '删除确认',

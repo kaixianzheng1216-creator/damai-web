@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { createTicketType, updateTicketType } from '@/api/event/event'
 import type { TicketTypeCreateRequest, TicketTypeUpdateRequest, TicketTypeVO } from '@/api/event'
-import { queryKeys } from '@/constants'
+import { queryKeys, TOAST_COPY, FORM_COPY } from '@/constants'
 import { formatDateTimeLocalInput } from '@/utils/format'
 
 interface UseTicketTypeDialogOptions {
@@ -79,15 +79,15 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
         : Promise.reject(new Error('No session ID'))
     },
     onSuccess: () => {
-      toast.success('票种创建成功')
+      toast.success(TOAST_COPY.ticketTypeCreated)
       formError.value = ''
       options.onOpenChange(false)
       invalidateAll()
       options.onSaved()
     },
     onError: () => {
-      formError.value = '创建失败，请重试'
-      toast.error('创建失败')
+      formError.value = FORM_COPY.ticketTypeCreateFailedRetry
+      toast.error(TOAST_COPY.ticketTypeCreateFailed)
     },
   })
 
@@ -95,22 +95,22 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
     mutationFn: ({ ticketTypeId, data }: { ticketTypeId: string; data: TicketTypeUpdateRequest }) =>
       updateTicketType(toValue(options.eventId), ticketTypeId, data),
     onSuccess: () => {
-      toast.success('票种更新成功')
+      toast.success(TOAST_COPY.ticketTypeUpdated)
       formError.value = ''
       options.onOpenChange(false)
       invalidateAll()
       options.onSaved()
     },
     onError: () => {
-      formError.value = '更新失败，请重试'
-      toast.error('更新失败')
+      formError.value = FORM_COPY.ticketTypeUpdateFailedRetry
+      toast.error(TOAST_COPY.ticketTypeUpdateFailed)
     },
   })
 
   const handleSaveTicketType = async () => {
     if (!form.name || form.salePrice <= 0) {
-      formError.value = '请填写票种名称和有效售价'
-      toast.error('请填写完整信息')
+      formError.value = FORM_COPY.fillTicketTypeNameAndPrice
+      toast.error(TOAST_COPY.fillCompleteInfo)
       return
     }
 
@@ -132,8 +132,8 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
     }
 
     if (form.totalQty <= 0) {
-      formError.value = '请填写大于 0 的总库存'
-      toast.error('请填写总库存')
+      formError.value = FORM_COPY.fillTotalQtyError
+      toast.error(TOAST_COPY.fillTotalQty)
       return
     }
 

@@ -286,7 +286,7 @@ describe('P0 admin list page composables', () => {
       queryKey: ['admin-work-order-list'],
     })
     expect(harness.invalidateSpy).toHaveBeenCalledWith({
-      queryKey: ['admin-work-order-detail', undefined],
+      queryKey: ['admin-work-order-detail'],
     })
   })
 })

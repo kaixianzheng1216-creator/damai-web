@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { adjustTicketTypeInventory } from '@/api/event/event'
 import type { TicketTypeInventoryAdjustRequest, TicketTypeVO } from '@/api/event'
-import { queryKeys } from '@/constants'
+import { queryKeys, TOAST_COPY, FORM_COPY } from '@/constants'
 
 interface UseInventoryAdjustDialogOptions {
   eventId: MaybeRefOrGetter<string>
@@ -44,23 +44,23 @@ export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOption
       data: TicketTypeInventoryAdjustRequest
     }) => adjustTicketTypeInventory(toValue(options.eventId), ticketTypeId, data),
     onSuccess: () => {
-      toast.success('库存调整成功')
+      toast.success(TOAST_COPY.inventoryAdjusted)
       adjustError.value = ''
       options.onOpenChange(false)
       invalidateAll()
       options.onSaved()
     },
     onError: () => {
-      adjustError.value = '调整失败，请重试'
-      toast.error('调整失败')
+      adjustError.value = FORM_COPY.adjustFailedRetry
+      toast.error(TOAST_COPY.inventoryAdjustFailed)
     },
   })
 
   const handleAdjustInventory = async () => {
     const ticketType = toValue(options.ticketType)
     if (!ticketType || adjustQty.value === 0) {
-      adjustError.value = '请输入非 0 的调整数量'
-      toast.error('请输入调整数量')
+      adjustError.value = FORM_COPY.enterNonZeroAdjustQty
+      toast.error(TOAST_COPY.enterAdjustQty)
       return
     }
 

@@ -12,8 +12,11 @@ import type {
 
 // ─── Admin ───────────────────────────────────────────────
 
-export const fetchAdminServices = (): Promise<ServiceGuaranteeVO[]> =>
+export const fetchAdminServiceList = (): Promise<ServiceGuaranteeVO[]> =>
   request.get<ServiceGuaranteeVO[]>('/api/event/admin/services')
+
+/** @deprecated Use fetchAdminServiceList instead */
+export const fetchAdminServices = fetchAdminServiceList
 
 export const fetchAdminServicesPage = (
   query?: ServiceGuaranteePageRequest,
