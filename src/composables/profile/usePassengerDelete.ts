@@ -1,7 +1,7 @@
 import { ref, type Ref } from 'vue'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useMutation } from '@tanstack/vue-query'
+import { useRefreshPassengerList } from './usePassengerRefresh'
 import { deletePassenger } from '@/api/account'
-import { queryKeys } from '@/constants'
 import { useDialog } from '@/composables/common'
 
 export interface UsePassengerDeleteOptions {
@@ -9,8 +9,6 @@ export interface UsePassengerDeleteOptions {
 }
 
 export const usePassengerDelete = (options: UsePassengerDeleteOptions) => {
-  const queryClient = useQueryClient()
-
   const {
     open: showDeletePassengerModal,
     openDialog: openDeleteDialog,
@@ -19,8 +17,7 @@ export const usePassengerDelete = (options: UsePassengerDeleteOptions) => {
 
   const deletingPassengerId = ref<string | null>(null)
 
-  const refreshPassengerList = () =>
-    queryClient.invalidateQueries({ queryKey: queryKeys.profile.passengers() })
+  const refreshPassengerList = useRefreshPassengerList()
 
   const deletePassengerMutation = useMutation({
     mutationFn: deletePassenger,

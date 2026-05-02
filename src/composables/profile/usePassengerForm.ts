@@ -1,9 +1,9 @@
 import { reactive, ref } from 'vue'
 import { z } from 'zod'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useMutation } from '@tanstack/vue-query'
+import { useRefreshPassengerList } from './usePassengerRefresh'
 import { createPassenger } from '@/api/account'
 import { PASSENGER_CERT_TYPES } from '@/constants'
-import { queryKeys } from '@/constants'
 import { useDialog } from '@/composables/common'
 import type { PassengerFormData } from '@/api/account'
 
@@ -13,8 +13,6 @@ const passengerSchema = z.object({
 })
 
 export const usePassengerForm = () => {
-  const queryClient = useQueryClient()
-
   const {
     open: showPassengerModal,
     openDialog: openPassengerDialog,
@@ -48,8 +46,7 @@ export const usePassengerForm = () => {
     resetPassengerForm()
   }
 
-  const refreshPassengerList = () =>
-    queryClient.invalidateQueries({ queryKey: queryKeys.profile.passengers() })
+  const refreshPassengerList = useRefreshPassengerList()
 
   const createPassengerMutation = useMutation({
     mutationFn: createPassenger,

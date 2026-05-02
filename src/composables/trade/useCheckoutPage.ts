@@ -12,14 +12,14 @@ import {
   queryKeys,
   TOAST_COPY,
 } from '@/constants'
-import { fetchOrderById, fetchOrderStatus, createPayment, cancelTicketOrder } from '@/api/trade'
+import { fetchMyOrderById, fetchMyOrderStatus, createPayment, cancelTicketOrder } from '@/api/trade'
 import type { OrderStatusVO } from '@/api/trade'
 import {
   formatRemainText,
   getCheckoutStatusFlags,
   getRemainSeconds,
   resolveCheckoutPaymentInfo,
-} from './checkoutState'
+} from '@/utils/checkoutState'
 
 export const useCheckoutPage = () => {
   const route = useRoute()
@@ -40,13 +40,13 @@ export const useCheckoutPage = () => {
     isError,
   } = useQuery({
     queryKey: queryKeys.trade.order(orderId),
-    queryFn: () => fetchOrderById(orderId.value),
+    queryFn: () => fetchMyOrderById(orderId.value),
     enabled: computed(() => !!orderId.value),
   })
 
   const { data: status } = useQuery({
     queryKey: queryKeys.trade.orderStatus(orderId),
-    queryFn: () => fetchOrderStatus(orderId.value),
+    queryFn: () => fetchMyOrderStatus(orderId.value),
     enabled: computed(() => !!orderId.value),
     refetchInterval: (query) => {
       const current = (query.state.data as OrderStatusVO | undefined)?.status ?? order.value?.status

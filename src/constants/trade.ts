@@ -163,6 +163,16 @@ export const PAYMENT_COPY = {
   refreshStatus: '刷新支付状态',
   backDetail: '返回详情',
   viewOrders: '查看订单',
+  createTime: '创建时间',
+  expireTime: '过期时间',
+  closeTime: '关闭时间',
+  refundTime: '退款时间',
+  paymentRecords: '支付记录',
+  paymentNo: '支付单号',
+  channel: '支付渠道',
+  payMethod: '支付方式',
+  outTradeNo: '商户订单号',
+  channelTradeNo: '渠道交易号',
 } as const
 
 export const CHECKOUT_CONFIG = {

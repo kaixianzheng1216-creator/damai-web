@@ -15,13 +15,10 @@ import type {
 export const fetchAdminServiceList = (): Promise<ServiceGuaranteeVO[]> =>
   request.get<ServiceGuaranteeVO[]>('/api/event/admin/services')
 
-/** @deprecated Use fetchAdminServiceList instead */
-export const fetchAdminServices = fetchAdminServiceList
-
 export const fetchAdminServicesPage = (
-  query?: ServiceGuaranteePageRequest,
+  params?: ServiceGuaranteePageRequest,
 ): Promise<PageResponseServiceGuaranteeVO> =>
-  request.get<PageResponseServiceGuaranteeVO>('/api/event/admin/services/page', { params: query })
+  request.get<PageResponseServiceGuaranteeVO>('/api/event/admin/services/page', { params })
 
 export const createService = (data: ServiceGuaranteeCreateRequest): Promise<string> =>
   request.post<RawEntityId>('/api/event/admin/services', data).then(normalizeEntityId)

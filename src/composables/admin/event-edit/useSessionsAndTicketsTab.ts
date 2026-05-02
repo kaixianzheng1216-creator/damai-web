@@ -2,7 +2,7 @@ import { ref, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
-import { deleteTicketType } from '@/api/event/event'
+import { adminDeleteTicketType } from '@/api/event/event'
 import type { SessionVO, TicketTypeVO } from '@/api/event'
 import { queryKeys, TOAST_COPY } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
@@ -32,7 +32,8 @@ export function useSessionsAndTicketsTab(options: UseSessionsAndTicketsTabOption
   }
 
   const deleteTicketTypeMutation = useMutation({
-    mutationFn: (ticketTypeId: string) => deleteTicketType(toValue(options.eventId), ticketTypeId),
+    mutationFn: (ticketTypeId: string) =>
+      adminDeleteTicketType(toValue(options.eventId), ticketTypeId),
     onSuccess: () => {
       toast.success(TOAST_COPY.ticketTypeDeleted)
       invalidateAll()

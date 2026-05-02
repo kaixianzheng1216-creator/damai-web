@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, type Ref, type ComputedRef } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { fetchAdminUserPage, updateAdminUserStatus } from '@/api/account/user'
 import type { UserVO } from '@/api/account'
@@ -6,7 +6,19 @@ import { queryKeys, USER_STATUS } from '@/constants'
 
 const adminUsersQueryKey = queryKeys.admin.list('users')
 
-export function useAdminUserListPage() {
+export function useAdminUserListPage(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchUsername: Ref<string>
+  searchMobile: Ref<string>
+  isLoading: Ref<boolean>
+  list: ComputedRef<UserVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  statusMutation: { mutate: (vars: { id: string; status: number }) => void }
+  handleSearch: () => void
+  toggleStatus: (row: UserVO) => void
+} {
   const queryClient = useQueryClient()
 
   const currentPage = ref(1)

@@ -25,6 +25,11 @@ export interface OrderItem {
   amount: string
   status: number
   statusLabel: OrderStatus
+  eventCoverUrlSnapshot?: string
+  venueNameSnapshot?: string
+  sessionStartAtSnapshot?: string
+  totalAmount?: number
+  quantity?: number
 }
 
 export interface AccountSettingItem {

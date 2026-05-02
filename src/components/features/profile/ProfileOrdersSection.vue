@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { h } from 'vue'
 import { useRouter } from 'vue-router'
-import { type ColumnDef } from '@tanstack/vue-table'
 import type { OrderItem } from '@/api/account'
-import DataTableCrud from '@/components/common/CommonDataTableCrud.vue'
-import { Badge } from '@/components/common/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
+import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import OrderCard from '@/components/common/OrderCard.vue'
 import { cn } from '@/utils'
 import { ORDER_FILTER_OPTIONS, type OrderFilterKey } from '@/constants'
-import { getOrderStatusBadgeClass } from '@/utils/statusMappers'
 
 const router = useRouter()
-const { viewMode } = useViewMode()
-
 const handleOrderClick = (order: OrderItem) => {
   router.push(`/checkout/${order.id}`)
 }
@@ -31,36 +25,16 @@ const emit = defineEmits<{
   'update:orderPage': [page: number]
   'update:orderPageSize': [pageSize: number]
 }>()
-
-const columns: ColumnDef<OrderItem>[] = [
-  { accessorKey: 'title', header: '订单标题' },
-  { accessorKey: 'orderNo', header: '订单号', size: 200 },
-  {
-    accessorKey: 'status',
-    header: '状态',
-    size: 120,
-    cell: ({ row }) =>
-      h(
-        Badge,
-        { class: getOrderStatusBadgeClass(row.original.status) },
-        () => row.original.statusLabel,
-      ),
-  },
-  { accessorKey: 'datetime', header: '场次', size: 180 },
-  { accessorKey: 'amount', header: '金额', size: 120 },
-]
 </script>
 
 <template>
   <DataTableCrud
-    :columns="columns"
     :data="paginatedOrders"
     :current-page="orderPage"
     :total-pages="orderTotalPages"
     :page-size="orderPageSize || 10"
     :total-row="orderTotalRow || 0"
     :show-create-button="false"
-    :view-mode="viewMode"
     @update:current-page="emit('update:orderPage', $event)"
     @update:page-size="emit('update:orderPageSize', $event)"
     @row-click="handleOrderClick"
@@ -90,33 +64,20 @@ const columns: ColumnDef<OrderItem>[] = [
 
     <template #cardTemplate="{ data }">
       <div class="space-y-4">
-        <Card
+        <OrderCard
           v-for="order in data"
           :key="order.id"
-          class="cursor-pointer hover:border-primary/50 transition-colors"
-          @click="handleOrderClick(order)"
-        >
-          <CardHeader class="pb-1.5">
-            <div class="flex items-start justify-between gap-2">
-              <CardTitle class="text-base leading-tight">{{ order.title }}</CardTitle>
-              <Badge :class="getOrderStatusBadgeClass(order.status)">{{ order.statusLabel }}</Badge>
-            </div>
-          </CardHeader>
-          <CardContent class="space-y-1 text-sm">
-            <div class="flex items-center gap-2">
-              <icon-lucide-file-text class="h-4 w-4 text-muted-foreground" />
-              <span>订单号: {{ order.orderNo || order.id }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <icon-lucide-calendar class="h-4 w-4 text-muted-foreground" />
-              <span>场次: {{ order.datetime }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <icon-lucide-credit-card class="h-4 w-4 text-muted-foreground" />
-              <span class="font-semibold text-primary">{{ order.amount }}</span>
-            </div>
-          </CardContent>
-        </Card>
+          :id="order.id"
+          :event-name-snapshot="order.title"
+          :event-cover-url-snapshot="order.eventCoverUrlSnapshot"
+          :venue-name-snapshot="order.venueNameSnapshot"
+          :session-start-at-snapshot="order.sessionStartAtSnapshot"
+          :total-amount="order.totalAmount"
+          :quantity="order.quantity"
+          :amount="order.amount"
+          :status-label="order.statusLabel"
+          :order-no="order.orderNo || order.id"
+        />
       </div>
     </template>
   </DataTableCrud>

@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
-import { fetchEventById, offlineEvent, publishEvent } from '@/api/event/event'
+import { fetchAdminEventById, offlineEvent, publishEvent } from '@/api/event/event'
 import { queryKeys, TOAST_COPY } from '@/constants'
 
 export function useEventEditPage() {
@@ -22,7 +22,8 @@ export function useEventEditPage() {
 
   const { data: eventDetailData } = useQuery({
     queryKey: eventDetailQueryKey,
-    queryFn: () => (eventId.value ? fetchEventById(eventId.value) : Promise.resolve(undefined)),
+    queryFn: () =>
+      eventId.value ? fetchAdminEventById(eventId.value) : Promise.resolve(undefined),
     enabled: computed(() => Boolean(eventId.value)),
     staleTime: 1000 * 60 * 5,
   })

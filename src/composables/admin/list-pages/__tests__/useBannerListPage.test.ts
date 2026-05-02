@@ -1,20 +1,20 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, effectScope, nextTick, type EffectScope } from 'vue'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
-import { createBanner, deleteBanner, fetchAdminBanners, updateBanner } from '@/api/event/banner'
-import { fetchAdminCities } from '@/api/event/city'
+import { createBanner, deleteBanner, fetchAdminBannerList, updateBanner } from '@/api/event/banner'
+import { fetchAdminCityList } from '@/api/event/city'
 import { useBannerListPage } from '../useBannerListPage'
 import type { BannerVO, PageResponseBannerVO } from '@/api/event'
 
 vi.mock('@/api/event/banner', () => ({
-  fetchAdminBanners: vi.fn(),
+  fetchAdminBannerList: vi.fn(),
   createBanner: vi.fn(),
   updateBanner: vi.fn(),
   deleteBanner: vi.fn(),
 }))
 
 vi.mock('@/api/event/city', () => ({
-  fetchAdminCities: vi.fn(),
+  fetchAdminCityList: vi.fn(),
 }))
 
 const createBannerVO = (overrides: Partial<BannerVO> = {}): BannerVO => ({
@@ -81,15 +81,15 @@ afterEach(() => {
 describe('useBannerListPage', () => {
   it('loads banners with pagination and city filter', async () => {
     const banner = createBannerVO()
-    vi.mocked(fetchAdminCities).mockResolvedValue([
+    vi.mocked(fetchAdminCityList).mockResolvedValue([
       { id: 'city-1', name: '北京', pinyin: 'beijing', firstLetter: 'B', isFeatured: 1 },
     ])
-    vi.mocked(fetchAdminBanners).mockResolvedValue(createPage([banner]))
+    vi.mocked(fetchAdminBannerList).mockResolvedValue(createPage([banner]))
     const harness = setupBannerListPage()
     cleanup = harness.cleanup
 
     await vi.waitFor(() => {
-      expect(fetchAdminBanners).toHaveBeenCalledWith({
+      expect(fetchAdminBannerList).toHaveBeenCalledWith({
         page: 1,
         size: 10,
         title: undefined,
@@ -108,8 +108,8 @@ describe('useBannerListPage', () => {
   })
 
   it('resets page to 1 when search filters change', async () => {
-    vi.mocked(fetchAdminCities).mockResolvedValue([])
-    vi.mocked(fetchAdminBanners).mockResolvedValue(createPage([]))
+    vi.mocked(fetchAdminCityList).mockResolvedValue([])
+    vi.mocked(fetchAdminBannerList).mockResolvedValue(createPage([]))
     const harness = setupBannerListPage()
     cleanup = harness.cleanup
 
@@ -121,7 +121,7 @@ describe('useBannerListPage', () => {
 
     expect(harness.result.currentPage.value).toBe(1)
     await vi.waitFor(() => {
-      expect(fetchAdminBanners).toHaveBeenLastCalledWith({
+      expect(fetchAdminBannerList).toHaveBeenLastCalledWith({
         page: 1,
         size: 10,
         title: '测试',
@@ -134,7 +134,7 @@ describe('useBannerListPage', () => {
 
     expect(harness.result.currentPage.value).toBe(1)
     await vi.waitFor(() => {
-      expect(fetchAdminBanners).toHaveBeenLastCalledWith({
+      expect(fetchAdminBannerList).toHaveBeenLastCalledWith({
         page: 1,
         size: 10,
         title: '测试',
@@ -144,8 +144,8 @@ describe('useBannerListPage', () => {
   })
 
   it('creates a banner, invalidates list, and closes dialog', async () => {
-    vi.mocked(fetchAdminCities).mockResolvedValue([])
-    vi.mocked(fetchAdminBanners).mockResolvedValue(createPage([]))
+    vi.mocked(fetchAdminCityList).mockResolvedValue([])
+    vi.mocked(fetchAdminBannerList).mockResolvedValue(createPage([]))
     vi.mocked(createBanner).mockResolvedValue('banner-2')
     const harness = setupBannerListPage()
     cleanup = harness.cleanup
@@ -181,13 +181,13 @@ describe('useBannerListPage', () => {
 
   it('edits a banner, invalidates list, and closes dialog', async () => {
     const banner = createBannerVO()
-    vi.mocked(fetchAdminCities).mockResolvedValue([])
-    vi.mocked(fetchAdminBanners).mockResolvedValue(createPage([banner]))
+    vi.mocked(fetchAdminCityList).mockResolvedValue([])
+    vi.mocked(fetchAdminBannerList).mockResolvedValue(createPage([banner]))
     vi.mocked(updateBanner).mockResolvedValue(undefined)
     const harness = setupBannerListPage()
     cleanup = harness.cleanup
 
-    await vi.waitFor(() => expect(fetchAdminBanners).toHaveBeenCalled())
+    await vi.waitFor(() => expect(fetchAdminBannerList).toHaveBeenCalled())
 
     harness.result.openEdit(banner)
     expect(harness.result.showDialog.value).toBe(true)
@@ -213,8 +213,8 @@ describe('useBannerListPage', () => {
   })
 
   it('does not create a banner when required fields are missing', async () => {
-    vi.mocked(fetchAdminCities).mockResolvedValue([])
-    vi.mocked(fetchAdminBanners).mockResolvedValue(createPage([]))
+    vi.mocked(fetchAdminCityList).mockResolvedValue([])
+    vi.mocked(fetchAdminBannerList).mockResolvedValue(createPage([]))
     const harness = setupBannerListPage()
     cleanup = harness.cleanup
 
@@ -230,13 +230,13 @@ describe('useBannerListPage', () => {
 
   it('confirms and deletes a banner', async () => {
     const banner = createBannerVO()
-    vi.mocked(fetchAdminCities).mockResolvedValue([])
-    vi.mocked(fetchAdminBanners).mockResolvedValue(createPage([banner]))
+    vi.mocked(fetchAdminCityList).mockResolvedValue([])
+    vi.mocked(fetchAdminBannerList).mockResolvedValue(createPage([banner]))
     vi.mocked(deleteBanner).mockResolvedValue(undefined)
     const harness = setupBannerListPage()
     cleanup = harness.cleanup
 
-    await vi.waitFor(() => expect(fetchAdminBanners).toHaveBeenCalled())
+    await vi.waitFor(() => expect(fetchAdminBannerList).toHaveBeenCalled())
 
     harness.result.handleDelete(banner)
     expect(harness.result.confirmDialog.value.open).toBe(true)

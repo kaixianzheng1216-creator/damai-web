@@ -7,7 +7,7 @@ export function provideProfilePage(profile: ProfilePageState) {
   provide(profilePageKey, profile)
 }
 
-export function useProfilePageContext() {
+export function useProfilePageContext(): ProfilePageState {
   const profile = inject(profilePageKey)
 
   if (!profile) {

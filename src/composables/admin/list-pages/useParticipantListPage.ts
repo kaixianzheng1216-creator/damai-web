@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, type Ref, type ComputedRef } from 'vue'
 import { useAdminCrud } from '../common/useAdminCrud'
 import { queryKeys } from '@/constants'
 import {
@@ -8,13 +8,43 @@ import {
   updateParticipant,
 } from '@/api/event/participant'
 import type { ParticipantCreateRequest, ParticipantUpdateRequest, ParticipantVO } from '@/api/event'
+import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
 
 type ParticipantForm = {
   name: string
   avatarUrl: string
 }
 
-export function useParticipantListPage() {
+export function useParticipantListPage(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchName: Ref<string>
+  isLoading: Ref<boolean>
+  list: ComputedRef<ParticipantVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  showDialog: Ref<boolean>
+  editingId: Ref<string | null>
+  form: ParticipantForm
+  dialogTitle: ComputedRef<string>
+  confirmDialog: Ref<ConfirmDialogState>
+  createMutation: {
+    mutateAsync: (data: ParticipantCreateRequest) => Promise<unknown>
+    isPending: Ref<boolean>
+  }
+  updateMutation: {
+    mutateAsync: (vars: { id: string; data: ParticipantUpdateRequest }) => Promise<unknown>
+    isPending: Ref<boolean>
+  }
+  deleteMutation: { mutateAsync: (id: string) => Promise<unknown> }
+  invalidate: () => void
+  openCreate: () => void
+  openEdit: (row: ParticipantVO) => void
+  handleSubmit: () => Promise<void>
+  handleDelete: (item: ParticipantVO) => void
+  closeConfirm: () => void
+  handleConfirm: () => Promise<void>
+} {
   const crud = useAdminCrud<
     ParticipantVO,
     ParticipantForm,

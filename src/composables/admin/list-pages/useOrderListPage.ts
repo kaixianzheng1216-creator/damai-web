@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { fetchAdminOrderPage } from '@/api/trade'
 import { ORDER_STATUS, queryKeys } from '@/constants'
@@ -13,7 +13,22 @@ const ORDER_STATUS_OPTIONS = [
   { label: '已退款', value: String(ORDER_STATUS.REFUNDED) },
 ]
 
-export function useOrderListPage() {
+export function useOrderListPage(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchUserId: Ref<string>
+  searchStatus: Ref<string>
+  showDetailDialog: Ref<boolean>
+  selectedOrder: Ref<TicketOrderVO | null>
+  statusOptions: typeof ORDER_STATUS_OPTIONS
+  isLoading: Ref<boolean>
+  list: ComputedRef<TicketOrderVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  handleSearch: () => void
+  openDetail: (row: TicketOrderVO) => void
+  closeDetail: () => void
+} {
   const currentPage = ref(1)
   const pageSize = ref(10)
   const searchUserId = ref('')

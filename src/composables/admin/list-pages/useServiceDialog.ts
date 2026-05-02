@@ -1,5 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
+import { toast } from 'vue3-toastify'
 import { createService, deleteService, updateService } from '@/api/event/service'
 import type {
   ServiceGuaranteeCreateRequest,
@@ -74,7 +75,10 @@ export function useServiceDialog(
       return
     }
 
-    if (!serviceForm.name) return
+    if (!serviceForm.name) {
+      toast.error('请填写服务保障名称')
+      return
+    }
     await createServiceMutation.mutateAsync({
       name: serviceForm.name,
       sortOrder: serviceForm.sortOrder,

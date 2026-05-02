@@ -1,10 +1,10 @@
 import { computed, ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import {
-  closeWorkOrder,
+  closeMyWorkOrder,
   fetchMyWorkOrderPage,
-  fetchWorkOrderById,
-  replyWorkOrder,
+  fetchMyWorkOrderById,
+  submitMyWorkOrderReply,
 } from '@/api/trade'
 import {
   WORK_ORDER_PAGE_SIZE,
@@ -57,7 +57,7 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
 
   const workOrderDetailQuery = useQuery({
     queryKey: queryKeys.profile.workOrderDetail(selectedWorkOrderId),
-    queryFn: () => fetchWorkOrderById(selectedWorkOrderId.value ?? ''),
+    queryFn: () => fetchMyWorkOrderById(selectedWorkOrderId.value ?? ''),
     enabled: computed(() => enabled.value && !!selectedWorkOrderId.value),
   })
 
@@ -79,7 +79,7 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
 
   const replyMutation = useMutation({
     mutationFn: ({ id, content }: { id: string; content: string }) =>
-      replyWorkOrder(id, { content }),
+      submitMyWorkOrderReply(id, { content }),
     onSuccess: async () => {
       replyContent.value = ''
       replyError.value = ''
@@ -91,7 +91,7 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
   })
 
   const closeWorkOrderMutation = useMutation({
-    mutationFn: closeWorkOrder,
+    mutationFn: closeMyWorkOrder,
     onSuccess: async () => {
       await invalidateWorkOrders()
     },

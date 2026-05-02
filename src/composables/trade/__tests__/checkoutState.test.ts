@@ -5,7 +5,7 @@ import {
   getCheckoutStatusFlags,
   getRemainSeconds,
   resolveCheckoutPaymentInfo,
-} from '../checkoutState'
+} from '@/utils/checkoutState'
 
 describe('checkout state helpers', () => {
   it('derives checkout status flags from order status', () => {

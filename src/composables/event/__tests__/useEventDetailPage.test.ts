@@ -95,7 +95,7 @@ async function setupEventDetailPage({ loggedIn = true } = {}) {
     unfollowEvent: vi.fn().mockResolvedValue(undefined),
   }))
   vi.doMock('@/api/trade', () => ({
-    fetchUserPurchaseCounts: vi.fn().mockResolvedValue({ 'ticket-1': 0 }),
+    fetchMyPurchaseCounts: vi.fn().mockResolvedValue({ 'ticket-1': 0 }),
     createTicketOrder: vi.fn().mockResolvedValue({
       orderId: 'order-1',
       status: 0,
@@ -179,7 +179,7 @@ describe('useEventDetailPage', () => {
     expect(harness.result.selectedSessionId.value).toBe('session-1')
     expect(harness.result.selectedTicketTypeId.value).toBe('ticket-1')
     expect(harness.result.selectedPassengerIds.value).toEqual(['passenger-1'])
-    expect(harness.tradeApi.fetchUserPurchaseCounts).toHaveBeenCalledWith(['ticket-1'])
+    expect(harness.tradeApi.fetchMyPurchaseCounts).toHaveBeenCalledWith(['ticket-1'])
 
     await harness.result.handleBuyNow()
     expect(harness.result.showPassengerModal.value).toBe(true)

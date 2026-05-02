@@ -3,12 +3,12 @@ import { useMutation, useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchPassengerPage } from '@/api/account'
 import { fetchEventDetailById } from '@/api/event'
-import { createTicketOrder, fetchUserPurchaseCounts } from '@/api/trade'
+import { createTicketOrder, fetchMyPurchaseCounts } from '@/api/trade'
 import { queryKeys } from '@/constants'
 import type { PassengerItem, PageResponsePassengerVO } from '@/api/account'
 import { useUserStore } from '@/stores/user'
 import { mapPassengerToPassengerItem } from '@/utils/mappers'
-import { calculateMaxTicketQuantity, getUserPurchasedCount } from './eventDetailState'
+import { calculateMaxTicketQuantity, getUserPurchasedCount } from '@/utils/eventDetailState'
 import { useEventFollow } from './useEventFollow'
 import { useEventTicketSelection } from './useEventTicketSelection'
 
@@ -58,7 +58,7 @@ export const useEventDetailPage = () => {
 
   const purchaseCountsQuery = useQuery({
     queryKey: queryKeys.trade.purchaseCounts(ticketSelection.ticketTypeIds),
-    queryFn: () => fetchUserPurchaseCounts(ticketSelection.ticketTypeIds.value),
+    queryFn: () => fetchMyPurchaseCounts(ticketSelection.ticketTypeIds.value),
     enabled: computed(() => userStore.isLoggedIn && ticketSelection.ticketTypeIds.value.length > 0),
   })
 

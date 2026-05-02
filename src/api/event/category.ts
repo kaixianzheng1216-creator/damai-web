@@ -13,21 +13,15 @@ import type {
 export const fetchCategoryList = (): Promise<CategoryVO[]> =>
   request.get<CategoryVO[]>('/api/event/front/categories')
 
-/** @deprecated Use fetchCategoryList instead */
-export const fetchCategories = fetchCategoryList
-
 // ─── Admin ───────────────────────────────────────────────
 
 export const fetchAdminCategoryList = (): Promise<CategoryVO[]> =>
   request.get<CategoryVO[]>('/api/event/admin/categories')
 
-/** @deprecated Use fetchAdminCategoryList instead */
-export const fetchAdminCategories = fetchAdminCategoryList
-
 export const fetchAdminCategoriesPage = (
-  query?: CategoryPageRequest,
+  params?: CategoryPageRequest,
 ): Promise<PageResponseCategoryVO> =>
-  request.get<PageResponseCategoryVO>('/api/event/admin/categories/page', { params: query })
+  request.get<PageResponseCategoryVO>('/api/event/admin/categories/page', { params })
 
 export const createCategory = (data: CategoryCreateRequest): Promise<string> =>
   request.post<RawEntityId>('/api/event/admin/categories', data).then(normalizeEntityId)

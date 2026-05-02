@@ -18,9 +18,9 @@ import {
   createNotice,
   createService,
   createServiceOption,
-  createTicketType,
+  adminCreateTicketType,
   fetchAdminNoticesPage,
-  fetchAdminServices,
+  fetchAdminServiceList,
   fetchEventPage,
   followEvent,
   checkIsFollowedEvent,
@@ -44,8 +44,8 @@ import {
   createRefund,
   fetchAdminWorkOrderById,
   fetchAdminWorkOrderPage,
-  fetchUserPurchaseCounts,
-  replyAdminWorkOrder,
+  fetchMyPurchaseCounts,
+  submitAdminWorkOrderReply,
   type OrderStatusVO,
   type PageResponseWorkOrderVO,
   type PaymentCreateRequest,
@@ -57,7 +57,7 @@ import {
   type WorkOrderReplyCreateRequest,
 } from '@/api/trade'
 import {
-  checkinTicket,
+  adminCheckinTicket,
   fetchMyTicketPage,
   type PageResponseTicketVO,
   type TicketPageRequest,
@@ -342,7 +342,7 @@ describe('API OpenAPI contracts', () => {
 
     vi.clearAllMocks()
     requestMock.post.mockResolvedValueOnce(456)
-    await expect(createTicketType('123', '456', ticketTypeBody)).resolves.toBe('456')
+    await expect(adminCreateTicketType('123', '456', ticketTypeBody)).resolves.toBe('456')
     expectRequestMatchesOpenApi({
       service: 'event',
       method: 'post',
@@ -406,10 +406,10 @@ describe('API OpenAPI contracts', () => {
     })
 
     vi.clearAllMocks()
-    await fetchUserPurchaseCounts(['4', '7'])
-    expect(requestMock.get).toHaveBeenCalledWith(
-      '/api/order/front/ticket-orders/purchase-counts?ticketTypeIds=4&ticketTypeIds=7',
-    )
+    await fetchMyPurchaseCounts(['4', '7'])
+    expect(requestMock.get).toHaveBeenCalledWith('/api/order/front/ticket-orders/purchase-counts', {
+      params: { ticketTypeIds: ['4', '7'] },
+    })
     const { operation } = findOperation('/front/ticket-orders/purchase-counts', 'get')
     expectQueryMatchesOperation(operation, { ticketTypeIds: ['4', '7'] })
     expect(schemaName(getResponseSchema(operation)?.['$ref'])).toBe('ApiResponseMapLongInteger')
@@ -435,7 +435,7 @@ describe('API OpenAPI contracts', () => {
     })
 
     vi.clearAllMocks()
-    await checkinTicket('qr-token')
+    await adminCheckinTicket('qr-token')
     expectRequestMatchesOpenApi({
       service: 'ticket',
       method: 'post',
@@ -485,7 +485,7 @@ describe('API OpenAPI contracts', () => {
     })
 
     vi.clearAllMocks()
-    await replyAdminWorkOrder('work-order-1', replyBody)
+    await submitAdminWorkOrderReply('work-order-1', replyBody)
     expectRequestMatchesOpenApi({
       service: 'order',
       method: 'post',
@@ -559,7 +559,7 @@ describe('API OpenAPI contracts', () => {
       type: 1,
     } satisfies NoticePageRequest
 
-    await fetchAdminServices()
+    await fetchAdminServiceList()
     expectRequestMatchesOpenApi({
       service: 'event',
       method: 'get',

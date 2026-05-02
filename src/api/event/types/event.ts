@@ -1,11 +1,13 @@
 import type { PaginatedResponse } from '../../types'
-import type { EventInfoVO } from './venue'
-import type { EventParticipantVO } from './venue'
-import type { EventServiceGuaranteeVO } from './venue'
+import type {
+  EventInfoVO,
+  EventParticipantVO,
+  EventServiceGuaranteeVO,
+  ParticipantVO,
+  NoticeItemVO,
+} from './venue'
 import type { SessionVO } from './session'
 import type { SeriesEventVO } from './series'
-import type { ParticipantVO } from './venue'
-import type { NoticeItemVO } from './venue'
 
 // ─── Event ───────────────────────────────────────────────
 

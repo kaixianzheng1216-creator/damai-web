@@ -12,7 +12,7 @@ import {
   isTicketTypeOnSale,
   resolveInitialSessionId,
   resolveSelectedTicketTypeId,
-} from './eventDetailState'
+} from '@/utils/eventDetailState'
 
 interface UseEventTicketSelectionOptions {
   detail: Ref<EventDetailVO | undefined>

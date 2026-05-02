@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { fetchAdminServicesPage } from '@/api/event/service'
 import type { ServiceGuaranteeVO } from '@/api/event'
@@ -6,7 +6,18 @@ import { queryKeys } from '@/constants'
 
 const adminServicesQueryKey = queryKeys.admin.list('services')
 
-export function useServiceList() {
+export function useServiceList(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchName: Ref<string>
+  isLoading: Ref<boolean>
+  list: ComputedRef<ServiceGuaranteeVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  selectedService: Ref<ServiceGuaranteeVO | null>
+  currentOptions: ComputedRef<ServiceGuaranteeVO['options']>
+  invalidate: () => Promise<void>
+} {
   const queryClient = useQueryClient()
 
   const currentPage = ref(1)

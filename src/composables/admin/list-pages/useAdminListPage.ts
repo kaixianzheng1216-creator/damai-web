@@ -1,12 +1,42 @@
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, type Ref, type ComputedRef } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue3-toastify'
 import { createAdmin, fetchAdminPage, updateAdmin, updateAdminStatus } from '@/api/account/admin'
 import type { AdminCreateRequest, AdminUpdateRequest, AdminVO } from '@/api/account'
 import { queryKeys, USER_STATUS } from '@/constants'
 
 const adminListQueryKey = queryKeys.admin.list('admins')
 
-export function useAdminListPage() {
+export function useAdminListPage(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchUsername: Ref<string>
+  searchMobile: Ref<string>
+  isLoading: Ref<boolean>
+  list: ComputedRef<AdminVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  showDialog: Ref<boolean>
+  editingId: Ref<string | null>
+  form: AdminCreateRequest & AdminUpdateRequest
+  dialogTitle: ComputedRef<string>
+  isSaving: ComputedRef<boolean>
+  createMutation: {
+    mutateAsync: (payload: AdminCreateRequest) => Promise<unknown>
+    isPending: Ref<boolean>
+  }
+  updateMutation: {
+    mutateAsync: (vars: { id: string; data: AdminUpdateRequest }) => Promise<unknown>
+    isPending: Ref<boolean>
+  }
+  statusMutation: { mutate: (vars: { id: string; status: number }) => void }
+  handleSearch: () => void
+  openCreate: () => void
+  openEdit: (row: AdminVO) => void
+  handleSubmit: () => Promise<void>
+  handleDelete: (_row: AdminVO) => void
+  toggleStatus: (row: AdminVO) => void
+} {
   const queryClient = useQueryClient()
 
   const currentPage = ref(1)
@@ -110,6 +140,7 @@ export function useAdminListPage() {
     }
 
     if (!form.mobile) {
+      toast.error('请填写手机号')
       return
     }
 

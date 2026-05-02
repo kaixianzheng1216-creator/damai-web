@@ -13,11 +13,8 @@ import type {
 export const fetchAdminSeriesList = (): Promise<SeriesEventVO[]> =>
   request.get<SeriesEventVO[]>('/api/event/admin/series')
 
-/** @deprecated Use fetchAdminSeriesList instead */
-export const fetchAdminSeries = fetchAdminSeriesList
-
-export const fetchAdminSeriesPage = (query?: SeriesPageRequest): Promise<PageResponseSeriesVO> =>
-  request.get<PageResponseSeriesVO>('/api/event/admin/series/page', { params: query })
+export const fetchAdminSeriesPage = (params?: SeriesPageRequest): Promise<PageResponseSeriesVO> =>
+  request.get<PageResponseSeriesVO>('/api/event/admin/series/page', { params })
 
 export const createSeries = (data: SeriesCreateRequest): Promise<string> =>
   request.post<RawEntityId>('/api/event/admin/series', data).then(normalizeEntityId)

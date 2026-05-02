@@ -2,8 +2,8 @@ import { computed, reactive, ref, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
-import { saveEventInfo } from '@/api/event/event'
-import { fetchAdminNotices } from '@/api/event/notice'
+import { updateEventInfo } from '@/api/event/event'
+import { fetchAdminNoticeList } from '@/api/event/notice'
 import type { EventInfoCreateRequest, EventInfoVO } from '@/api/event'
 import { NOTICE_TYPE, queryKeys, TOAST_COPY } from '@/constants'
 
@@ -18,7 +18,7 @@ export function useEventInfoTab(options: UseEventInfoTabOptions) {
 
   const { data: noticeTemplates } = useQuery({
     queryKey: queryKeys.admin.list('notices'),
-    queryFn: fetchAdminNotices,
+    queryFn: fetchAdminNoticeList,
   })
 
   const purchaseTemplates = computed(() =>
@@ -64,7 +64,7 @@ export function useEventInfoTab(options: UseEventInfoTabOptions) {
 
   const saveEventInfoMutation = useMutation({
     mutationFn: (payload: EventInfoCreateRequest) =>
-      saveEventInfo(toValue(options.eventId), payload),
+      updateEventInfo(toValue(options.eventId), payload),
     onSuccess: () => {
       toast.success(TOAST_COPY.infoSaved)
       queryClient.invalidateQueries({

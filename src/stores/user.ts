@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
-import { createAuthStore } from '@/composables/common/useAuthStore'
+import { createAuthStore } from '@/composables/common/createAuthStore'
 
 export interface UserInfo {
   id: string

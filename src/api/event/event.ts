@@ -35,7 +35,7 @@ export const fetchAdminEventPage = (
 ): Promise<AdminPageResponseEventVO> =>
   request.get<AdminPageResponseEventVO>('/api/event/admin/events/page', { params })
 
-export const fetchEventById = (id: string): Promise<EventDetailVO> =>
+export const fetchAdminEventById = (id: string): Promise<EventDetailVO> =>
   request.get<EventDetailVO>(`/api/event/admin/events/${id}`)
 
 export const createEvent = (data: EventCreateRequest): Promise<string> =>
@@ -53,27 +53,29 @@ export const publishEvent = (id: string): Promise<void> =>
 export const offlineEvent = (id: string): Promise<void> =>
   request.put<void>(`/api/event/admin/events/${id}/offline`)
 
-export const saveEventInfo = (id: string, data: EventInfoCreateRequest): Promise<void> =>
+export const updateEventInfo = (id: string, data: EventInfoCreateRequest): Promise<void> =>
   request.put<void>(`/api/event/admin/events/${id}/detail`, data)
 
 // ─── Session ─────────────────────────────────────────────
 
-export const batchAddSessions = (eventId: string, data: SessionBatchCreateRequest): Promise<void> =>
-  request.post<void>(`/api/event/admin/events/${eventId}/sessions/batch`, data)
+export const adminBatchAddSessions = (
+  eventId: string,
+  data: SessionBatchCreateRequest,
+): Promise<void> => request.post<void>(`/api/event/admin/events/${eventId}/sessions/batch`, data)
 
-export const updateSession = (
+export const adminUpdateSession = (
   eventId: string,
   sessionId: string,
   data: SessionUpdateRequest,
 ): Promise<void> =>
   request.put<void>(`/api/event/admin/events/${eventId}/sessions/${sessionId}`, data)
 
-export const deleteSession = (eventId: string, sessionId: string): Promise<void> =>
+export const adminDeleteSession = (eventId: string, sessionId: string): Promise<void> =>
   request.del<void>(`/api/event/admin/events/${eventId}/sessions/${sessionId}`)
 
 // ─── Ticket Type ─────────────────────────────────────────
 
-export const createTicketType = (
+export const adminCreateTicketType = (
   eventId: string,
   sessionId: string,
   data: TicketTypeCreateRequest,
@@ -85,17 +87,17 @@ export const createTicketType = (
     )
     .then(normalizeEntityId)
 
-export const updateTicketType = (
+export const adminUpdateTicketType = (
   eventId: string,
   ticketTypeId: string,
   data: TicketTypeUpdateRequest,
 ): Promise<void> =>
   request.put<void>(`/api/event/admin/events/${eventId}/ticket-types/${ticketTypeId}`, data)
 
-export const deleteTicketType = (eventId: string, ticketTypeId: string): Promise<void> =>
+export const adminDeleteTicketType = (eventId: string, ticketTypeId: string): Promise<void> =>
   request.del<void>(`/api/event/admin/events/${eventId}/ticket-types/${ticketTypeId}`)
 
-export const adjustTicketTypeInventory = (
+export const adminAdjustTicketTypeInventory = (
   eventId: string,
   ticketTypeId: string,
   data: TicketTypeInventoryAdjustRequest,
@@ -107,32 +109,35 @@ export const adjustTicketTypeInventory = (
 
 // ─── Service ─────────────────────────────────────────────
 
-export const batchAddServices = (
+export const adminBatchAddServices = (
   eventId: string,
   data: EventServiceBatchAddRequest,
 ): Promise<void> => request.post<void>(`/api/event/admin/events/${eventId}/services/batch`, data)
 
-export const removeService = (eventId: string, eventServiceId: string): Promise<void> =>
+export const adminDeleteEventService = (eventId: string, eventServiceId: string): Promise<void> =>
   request.del<void>(`/api/event/admin/events/${eventId}/services/${eventServiceId}`)
 
 // ─── Participant ─────────────────────────────────────────
 
-export const removeParticipant = (eventId: string, eventParticipantId: string): Promise<void> =>
+export const adminDeleteEventParticipant = (
+  eventId: string,
+  eventParticipantId: string,
+): Promise<void> =>
   request.del<void>(`/api/event/admin/events/${eventId}/participants/${eventParticipantId}`)
 
-export const batchAddParticipants = (
+export const adminBatchAddParticipants = (
   eventId: string,
   data: EventParticipantBatchAddRequest,
 ): Promise<void> =>
   request.post<void>(`/api/event/admin/events/${eventId}/participants/batch`, data)
 
-export const sortParticipants = (
+export const adminSortParticipants = (
   eventId: string,
   data: EventParticipantSortRequest,
 ): Promise<void> => request.put<void>(`/api/event/admin/events/${eventId}/participants/sort`, data)
 
-export const copyTicketTypes = (eventId: string, data: TicketTypeCopyRequest): Promise<void> =>
+export const adminCopyTicketTypes = (eventId: string, data: TicketTypeCopyRequest): Promise<void> =>
   request.post<void>(`/api/event/admin/events/${eventId}/ticket-types/copy`, data)
 
-export const publishAllEvents = (): Promise<void> =>
+export const adminPublishAllEvents = (): Promise<void> =>
   request.put<void>('/api/event/admin/events/publish-all')

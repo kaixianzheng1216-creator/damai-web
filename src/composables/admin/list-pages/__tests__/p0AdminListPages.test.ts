@@ -27,14 +27,14 @@ const eventMocks = vi.hoisted(() => ({
   deleteEvent: vi.fn(),
   publishEvent: vi.fn(),
   offlineEvent: vi.fn(),
-  fetchAdminCities: vi.fn(),
-  fetchAdminCategories: vi.fn(),
+  fetchAdminCityList: vi.fn(),
+  fetchAdminCategoryList: vi.fn(),
 }))
 
 const tradeMocks = vi.hoisted(() => ({
   fetchAdminWorkOrderPage: vi.fn(),
   fetchAdminWorkOrderById: vi.fn(),
-  replyAdminWorkOrder: vi.fn(),
+  submitAdminWorkOrderReply: vi.fn(),
   closeAdminWorkOrder: vi.fn(),
 }))
 
@@ -51,10 +51,10 @@ vi.mock('@/api/event/event', () => ({
   offlineEvent: eventMocks.offlineEvent,
 }))
 vi.mock('@/api/event/city', () => ({
-  fetchAdminCities: eventMocks.fetchAdminCities,
+  fetchAdminCityList: eventMocks.fetchAdminCityList,
 }))
 vi.mock('@/api/event/category', () => ({
-  fetchAdminCategories: eventMocks.fetchAdminCategories,
+  fetchAdminCategoryList: eventMocks.fetchAdminCategoryList,
 }))
 vi.mock('@/api/trade', () => tradeMocks)
 vi.mock('vue-router', () => ({
@@ -216,8 +216,8 @@ describe('P0 admin list page composables', () => {
 
   it('resets event pagination on filters and confirms publish mutations', async () => {
     const event = createEvent()
-    eventMocks.fetchAdminCities.mockResolvedValue([])
-    eventMocks.fetchAdminCategories.mockResolvedValue([])
+    eventMocks.fetchAdminCityList.mockResolvedValue([])
+    eventMocks.fetchAdminCategoryList.mockResolvedValue([])
     eventMocks.fetchAdminEventPage.mockResolvedValue(
       createPage([event]) satisfies AdminPageResponseEventVO,
     )
@@ -259,7 +259,7 @@ describe('P0 admin list page composables', () => {
       createPage([workOrder]) satisfies PageResponseWorkOrderVO,
     )
     tradeMocks.fetchAdminWorkOrderById.mockResolvedValue(detail)
-    tradeMocks.replyAdminWorkOrder.mockResolvedValue(undefined)
+    tradeMocks.submitAdminWorkOrderReply.mockResolvedValue(undefined)
     const harness = setupComposable(() => useAdminWorkOrderListPage())
     cleanup = harness.cleanup
 
@@ -279,7 +279,7 @@ describe('P0 admin list page composables', () => {
     harness.result.replyContent.value = '已为你处理'
     await harness.result.submitReply()
 
-    expect(tradeMocks.replyAdminWorkOrder).toHaveBeenCalledWith('work-order-1', {
+    expect(tradeMocks.submitAdminWorkOrderReply).toHaveBeenCalledWith('work-order-1', {
       content: '已为你处理',
     })
     expect(harness.invalidateSpy).toHaveBeenCalledWith({

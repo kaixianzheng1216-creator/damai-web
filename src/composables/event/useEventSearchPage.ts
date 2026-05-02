@@ -1,10 +1,8 @@
 import { useSearchFilters } from './useSearchFilters'
-import { useSearchHistory } from './useSearchHistory'
 import { useSearchResults } from './useSearchResults'
 
 export const useEventSearchPage = () => {
   const filters = useSearchFilters()
-  const history = useSearchHistory()
   const results = useSearchResults(filters.queryParams)
 
   return {
@@ -25,6 +23,5 @@ export const useEventSearchPage = () => {
     handleCalendarDateChange: filters.handleCalendarDateChange,
     handleSortChange: results.handleSortChange,
     handlePageChange: results.handlePageChange,
-    ...history,
   }
 }

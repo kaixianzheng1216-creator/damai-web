@@ -1,10 +1,18 @@
-import { computed } from 'vue'
+import { computed, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
-import { fetchTicketById } from '@/api/ticket'
+import { fetchMyTicketById, type TicketVO } from '@/api/ticket'
 import { queryKeys } from '@/constants'
 
-export function useTicketDetailPage() {
+export function useTicketDetailPage(): {
+  ticketId: ComputedRef<string>
+  hasTicketId: ComputedRef<boolean>
+  ticket: Ref<TicketVO | undefined>
+  isLoading: Ref<boolean>
+  isError: Ref<boolean>
+  isEmpty: ComputedRef<boolean>
+  goBack: () => void
+} {
   const route = useRoute()
   const router = useRouter()
 
@@ -20,7 +28,7 @@ export function useTicketDetailPage() {
     isError,
   } = useQuery({
     queryKey: queryKeys.ticket.detail(ticketId),
-    queryFn: () => fetchTicketById(ticketId.value),
+    queryFn: () => fetchMyTicketById(ticketId.value),
     enabled: hasTicketId,
   })
 

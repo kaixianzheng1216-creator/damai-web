@@ -2,7 +2,7 @@ import { computed, ref, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
-import { batchAddParticipants, removeParticipant } from '@/api/event/event'
+import { adminBatchAddParticipants, adminDeleteEventParticipant } from '@/api/event/event'
 import { fetchAdminParticipantsPage } from '@/api/event/participant'
 import type { EventParticipantBatchAddRequest, EventParticipantVO } from '@/api/event'
 import { queryKeys, TOAST_COPY } from '@/constants'
@@ -65,7 +65,7 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
 
   const batchAddParticipantsMutation = useMutation({
     mutationFn: (payload: EventParticipantBatchAddRequest) =>
-      batchAddParticipants(toValue(options.eventId), payload),
+      adminBatchAddParticipants(toValue(options.eventId), payload),
     onSuccess: () => {
       toast.success(TOAST_COPY.participantsAdded)
       showParticipantDialog.value = false
@@ -79,7 +79,7 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
 
   const removeParticipantMutation = useMutation({
     mutationFn: (eventParticipantId: string) =>
-      removeParticipant(toValue(options.eventId), eventParticipantId),
+      adminDeleteEventParticipant(toValue(options.eventId), eventParticipantId),
     onSuccess: () => {
       toast.success(TOAST_COPY.participantsRemoved)
       invalidateAll()

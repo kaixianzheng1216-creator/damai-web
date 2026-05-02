@@ -1,18 +1,42 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { deleteEvent, fetchAdminEventPage, offlineEvent, publishEvent } from '@/api/event/event'
-import { fetchAdminCategories } from '@/api/event/category'
-import { fetchAdminCities } from '@/api/event/city'
-import type { EventVO } from '@/api/event'
+import { fetchAdminCategoryList } from '@/api/event/category'
+import { fetchAdminCityList } from '@/api/event/city'
+import type { CategoryVO, CityVO, EventVO } from '@/api/event'
 import { queryKeys } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
 
 const adminEventsQueryKey = queryKeys.admin.list('events')
 const adminCitiesQueryKey = queryKeys.admin.list('cities')
 const adminCategoriesQueryKey = queryKeys.admin.list('categories')
 
-export function useAdminEventListPage() {
+export function useAdminEventListPage(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchName: Ref<string>
+  searchCityId: Ref<string>
+  searchCategoryId: Ref<string>
+  citiesData: Ref<CityVO[] | undefined>
+  categoriesData: Ref<CategoryVO[] | undefined>
+  isLoading: Ref<boolean>
+  list: ComputedRef<EventVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  confirmDialog: Ref<ConfirmDialogState>
+  deleteMutation: { mutateAsync: (id: string) => Promise<unknown> }
+  publishMutation: { mutateAsync: (id: string) => Promise<unknown> }
+  offlineMutation: { mutateAsync: (id: string) => Promise<unknown> }
+  openCreate: () => void
+  openEdit: (row: EventVO) => void
+  handleDelete: (row: EventVO) => void
+  handlePublish: (row: EventVO) => void
+  handleOffline: (row: EventVO) => void
+  closeConfirm: () => void
+  handleConfirm: () => Promise<void>
+} {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
@@ -25,12 +49,12 @@ export function useAdminEventListPage() {
 
   const { data: citiesData } = useQuery({
     queryKey: adminCitiesQueryKey,
-    queryFn: fetchAdminCities,
+    queryFn: fetchAdminCityList,
   })
 
   const { data: categoriesData } = useQuery({
     queryKey: adminCategoriesQueryKey,
-    queryFn: fetchAdminCategories,
+    queryFn: fetchAdminCategoryList,
   })
 
   const queryKey = computed(() => [

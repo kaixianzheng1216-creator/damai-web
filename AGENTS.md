@@ -10,50 +10,52 @@
 
 - **框架**: Vue 3 (Composition API + `<script setup>`)
 - **构建工具**: Vite 6
-- **语言**: TypeScript 5.9
+- **语言**: TypeScript 5.9（`noUncheckedIndexedAccess: true`）
 - **状态管理**: Pinia
 - **路由**: Vue Router 5
 - **UI 组件**: shadcn-vue (New York 风格) + Lucide Icons
-- **样式**: Tailwind CSS v4
+- **样式**: Tailwind CSS v4（`@tailwindcss/vite` 插件，无 `tailwind.config.ts`）
 - **数据获取**: Axios + TanStack Vue Query v5
 - **验证**: Zod
 - **代码规范**: ESLint + Oxlint + Prettier
 
 ## 常用命令
 
-| 命令                  | 说明                                                                                                               |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `npm run dev`         | 启动开发服务器（带代理和 SSL）                                                                                     |
-| `npm run build`       | 类型检查 + 生产构建                                                                                                |
-| `npm run type-check`  | `vue-tsc --build`                                                                                                  |
-| `npm run test`        | `vitest run`（环境: happy-dom）                                                                                    |
-| `npm run ci`          | **完整质量门禁**：type-check → lint:check → lint:oxlint → audit:ids → openapi:report → test → format:check → build |
-| `npm run lint:fix`    | ESLint 自动修复（带缓存）                                                                                          |
-| `npm run lint:oxlint` | Oxlint 快速检查                                                                                                    |
-| `npm run format`      | Prettier 格式化 `src/`                                                                                             |
+| 命令                   | 说明                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `npm run dev`          | 启动开发服务器（带代理和 SSL）                                                                                     |
+| `npm run build`        | 类型检查 + 生产构建                                                                                                |
+| `npm run type-check`   | `vue-tsc --build`                                                                                                  |
+| `npm run test`         | `vitest run`（环境: happy-dom）                                                                                    |
+| `npm run ci`           | **完整质量门禁**：type-check → lint:check → lint:oxlint → audit:ids → openapi:report → test → format:check → build |
+| `npm run lint:fix`     | ESLint 自动修复（带缓存）                                                                                          |
+| `npm run lint:check`   | ESLint 检查（无缓存，CI 用）                                                                                       |
+| `npm run lint:oxlint`  | Oxlint 快速检查                                                                                                    |
+| `npm run format`       | Prettier 格式化 `src/`                                                                                             |
+| `npm run format:check` | Prettier 检查模式（CI 用）                                                                                         |
 
-> 提交前务必运行 `npm run ci`。pre-commit hook 只处理 staged 文件的格式，不跑类型检查和测试。
+> **提交前务必运行 `npm run ci`。** pre-commit hook（`.husky/pre-commit`）只运行 `lint-staged`（ESLint + Prettier 格式化 staged 文件），**不跑类型检查、测试和审计脚本**。依赖 CI 通过 `npm run ci`。
 
 ## 项目结构
 
 ```text
 src/
-├── api/               # API 请求（按领域划分，如 account/ event/ trade/ ticket/ ai/ file/）
+├── api/                # API 请求（按领域：account/ event/ trade/ ticket/ ai/ file/）
 ├── components/
-│   ├── common/ui/     # shadcn-vue 基础组件（自动导入）
-│   ├── common/        # 通用业务组件（如 TheHeader, ConfirmDialog）
-│   ├── admin/         # 后台专用组件（自动导入）
-│   └── features/      # 业务功能组件（自动导入）
-├── composables/       # 组合式函数（按领域划分，含 common/ 通用逻辑）
-├── constants/         # 常量、枚举、queryKeys、校验规则、文案
-├── layouts/           # MainLayout, AdminLayout, EmptyLayout
-├── lib/               # shadcn/ui 工具库
-├── router/            # 路由配置（单文件 index.ts）
-├── stores/            # Pinia 状态（user.ts, admin.ts）
-├── styles/            # 全局样式
-├── types/             # 全局类型与自动导入声明
-├── utils/             # 纯函数工具（自动导入目录）
-└── views/             # 页面组件
+│   ├── _templates/     # Dialog/FormDialog 参考模板
+│   ├── common/ui/      # shadcn-vue 基础组件（自动注册）
+│   ├── common/         # 通用业务组件（如 TheHeader, ConfirmDialog）
+│   ├── admin/          # 后台专用组件（自动注册）
+│   └── features/       # 业务功能组件（自动注册）
+├── composables/        # 组合式函数（按领域划分，含 common/ 通用逻辑）
+├── constants/          # 常量、枚举、queryKeys、校验规则、文案
+├── layouts/            # MainLayout, AdminLayout, EmptyLayout
+├── router/             # 路由配置（单文件 index.ts）
+├── stores/             # Pinia 状态（user.ts, admin.ts）
+├── styles/             # 全局样式与 Tailwind 入口
+├── types/              # 全局类型与自动导入声明
+├── utils/              # 纯函数工具（自动导入目录）
+└── views/              # 页面组件（按领域：home/ event/ trade/ ticket/ profile/ ai/ auth/ admin/ error/ participant/）
 ```
 
 ## 关键架构约定
@@ -62,10 +64,14 @@ src/
 
 - **按领域组织**：`account/`（认证、用户、管理员）、`event/`（活动、城市、分类、场馆）、`trade/`（订单、支付、工单）、`ticket/`（电子票）、`ai/`、`file/`。
 - **统一使用 `request` 封装**，禁止直接调用 axios。API 函数返回 `Promise<T>`，响应数据已自动解包。
-- **自定义请求选项**：`RequestConfig` 扩展了 Axios 配置，增加 `showError?: boolean`（禁用 toast）和 `rawResponse?: boolean`（返回完整 `ApiResponse`）。
-- **认证头按路径注入**：`/front/*` → `Authorization-User`，`/admin/*` → `Authorization-Admin`，由拦截器自动处理，无需在单个 API 函数中设置。
+- **自定义请求选项**：`RequestConfig` 扩展了 Axios 配置，增加：
+  - `showError?: boolean` — 禁用自动 toast（**默认值因方法而异**：`get` 默认为 `true`，`post/put/patch/del` 默认为 `false`）
+  - `rawResponse?: boolean` — 返回完整 `ApiResponse<T>` 而非只返回 `data`
+- **认证头按路径注入**：`/front/*` → `Authorization-User`，`/admin/*` → `Authorization-Admin`，由拦截器自动处理。
 - **响应归一化**：`requestTransforms.ts` 递归处理响应字段——所有 `id` / `*Id` 转为 `string`，`datetime-local` 转为 ISO 8601，分页数字字段转为 `number`。
-- **API 函数命名**：`fetchXxxPage`、`fetchXxxById`、`createXxx`、`updateXxx`、`deleteXxx`、`publishXxx`、`offlineXxx`。
+- **文件上传**：使用 `uploadFormData(url, file)`，内部构造 `FormData`。
+- **API 函数命名**：遵循 `docs/api-naming.md` 规范——`fetchXxxPage`、`fetchXxxById`、`createXxx`、`updateXxx`、`deleteXxx`、`publishXxx`、`offlineXxx`。后台接口加 `Admin` 前缀（如 `fetchAdminEventPage`），当前用户视角使用 `My` 前缀（如 `fetchMyOrderPage`）。
+- **错误处理**：业务层可捕获 `ApiRequestError`（含 `code`、`response`、`status`）做精细处理。全局错误由 `request.ts` 兜底。
 
 ### 2. 实体 ID 策略（硬性约束）
 
@@ -73,7 +79,7 @@ src/
 
 - 后端已把 Long ID 序列化为 string。
 - 禁止在任何业务代码中把 ID 转回 number：`Number(id)`、`parseInt(id)`、`+id` 均会导致 CI 失败。
-- `scripts/audit-id-strategy.mjs` 会在 `npm run ci` 时扫描 `src/views/` 和 `src/composables/` 中的违规用法。
+- `scripts/audit-id-strategy.mjs` 在 `npm run ci` 时扫描 `src/views/` 和 `src/composables/` 中的违规用法。
 
 ### 3. Query Key 管理 (`src/constants/queryKeys.ts`)
 
@@ -97,7 +103,25 @@ src/
 
 **页面保持轻量**：视图层只负责读取一个 page composable，组合 feature components，处理 loading/error/success 三态。业务逻辑、表单状态、缓存失效、弹窗状态放在 composable 中。
 
-### 5. 后台 CRUD 页面模板
+### 5. Dialog 弹窗规范（硬性约束）
+
+详见 `docs/ui-guidelines.md`。核心规则：
+
+- **禁止在 Dialog 组件上使用 `v-if`**：ESLint 自定义规则 `dialog-no-vif-with-open` 强制检查。`v-if` 会跳过退出动画和副作用清理（scroll lock、focus trap），导致页面卡死。
+- **必须使用 `:open` prop 控制显示**，配合 `@update:open` 事件。
+- **所有业务 Dialog 使用 `useDialog()` 管理状态**（`open`、`data`、`isLoading`、`openDialog(payload?)`、`closeDialog()`）。
+- **禁止 Dialog 套 Dialog**：两个弹窗同时 open 会导致 `DismissableLayer` 冲突。
+- 参考模板：`src/components/_templates/DialogTemplate.vue`、`FormDialogTemplate.vue`。
+
+```vue
+<!-- 正确 -->
+<MyDialog :open="dialog.open.value" @update:open="dialog.closeDialog" @confirm="dialog.submit" />
+
+<!-- 错误：v-if + :open 混用 -->
+<MyDialog v-if="showDialog" :open="showDialog" />
+```
+
+### 6. 后台 CRUD 页面模板
 
 新增后台列表页时，最小结构：
 
@@ -110,7 +134,7 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 
 视图负责接线：表格数据/分页/loading 来自 composable；搜索项通过 `v-model` 绑定；增删改调用 composable action。查询、mutation、确认弹窗状态、缓存失效都放在 page composable 中。
 
-### 6. 路由 (`src/router/index.ts`)
+### 7. 路由 (`src/router/index.ts`)
 
 - 单文件路由配置，无模块拆分。
 - 三套布局：`MainLayout`（前台）、`AdminLayout`（后台）、`EmptyLayout`（登录页等）。
@@ -120,15 +144,15 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 - 登录失效由 `request.ts` 全局处理（code `10002`），业务层不重复写跳转逻辑。
 - `router.afterEach` 根据 `meta.title` 自动设置 `document.title`（后缀 `- Damai`）。
 
-### 7. 状态管理 (`src/stores/`)
+### 8. 状态管理 (`src/stores/`)
 
 - 仅两个 Pinia store：`user.ts` 和 `admin.ts`。
-- 使用 `@vueuse/core` 的 `useStorage` 持久化到 `localStorage`。
+- 使用 `createAuthStore` composable（`@vueuse/core` 的 `useStorage`）持久化到 `localStorage`。
 - 统一模式：`ref` 存 token/info，computed `isLoggedIn`，`setXxxInfo(data, token?)`，`clearXxxInfo()`。
 
-### 8. 自动导入配置
+### 9. 自动导入配置
 
-`vite.config.ts` 中配置了 `unplugin-auto-import` 和 `unplugin-vue-components`：
+`vite.config.ts` 中配置了 `unplugin-auto-import` 和 `unplugin-vue-components`。详见 `docs/auto-imports.md`。
 
 **无需手动 import 的 API**：
 
@@ -143,58 +167,68 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 **自动注册组件的目录**：
 
 - `src/components/common/ui/`（shadcn-vue 基础组件）
-- `src/components/admin/`
-- `src/components/features/`
+- `src/components/admin/`、`src/components/features/`
 
-**图标**：使用 `icon-lucide-xxx` 格式自动导入 Lucide 图标（如 `<icon-lucide-loader2 />`）。
+**图标**：使用 `icon-lucide-xxx` 格式（如 `<icon-lucide-loader2 />`）。
+
+**仍需手动 import**：`src/api/`、`src/stores/`、`src/router/`、`src/views/`、第三方库（`axios`、`vue3-toastify`、`dayjs` 等）、所有 TypeScript 类型。
 
 **类型声明**：自动生成到 `src/types/auto-imports.d.ts` 和 `src/types/components.d.ts`。
 
-### 9. TanStack Vue Query 配置
+### 10. TanStack Vue Query 配置
 
 - 默认 stale time: 5 分钟
 - 默认 GC time: 30 分钟
 - 窗口聚焦时不重新获取（`refetchOnWindowFocus: false`）
+- Query 与 Mutation 的注册发生在 `MainLayout.vue` / `AdminLayout.vue`
 
-### 10. 样式与格式化
+### 11. 样式与格式化
 
+- **shadcn-vue 配置**：`components.json` — New York 风格、Zinc 基础色、CSS Variables、Lucide 图标库。
 - **Prettier 配置**：`semi: false`、`singleQuote: true`、`printWidth: 100`。
-- **无分号、单引号**。提交时 pre-commit hook 会自动格式化，如果代码不符合规范会被重写。
+- **无分号、单引号**。pre-commit hook 会自动格式化 staged 文件。
 - Tailwind CSS v4 使用 `@tailwindcss/vite` 插件，无传统 `tailwind.config.ts`。
+- 工具类合并：`cn()` 函数（`clsx` + `tailwind-merge`），自动导入可用。
 
-### 11. 测试
+### 12. 测试
 
 - 测试框架：Vitest + `@vue/test-utils` + happy-dom。
 - 优先为 composable 写单测（mock API 函数，不访问真实后端）。
 - 组件测试保持黑盒：断言渲染文本、按钮事件、emit 事件，不依赖内部私有状态。
 - 新增后台列表页建议补 `useXxxListPage.test.ts`，覆盖查询参数、分页复位和 mutation 成功后的 query key 失效。
 
-### 12. OpenAPI 契约检查
+### 13. OpenAPI 契约检查
 
-- `scripts/openapi-contract-report.mjs` 会在 CI 中检查：所有前端 `request.get/post/put/patch/del()` 调用必须在 `docs/` 下的 OpenAPI JSON 文档中有对应定义。
+- `scripts/openapi-contract-report.mjs` 在 CI 中检查：所有前端 `request.get/post/put/patch/del()` 调用必须在 `docs/` 下的 OpenAPI JSON 文档中有对应定义。
 - 如果新增 API 调用但未同步 OpenAPI 文档，CI 会失败。
 
-### 13. 环境变量
+### 14. 环境变量
 
 - `VITE_API_BASE_URL`：API 基础路径（用于 Vite 代理）。
 - `VITE_API_TARGET_URL`：代理转发目标地址（开发时指向后端服务）。
+- 本地开发覆写使用 `.env.local`（未入库）。
 
 ## 代码风格速查
 
-| 项目       | 约定                                                                         |
-| ---------- | ---------------------------------------------------------------------------- |
-| 引号       | 单引号                                                                       |
-| 分号       | 无                                                                           |
-| 行宽       | 100                                                                          |
-| 组件名     | 多单词（eslint `vue/multi-word-component-names` 已关闭，但仍建议语义化命名） |
-| 未使用变量 | 允许以 `_` 开头的参数                                                        |
-| `any` 类型 | `src/components/common/ui/**` 允许；其他业务代码禁止                         |
-| 实体 ID    | 始终为 `string`，禁止 `Number(id)` / `parseInt(id)`                          |
-| 导入路径   | 使用 `@/` 别名指向 `src/`                                                    |
+| 项目        | 约定                                                                         |
+| ----------- | ---------------------------------------------------------------------------- |
+| 引号        | 单引号                                                                       |
+| 分号        | 无                                                                           |
+| 行宽        | 100                                                                          |
+| 组件名      | 多单词（eslint `vue/multi-word-component-names` 已关闭，但仍建议语义化命名） |
+| 未使用变量  | 允许以 `_` 开头的参数                                                        |
+| `any` 类型  | `src/components/common/ui/**` 允许；其他业务代码禁止                         |
+| 实体 ID     | 始终为 `string`，禁止 `Number(id)` / `parseInt(id)`                          |
+| Dialog 控制 | 禁止 `v-if`，必须使用 `:open` prop                                           |
+| 导入路径    | 使用 `@/` 别名指向 `src/`                                                    |
+| 页面三态    | 所有页面必须处理 loading / error / success                                   |
 
 ## 参考文档
 
 - `docs/architecture.md`：更详细的架构分层、API 边界、认证与路由说明。
+- `docs/ui-guidelines.md`：Dialog 使用规范（打开/关闭/确认/提交模式）。
+- `docs/api-naming.md`：API 函数命名规范（fetchXxxPage、Admin 前缀、My 前缀等）。
+- `docs/auto-imports.md`：完整的自动导入/注册清单与仍需手动 import 的项目。
 - `docs/refactor-checklist.md`：阶段性重构检查项。
 - `docs/openapi-workflow.md`：接口文档同步流程。
 - `README.md`：项目简介与基础命令。

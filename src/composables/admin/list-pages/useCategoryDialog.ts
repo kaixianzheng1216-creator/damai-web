@@ -1,5 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
+import { toast } from 'vue3-toastify'
 import { createCategory, deleteCategory, updateCategory } from '@/api/event/category'
 import type { CategoryCreateRequest, CategoryUpdateRequest, CategoryVO } from '@/api/event'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
@@ -103,7 +104,10 @@ export function useCategoryDialog(tree: ReturnType<typeof useCategoryTree>) {
       })
       return
     }
-    if (!form.name) return
+    if (!form.name) {
+      toast.error('请填写分类名称')
+      return
+    }
     await createMutation.mutateAsync({ name: form.name, parentId: '0', sortOrder: form.sortOrder })
   }
 
@@ -116,7 +120,10 @@ export function useCategoryDialog(tree: ReturnType<typeof useCategoryTree>) {
       })
       return
     }
-    if (!childForm.name) return
+    if (!childForm.name) {
+      toast.error('请填写子分类名称')
+      return
+    }
     await createChildMutation.mutateAsync({
       name: childForm.name,
       parentId: tree.selectedParent.value.id,

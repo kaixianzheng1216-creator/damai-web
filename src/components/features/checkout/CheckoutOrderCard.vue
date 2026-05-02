@@ -65,6 +65,22 @@ defineProps<{
               {{ formatDateTime(order.sessionStartAtSnapshot ?? '') }}
             </p>
           </div>
+          <div>
+            <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.createTime }}</p>
+            <p class="font-medium text-foreground">{{ formatDateTime(order.createAt) }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.expireTime }}</p>
+            <p class="font-medium text-foreground">{{ formatDateTime(order.expireAt ?? '') }}</p>
+          </div>
+          <div v-if="isClosed && order.closeTime">
+            <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.closeTime }}</p>
+            <p class="font-medium text-foreground">{{ formatDateTime(order.closeTime) }}</p>
+          </div>
+          <div v-if="order.refundTime">
+            <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.refundTime }}</p>
+            <p class="font-medium text-foreground">{{ formatDateTime(order.refundTime) }}</p>
+          </div>
           <div v-if="isPaid && order.payTime">
             <p class="text-sm text-muted-foreground">{{ PAYMENT_COPY.payTime }}</p>
             <p class="font-medium text-foreground">{{ formatDateTime(order.payTime) }}</p>
@@ -118,6 +134,50 @@ defineProps<{
             <div v-if="refund.reason" class="pt-2 border-t border-border/50">
               <span class="text-muted-foreground">退款原因</span>
               <p class="mt-1 text-foreground">{{ refund.reason }}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+
+    <div v-if="order.payments?.length" class="mt-6 border-t border-border pt-6">
+      <p class="text-sm font-medium text-muted-foreground mb-3">
+        {{ PAYMENT_COPY.paymentRecords }}
+      </p>
+      <div class="space-y-3">
+        <Card v-for="payment in order.payments" :key="payment.id" class="bg-muted/30 border-0">
+          <CardContent class="p-4 space-y-2 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">{{ PAYMENT_COPY.paymentNo }}</span>
+              <span class="font-mono">{{ payment.paymentNo }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">{{ PAYMENT_COPY.channel }}</span>
+              <span>{{ payment.channelLabel }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">{{ PAYMENT_COPY.payMethod }}</span>
+              <span>{{ payment.payMethodLabel }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">{{ PAYMENT_COPY.amount }}</span>
+              <span class="font-medium text-primary">{{ formatPrice(payment.amount) }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">支付状态</span>
+              <Badge variant="outline">{{ payment.statusLabel }}</Badge>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">{{ PAYMENT_COPY.outTradeNo }}</span>
+              <span class="font-mono max-w-[180px] truncate">{{ payment.outTradeNo }}</span>
+            </div>
+            <div v-if="payment.channelTradeNo" class="flex items-center justify-between">
+              <span class="text-muted-foreground">{{ PAYMENT_COPY.channelTradeNo }}</span>
+              <span class="font-mono max-w-[180px] truncate">{{ payment.channelTradeNo }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">{{ PAYMENT_COPY.payTime }}</span>
+              <span>{{ formatDateTime(payment.createAt) }}</span>
             </div>
           </CardContent>
         </Card>

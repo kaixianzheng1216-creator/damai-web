@@ -23,6 +23,11 @@ const mapTicketOrderToOrderItem = (order: TicketOrderVO): OrderItem => ({
   amount: order.totalAmount !== undefined ? formatPrice(order.totalAmount) : '-',
   status: order.status,
   statusLabel: (order.statusLabel || mapOrderStatus(order.status)) as OrderStatus,
+  eventCoverUrlSnapshot: order.eventCoverUrlSnapshot,
+  venueNameSnapshot: order.venueNameSnapshot,
+  sessionStartAtSnapshot: order.sessionStartAtSnapshot,
+  totalAmount: order.totalAmount,
+  quantity: order.quantity,
 })
 
 export const useOrderList = (options: QueryEnabledOptions = {}) => {
@@ -58,14 +63,13 @@ export const useOrderList = (options: QueryEnabledOptions = {}) => {
     enabled,
   })
 
-  const orderList = computed<OrderItem[]>(
+  const paginatedOrders = computed<OrderItem[]>(
     () =>
       getRecords<TicketOrderVO>(myOrderPageQuery.data).value.map(mapTicketOrderToOrderItem) ?? [],
   )
 
   const orderTotalPages = getTotalPages(myOrderPageQuery.data)
   const orderTotalRow = getTotalRow(myOrderPageQuery.data)
-  const paginatedOrders = computed(() => orderList.value)
 
   return {
     orderFilter,
@@ -73,6 +77,7 @@ export const useOrderList = (options: QueryEnabledOptions = {}) => {
     orderPageSize,
     myOrderPageQuery,
     paginatedOrders,
+    orderList: paginatedOrders,
     orderTotalPages,
     orderTotalRow,
     updateOrderPage,

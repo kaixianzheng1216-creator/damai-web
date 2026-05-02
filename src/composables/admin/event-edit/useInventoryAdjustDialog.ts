@@ -2,7 +2,7 @@ import { ref, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
-import { adjustTicketTypeInventory } from '@/api/event/event'
+import { adminAdjustTicketTypeInventory } from '@/api/event/event'
 import type { TicketTypeInventoryAdjustRequest, TicketTypeVO } from '@/api/event'
 import { queryKeys, TOAST_COPY, FORM_COPY } from '@/constants'
 
@@ -42,7 +42,7 @@ export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOption
     }: {
       ticketTypeId: string
       data: TicketTypeInventoryAdjustRequest
-    }) => adjustTicketTypeInventory(toValue(options.eventId), ticketTypeId, data),
+    }) => adminAdjustTicketTypeInventory(toValue(options.eventId), ticketTypeId, data),
     onSuccess: () => {
       toast.success(TOAST_COPY.inventoryAdjusted)
       adjustError.value = ''

@@ -13,16 +13,10 @@ import type {
 export const fetchBannerList = (cityId?: string): Promise<BannerVO[]> =>
   request.get<BannerVO[]>('/api/event/front/banners', cityId ? { params: { cityId } } : undefined)
 
-/** @deprecated Use fetchBannerList instead */
-export const fetchBanners = fetchBannerList
-
 // ─── Admin ───────────────────────────────────────────────
 
-export const fetchAdminBannerList = (query?: BannerPageQuery): Promise<PageResponseBannerVO> =>
-  request.get<PageResponseBannerVO>('/api/event/admin/banners/page', { params: query })
-
-/** @deprecated Use fetchAdminBannerList instead */
-export const fetchAdminBanners = fetchAdminBannerList
+export const fetchAdminBannerList = (params?: BannerPageQuery): Promise<PageResponseBannerVO> =>
+  request.get<PageResponseBannerVO>('/api/event/admin/banners/page', { params })
 
 export const createBanner = (data: BannerCreateRequest): Promise<string> =>
   request.post<RawEntityId>('/api/event/admin/banners', data).then(normalizeEntityId)

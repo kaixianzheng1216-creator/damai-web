@@ -11,7 +11,7 @@ import {
   getUserPurchasedCount,
   isTicketTypeOnSale,
   resolveSelectedTicketTypeId,
-} from '../eventDetailState'
+} from '@/utils/eventDetailState'
 
 const createTicketType = (overrides: Partial<TicketTypeVO> = {}): TicketTypeVO => ({
   id: 'ticket-1',

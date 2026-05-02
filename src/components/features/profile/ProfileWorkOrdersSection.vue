@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { h } from 'vue'
-import { type ColumnDef } from '@tanstack/vue-table'
 import type { WorkOrderVO } from '@/api/trade'
-import DataTableCrud from '@/components/common/CommonDataTableCrud.vue'
-import { Badge } from '@/components/common/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
+import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import CardListItem from '@/components/common/CardListItem.vue'
 import { WORK_ORDER_FILTER_OPTIONS, type WorkOrderFilterKey } from '@/constants'
 import { cn } from '@/utils'
 import { formatDateTime } from '@/utils/format'
-import { getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
-
-const { viewMode } = useViewMode()
 
 defineProps<{
   workOrderFilter: WorkOrderFilterKey
@@ -27,41 +21,16 @@ const emit = defineEmits<{
   'update:workOrderPageSize': [pageSize: number]
   'open-detail': [workOrder: WorkOrderVO]
 }>()
-
-const columns: ColumnDef<WorkOrderVO>[] = [
-  { accessorKey: 'title', header: '工单标题' },
-  { accessorKey: 'workOrderNo', header: '工单号', size: 180 },
-  { accessorKey: 'typeLabel', header: '类型', size: 120 },
-  {
-    accessorKey: 'status',
-    header: '状态',
-    size: 120,
-    cell: ({ row }) =>
-      h(
-        Badge,
-        { class: getWorkOrderStatusBadgeClass(row.original.status) },
-        () => row.original.statusLabel,
-      ),
-  },
-  {
-    accessorKey: 'lastReplyAt',
-    header: '最后回复',
-    size: 160,
-    cell: ({ row }) => formatDateTime(row.original.lastReplyAt, '-'),
-  },
-]
 </script>
 
 <template>
   <DataTableCrud
-    :columns="columns"
     :data="workOrders"
     :current-page="workOrderPage"
     :total-pages="workOrderTotalPages"
     :page-size="workOrderPageSize || 10"
     :total-row="workOrderTotalRow || 0"
     :show-create-button="false"
-    :view-mode="viewMode"
     @update:current-page="emit('update:workOrderPage', $event)"
     @update:page-size="emit('update:workOrderPageSize', $event)"
     @row-click="emit('open-detail', $event)"
@@ -91,40 +60,35 @@ const columns: ColumnDef<WorkOrderVO>[] = [
 
     <template #cardTemplate="{ data }">
       <div class="space-y-3">
-        <Card
+        <CardListItem
           v-for="workOrder in data"
           :key="workOrder.id"
-          class="cursor-pointer transition-colors hover:border-primary/50"
           @click="emit('open-detail', workOrder)"
         >
-          <CardHeader class="pb-2">
-            <div class="flex items-start justify-between gap-2">
-              <CardTitle class="min-w-0 text-base leading-tight">
-                <span class="line-clamp-2">{{ workOrder.title }}</span>
-              </CardTitle>
-              <Badge :class="getWorkOrderStatusBadgeClass(workOrder.status)">
-                {{ workOrder.statusLabel }}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent class="space-y-2 text-sm">
-            <div class="flex items-center gap-2 text-muted-foreground">
-              <icon-lucide-hash class="size-4 shrink-0" />
-              <span class="truncate">{{ workOrder.workOrderNo || workOrder.id }}</span>
-            </div>
-            <div class="flex items-center gap-2 text-muted-foreground">
-              <icon-lucide-tags class="size-4 shrink-0" />
-              <span>{{ workOrder.typeLabel || '其他' }}</span>
-            </div>
-            <p class="line-clamp-2 text-muted-foreground">
-              {{ workOrder.lastReplyPreview || workOrder.content || '暂无回复' }}
+          <template #title>
+            <p class="line-clamp-2 text-sm font-bold text-foreground">{{ workOrder.title }}</p>
+          </template>
+          <template #details>
+            <p class="flex items-center gap-1 text-xs text-muted-foreground">
+              <icon-lucide-tags class="h-3 w-3 shrink-0" />{{ workOrder.typeLabel || '其他' }}
             </p>
-            <div class="flex items-center gap-2 text-xs text-muted-foreground">
-              <icon-lucide-clock class="size-3.5 shrink-0" />
-              <span>{{ formatDateTime(workOrder.lastReplyAt || workOrder.createAt, '-') }}</span>
-            </div>
-          </CardContent>
-        </Card>
+            <p class="text-xs text-muted-foreground">
+              {{ formatDateTime(workOrder.lastReplyAt || workOrder.createAt, '-') }}
+            </p>
+          </template>
+          <template #middle>
+            <hr class="border-border" />
+          </template>
+          <template #bottomLeft>
+            <p class="text-xs text-muted-foreground">{{ workOrder.workOrderNo || workOrder.id }}</p>
+          </template>
+          <template #bottomRight>
+            <span
+              class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
+              >{{ workOrder.statusLabel }}</span
+            >
+          </template>
+        </CardListItem>
       </div>
     </template>
   </DataTableCrud>

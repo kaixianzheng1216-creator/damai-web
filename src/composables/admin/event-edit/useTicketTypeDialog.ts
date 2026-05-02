@@ -2,7 +2,7 @@ import { computed, reactive, ref, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
-import { createTicketType, updateTicketType } from '@/api/event/event'
+import { adminCreateTicketType, adminUpdateTicketType } from '@/api/event/event'
 import type { TicketTypeCreateRequest, TicketTypeUpdateRequest, TicketTypeVO } from '@/api/event'
 import { queryKeys, TOAST_COPY, FORM_COPY } from '@/constants'
 import { formatDateTimeLocalInput } from '@/utils/format'
@@ -75,7 +75,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
     mutationFn: (payload: TicketTypeCreateRequest) => {
       const sessionId = toValue(options.sessionId)
       return sessionId
-        ? createTicketType(toValue(options.eventId), sessionId, payload)
+        ? adminCreateTicketType(toValue(options.eventId), sessionId, payload)
         : Promise.reject(new Error('No session ID'))
     },
     onSuccess: () => {
@@ -93,7 +93,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
 
   const updateTicketTypeMutation = useMutation({
     mutationFn: ({ ticketTypeId, data }: { ticketTypeId: string; data: TicketTypeUpdateRequest }) =>
-      updateTicketType(toValue(options.eventId), ticketTypeId, data),
+      adminUpdateTicketType(toValue(options.eventId), ticketTypeId, data),
     onSuccess: () => {
       toast.success(TOAST_COPY.ticketTypeUpdated)
       formError.value = ''

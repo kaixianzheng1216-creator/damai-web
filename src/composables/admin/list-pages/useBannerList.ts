@@ -1,14 +1,26 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { fetchAdminBanners } from '@/api/event/banner'
-import { fetchAdminCities } from '@/api/event/city'
-import type { CityVO } from '@/api/event'
+import { fetchAdminBannerList } from '@/api/event/banner'
+import { fetchAdminCityList } from '@/api/event/city'
+import type { BannerVO, CityVO } from '@/api/event'
 import { queryKeys } from '@/constants'
 
 const adminBannersQueryKey = queryKeys.admin.list('banners')
 const adminCitiesQueryKey = queryKeys.admin.list('cities')
 
-export function useBannerList() {
+export function useBannerList(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchTitle: Ref<string>
+  searchCityId: Ref<string>
+  citiesData: Ref<CityVO[] | undefined>
+  citiesMap: ComputedRef<Map<string, CityVO>>
+  isLoading: Ref<boolean>
+  list: ComputedRef<BannerVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  invalidate: () => Promise<void>
+} {
   const queryClient = useQueryClient()
 
   const currentPage = ref(1)
@@ -18,7 +30,7 @@ export function useBannerList() {
 
   const { data: citiesData } = useQuery({
     queryKey: adminCitiesQueryKey,
-    queryFn: fetchAdminCities,
+    queryFn: fetchAdminCityList,
   })
 
   const citiesMap = computed(() => {
@@ -39,7 +51,7 @@ export function useBannerList() {
   const { data, isLoading } = useQuery({
     queryKey,
     queryFn: () =>
-      fetchAdminBanners({
+      fetchAdminBannerList({
         page: currentPage.value,
         size: pageSize.value,
         title: searchTitle.value || undefined,

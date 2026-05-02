@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import { h } from 'vue'
 import { useRouter } from 'vue-router'
-import { type ColumnDef } from '@tanstack/vue-table'
 import type { TicketVO } from '@/api/ticket'
-import DataTableCrud from '@/components/common/CommonDataTableCrud.vue'
-import { Badge } from '@/components/common/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
-import { formatDateTime } from '@/utils/format'
-import { getTicketStatusClass } from '@/utils/statusMappers'
+import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import TicketCard from '@/components/common/TicketCard.vue'
 
 defineProps<{
   paginatedTickets: TicketVO[]
@@ -23,89 +18,39 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { viewMode } = useViewMode()
 
 const viewTicketDetail = (ticketId: string) => {
   router.push(`/ticket/${ticketId}`)
 }
-
-const columns: ColumnDef<TicketVO>[] = [
-  { accessorKey: 'eventNameSnapshot', header: '活动名称' },
-  { accessorKey: 'ticketNo', header: '电子票号', size: 150 },
-  {
-    accessorKey: 'statusLabel',
-    header: '状态',
-    size: 120,
-    cell: ({ row }) =>
-      h(
-        Badge,
-        { class: getTicketStatusClass(row.original.status) },
-        () => row.original.statusLabel,
-      ),
-  },
-  {
-    accessorKey: 'sessionStartAtSnapshot',
-    header: '场次',
-    size: 180,
-    cell: ({ row }) => formatDateTime(row.original.sessionStartAtSnapshot),
-  },
-  { accessorKey: 'venueNameSnapshot', header: '场馆' },
-  { accessorKey: 'ticketTypeNameSnapshot', header: '票种' },
-  { accessorKey: 'passengerNameSnapshot', header: '购票人', size: 120 },
-]
 </script>
 
 <template>
   <DataTableCrud
-    :columns="columns"
     :data="paginatedTickets"
     :current-page="ticketPage"
     :total-pages="ticketTotalPages"
     :page-size="ticketPageSize || 10"
     :total-row="ticketTotalRow || 0"
     :show-create-button="false"
-    :view-mode="viewMode"
     @update:current-page="emit('update:ticketPage', $event)"
     @update:page-size="emit('update:ticketPageSize', $event)"
     @row-click="(ticket) => viewTicketDetail(ticket.id)"
   >
     <template #cardTemplate="{ data }">
       <div class="space-y-4">
-        <Card
+        <TicketCard
           v-for="ticket in data"
           :key="ticket.id"
-          class="cursor-pointer hover:border-primary/50 transition-colors"
-          @click="viewTicketDetail(ticket.id)"
-        >
-          <CardHeader class="pb-3">
-            <div class="flex items-start justify-between gap-2">
-              <CardTitle class="text-base leading-tight">{{ ticket.eventNameSnapshot }}</CardTitle>
-              <Badge :class="getTicketStatusClass(ticket.status)">{{ ticket.statusLabel }}</Badge>
-            </div>
-          </CardHeader>
-          <CardContent class="space-y-2 text-sm">
-            <div class="flex items-center gap-2">
-              <icon-lucide-ticket class="h-4 w-4 text-muted-foreground" />
-              <span>电子票号: {{ ticket.ticketNo }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <icon-lucide-calendar class="h-4 w-4 text-muted-foreground" />
-              <span>场次: {{ formatDateTime(ticket.sessionStartAtSnapshot) }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <icon-lucide-map-pin class="h-4 w-4 text-muted-foreground" />
-              <span>场馆: {{ ticket.venueNameSnapshot }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <icon-lucide-ticket class="h-4 w-4 text-muted-foreground" />
-              <span>票种: {{ ticket.ticketTypeNameSnapshot }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <icon-lucide-user class="h-4 w-4 text-muted-foreground" />
-              <span>购票人: {{ ticket.passengerNameSnapshot }}</span>
-            </div>
-          </CardContent>
-        </Card>
+          :id="ticket.id"
+          :event-name-snapshot="ticket.eventNameSnapshot"
+          :event-cover-url-snapshot="ticket.eventCoverUrlSnapshot"
+          :venue-name-snapshot="ticket.venueNameSnapshot"
+          :session-start-at-snapshot="ticket.sessionStartAtSnapshot"
+          :passenger-name-snapshot="ticket.passengerNameSnapshot"
+          :status-label="ticket.statusLabel"
+          :ticket-no="ticket.ticketNo"
+          :to="'/ticket/' + ticket.id"
+        />
       </div>
     </template>
   </DataTableCrud>

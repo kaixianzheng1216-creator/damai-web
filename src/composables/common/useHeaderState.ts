@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { logout } from '@/api/account'
-import { fetchGroupedCities } from '@/api/event'
+import { fetchGroupedCityList } from '@/api/event'
 import {
   DEFAULT_SEARCH_QUERY,
   HEADER_PROFILE_MENU_ITEMS,
@@ -27,7 +27,7 @@ export const useHeaderState = () => {
 
   const cityOptionsQuery = useQuery({
     queryKey: queryKeys.event.cityOptions(),
-    queryFn: fetchGroupedCities,
+    queryFn: fetchGroupedCityList,
   })
 
   const hotCities = computed<string[]>(

@@ -45,7 +45,7 @@ const actionButton = (
   onClick: (event: Event) => void,
 ) => h(Button, { size: 'sm', variant, onClick }, () => label)
 
-const actionGroup = (buttons: Array<VNode | null>) =>
+const actionGroup = (buttons: (VNode | null)[]) =>
   h('div', { class: 'flex items-center gap-2' }, buttons.filter(Boolean))
 
 const editDeleteActions = <T>(row: T, { openEdit, handleDelete }: CrudColumnActions<T>) =>

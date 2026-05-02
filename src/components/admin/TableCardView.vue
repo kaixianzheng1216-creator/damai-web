@@ -1,6 +1,5 @@
 <script setup lang="ts" generic="TData">
-import type { Row } from '@tanstack/vue-table'
-import { FlexRender } from '@tanstack/vue-table'
+import { FlexRender, type Row } from '@tanstack/vue-table'
 import { Card, CardContent } from '@/components/common/ui/card'
 import EmptyState from '@/components/common/EmptyState.vue'
 
@@ -11,6 +10,10 @@ interface Props {
 }
 
 defineProps<Props>()
+
+const emit = defineEmits<{
+  'row-click': [row: TData]
+}>()
 </script>
 
 <template>
@@ -22,7 +25,12 @@ defineProps<Props>()
     <template v-if="data.length && !loading">
       <slot name="cardTemplate" :data="data" :rows="rows">
         <div class="space-y-4">
-          <Card v-for="row in rows" :key="row.id">
+          <Card
+            v-for="row in rows"
+            :key="row.id"
+            class="cursor-pointer"
+            @click="emit('row-click', row.original)"
+          >
             <CardContent class="pt-6">
               <div class="space-y-2">
                 <div

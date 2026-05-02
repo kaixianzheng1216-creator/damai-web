@@ -3,9 +3,9 @@ import { nextTick, ref, watch } from 'vue'
 import type { ChatMessage, AiChatItem } from '@/api/ai/types'
 import { AI_CHAT_COPY, AVATAR_PLACEHOLDERS } from '@/constants'
 import { useUserStore } from '@/stores/user'
-import AIChatEventCard from './AIChatEventCard.vue'
-import AIChatOrderCard from './AIChatOrderCard.vue'
-import AIChatTicketCard from './AIChatTicketCard.vue'
+import EventCard from '@/components/common/EventCard.vue'
+import OrderCard from '@/components/common/OrderCard.vue'
+import TicketCard from '@/components/common/TicketCard.vue'
 
 const props = defineProps<{
   messages: ChatMessage[]
@@ -36,11 +36,44 @@ watch(
 const renderCard = (item: AiChatItem) => {
   switch (item.type) {
     case 'event':
-      return h(AIChatEventCard, { item })
+      return h(EventCard, {
+        id: item.id,
+        name: item.name,
+        coverUrl: item.coverUrl,
+        participantName: item.participantName,
+        cityNameSnapshot: item.cityNameSnapshot,
+        venueNameSnapshot: item.venueNameSnapshot,
+        firstSessionStartAt: item.firstSessionStartAt,
+        lastSessionEndAt: item.lastSessionEndAt,
+        minPrice: item.minPrice,
+        maxPrice: item.maxPrice,
+        showBuyButton: true,
+      })
     case 'order':
-      return h(AIChatOrderCard, { item })
+      return h(OrderCard, {
+        id: item.id,
+        eventNameSnapshot: item.eventNameSnapshot,
+        eventCoverUrlSnapshot: item.eventCoverUrlSnapshot,
+        venueNameSnapshot: item.venueNameSnapshot,
+        sessionStartAtSnapshot: item.sessionStartAtSnapshot,
+        totalAmount: item.totalAmount,
+        quantity: item.quantity,
+        statusLabel: item.statusLabel,
+        orderNo: item.orderNo,
+      })
     case 'ticket':
-      return h(AIChatTicketCard, { item })
+      return h(TicketCard, {
+        id: item.id,
+        eventNameSnapshot: item.eventNameSnapshot,
+        eventCoverUrlSnapshot: item.eventCoverUrlSnapshot,
+        venueNameSnapshot: item.venueNameSnapshot,
+        sessionStartAtSnapshot: item.sessionStartAtSnapshot,
+        passengerNameSnapshot: item.passengerNameSnapshot,
+        status: item.status,
+        statusLabel: item.statusLabel,
+        ticketNo: item.ticketNo,
+        showButton: true,
+      })
     default:
       return null
   }

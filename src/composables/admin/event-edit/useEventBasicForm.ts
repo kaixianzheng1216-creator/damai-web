@@ -1,10 +1,10 @@
 import { computed, reactive, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { fetchAdminCategories } from '@/api/event/category'
-import { fetchAdminCities } from '@/api/event/city'
-import { fetchAdminSeries } from '@/api/event/series'
-import { fetchAdminVenues } from '@/api/event/venue'
+import { fetchAdminCategoryList } from '@/api/event/category'
+import { fetchAdminCityList } from '@/api/event/city'
+import { fetchAdminSeriesList } from '@/api/event/series'
+import { fetchAdminVenueList } from '@/api/event/venue'
 import type {
   CategoryVO,
   CityVO,
@@ -36,22 +36,22 @@ const normalizeList = <T>(data: T[] | Record<string, T> | undefined): T[] => {
 export function useEventBasicForm(options: UseEventBasicFormOptions) {
   const { data: citiesData } = useQuery({
     queryKey: queryKeys.admin.list('cities'),
-    queryFn: fetchAdminCities,
+    queryFn: fetchAdminCityList,
   })
 
   const { data: categoriesData } = useQuery({
     queryKey: queryKeys.admin.list('categories'),
-    queryFn: fetchAdminCategories,
+    queryFn: fetchAdminCategoryList,
   })
 
   const { data: venuesData } = useQuery({
     queryKey: queryKeys.admin.list('venues'),
-    queryFn: fetchAdminVenues,
+    queryFn: fetchAdminVenueList,
   })
 
   const { data: seriesData } = useQuery({
     queryKey: queryKeys.admin.list('series'),
-    queryFn: fetchAdminSeries,
+    queryFn: fetchAdminSeriesList,
   })
 
   const cities = computed(() => normalizeList<CityVO>(citiesData.value))

@@ -12,7 +12,7 @@ defineProps<{
   isLoggedIn: boolean
   displayName: string
   avatarUrl: string
-  items: Array<{ section: ProfileSectionKey; label: string }>
+  items: { section: ProfileSectionKey; label: string }[]
 }>()
 
 const emit = defineEmits<{

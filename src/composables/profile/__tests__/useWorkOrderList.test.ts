@@ -2,10 +2,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, effectScope, nextTick, type EffectScope } from 'vue'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
 import {
-  closeWorkOrder,
+  closeMyWorkOrder,
   fetchMyWorkOrderPage,
-  fetchWorkOrderById,
-  replyWorkOrder,
+  fetchMyWorkOrderById,
+  submitMyWorkOrderReply,
 } from '@/api/trade'
 import { WORK_ORDER_STATUS } from '@/constants'
 import { useWorkOrderList } from '../useWorkOrderList'
@@ -13,9 +13,9 @@ import type { PageResponseWorkOrderVO, WorkOrderDetailVO, WorkOrderVO } from '@/
 
 vi.mock('@/api/trade', () => ({
   fetchMyWorkOrderPage: vi.fn(),
-  fetchWorkOrderById: vi.fn(),
-  replyWorkOrder: vi.fn(),
-  closeWorkOrder: vi.fn(),
+  fetchMyWorkOrderById: vi.fn(),
+  submitMyWorkOrderReply: vi.fn(),
+  closeMyWorkOrder: vi.fn(),
 }))
 
 const createWorkOrder = (overrides: Partial<WorkOrderVO> = {}): WorkOrderVO => ({
@@ -131,29 +131,29 @@ describe('useWorkOrderList', () => {
     const workOrder = createWorkOrder()
     const detail = createDetail({ id: 'wo-1', replies: [] })
     vi.mocked(fetchMyWorkOrderPage).mockResolvedValue(createPage([workOrder]))
-    vi.mocked(fetchWorkOrderById).mockResolvedValue(detail)
-    vi.mocked(replyWorkOrder).mockResolvedValue(undefined)
+    vi.mocked(fetchMyWorkOrderById).mockResolvedValue(detail)
+    vi.mocked(submitMyWorkOrderReply).mockResolvedValue(undefined)
     const harness = setupWorkOrderList()
     cleanup = harness.cleanup
 
     await vi.waitFor(() => expect(fetchMyWorkOrderPage).toHaveBeenCalled())
-    expect(fetchWorkOrderById).not.toHaveBeenCalled()
+    expect(fetchMyWorkOrderById).not.toHaveBeenCalled()
 
     harness.result.openWorkOrderDetail(workOrder)
     await vi.waitFor(() => {
-      expect(fetchWorkOrderById).toHaveBeenCalledWith('wo-1')
+      expect(fetchMyWorkOrderById).toHaveBeenCalledWith('wo-1')
     })
     expect(harness.result.selectedWorkOrder.value).toEqual(detail)
 
     harness.result.replyContent.value = '   '
     await harness.result.submitWorkOrderReply()
     expect(harness.result.replyError.value).toBe('请输入回复内容')
-    expect(replyWorkOrder).not.toHaveBeenCalled()
+    expect(submitMyWorkOrderReply).not.toHaveBeenCalled()
 
     harness.result.replyContent.value = '已为你处理'
     await harness.result.submitWorkOrderReply()
 
-    expect(replyWorkOrder).toHaveBeenCalledWith('wo-1', { content: '已为你处理' })
+    expect(submitMyWorkOrderReply).toHaveBeenCalledWith('wo-1', { content: '已为你处理' })
     expect(harness.invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['my-work-order-page'],
     })
@@ -167,33 +167,33 @@ describe('useWorkOrderList', () => {
     const workOrder = createWorkOrder({ status: WORK_ORDER_STATUS.CLOSED })
     const detail = createDetail({ id: 'wo-1', status: WORK_ORDER_STATUS.CLOSED })
     vi.mocked(fetchMyWorkOrderPage).mockResolvedValue(createPage([workOrder]))
-    vi.mocked(fetchWorkOrderById).mockResolvedValue(detail)
+    vi.mocked(fetchMyWorkOrderById).mockResolvedValue(detail)
     const harness = setupWorkOrderList()
     cleanup = harness.cleanup
 
     harness.result.openWorkOrderDetail(workOrder)
-    await vi.waitFor(() => expect(fetchWorkOrderById).toHaveBeenCalled())
+    await vi.waitFor(() => expect(fetchMyWorkOrderById).toHaveBeenCalled())
 
     harness.result.replyContent.value = 'test reply'
     await harness.result.submitWorkOrderReply()
 
     expect(harness.result.replyError.value).toBe('工单已关闭，无法继续回复')
-    expect(replyWorkOrder).not.toHaveBeenCalled()
+    expect(submitMyWorkOrderReply).not.toHaveBeenCalled()
   })
 
   it('closes work order and invalidates queries', async () => {
     const workOrder = createWorkOrder()
     vi.mocked(fetchMyWorkOrderPage).mockResolvedValue(createPage([workOrder]))
-    vi.mocked(closeWorkOrder).mockResolvedValue(undefined)
+    vi.mocked(closeMyWorkOrder).mockResolvedValue(undefined)
     const harness = setupWorkOrderList()
     cleanup = harness.cleanup
 
     harness.result.openWorkOrderDetail(workOrder)
-    await vi.waitFor(() => expect(fetchWorkOrderById).toHaveBeenCalled())
+    await vi.waitFor(() => expect(fetchMyWorkOrderById).toHaveBeenCalled())
 
     await harness.result.confirmCloseWorkOrder()
 
-    expect(closeWorkOrder.mock.calls[0]?.[0]).toBe('wo-1')
+    expect(closeMyWorkOrder.mock.calls[0]?.[0]).toBe('wo-1')
     expect(harness.invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['my-work-order-page'],
     })

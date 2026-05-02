@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { fetchAdminCategoriesPage } from '@/api/event/category'
 import type { CategoryVO } from '@/api/event'
@@ -6,7 +6,21 @@ import { queryKeys } from '@/constants'
 
 const adminCategoriesQueryKey = queryKeys.admin.list('categories')
 
-export function useCategoryTree() {
+export function useCategoryTree(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchName: Ref<string>
+  isLoading: Ref<boolean>
+  list: ComputedRef<CategoryVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  showChildrenDialog: Ref<boolean>
+  selectedParent: Ref<CategoryVO | null>
+  currentChildren: ComputedRef<CategoryVO[]>
+  invalidate: () => Promise<void>
+  invalidateAndSyncParent: () => Promise<void>
+  openManageChildren: (row: CategoryVO) => void
+} {
   const queryClient = useQueryClient()
 
   const currentPage = ref(1)

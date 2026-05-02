@@ -1,8 +1,8 @@
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 
 export type ConfirmDialogVariant = 'default' | 'destructive'
 
-interface ConfirmDialogState {
+export interface ConfirmDialogState {
   open: boolean
   title: string
   description: string
@@ -30,7 +30,17 @@ const getDefaultConfirmText = (title: string) => {
 const getDefaultVariant = (title: string, description: string): ConfirmDialogVariant =>
   destructivePattern.test(`${title}${description}`) ? 'destructive' : 'default'
 
-export function useConfirmDialog() {
+export function useConfirmDialog(): {
+  confirmDialog: Ref<ConfirmDialogState>
+  openConfirm: (
+    title: string,
+    description: string,
+    onConfirm: () => void | Promise<void>,
+    options?: string | OpenConfirmOptions,
+  ) => void
+  closeConfirm: () => void
+  handleConfirm: () => Promise<void>
+} {
   const confirmDialog = ref<ConfirmDialogState>({
     open: false,
     title: '',

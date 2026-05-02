@@ -11,6 +11,9 @@ declare global {
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
   const buildAIChatPrompt: typeof import('../utils/aiChatPrompt').buildAIChatPrompt
+  const buildPassengerSelection: typeof import('../utils/eventDetailState').buildPassengerSelection
+  const buildPassengerSlots: typeof import('../utils/eventDetailState').buildPassengerSlots
+  const calculateMaxTicketQuantity: typeof import('../utils/eventDetailState').calculateMaxTicketQuantity
   const clsx: typeof import('clsx').clsx
   const cn: typeof import('../utils/index').cn
   const computed: typeof import('vue').computed
@@ -50,12 +53,18 @@ declare global {
   const formatDateTimeWithoutWeekday: typeof import('../utils/format').formatDateTimeWithoutWeekday
   const formatPrice: typeof import('../utils/format').formatPrice
   const formatPriceRange: typeof import('../utils/format').formatPriceRange
+  const formatRemainText: typeof import('../utils/checkoutState').formatRemainText
   const getActivePinia: typeof import('pinia').getActivePinia
+  const getCheckoutStatusFlags: typeof import('../utils/checkoutState').getCheckoutStatusFlags
   const getCurrentInstance: typeof import('vue').getCurrentInstance
+  const getCurrentNotices: typeof import('../utils/eventDetailState').getCurrentNotices
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
   const getOrderStatusBadgeClass: typeof import('../utils/statusMappers').getOrderStatusBadgeClass
+  const getRemainSeconds: typeof import('../utils/checkoutState').getRemainSeconds
+  const getSelectedPassengers: typeof import('../utils/eventDetailState').getSelectedPassengers
   const getTicketStatusClass: typeof import('../utils/statusMappers').getTicketStatusClass
+  const getUserPurchasedCount: typeof import('../utils/eventDetailState').getUserPurchasedCount
   const getWorkOrderStatusBadgeClass: typeof import('../utils/statusMappers').getWorkOrderStatusBadgeClass
   const h: typeof import('vue').h
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
@@ -67,6 +76,7 @@ declare global {
   const isReadonly: typeof import('vue').isReadonly
   const isRef: typeof import('vue').isRef
   const isShallow: typeof import('vue').isShallow
+  const isTicketTypeOnSale: typeof import('../utils/eventDetailState').isTicketTypeOnSale
   const makeDestructurable: typeof import('@vueuse/core').makeDestructurable
   const mapActions: typeof import('pinia').mapActions
   const mapGetters: typeof import('pinia').mapGetters
@@ -115,8 +125,11 @@ declare global {
   const refManualReset: typeof import('@vueuse/core').refManualReset
   const refThrottled: typeof import('@vueuse/core').refThrottled
   const refWithControl: typeof import('@vueuse/core').refWithControl
+  const resolveCheckoutPaymentInfo: typeof import('../utils/checkoutState').resolveCheckoutPaymentInfo
   const resolveComponent: typeof import('vue').resolveComponent
+  const resolveInitialSessionId: typeof import('../utils/eventDetailState').resolveInitialSessionId
   const resolveRef: typeof import('@vueuse/core').resolveRef
+  const resolveSelectedTicketTypeId: typeof import('../utils/eventDetailState').resolveSelectedTicketTypeId
   const setActivePinia: typeof import('pinia').setActivePinia
   const setMapStoreSuffix: typeof import('pinia').setMapStoreSuffix
   const shallowReactive: typeof import('vue').shallowReactive
@@ -341,11 +354,11 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
+  export type { PassengerSlot, MaxTicketQuantityOptions } from '../utils/eventDetailState'
+  import('../utils/eventDetailState')
+  // @ts-ignore
   export type { UseAIChatOptions } from '../composables/ai/useAIChat'
   import('../composables/ai/useAIChat')
-  // @ts-ignore
-  export type { ViewMode } from '../composables/common/useViewMode'
-  import('../composables/common/useViewMode')
 }
 
 // for vue template auto import
@@ -358,6 +371,9 @@ declare module 'vue' {
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly buildAIChatPrompt: UnwrapRef<typeof import('../utils/aiChatPrompt')['buildAIChatPrompt']>
+    readonly buildPassengerSelection: UnwrapRef<typeof import('../utils/eventDetailState')['buildPassengerSelection']>
+    readonly buildPassengerSlots: UnwrapRef<typeof import('../utils/eventDetailState')['buildPassengerSlots']>
+    readonly calculateMaxTicketQuantity: UnwrapRef<typeof import('../utils/eventDetailState')['calculateMaxTicketQuantity']>
     readonly clsx: UnwrapRef<typeof import('clsx')['clsx']>
     readonly cn: UnwrapRef<typeof import('../utils/index')['cn']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
@@ -397,12 +413,18 @@ declare module 'vue' {
     readonly formatDateTimeWithoutWeekday: UnwrapRef<typeof import('../utils/format')['formatDateTimeWithoutWeekday']>
     readonly formatPrice: UnwrapRef<typeof import('../utils/format')['formatPrice']>
     readonly formatPriceRange: UnwrapRef<typeof import('../utils/format')['formatPriceRange']>
+    readonly formatRemainText: UnwrapRef<typeof import('../utils/checkoutState')['formatRemainText']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
+    readonly getCheckoutStatusFlags: UnwrapRef<typeof import('../utils/checkoutState')['getCheckoutStatusFlags']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
+    readonly getCurrentNotices: UnwrapRef<typeof import('../utils/eventDetailState')['getCurrentNotices']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
     readonly getOrderStatusBadgeClass: UnwrapRef<typeof import('../utils/statusMappers')['getOrderStatusBadgeClass']>
+    readonly getRemainSeconds: UnwrapRef<typeof import('../utils/checkoutState')['getRemainSeconds']>
+    readonly getSelectedPassengers: UnwrapRef<typeof import('../utils/eventDetailState')['getSelectedPassengers']>
     readonly getTicketStatusClass: UnwrapRef<typeof import('../utils/statusMappers')['getTicketStatusClass']>
+    readonly getUserPurchasedCount: UnwrapRef<typeof import('../utils/eventDetailState')['getUserPurchasedCount']>
     readonly getWorkOrderStatusBadgeClass: UnwrapRef<typeof import('../utils/statusMappers')['getWorkOrderStatusBadgeClass']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
@@ -414,6 +436,7 @@ declare module 'vue' {
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
+    readonly isTicketTypeOnSale: UnwrapRef<typeof import('../utils/eventDetailState')['isTicketTypeOnSale']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>
     readonly mapGetters: UnwrapRef<typeof import('pinia')['mapGetters']>
@@ -462,8 +485,11 @@ declare module 'vue' {
     readonly refManualReset: UnwrapRef<typeof import('@vueuse/core')['refManualReset']>
     readonly refThrottled: UnwrapRef<typeof import('@vueuse/core')['refThrottled']>
     readonly refWithControl: UnwrapRef<typeof import('@vueuse/core')['refWithControl']>
+    readonly resolveCheckoutPaymentInfo: UnwrapRef<typeof import('../utils/checkoutState')['resolveCheckoutPaymentInfo']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
+    readonly resolveInitialSessionId: UnwrapRef<typeof import('../utils/eventDetailState')['resolveInitialSessionId']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
+    readonly resolveSelectedTicketTypeId: UnwrapRef<typeof import('../utils/eventDetailState')['resolveSelectedTicketTypeId']>
     readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
     readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
@@ -654,7 +680,6 @@ declare module 'vue' {
     readonly useVModel: UnwrapRef<typeof import('@vueuse/core')['useVModel']>
     readonly useVModels: UnwrapRef<typeof import('@vueuse/core')['useVModels']>
     readonly useVibrate: UnwrapRef<typeof import('@vueuse/core')['useVibrate']>
-    readonly useViewMode: UnwrapRef<typeof import('../composables/common/useViewMode')['useViewMode']>
     readonly useVirtualList: UnwrapRef<typeof import('@vueuse/core')['useVirtualList']>
     readonly useWakeLock: UnwrapRef<typeof import('@vueuse/core')['useWakeLock']>
     readonly useWebNotification: UnwrapRef<typeof import('@vueuse/core')['useWebNotification']>

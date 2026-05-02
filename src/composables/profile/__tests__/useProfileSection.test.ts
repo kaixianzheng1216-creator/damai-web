@@ -8,14 +8,14 @@ async function setupProfileSection(initialSection?: string) {
     path: '/profile',
     query: initialSection ? { section: initialSection } : {},
   })
-  const replace = vi.fn(async (location: { path: string; query: Record<string, unknown> }) => {
+  const push = vi.fn(async (location: { path: string; query: Record<string, unknown> }) => {
     route.path = location.path
     route.query = location.query as typeof route.query
   })
 
   vi.doMock('vue-router', () => ({
     useRoute: () => route,
-    useRouter: () => ({ replace }),
+    useRouter: () => ({ push }),
   }))
 
   const { useProfileSection } = await import('../useProfileSection')
@@ -30,7 +30,7 @@ async function setupProfileSection(initialSection?: string) {
 
   return {
     result,
-    replace,
+    push,
     cleanup: () => {
       scope.stop()
       vi.doUnmock('vue-router')
@@ -66,7 +66,7 @@ describe('useProfileSection', () => {
     await harness.result.openSection('tickets')
 
     expect(harness.result.activeSection.value).toBe('tickets')
-    expect(harness.replace).toHaveBeenCalledWith({
+    expect(harness.push).toHaveBeenCalledWith({
       path: '/profile',
       query: { section: 'tickets' },
     })

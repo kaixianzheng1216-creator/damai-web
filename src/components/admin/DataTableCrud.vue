@@ -1,16 +1,11 @@
 <script setup lang="ts" generic="TData">
-import type { ColumnDef, SortingState } from '@tanstack/vue-table'
-import { FlexRender, getCoreRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
-import type { ViewMode } from '@/composables/useViewMode'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/common/ui/table'
-import EmptyState from '@/components/common/EmptyState.vue'
+  getCoreRowModel,
+  getSortedRowModel,
+  useVueTable,
+  type ColumnDef,
+  type SortingState,
+} from '@tanstack/vue-table'
 import TablePagination from './TablePagination.vue'
 import TableToolbar from './TableToolbar.vue'
 import TableCardView from './TableCardView.vue'
@@ -18,7 +13,7 @@ import TableCardView from './TableCardView.vue'
 const props = withDefaults(
   defineProps<{
     data: TData[]
-    columns: ColumnDef<TData>[]
+    columns?: ColumnDef<TData>[]
     loading?: boolean
     title?: string
     currentPage?: number
@@ -27,7 +22,6 @@ const props = withDefaults(
     pageSize?: number
     totalRow?: number
     showCreateButton?: boolean
-    viewMode?: ViewMode
     showPagination?: boolean
   }>(),
   {
@@ -37,8 +31,8 @@ const props = withDefaults(
     totalPages: 1,
     totalRow: 0,
     showCreateButton: true,
-    viewMode: 'table',
     showPagination: true,
+    columns: () => [],
   },
 )
 
@@ -85,75 +79,11 @@ const table = useVueTable({
       <template #actions><slot name="actions" /></template>
     </TableToolbar>
 
-    <div
-      v-if="viewMode === 'table'"
-      class="relative rounded-lg border border-border bg-card overflow-x-auto w-full"
-    >
-      <div
-        v-if="loading"
-        class="absolute inset-0 z-10 flex-center bg-background/60 backdrop-blur-sm"
-      >
-        <icon-lucide-loader2 class="h-6 w-6 animate-spin text-primary" />
-      </div>
-
-      <Table>
-        <TableHeader class="bg-muted sticky top-0 z-10">
-          <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-            <TableHead
-              v-for="header in headerGroup.headers"
-              :key="header.id"
-              :col-span="header.colSpan"
-            >
-              <div
-                v-if="!header.isPlaceholder && header.column.getCanSort()"
-                class="flex items-center cursor-pointer select-none"
-                @click="header.column.toggleSorting(header.column.getIsSorted() === 'asc')"
-              >
-                <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
-                <icon-lucide-chevron-down
-                  class="ml-2 h-4 w-4"
-                  :class="{
-                    'opacity-0': !header.column.getIsSorted(),
-                    'rotate-180': header.column.getIsSorted() === 'asc',
-                  }"
-                />
-              </div>
-              <FlexRender
-                v-else-if="!header.isPlaceholder"
-                :render="header.column.columnDef.header"
-                :props="header.getContext()"
-              />
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          <template v-if="table.getRowModel().rows.length">
-            <TableRow
-              v-for="row in table.getRowModel().rows"
-              :key="row.id"
-              class="cursor-pointer hover:bg-muted/50 transition-colors"
-              @click="emit('row-click', row.original)"
-            >
-              <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-              </TableCell>
-            </TableRow>
-          </template>
-          <TableRow v-else-if="!loading">
-            <TableCell :colspan="table.getAllColumns().length" class="py-16 text-center">
-              <EmptyState class="min-h-36 py-0" title="暂无数据" />
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </div>
-
     <TableCardView
-      v-else-if="viewMode === 'card'"
       :loading="loading"
       :data="data"
       :rows="table.getRowModel().rows"
+      @row-click="emit('row-click', $event)"
     >
       <template #cardTemplate="{ data: slotData, rows: slotRows }">
         <slot name="cardTemplate" :data="slotData" :rows="slotRows" />

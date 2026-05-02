@@ -2,7 +2,7 @@ import { reactive, ref, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
-import { batchAddSessions, deleteSession, updateSession } from '@/api/event/event'
+import { adminBatchAddSessions, adminDeleteSession, adminUpdateSession } from '@/api/event/event'
 import type { SessionItem, SessionUpdateRequest, SessionVO } from '@/api/event'
 import { queryKeys, TOAST_COPY, FORM_COPY } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
@@ -69,7 +69,7 @@ export function useSessionList(options: UseSessionListOptions) {
 
   const batchAddSessionsMutation = useMutation({
     mutationFn: (sessions: SessionItem[]) =>
-      batchAddSessions(toValue(options.eventId), { sessions }),
+      adminBatchAddSessions(toValue(options.eventId), { sessions }),
     onSuccess: () => {
       toast.success(TOAST_COPY.sessionAdded)
       sessionError.value = ''
@@ -85,7 +85,7 @@ export function useSessionList(options: UseSessionListOptions) {
 
   const updateSessionMutation = useMutation({
     mutationFn: ({ sessionId, data }: { sessionId: string; data: SessionUpdateRequest }) =>
-      updateSession(toValue(options.eventId), sessionId, data),
+      adminUpdateSession(toValue(options.eventId), sessionId, data),
     onSuccess: () => {
       toast.success(TOAST_COPY.sessionUpdated)
       sessionError.value = ''
@@ -100,7 +100,7 @@ export function useSessionList(options: UseSessionListOptions) {
   })
 
   const deleteSessionMutation = useMutation({
-    mutationFn: (sessionId: string) => deleteSession(toValue(options.eventId), sessionId),
+    mutationFn: (sessionId: string) => adminDeleteSession(toValue(options.eventId), sessionId),
     onSuccess: () => {
       toast.success(TOAST_COPY.sessionDeleted)
       invalidateAll()

@@ -2,8 +2,8 @@ import { ref, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
-import { batchAddServices, removeService } from '@/api/event/event'
-import { fetchAdminServices } from '@/api/event/service'
+import { adminBatchAddServices, adminDeleteEventService } from '@/api/event/event'
+import { fetchAdminServiceList } from '@/api/event/service'
 import type {
   EventServiceBatchAddRequest,
   EventServiceGuaranteeVO,
@@ -34,7 +34,7 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
 
   const { data: servicesData } = useQuery({
     queryKey: queryKeys.admin.list('services'),
-    queryFn: fetchAdminServices,
+    queryFn: fetchAdminServiceList,
     enabled: serviceDialogEnabled,
   })
 
@@ -55,9 +55,9 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
   const batchAddServicesMutation = useMutation({
     mutationFn: async (payload: EventServiceBatchAddRequest) => {
       for (const eventService of toValue(options.eventServices)) {
-        await removeService(toValue(options.eventId), eventService.id)
+        await adminDeleteEventService(toValue(options.eventId), eventService.id)
       }
-      return batchAddServices(toValue(options.eventId), payload)
+      return adminBatchAddServices(toValue(options.eventId), payload)
     },
     onSuccess: () => {
       toast.success(TOAST_COPY.servicesSaved)
@@ -71,7 +71,8 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
   })
 
   const removeServiceMutation = useMutation({
-    mutationFn: (eventServiceId: string) => removeService(toValue(options.eventId), eventServiceId),
+    mutationFn: (eventServiceId: string) =>
+      adminDeleteEventService(toValue(options.eventId), eventServiceId),
     onSuccess: () => {
       toast.success(TOAST_COPY.serviceRemoved)
       invalidateAll()

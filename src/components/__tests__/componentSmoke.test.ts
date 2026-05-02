@@ -37,7 +37,7 @@ const passthroughStub = defineComponent({
 })
 
 describe('component smoke coverage', () => {
-  it('renders an admin table and emits create / row-click events', async () => {
+  it('renders an admin card list and emits create / row-click events', async () => {
     interface Row {
       id: string
       name: string
@@ -60,7 +60,7 @@ describe('component smoke coverage', () => {
     await findButtonByText(wrapper, '新建').trigger('click')
     expect(wrapper.emitted('create')).toHaveLength(1)
 
-    await wrapper.get('tbody tr').trigger('click')
+    await wrapper.find('.cursor-pointer').trigger('click')
     expect(wrapper.emitted('row-click')?.[0]).toEqual([row])
   })
 

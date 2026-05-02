@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, effectScope, type EffectScope } from 'vue'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
-import { fetchTicketById, type TicketVO } from '@/api/ticket'
+import { fetchMyTicketById, type TicketVO } from '@/api/ticket'
 import { useTicketDetailPage } from '../useTicketDetailPage'
 
 const routerMocks = vi.hoisted(() => ({
@@ -15,7 +15,7 @@ vi.mock('vue-router', () => ({
 }))
 
 vi.mock('@/api/ticket', () => ({
-  fetchTicketById: vi.fn(),
+  fetchMyTicketById: vi.fn(),
 }))
 
 const createTicket = (): TicketVO => ({
@@ -82,12 +82,12 @@ afterEach(() => {
 
 describe('useTicketDetailPage', () => {
   it('fetches the ticket from a normalized route param', async () => {
-    vi.mocked(fetchTicketById).mockResolvedValue(createTicket())
+    vi.mocked(fetchMyTicketById).mockResolvedValue(createTicket())
     const harness = setupTicketDetail()
     cleanup = harness.cleanup
 
     await vi.waitFor(() => {
-      expect(fetchTicketById).toHaveBeenCalledWith('ticket-1')
+      expect(fetchMyTicketById).toHaveBeenCalledWith('ticket-1')
     })
     expect(harness.result.isEmpty.value).toBe(false)
   })
@@ -98,7 +98,7 @@ describe('useTicketDetailPage', () => {
     cleanup = harness.cleanup
 
     expect(harness.result.isEmpty.value).toBe(true)
-    expect(fetchTicketById).not.toHaveBeenCalled()
+    expect(fetchMyTicketById).not.toHaveBeenCalled()
 
     harness.result.goBack()
     expect(routerMocks.back).toHaveBeenCalled()

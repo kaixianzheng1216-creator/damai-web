@@ -37,7 +37,7 @@ export const useProfileSection = () => {
 
   const openSection = async (section: ProfileSectionKey) => {
     activeSection.value = section
-    await router.replace({
+    await router.push({
       path: route.path,
       query: {
         ...route.query,

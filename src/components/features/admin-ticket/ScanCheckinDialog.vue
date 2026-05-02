@@ -4,7 +4,7 @@ import { BrowserQRCodeReader, type IScannerControls } from '@zxing/browser'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
-import { checkinTicket } from '@/api/ticket/ticket'
+import { adminCheckinTicket } from '@/api/ticket/ticket'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
@@ -59,7 +59,7 @@ const submit = async (token: string) => {
 
   isSubmitting.value = true
   try {
-    await checkinTicket(t)
+    await adminCheckinTicket(t)
     showResult('success', `检票成功：${t}`)
     manualToken.value = ''
     lastScannedToken.value = ''

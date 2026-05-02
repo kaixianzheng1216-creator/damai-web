@@ -24,7 +24,7 @@ export const PROFILE_SECTIONS: ProfileSectionOption[] = [
   { key: 'passengers', label: '常用购票人', group: 'account', icon: 'users' },
 ]
 
-export const HEADER_PROFILE_MENU_ITEMS: Array<{ section: ProfileSectionKey; label: string }> =
+export const HEADER_PROFILE_MENU_ITEMS: { section: ProfileSectionKey; label: string }[] =
   PROFILE_SECTIONS.map(({ key, label }) => ({
     section: key,
     label,

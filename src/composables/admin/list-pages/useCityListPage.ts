@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, type Ref, type ComputedRef } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
 import { useAdminCrud } from '../common/useAdminCrud'
 import { queryKeys } from '@/constants'
@@ -10,6 +10,7 @@ import {
   updateCityFeatured,
 } from '@/api/event/city'
 import type { CityCreateRequest, CityUpdateRequest, CityVO } from '@/api/event'
+import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
 
 type CityForm = {
   name: string
@@ -17,7 +18,38 @@ type CityForm = {
   firstLetter: string
 }
 
-export function useCityListPage() {
+export function useCityListPage(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchName: Ref<string>
+  isLoading: Ref<boolean>
+  list: ComputedRef<CityVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  showDialog: Ref<boolean>
+  editingId: Ref<string | null>
+  form: CityForm
+  dialogTitle: ComputedRef<string>
+  confirmDialog: Ref<ConfirmDialogState>
+  createMutation: {
+    mutateAsync: (data: CityCreateRequest) => Promise<unknown>
+    isPending: Ref<boolean>
+  }
+  updateMutation: {
+    mutateAsync: (vars: { id: string; data: CityUpdateRequest }) => Promise<unknown>
+    isPending: Ref<boolean>
+  }
+  deleteMutation: { mutateAsync: (id: string) => Promise<unknown> }
+  featuredMutation: { mutate: (vars: { id: string; isFeatured: number }) => void }
+  invalidate: () => void
+  openCreate: () => void
+  openEdit: (row: CityVO) => void
+  handleSubmit: () => Promise<void>
+  handleDelete: (item: CityVO) => void
+  toggleFeatured: (row: CityVO) => void
+  closeConfirm: () => void
+  handleConfirm: () => Promise<void>
+} {
   const crud = useAdminCrud<CityVO, CityForm, CityCreateRequest, CityUpdateRequest>({
     queryKeyBase: queryKeys.admin.list('cities'),
     fetchPage: fetchAdminCitiesPage,

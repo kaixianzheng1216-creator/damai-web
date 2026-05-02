@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { computed } from 'vue'
+import { computed, type HTMLAttributes } from 'vue'
 import {
   Dialog,
   DialogContent,

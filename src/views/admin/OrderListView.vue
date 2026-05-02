@@ -74,9 +74,9 @@ const columns = createOrderColumns({ openDetail })
   </DataTableCrud>
 
   <OrderDetailDialog
-    v-if="showDetailDialog"
     :order="selectedOrder"
     :open="showDetailDialog"
+    @update:open="!$event && closeDetail()"
     @close="closeDetail"
   />
 </template>

@@ -2,7 +2,7 @@ import { computed, ref, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
-import { copyTicketTypes } from '@/api/event/event'
+import { adminCopyTicketTypes } from '@/api/event/event'
 import type { SessionVO } from '@/api/event'
 import { queryKeys, TOAST_COPY } from '@/constants'
 
@@ -52,7 +52,7 @@ export function useTicketTypeCopyDialog(options: UseTicketTypeCopyDialogOptions)
     }: {
       sourceSessionId: string
       targetSessionIds: string[]
-    }) => copyTicketTypes(toValue(options.eventId), { sourceSessionId, targetSessionIds }),
+    }) => adminCopyTicketTypes(toValue(options.eventId), { sourceSessionId, targetSessionIds }),
     onSuccess: () => {
       toast.success(TOAST_COPY.ticketTypesCopied)
       options.onOpenChange(false)

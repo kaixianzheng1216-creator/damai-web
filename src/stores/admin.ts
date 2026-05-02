@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { createAuthStore } from '@/composables/common/useAuthStore'
+import { createAuthStore } from '@/composables/common/createAuthStore'
 
 export interface AdminInfo {
   id: string

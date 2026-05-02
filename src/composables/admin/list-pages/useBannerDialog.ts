@@ -1,5 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
+import { toast } from 'vue3-toastify'
 import { createBanner, deleteBanner, updateBanner } from '@/api/event/banner'
 import type { BannerCreateRequest, BannerUpdateRequest, BannerVO } from '@/api/event'
 import { formatDateTimeLocalInput } from '@/utils/format'
@@ -106,6 +107,7 @@ export function useBannerDialog(
       !form.displayStartAt ||
       !form.displayEndAt
     ) {
+      toast.error('请填写完整的 Banner 信息')
       return
     }
 

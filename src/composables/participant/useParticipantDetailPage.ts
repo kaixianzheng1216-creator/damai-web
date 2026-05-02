@@ -1,8 +1,8 @@
-import { ref, computed } from 'vue'
+import { ref, computed, type Ref, type ComputedRef } from 'vue'
 import { useRoute } from 'vue-router'
-import { useQuery } from '@tanstack/vue-query'
+import { useQuery, type UseQueryReturnType } from '@tanstack/vue-query'
 import {
-  fetchParticipantDetail,
+  fetchParticipantById,
   fetchParticipantEventsPage,
   followParticipant,
   unfollowParticipant,
@@ -10,8 +10,24 @@ import {
 } from '@/api/event'
 import { useFollowToggle } from '@/composables/common/useFollowToggle'
 import { queryKeys } from '@/constants'
+import type { ParticipantVO, PageResponseEventVO } from '@/api/event'
 
-export function useParticipantDetailPage() {
+export function useParticipantDetailPage(): {
+  participantId: ComputedRef<string>
+  participantQuery: UseQueryReturnType<ParticipantVO, Error>
+  isFollowedQuery: UseQueryReturnType<boolean, Error>
+  followMutation: {
+    mutateAsync: (vars: { participantId: string }) => Promise<void>
+    isPending: Ref<boolean>
+  }
+  unfollowMutation: { mutateAsync: (id: string) => Promise<void>; isPending: Ref<boolean> }
+  eventsQuery: UseQueryReturnType<PageResponseEventVO, Error>
+  currentPage: Ref<number>
+  handlePageChange: (page: number) => void
+  toggleFollow: () => Promise<void>
+  isFollowed: ComputedRef<boolean>
+  isFollowLoading: ComputedRef<boolean>
+} {
   const route = useRoute()
 
   const participantId = computed(() => {
@@ -23,7 +39,7 @@ export function useParticipantDetailPage() {
 
   const participantQuery = useQuery({
     queryKey: computed(() => queryKeys.participant.detail(participantId.value)),
-    queryFn: () => fetchParticipantDetail(participantId.value),
+    queryFn: () => fetchParticipantById(participantId.value),
     enabled: hasParticipantId,
   })
 

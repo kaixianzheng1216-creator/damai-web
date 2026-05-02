@@ -1,6 +1,6 @@
 export type DetailTabKey = 'detail' | 'purchase' | 'watch'
 
-export const DETAIL_TABS: Array<{ label: string; value: DetailTabKey }> = [
+export const DETAIL_TABS: { label: string; value: DetailTabKey }[] = [
   { label: '活动详情', value: 'detail' },
   { label: '购票须知', value: 'purchase' },
   { label: '观演须知', value: 'watch' },

@@ -22,22 +22,22 @@ const toastMocks = vi.hoisted(() => ({
 const eventApiMocks = vi.hoisted(() => ({
   createEvent: vi.fn(),
   updateEvent: vi.fn(),
-  createTicketType: vi.fn(),
+  adminCreateTicketType: vi.fn(),
   updateTicketType: vi.fn(),
-  adjustTicketTypeInventory: vi.fn(),
-  batchAddParticipants: vi.fn(),
+  adminAdjustTicketTypeInventory: vi.fn(),
+  adminBatchAddParticipants: vi.fn(),
   removeParticipant: vi.fn(),
-  batchAddServices: vi.fn(),
-  removeService: vi.fn(),
+  adminBatchAddServices: vi.fn(),
+  adminDeleteEventService: vi.fn(),
 }))
 
 const optionApiMocks = vi.hoisted(() => ({
-  fetchAdminCities: vi.fn(),
-  fetchAdminCategories: vi.fn(),
-  fetchAdminVenues: vi.fn(),
-  fetchAdminSeries: vi.fn(),
+  fetchAdminCityList: vi.fn(),
+  fetchAdminCategoryList: vi.fn(),
+  fetchAdminVenueList: vi.fn(),
+  fetchAdminSeriesList: vi.fn(),
   fetchAdminParticipantsPage: vi.fn(),
-  fetchAdminServices: vi.fn(),
+  fetchAdminServiceList: vi.fn(),
 }))
 
 vi.mock('vue3-toastify', () => ({
@@ -45,17 +45,17 @@ vi.mock('vue3-toastify', () => ({
 }))
 
 vi.mock('@/api/event/event', () => eventApiMocks)
-vi.mock('@/api/event/city', () => ({ fetchAdminCities: optionApiMocks.fetchAdminCities }))
+vi.mock('@/api/event/city', () => ({ fetchAdminCityList: optionApiMocks.fetchAdminCityList }))
 vi.mock('@/api/event/category', () => ({
-  fetchAdminCategories: optionApiMocks.fetchAdminCategories,
+  fetchAdminCategoryList: optionApiMocks.fetchAdminCategoryList,
 }))
-vi.mock('@/api/event/venue', () => ({ fetchAdminVenues: optionApiMocks.fetchAdminVenues }))
-vi.mock('@/api/event/series', () => ({ fetchAdminSeries: optionApiMocks.fetchAdminSeries }))
+vi.mock('@/api/event/venue', () => ({ fetchAdminVenueList: optionApiMocks.fetchAdminVenueList }))
+vi.mock('@/api/event/series', () => ({ fetchAdminSeriesList: optionApiMocks.fetchAdminSeriesList }))
 vi.mock('@/api/event/participant', () => ({
   fetchAdminParticipantsPage: optionApiMocks.fetchAdminParticipantsPage,
 }))
 vi.mock('@/api/event/service', () => ({
-  fetchAdminServices: optionApiMocks.fetchAdminServices,
+  fetchAdminServiceList: optionApiMocks.fetchAdminServiceList,
 }))
 
 function setupComposable<T>(factory: () => T) {
@@ -153,18 +153,18 @@ const createEventService = (): EventServiceGuaranteeVO => ({
 beforeEach(() => {
   eventApiMocks.createEvent.mockResolvedValue('event-new')
   eventApiMocks.updateEvent.mockResolvedValue(undefined)
-  eventApiMocks.createTicketType.mockResolvedValue(undefined)
+  eventApiMocks.adminCreateTicketType.mockResolvedValue(undefined)
   eventApiMocks.updateTicketType.mockResolvedValue(undefined)
-  eventApiMocks.adjustTicketTypeInventory.mockResolvedValue(undefined)
-  eventApiMocks.batchAddParticipants.mockResolvedValue(undefined)
+  eventApiMocks.adminAdjustTicketTypeInventory.mockResolvedValue(undefined)
+  eventApiMocks.adminBatchAddParticipants.mockResolvedValue(undefined)
   eventApiMocks.removeParticipant.mockResolvedValue(undefined)
-  eventApiMocks.batchAddServices.mockResolvedValue(undefined)
-  eventApiMocks.removeService.mockResolvedValue(undefined)
+  eventApiMocks.adminBatchAddServices.mockResolvedValue(undefined)
+  eventApiMocks.adminDeleteEventService.mockResolvedValue(undefined)
 
-  optionApiMocks.fetchAdminCities.mockResolvedValue([])
-  optionApiMocks.fetchAdminCategories.mockResolvedValue([])
-  optionApiMocks.fetchAdminVenues.mockResolvedValue([])
-  optionApiMocks.fetchAdminSeries.mockResolvedValue([])
+  optionApiMocks.fetchAdminCityList.mockResolvedValue([])
+  optionApiMocks.fetchAdminCategoryList.mockResolvedValue([])
+  optionApiMocks.fetchAdminVenueList.mockResolvedValue([])
+  optionApiMocks.fetchAdminSeriesList.mockResolvedValue([])
   optionApiMocks.fetchAdminParticipantsPage.mockResolvedValue({
     pageNumber: 1,
     pageSize: 10,
@@ -172,7 +172,7 @@ beforeEach(() => {
     totalPage: 1,
     records: [],
   })
-  optionApiMocks.fetchAdminServices.mockResolvedValue([])
+  optionApiMocks.fetchAdminServiceList.mockResolvedValue([])
 })
 
 afterEach(() => {
@@ -233,7 +233,7 @@ describe('event edit flows', () => {
 
     await harness.result.handleSaveTicketType()
     expect(toastMocks.error).toHaveBeenCalledWith('请填写完整信息')
-    expect(eventApiMocks.createTicketType).not.toHaveBeenCalled()
+    expect(eventApiMocks.adminCreateTicketType).not.toHaveBeenCalled()
 
     Object.assign(harness.result.form, {
       name: '看台',
@@ -247,7 +247,7 @@ describe('event edit flows', () => {
 
     await harness.result.handleSaveTicketType()
 
-    expect(eventApiMocks.createTicketType).toHaveBeenCalledWith('event-1', 'session-1', {
+    expect(eventApiMocks.adminCreateTicketType).toHaveBeenCalledWith('event-1', 'session-1', {
       name: '看台',
       salePrice: 188,
       totalQty: 10,
@@ -283,9 +283,13 @@ describe('event edit flows', () => {
     harness.result.adjustQty.value = 5
     await harness.result.handleAdjustInventory()
 
-    expect(eventApiMocks.adjustTicketTypeInventory).toHaveBeenCalledWith('event-1', 'ticket-1', {
-      adjustQty: 5,
-    })
+    expect(eventApiMocks.adminAdjustTicketTypeInventory).toHaveBeenCalledWith(
+      'event-1',
+      'ticket-1',
+      {
+        adjustQty: 5,
+      },
+    )
     expect(onOpenChange).toHaveBeenCalledWith(false)
     expect(onSaved).toHaveBeenCalled()
 
@@ -309,7 +313,7 @@ describe('event edit flows', () => {
     harness.result.toggleParticipant('p2')
     await harness.result.handleAddParticipants()
 
-    expect(eventApiMocks.batchAddParticipants).toHaveBeenCalledWith('event-1', {
+    expect(eventApiMocks.adminBatchAddParticipants).toHaveBeenCalledWith('event-1', {
       participantIds: ['p2'],
     })
     expect(harness.result.showParticipantDialog.value).toBe(false)
@@ -334,8 +338,8 @@ describe('event edit flows', () => {
 
     await harness.result.handleSaveServices()
 
-    expect(eventApiMocks.removeService).toHaveBeenCalledWith('event-1', 'event-service-1')
-    expect(eventApiMocks.batchAddServices).toHaveBeenCalledWith('event-1', {
+    expect(eventApiMocks.adminDeleteEventService).toHaveBeenCalledWith('event-1', 'event-service-1')
+    expect(eventApiMocks.adminBatchAddServices).toHaveBeenCalledWith('event-1', {
       services: [
         {
           serviceGuaranteeId: 'service-1',

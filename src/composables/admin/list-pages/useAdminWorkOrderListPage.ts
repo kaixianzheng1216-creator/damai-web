@@ -1,14 +1,15 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import {
   closeAdminWorkOrder,
   fetchAdminWorkOrderById,
   fetchAdminWorkOrderPage,
-  replyAdminWorkOrder,
+  submitAdminWorkOrderReply,
 } from '@/api/trade'
 import type { WorkOrderVO } from '@/api/trade'
 import { queryKeys, WORK_ORDER_STATUS } from '@/constants'
 import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
 
 export const ADMIN_WORK_ORDER_STATUS_OPTIONS = [
   { label: '全部', value: 'all' },
@@ -17,7 +18,34 @@ export const ADMIN_WORK_ORDER_STATUS_OPTIONS = [
   { label: '已关闭', value: String(WORK_ORDER_STATUS.CLOSED) },
 ]
 
-export function useAdminWorkOrderListPage() {
+export function useAdminWorkOrderListPage(): {
+  currentPage: Ref<number>
+  pageSize: Ref<number>
+  searchUserId: Ref<string>
+  searchStatus: Ref<string>
+  selectedWorkOrderId: Ref<string | null>
+  replyContent: Ref<string>
+  replyError: Ref<string>
+  statusOptions: typeof ADMIN_WORK_ORDER_STATUS_OPTIONS
+  isLoading: Ref<boolean>
+  list: ComputedRef<WorkOrderVO[]>
+  totalRow: ComputedRef<number>
+  totalPages: ComputedRef<number>
+  selectedWorkOrder: ComputedRef<WorkOrderVO | undefined>
+  workOrderDetailQuery: ReturnType<typeof useQuery>
+  replyMutation: {
+    mutateAsync: (vars: { id: string; content: string }) => Promise<unknown>
+    isPending: Ref<boolean>
+  }
+  closeMutation: { mutateAsync: (id: string) => Promise<unknown>; isPending: Ref<boolean> }
+  confirmDialog: Ref<ConfirmDialogState>
+  openDetail: (row: WorkOrderVO) => void
+  closeDetail: () => void
+  submitReply: () => Promise<void>
+  requestClose: (row?: WorkOrderVO) => void
+  closeConfirm: () => void
+  handleConfirm: () => Promise<void>
+} {
   const queryClient = useQueryClient()
   const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
 
@@ -74,7 +102,7 @@ export function useAdminWorkOrderListPage() {
 
   const replyMutation = useMutation({
     mutationFn: ({ id, content }: { id: string; content: string }) =>
-      replyAdminWorkOrder(id, { content }),
+      submitAdminWorkOrderReply(id, { content }),
     onSuccess: async () => {
       replyContent.value = ''
       replyError.value = ''

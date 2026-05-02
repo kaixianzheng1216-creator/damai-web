@@ -1,6 +1,6 @@
 import { computed, watch, ref } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { fetchBanners, fetchCategories, fetchEventPage, fetchCitiesList } from '@/api/event'
+import { fetchBannerList, fetchCategoryList, fetchEventPage, fetchCityList } from '@/api/event'
 import { convertCategoryVOToHomeItem, convertEventVOToCardItem } from '@/utils/mappers'
 import type {
   HomeBannerItem,
@@ -30,17 +30,17 @@ export const useHomePage = () => {
 
   const bannersQuery = useQuery({
     queryKey: queryKeys.home.banners(),
-    queryFn: () => fetchBanners(),
+    queryFn: () => fetchBannerList(),
   })
 
   const categoriesQuery = useQuery({
     queryKey: queryKeys.home.categories(),
-    queryFn: fetchCategories,
+    queryFn: fetchCategoryList,
   })
 
   const citiesQuery = useQuery({
     queryKey: queryKeys.home.cities(),
-    queryFn: fetchCitiesList,
+    queryFn: fetchCityList,
   })
 
   const categories = computed<HomeCategoryItem[]>(() => {

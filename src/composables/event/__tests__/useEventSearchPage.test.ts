@@ -41,7 +41,7 @@ async function setupEventSearch(initialQuery: Record<string, unknown> = {}) {
 
   vi.doMock('@/api/event', () => ({
     fetchEventPage: vi.fn().mockResolvedValue(createPage()),
-    fetchCitiesList: vi.fn().mockResolvedValue([
+    fetchCityList: vi.fn().mockResolvedValue([
       {
         id: 'city-1',
         name: '北京',
@@ -50,7 +50,7 @@ async function setupEventSearch(initialQuery: Record<string, unknown> = {}) {
         isFeatured: 1,
       },
     ]),
-    fetchCategories: vi.fn().mockResolvedValue([
+    fetchCategoryList: vi.fn().mockResolvedValue([
       {
         id: 'parent-1',
         parentId: '0',

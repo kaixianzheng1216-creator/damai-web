@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchCitiesList, fetchCategories } from '@/api/event'
+import { fetchCityList, fetchCategoryList } from '@/api/event'
 import { DEFAULT_SEARCH_QUERY, TIME_OPTIONS } from '@/constants/search'
 import { queryKeys } from '@/constants'
 import type { EventPageRequest, CityVO, CategoryVO } from '@/api/event'
@@ -32,12 +32,12 @@ export const useSearchFilters = () => {
 
   const citiesQuery = useQuery({
     queryKey: queryKeys.event.searchCities(),
-    queryFn: fetchCitiesList,
+    queryFn: fetchCityList,
   })
 
   const categoriesQuery = useQuery({
     queryKey: queryKeys.event.searchCategories(),
-    queryFn: fetchCategories,
+    queryFn: fetchCategoryList,
   })
 
   const selectedParentCategoryId = ref<string | undefined>()
