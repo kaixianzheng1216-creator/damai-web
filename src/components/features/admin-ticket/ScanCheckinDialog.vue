@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onUnmounted, watch } from 'vue'
-import { BrowserQRCodeReader, type IScannerControls } from '@zxing/browser'
+import type { BrowserQRCodeReader, IScannerControls } from '@zxing/browser'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
@@ -34,6 +34,13 @@ const isSubmitting = ref(false)
 const lastScannedToken = ref('')
 const result = ref<{ type: 'success' | 'error'; message: string } | null>(null)
 const scanCompleted = ref(false)
+
+// Dynamic import state
+const zxingReaderClass = ref<typeof BrowserQRCodeReader | null>(null)
+const loadingScanner = ref(false)
+const importError = ref(false)
+let zxingImportPromise: Promise<typeof import('@zxing/browser')> | null = null
+let pendingImport = false
 
 let controls: IScannerControls | null = null
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -83,13 +90,14 @@ const handleScanResult = (token: string) => {
 }
 
 const startScanner = async () => {
-  if (!videoRef.value) return
+  const ReaderClass = zxingReaderClass.value
+  if (!videoRef.value || !ReaderClass) return
   stopScanner()
   result.value = null
   scanCompleted.value = false
 
   try {
-    const reader = new BrowserQRCodeReader()
+    const reader = new ReaderClass()
     controls = await reader.decodeFromVideoDevice(undefined, videoRef.value, (res, _err) => {
       if (res) handleScanResult(res.getText())
     })
@@ -112,21 +120,53 @@ const handleOpen = (val: boolean) => {
   }
   if (!val) {
     stopScanner()
+    pendingImport = false
   }
   emit('update:open', val)
 }
 
-// 监听对话框打开状态，打开时自动启动摄像头
+const doImportAndStart = async () => {
+  importError.value = false
+
+  if (!zxingImportPromise) {
+    loadingScanner.value = true
+    zxingImportPromise = import('@zxing/browser')
+  }
+
+  try {
+    const module = await Promise.race([
+      zxingImportPromise,
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 10000)),
+    ])
+    loadingScanner.value = false
+    zxingReaderClass.value = module.BrowserQRCodeReader
+
+    if (pendingImport) {
+      // Wait for next tick to ensure video element is rendered
+      setTimeout(() => {
+        startScanner()
+      }, 100)
+    }
+  } catch {
+    loadingScanner.value = false
+    importError.value = true
+    zxingImportPromise = null // Allow retry
+  }
+}
+
+const retryImport = () => {
+  doImportAndStart()
+}
+
+// 监听对话框打开状态，打开时动态加载扫码库并启动摄像头
 watch(
   () => props.open,
   (newVal) => {
     if (newVal) {
       result.value = null
       scanCompleted.value = false
-      // 等待下一帧确保video元素已渲染
-      setTimeout(() => {
-        startScanner()
-      }, 100)
+      pendingImport = true
+      doImportAndStart()
     }
   },
 )
@@ -147,29 +187,55 @@ onUnmounted(stopScanner)
 
       <div class="space-y-4">
         <!-- 摄像头区域 -->
-        <div
-          v-if="!scanCompleted"
-          class="relative overflow-hidden rounded-lg bg-black aspect-square"
-        >
-          <video ref="videoRef" class="h-full w-full object-cover" autoplay muted playsinline />
-          <!-- 扫描框 -->
-          <div class="absolute inset-0 flex-center pointer-events-none">
-            <div class="w-2/3 aspect-square border-2 border-white/70 rounded-lg relative">
-              <span
-                class="absolute -top-px -left-px w-5 h-5 border-t-2 border-l-2 border-primary rounded-tl-lg"
-              />
-              <span
-                class="absolute -top-px -right-px w-5 h-5 border-t-2 border-r-2 border-primary rounded-tr-lg"
-              />
-              <span
-                class="absolute -bottom-px -left-px w-5 h-5 border-b-2 border-l-2 border-primary rounded-bl-lg"
-              />
-              <span
-                class="absolute -bottom-px -right-px w-5 h-5 border-b-2 border-r-2 border-primary rounded-br-lg"
-              />
+        <template v-if="!scanCompleted">
+          <!-- 加载扫码模块中 -->
+          <div
+            v-if="loadingScanner"
+            class="relative overflow-hidden rounded-lg bg-black aspect-square flex-center"
+          >
+            <div class="flex flex-col items-center gap-3 text-white">
+              <icon-lucide-loader2 class="h-8 w-8 animate-spin" />
+              <span class="text-sm">正在加载扫描模块...</span>
             </div>
           </div>
-        </div>
+
+          <!-- 加载失败 -->
+          <div
+            v-else-if="importError"
+            class="relative overflow-hidden rounded-lg bg-muted aspect-square flex-center"
+          >
+            <div class="flex flex-col items-center gap-3 text-muted-foreground">
+              <icon-lucide-alert-triangle class="h-8 w-8" />
+              <span class="text-sm">扫描模块加载失败</span>
+              <Button variant="outline" size="sm" @click="retryImport">
+                <icon-lucide-refresh-cw class="mr-1 h-4 w-4" />
+                重试
+              </Button>
+            </div>
+          </div>
+
+          <!-- 摄像头 -->
+          <div v-else class="relative overflow-hidden rounded-lg bg-black aspect-square">
+            <video ref="videoRef" class="h-full w-full object-cover" autoplay muted playsinline />
+            <!-- 扫描框 -->
+            <div class="absolute inset-0 flex-center pointer-events-none">
+              <div class="w-2/3 aspect-square border-2 border-white/70 rounded-lg relative">
+                <span
+                  class="absolute -top-px -left-px w-5 h-5 border-t-2 border-l-2 border-primary rounded-tl-lg"
+                />
+                <span
+                  class="absolute -top-px -right-px w-5 h-5 border-t-2 border-r-2 border-primary rounded-tr-lg"
+                />
+                <span
+                  class="absolute -bottom-px -left-px w-5 h-5 border-b-2 border-l-2 border-primary rounded-bl-lg"
+                />
+                <span
+                  class="absolute -bottom-px -right-px w-5 h-5 border-b-2 border-r-2 border-primary rounded-br-lg"
+                />
+              </div>
+            </div>
+          </div>
+        </template>
 
         <!-- 结果提示 (扫描完成时持久显示) -->
         <div

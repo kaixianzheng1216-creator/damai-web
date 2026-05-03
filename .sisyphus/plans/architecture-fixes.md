@@ -1133,7 +1133,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 20. **Dynamic import @zxing/browser in ScanCheckinDialog**
+- [x] 20. **Dynamic import @zxing/browser in ScanCheckinDialog**
 
   **What to do**:
   - In `ScanCheckinDialog.vue`, move `import { BrowserQRCodeReader } from '@zxing/browser'` from static import to dynamic import
@@ -1207,7 +1207,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 21. **Dynamic import @stomp/stompjs in useWorkOrderChat**
+- [x] 21. **Dynamic import @stomp/stompjs in useWorkOrderChat**
 
   **What to do**:
   - In `useWorkOrderChat.ts`, change `import { Client } from '@stomp/stompjs'` to dynamic import inside `connect()`
@@ -1260,7 +1260,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 22. **Build verification + chunk size audit**
+- [x] 22. **Build verification + chunk size audit**
 
   **What to do**:
   - Run `npm run build`

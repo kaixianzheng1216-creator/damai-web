@@ -114,6 +114,7 @@ declare module 'vue' {
     HomeBanner: typeof import('./../components/features/home/HomeBanner.vue')['default']
     HomeFloatingSupport: typeof import('./../components/features/home/HomeFloatingSupport.vue')['default']
     IconLucideAlertCircle: typeof import('~icons/lucide/alert-circle')['default']
+    IconLucideAlertTriangle: typeof import('~icons/lucide/alert-triangle')['default']
     IconLucideArrowLeft: typeof import('~icons/lucide/arrow-left')['default']
     IconLucideArrowUp: typeof import('~icons/lucide/arrow-up')['default']
     IconLucideBot: typeof import('~icons/lucide/bot')['default']

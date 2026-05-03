@@ -1,8 +1,20 @@
 import { ref } from 'vue'
-import { Client } from '@stomp/stompjs'
-import type { StompSubscription } from '@stomp/stompjs'
+import type { Client, StompSubscription } from '@stomp/stompjs'
 import { toast } from 'vue3-toastify'
 import type { WorkOrderReplyVO } from '@/api/trade'
+
+// ─── Dynamic Stomp Import (deduplicated) ──────────────────────
+
+let _ClientClass: typeof Client | null = null
+let _importPromise: Promise<void> | null = null
+
+async function _loadStompClient(): Promise<void> {
+  if (_ClientClass) return
+  _importPromise ??= import('@stomp/stompjs').then((m) => {
+    _ClientClass = m.Client
+  })
+  await _importPromise
+}
 
 // ─── Internal WS Message Types ────────────────────────────────
 
@@ -57,7 +69,10 @@ function createWorkOrderChat() {
     )
   }
 
-  function connect(token: string): void {
+  async function connect(token: string): Promise<void> {
+    await _loadStompClient()
+    const Client = _ClientClass!
+
     if (!token) {
       console.warn('[useWorkOrderChat] Cannot connect: no token provided')
       return
