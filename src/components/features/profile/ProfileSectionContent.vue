@@ -6,97 +6,120 @@ import ProfileOrdersSection from './ProfileOrdersSection.vue'
 import ProfilePassengersSection from './ProfilePassengersSection.vue'
 import ProfileTicketsSection from './ProfileTicketsSection.vue'
 import ProfileWorkOrdersSection from './ProfileWorkOrdersSection.vue'
-import { useProfilePageContext } from './profilePageContext'
+import type { ProfileSectionKey } from '@/constants'
+import type { usePassengerManagement } from '@/composables/profile/usePassengerManagement'
+import type { useOrderList } from '@/composables/profile/useOrderList'
+import type { useTicketList } from '@/composables/profile/useTicketList'
+import type { useWorkOrderList } from '@/composables/profile/useWorkOrderList'
+import type { useFollowList } from '@/composables/profile/useFollowList'
+import type { useProfileUserInfo } from '@/composables/profile/useProfileUserInfo'
 
-const profile = useProfilePageContext()
+type PassengerManagementState = ReturnType<typeof usePassengerManagement>
+type OrderListState = ReturnType<typeof useOrderList>
+type TicketListState = ReturnType<typeof useTicketList>
+type WorkOrderListState = ReturnType<typeof useWorkOrderList>
+type FollowListState = ReturnType<typeof useFollowList>
+type UserInfoState = ReturnType<typeof useProfileUserInfo>
+
+defineProps<{
+  activeSection: ProfileSectionKey
+  userInfo: UserInfoState
+  passengerManagement: PassengerManagementState
+  orderList: OrderListState
+  ticketList: TicketListState
+  workOrderList: WorkOrderListState
+  followList: FollowListState
+}>()
 </script>
 
 <template>
+  <!-- eslint-disable vue/no-mutating-props -->
   <ProfileInfoSection
-    v-if="profile.activeSection.value === 'info'"
-    v-model:form="profile.infoForm"
-    :display-avatar="profile.displayAvatar.value"
-    :years="profile.years"
-    :months="profile.months"
-    :days="profile.days"
-    @save="profile.saveInfo"
-    @avatar-selected="profile.updateAvatar"
+    v-if="activeSection === 'info'"
+    v-model:form="userInfo.infoForm"
+    :display-avatar="userInfo.displayAvatar.value"
+    :years="userInfo.years"
+    :months="userInfo.months"
+    :days="userInfo.days"
+    @save="userInfo.saveInfo"
+    @avatar-selected="userInfo.updateAvatar"
   />
 
   <ProfilePassengersSection
-    v-else-if="profile.activeSection.value === 'passengers'"
-    :passengers="profile.passengerList.value"
-    :passenger-page="profile.passengerPage.value"
-    :passenger-page-size="profile.passengerPageSize.value"
-    :passenger-total-pages="profile.passengerTotalPages.value"
-    :passenger-total-row="profile.passengerTotalRow.value"
-    :passenger-keyword="profile.passengerKeyword.value"
-    @create="profile.openCreatePassengerModal"
-    @delete="profile.openDeletePassengerModal"
-    @update:passenger-page="profile.updatePassengerPage"
-    @update:passenger-page-size="profile.updatePassengerPageSize"
-    @update:passenger-keyword="profile.updatePassengerKeyword"
+    v-else-if="activeSection === 'passengers'"
+    :passengers="passengerManagement.passengerList.value"
+    :passenger-page="passengerManagement.passengerPage.value"
+    :passenger-page-size="passengerManagement.passengerPageSize.value"
+    :passenger-total-pages="passengerManagement.passengerTotalPages.value"
+    :passenger-total-row="passengerManagement.passengerTotalRow.value"
+    :passenger-keyword="passengerManagement.passengerKeyword.value"
+    @create="passengerManagement.openCreatePassengerModal"
+    @delete="passengerManagement.openDeletePassengerModal"
+    @update:passenger-page="passengerManagement.updatePassengerPage"
+    @update:passenger-page-size="passengerManagement.updatePassengerPageSize"
+    @update:passenger-keyword="passengerManagement.updatePassengerKeyword"
   />
 
   <ProfileOrdersSection
-    v-else-if="profile.activeSection.value === 'orders'"
-    :order-filter="profile.orderFilter.value"
-    :paginated-orders="profile.paginatedOrders.value"
-    :order-page="profile.orderPage.value"
-    :order-page-size="profile.orderPageSize.value"
-    :order-total-pages="profile.orderTotalPages.value"
-    :order-total-row="profile.orderTotalRow.value"
-    @update:order-filter="profile.orderFilter.value = $event"
-    @update:order-page="profile.updateOrderPage"
-    @update:order-page-size="profile.updateOrderPageSize"
+    v-else-if="activeSection === 'orders'"
+    :order-filter="orderList.orderFilter.value"
+    :paginated-orders="orderList.paginatedOrders.value"
+    :order-page="orderList.orderPage.value"
+    :order-page-size="orderList.orderPageSize.value"
+    :order-total-pages="orderList.orderTotalPages.value"
+    :order-total-row="orderList.orderTotalRow.value"
+    @update:order-filter="orderList.orderFilter.value = $event"
+    @update:order-page="orderList.updateOrderPage"
+    @update:order-page-size="orderList.updateOrderPageSize"
   />
 
   <ProfileTicketsSection
-    v-else-if="profile.activeSection.value === 'tickets'"
-    :paginated-tickets="profile.paginatedTickets.value"
-    :ticket-page="profile.ticketPage.value"
-    :ticket-page-size="profile.ticketPageSize.value"
-    :ticket-total-pages="profile.ticketTotalPages.value"
-    :ticket-total-row="profile.ticketTotalRow.value"
-    @update:ticket-page="profile.updateTicketPage"
-    @update:ticket-page-size="profile.updateTicketPageSize"
+    v-else-if="activeSection === 'tickets'"
+    :paginated-tickets="ticketList.ticketList.value"
+    :ticket-page="ticketList.ticketPage.value"
+    :ticket-page-size="ticketList.ticketPageSize.value"
+    :ticket-total-pages="ticketList.ticketTotalPages.value"
+    :ticket-total-row="ticketList.ticketTotalRow.value"
+    @update:ticket-page="ticketList.updateTicketPage"
+    @update:ticket-page-size="ticketList.updateTicketPageSize"
   />
 
   <ProfileWorkOrdersSection
-    v-else-if="profile.activeSection.value === 'work-orders'"
-    :work-order-filter="profile.workOrderFilter.value"
-    :work-orders="profile.workOrders.value"
-    :work-order-page="profile.workOrderPage.value"
-    :work-order-page-size="profile.workOrderPageSize.value"
-    :work-order-total-pages="profile.workOrderTotalPages.value"
-    :work-order-total-row="profile.workOrderTotalRow.value"
-    @update:work-order-filter="profile.workOrderFilter.value = $event"
-    @update:work-order-page="profile.updateWorkOrderPage"
-    @update:work-order-page-size="profile.updateWorkOrderPageSize"
-    @open-detail="profile.openWorkOrderDetail"
+    v-else-if="activeSection === 'work-orders'"
+    :work-order-filter="workOrderList.workOrderFilter.value"
+    :work-orders="workOrderList.workOrders.value"
+    :work-order-page="workOrderList.workOrderPage.value"
+    :work-order-page-size="workOrderList.workOrderPageSize.value"
+    :work-order-total-pages="workOrderList.workOrderTotalPages.value"
+    :work-order-total-row="workOrderList.workOrderTotalRow.value"
+    @update:work-order-filter="workOrderList.workOrderFilter.value = $event"
+    @update:work-order-page="workOrderList.updateWorkOrderPage"
+    @update:work-order-page-size="workOrderList.updateWorkOrderPageSize"
+    @open-detail="workOrderList.openWorkOrderDetail"
   />
 
   <ProfileFollowedEventsSection
-    v-else-if="profile.activeSection.value === 'followed-events'"
-    :paginated-events="profile.followList.paginatedFollowedEvents.value"
-    :page="profile.followList.followedEventsPage.value"
-    :total-pages="profile.followList.followedEventsTotalPages.value"
-    :page-size="profile.followList.followedEventsPageSize.value"
-    :total-row="profile.followList.followedEventsTotalRow.value"
-    @update:page="profile.followList.updateFollowedEventsPage"
-    @update:page-size="profile.followList.updateFollowedEventsPageSize"
-    @toggle-follow="profile.followList.handleUnfollowEvent"
+    v-else-if="activeSection === 'followed-events'"
+    :paginated-events="followList.paginatedFollowedEvents.value"
+    :page="followList.followedEventsPage.value"
+    :total-pages="followList.followedEventsTotalPages.value"
+    :page-size="followList.followedEventsPageSize.value"
+    :total-row="followList.followedEventsTotalRow.value"
+    @update:page="followList.updateFollowedEventsPage"
+    @update:page-size="followList.updateFollowedEventsPageSize"
+    @toggle-follow="followList.handleUnfollowEvent"
   />
 
   <ProfileFollowedParticipantsSection
-    v-else-if="profile.activeSection.value === 'followed-participants'"
-    :paginated-participants="profile.followList.paginatedFollowedParticipants.value"
-    :page="profile.followList.followedParticipantsPage.value"
-    :total-pages="profile.followList.followedParticipantsTotalPages.value"
-    :page-size="profile.followList.followedParticipantsPageSize.value"
-    :total-row="profile.followList.followedParticipantsTotalRow.value"
-    @update:page="profile.followList.updateFollowedParticipantsPage"
-    @update:page-size="profile.followList.updateFollowedParticipantsPageSize"
-    @toggle-follow="profile.followList.handleUnfollowParticipant"
+    v-else-if="activeSection === 'followed-participants'"
+    :paginated-participants="followList.paginatedFollowedParticipants.value"
+    :page="followList.followedParticipantsPage.value"
+    :total-pages="followList.followedParticipantsTotalPages.value"
+    :page-size="followList.followedParticipantsPageSize.value"
+    :total-row="followList.followedParticipantsTotalRow.value"
+    @update:page="followList.updateFollowedParticipantsPage"
+    @update:page-size="followList.updateFollowedParticipantsPageSize"
+    @toggle-follow="followList.handleUnfollowParticipant"
   />
+  <!-- eslint-enable vue/no-mutating-props -->
 </template>

@@ -1,4 +1,3 @@
-export * from './useProfilePage'
 export * from './useProfileSection'
 export * from './usePassengerManagement'
 export * from './useOrderList'

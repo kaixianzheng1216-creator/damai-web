@@ -4,14 +4,17 @@ import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
 import type {
   EventParticipantVO,
   EventServiceGuaranteeVO,
+  EventVO,
   ServiceGuaranteeVO,
+  SessionVO,
   TicketTypeVO,
 } from '@/api/event'
-import { TICKET_TYPE_STATUS } from '@/constants'
+import { TICKET_TYPE_STATUS, queryKeys } from '@/constants'
 import { useEventBasicTab } from '../useEventBasicTab'
 import { useEventParticipantsTab } from '../useEventParticipantsTab'
 import { useEventServicesTab } from '../useEventServicesTab'
 import { useInventoryAdjustDialog } from '../useInventoryAdjustDialog'
+import { useSessionsAndTicketsTab } from '../useSessionsAndTicketsTab'
 import { useTicketTypeDialog } from '../useTicketTypeDialog'
 
 const toastMocks = vi.hoisted(() => ({
@@ -22,8 +25,10 @@ const toastMocks = vi.hoisted(() => ({
 const eventApiMocks = vi.hoisted(() => ({
   createEvent: vi.fn(),
   updateEvent: vi.fn(),
+  deleteEvent: vi.fn(),
   adminCreateTicketType: vi.fn(),
-  updateTicketType: vi.fn(),
+  adminUpdateTicketType: vi.fn(),
+  adminDeleteTicketType: vi.fn(),
   adminAdjustTicketTypeInventory: vi.fn(),
   adminBatchAddParticipants: vi.fn(),
   removeParticipant: vi.fn(),
@@ -150,11 +155,35 @@ const createEventService = (): EventServiceGuaranteeVO => ({
   },
 })
 
+const createEventVO = (overrides?: Partial<EventVO>): EventVO => ({
+  id: 'event-1',
+  categoryId: 'category-1',
+  venueId: 'venue-1',
+  cityId: 'city-1',
+  name: '已存在的演出',
+  coverUrl: 'cover.png',
+  recommendWeight: 5,
+  status: 1,
+  seriesId: undefined,
+  ...overrides,
+})
+
+const createSessionVO = (): SessionVO => ({
+  id: 'session-1',
+  eventId: 'event-1',
+  name: '第一场',
+  startAt: '2026-05-01T10:00:00.000Z',
+  endAt: '2026-05-01T12:00:00.000Z',
+  ticketTypes: [],
+})
+
 beforeEach(() => {
   eventApiMocks.createEvent.mockResolvedValue('event-new')
   eventApiMocks.updateEvent.mockResolvedValue(undefined)
+  eventApiMocks.deleteEvent.mockResolvedValue(undefined)
   eventApiMocks.adminCreateTicketType.mockResolvedValue(undefined)
-  eventApiMocks.updateTicketType.mockResolvedValue(undefined)
+  eventApiMocks.adminUpdateTicketType.mockResolvedValue(undefined)
+  eventApiMocks.adminDeleteTicketType.mockResolvedValue(undefined)
   eventApiMocks.adminAdjustTicketTypeInventory.mockResolvedValue(undefined)
   eventApiMocks.adminBatchAddParticipants.mockResolvedValue(undefined)
   eventApiMocks.removeParticipant.mockResolvedValue(undefined)
@@ -353,6 +382,180 @@ describe('event edit flows', () => {
     })
     expect(harness.result.showServiceDialog.value).toBe(false)
     expect(onUpdated).toHaveBeenCalled()
+
+    harness.cleanup()
+  })
+
+  it('updates an existing event from the basic tab form', async () => {
+    const onUpdated = vi.fn()
+    const eventData = createEventVO()
+    const harness = setupComposable(() =>
+      useEventBasicTab({
+        eventId: 'event-1',
+        isEdit: true,
+        eventData,
+        onCreated: vi.fn(),
+        onUpdated,
+      }),
+    )
+
+    // Form should be prepopulated from eventData
+    expect(harness.result.basicForm.name).toBe('已存在的演出')
+    expect(harness.result.basicForm.categoryId).toBe('category-1')
+
+    // Modify fields
+    Object.assign(harness.result.basicForm, {
+      name: '修改后的演出',
+      recommendWeight: 20,
+    })
+
+    await harness.result.save()
+
+    expect(eventApiMocks.updateEvent).toHaveBeenCalledWith('event-1', {
+      categoryId: 'category-1',
+      venueId: 'venue-1',
+      cityId: 'city-1',
+      name: '修改后的演出',
+      coverUrl: 'cover.png',
+      recommendWeight: 20,
+      seriesId: undefined,
+    })
+    expect(onUpdated).toHaveBeenCalled()
+    expect(toastMocks.success).toHaveBeenCalled()
+
+    harness.cleanup()
+  })
+
+  it('prepopulates form fields when eventData is provided in edit mode', async () => {
+    const eventData = createEventVO({
+      name: '预填充演出',
+      categoryId: 'category-2',
+      venueId: 'venue-2',
+      cityId: 'city-2',
+      recommendWeight: 8,
+      seriesId: 'series-1',
+    })
+    const harness = setupComposable(() =>
+      useEventBasicTab({
+        eventId: 'event-2',
+        isEdit: true,
+        eventData,
+        onCreated: vi.fn(),
+        onUpdated: vi.fn(),
+      }),
+    )
+
+    expect(harness.result.basicForm.name).toBe('预填充演出')
+    expect(harness.result.basicForm.categoryId).toBe('category-2')
+    expect(harness.result.basicForm.venueId).toBe('venue-2')
+    expect(harness.result.basicForm.cityId).toBe('city-2')
+    expect(harness.result.basicForm.recommendWeight).toBe(8)
+    expect(harness.result.basicForm.seriesId).toBe('series-1')
+
+    harness.cleanup()
+  })
+
+  it('updates an existing ticket type', async () => {
+    const onSaved = vi.fn()
+    const editingTicketType = createTicketType()
+    const harness = setupComposable(() =>
+      useTicketTypeDialog({
+        eventId: 'event-1',
+        sessionId: null,
+        editingTicketType,
+        onOpenChange: vi.fn(),
+        onSaved,
+      }),
+    )
+
+    // Form should be prepopulated from editingTicketType
+    expect(harness.result.form.name).toBe('看台')
+
+    // Modify fields
+    Object.assign(harness.result.form, {
+      name: 'VIP座',
+      salePrice: 388,
+      orderLimit: 4,
+      accountLimit: 6,
+      saleStartAt: '2026-06-01T10:00',
+      saleEndAt: '2026-06-02T10:00',
+    })
+
+    await harness.result.handleSaveTicketType()
+
+    expect(eventApiMocks.adminUpdateTicketType).toHaveBeenCalledWith('event-1', 'ticket-1', {
+      name: 'VIP座',
+      salePrice: 388,
+      orderLimit: 4,
+      accountLimit: 6,
+      saleStartAt: '2026-06-01T10:00',
+      saleEndAt: '2026-06-02T10:00',
+    })
+    expect(onSaved).toHaveBeenCalled()
+    expect(toastMocks.success).toHaveBeenCalled()
+
+    harness.cleanup()
+  })
+
+  it('deletes a ticket type via the sessions tab', async () => {
+    const onUpdated = vi.fn()
+    const harness = setupComposable(() =>
+      useSessionsAndTicketsTab({
+        eventId: 'event-1',
+        onUpdated,
+      }),
+    )
+
+    const ticketType = createTicketType()
+    harness.result.handleDeleteTicketType(ticketType)
+
+    // Confirm dialog should be open
+    expect(harness.result.confirmDialog.value.open).toBe(true)
+
+    // Trigger confirm
+    await harness.result.handleConfirm()
+
+    expect(eventApiMocks.adminDeleteTicketType).toHaveBeenCalledWith('event-1', 'ticket-1')
+    expect(toastMocks.success).toHaveBeenCalled()
+    expect(harness.result.confirmDialog.value.open).toBe(false)
+    expect(onUpdated).toHaveBeenCalled()
+
+    harness.cleanup()
+  })
+
+  it('opens create ticket type dialog via useSessionsAndTicketsTab', () => {
+    const onUpdated = vi.fn()
+    const harness = setupComposable(() =>
+      useSessionsAndTicketsTab({
+        eventId: 'event-1',
+        onUpdated,
+      }),
+    )
+
+    harness.result.handleCreateTicketType('session-1')
+
+    expect(harness.result.activeSessionId.value).toBe('session-1')
+    expect(harness.result.editingTicketType.value).toBeNull()
+    expect(harness.result.showTicketTypeDialog.value).toBe(true)
+
+    harness.cleanup()
+  })
+
+  it('calls deleteEvent mutation and invalidates cache', async () => {
+    const harness = setupComposable(() => {
+      const queryClient = useQueryClient()
+      const mutation = useMutation({
+        mutationFn: (id: string) => eventApiMocks.deleteEvent(id),
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.admin.list('events') })
+        },
+      })
+      return { mutation }
+    })
+
+    await harness.result.mutation.mutateAsync('event-1')
+
+    expect(eventApiMocks.deleteEvent).toHaveBeenCalledWith('event-1')
 
     harness.cleanup()
   })

@@ -85,7 +85,7 @@ const renderCard = (item: AiChatItem) => {
     <div class="mx-auto w-full max-w-[800px] space-y-4 px-4 py-4">
       <div
         v-for="(msg, index) in messages"
-        :key="index"
+        :key="`${msg.role}-${index}-${(msg.content || '').slice(0, 20)}`"
         class="flex"
         :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
       >

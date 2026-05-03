@@ -4,6 +4,8 @@ import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
 import {
   cancelTicketOrder,
   createPayment,
+  fetchMyOrderById,
+  fetchMyOrderStatus,
   fetchOrderById,
   fetchOrderStatus,
   type PaymentVO,
@@ -28,7 +30,9 @@ vi.mock('vue3-toastify', () => ({
 
 vi.mock('@/api/trade', () => ({
   fetchOrderById: vi.fn(),
+  fetchMyOrderById: vi.fn(),
   fetchOrderStatus: vi.fn(),
+  fetchMyOrderStatus: vi.fn(),
   createPayment: vi.fn(),
   cancelTicketOrder: vi.fn(),
 }))
@@ -103,6 +107,7 @@ function setupCheckout() {
 
   return {
     result,
+    queryClient,
     invalidateSpy,
     cleanup: () => {
       scope?.stop()
@@ -116,7 +121,12 @@ let cleanup: (() => void) | undefined
 beforeEach(() => {
   routerMocks.route.params.id = 'order-1'
   vi.mocked(fetchOrderById).mockResolvedValue(createOrder())
+  vi.mocked(fetchMyOrderById).mockResolvedValue(createOrder())
   vi.mocked(fetchOrderStatus).mockResolvedValue({
+    orderId: 'order-1',
+    status: ORDER_STATUS.PENDING,
+  })
+  vi.mocked(fetchMyOrderStatus).mockResolvedValue({
     orderId: 'order-1',
     status: ORDER_STATUS.PENDING,
   })
@@ -161,5 +171,66 @@ describe('useCheckoutPage', () => {
     expect(harness.invalidateSpy.mock.calls.map(([arg]) => arg.queryKey?.[0])).toEqual(
       expect.arrayContaining(['order-status', 'ticket-order']),
     )
+  })
+
+  it('redirects to orders when order status becomes PAID', async () => {
+    const harness = setupCheckout()
+    cleanup = harness.cleanup
+
+    await flushPromises()
+
+    harness.queryClient.setQueryData(['order-status', 'order-1'], {
+      orderId: 'order-1',
+      status: ORDER_STATUS.PAID,
+    })
+    await nextTick()
+
+    expect(routerMocks.push).toHaveBeenCalledWith({
+      path: '/profile',
+      query: { section: 'orders' },
+    })
+    expect(harness.result.showQrCodeDialog.value).toBe(false)
+  })
+
+  it('rejects createPayment when order is not pending', async () => {
+    const harness = setupCheckout()
+    cleanup = harness.cleanup
+
+    await flushPromises()
+
+    harness.queryClient.setQueryData(['order-status', 'order-1'], {
+      orderId: 'order-1',
+      status: ORDER_STATUS.CANCELLED,
+    })
+    await nextTick()
+
+    await expect(harness.result.createPaymentMutation.mutateAsync()).rejects.toThrow(
+      'Order is not pending',
+    )
+  })
+
+  it('shows error toast when payment creation fails', async () => {
+    const { toast } = await import('vue3-toastify')
+    vi.mocked(createPayment).mockRejectedValue(new Error('API error'))
+
+    const harness = setupCheckout()
+    cleanup = harness.cleanup
+
+    await flushPromises()
+
+    await expect(harness.result.createPaymentMutation.mutateAsync()).rejects.toThrow('API error')
+
+    expect(toast.error).toHaveBeenCalled()
+  })
+
+  it('goDetail navigates to event detail page', async () => {
+    const harness = setupCheckout()
+    cleanup = harness.cleanup
+
+    await flushPromises()
+
+    harness.result.goDetail()
+
+    expect(routerMocks.push).toHaveBeenCalledWith('/detail/event-1')
   })
 })

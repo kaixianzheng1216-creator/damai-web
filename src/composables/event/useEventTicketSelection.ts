@@ -65,66 +65,46 @@ export const useEventTicketSelection = ({ detail, passengers }: UseEventTicketSe
   const currentNotices = computed(() => getCurrentNotices(detail.value, activeTab.value))
   const seriesEvents = computed<SeriesEventVO[]>(() => detail.value?.seriesEvents ?? [])
 
+  // Unified state reducer replaces 5 interdependent watchers.
+  // Watches all source refs in a single callback so writes are ordered
+  // and consumed atomically. selectedPassengerIds is intentionally absent
+  // from the source list so that user changes via updatePassengerForSlot
+  // are preserved.
   watch(
-    detail,
-    (nextDetail) => {
-      if (!nextDetail) {
-        return
+    [detail, availableTicketTypes, passengers, ticketQuantity, selectedTicketTypeLimit],
+    ([newDetail], [oldDetail]) => {
+      if (!newDetail) return
+
+      // 1) detail change → reset session and quantity
+      if (newDetail !== oldDetail) {
+        selectedSessionId.value = resolveInitialSessionId(newDetail)
+        ticketQuantity.value = 1
       }
 
-      ticketQuantity.value = 1
-      selectedSessionId.value = resolveInitialSessionId(nextDetail)
-    },
-    { immediate: true },
-  )
-
-  watch(
-    availableTicketTypes,
-    (ticketTypes) => {
+      // 2) availableTicketTypes change → resolve ticket type
+      // Read fresh ticketTypes from the (possibly just-updated) session
       selectedTicketTypeId.value = resolveSelectedTicketTypeId(
-        ticketTypes,
+        selectedSession.value?.ticketTypes ?? [],
         selectedTicketTypeId.value,
       )
-    },
-    { immediate: true },
-  )
 
-  watch(
-    passengers,
-    (passengerList) => {
-      if (!passengerList.length) {
-        selectedPassengerIds.value = []
-        return
+      // 3) selectedTicketTypeLimit change → clamp ticket quantity
+      if (ticketQuantity.value > selectedTicketTypeLimit.value) {
+        ticketQuantity.value = selectedTicketTypeLimit.value
       }
 
-      const passengerIds = passengerList.map((item) => item.id)
-      const filtered = selectedPassengerIds.value.filter((id) => passengerIds.includes(id))
-      selectedPassengerIds.value = buildPassengerSelection(
-        filtered,
-        passengerList,
-        ticketQuantity.value,
-      )
-    },
-    { immediate: true },
-  )
-
-  watch(
-    ticketQuantity,
-    (value) => {
-      selectedPassengerIds.value = buildPassengerSelection(
-        selectedPassengerIds.value,
-        passengers.value,
-        value,
-      )
-    },
-    { immediate: true },
-  )
-
-  watch(
-    selectedTicketTypeLimit,
-    (limit) => {
-      if (ticketQuantity.value > limit) {
-        ticketQuantity.value = limit
+      // 4 & 5) passengers / ticketQuantity change → rebuild passenger selection
+      // Filters stale passenger IDs first, then fills to required quantity
+      if (!passengers.value.length) {
+        selectedPassengerIds.value = []
+      } else {
+        const passengerIds = passengers.value.map((item) => item.id)
+        const filtered = selectedPassengerIds.value.filter((id) => passengerIds.includes(id))
+        selectedPassengerIds.value = buildPassengerSelection(
+          filtered,
+          passengers.value,
+          ticketQuantity.value,
+        )
       }
     },
     { immediate: true },

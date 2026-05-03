@@ -25,7 +25,7 @@ const DialogStub = defineComponent({
   },
   emits: ['update:open'],
   template: `
-    <section v-if="open">
+    <section v-show="open">
       <button type="button" aria-label="关闭弹窗" @click="$emit('update:open', false)">关闭</button>
       <slot />
     </section>

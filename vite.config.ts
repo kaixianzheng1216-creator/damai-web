@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
         'vue-router',
         'pinia',
         '@vueuse/core',
-        { '@tanstack/vue-query': ['useQuery', 'useMutation', 'useQueryClient'] },
+        { '@tanstack/vue-query': ['useQuery', 'useMutation', 'useQueryClient', 'useQueries'] },
         { zod: ['z'], clsx: ['clsx'], 'tailwind-merge': ['twMerge'] },
       ],
       dirs: ['src/utils', 'src/composables'],

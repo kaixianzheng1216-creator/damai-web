@@ -112,7 +112,7 @@ export function useAdminCrud<
   }
 
   const createMutation = useMutation({
-    mutationFn: createItem,
+    mutationFn: (data: TCreateRequest) => createItem(data),
     onSuccess: () => {
       invalidate()
       showDialog.value = false
@@ -128,7 +128,7 @@ export function useAdminCrud<
   })
 
   const deleteMutation = useMutation({
-    mutationFn: deleteItem,
+    mutationFn: (id: AdminCrudId) => deleteItem(id),
     onSuccess: invalidate,
   })
 
@@ -188,6 +188,7 @@ export function useAdminCrud<
     invalidate,
     openCreate,
     openEdit,
+    openConfirm,
     closeConfirm,
     handleConfirm,
     handleSubmit,

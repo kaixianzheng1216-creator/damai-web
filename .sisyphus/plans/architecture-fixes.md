@@ -689,7 +689,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 11. **Remove useProfilePage pass-through, wire view directly**
+- [x] 11. **Remove useProfilePage pass-through, wire view directly**
 
   **What to do**:
   - Read `ProfileView.vue` and identify all properties consumed from `useProfilePage()`
@@ -760,7 +760,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 12. **Migrate Banner/Service CRUD to useAdminCrud**
+- [x] 12. **Migrate Banner/Service CRUD to useAdminCrud**
 
   **What to do**:
   - Refactor `useBannerListPage.ts` to use `useAdminCrud` instead of manual `useBannerList` + `useBannerDialog`
@@ -818,7 +818,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 13. **Migrate useHomePage manual fetch → useQueries**
+- [x] 13. **Migrate useHomePage manual fetch → useQueries**
 
   **What to do**:
   - Write characterization tests for CURRENT `useHomePage.ts` behavior FIRST
@@ -886,7 +886,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 14. **Refactor useEventTicketSelection watchers → state reducer**
+- [x] 14. **Refactor useEventTicketSelection watchers → state reducer**
 
   **What to do**:
   - Write characterization tests for CURRENT 5-watcher behavior FIRST
@@ -945,7 +945,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 15. **Fix AIChatMessageList :key="index" → stable key**
+- [x] 15. **Fix AIChatMessageList :key="index" → stable key**
 
   **What to do**:
   - In `AIChatMessageList.vue`, change `:key="index"` to a stable composite key
@@ -1000,7 +1000,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 16. **Add edge cases to useCheckoutPage test**
+- [x] 16. **Add edge cases to useCheckoutPage test**
 
   **What to do**:
   - Augment `src/composables/trade/__tests__/useCheckoutPage.test.ts`
@@ -1034,7 +1034,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 17. **Add edge cases to useLoginPage test**
+- [x] 17. **Add edge cases to useLoginPage test**
 
   **What to do**:
   - Augment `src/composables/auth/__tests__/useLoginPage.test.ts`
@@ -1067,7 +1067,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 18. **Add update/delete flows to eventEditFlows test**
+- [x] 18. **Add update/delete flows to eventEditFlows test**
 
   **What to do**:
   - Augment `src/composables/admin/event-edit/__tests__/eventEditFlows.test.ts`
@@ -1100,7 +1100,7 @@ Max Concurrent: 10 (Wave 1)
 
 ---
 
-- [ ] 19. **Fix componentSmoke DialogStub v-if → :open**
+- [x] 19. **Fix componentSmoke DialogStub v-if → :open**
 
   **What to do**:
   - In `src/components/__tests__/componentSmoke.test.ts`, fix the DialogStub to use `:open` prop instead of `v-if`

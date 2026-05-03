@@ -75,6 +75,7 @@ afterEach(() => {
   cleanup?.()
   cleanup = undefined
   vi.clearAllMocks()
+  vi.useRealTimers()
   routerMocks.currentRoute.value.query = { redirect: '/profile' }
 })
 
@@ -115,5 +116,117 @@ describe('useLoginPage', () => {
     })
     expect(harness.saveSession).toHaveBeenCalledWith(response)
     expect(routerMocks.push).toHaveBeenCalledWith('/profile')
+  })
+
+  it('displays error when login fails (invalid code / server error)', async () => {
+    vi.mocked(login).mockRejectedValue(new Error('Invalid code'))
+    const harness = setupLoginPage()
+    cleanup = harness.cleanup
+
+    harness.result.form.mobile = '13800138000'
+    harness.result.form.code = '000000'
+
+    await harness.result.handleLogin()
+
+    expect(harness.result.errorMsg.value).toBe(AUTH_COPY.loginFailed)
+    expect(harness.saveSession).not.toHaveBeenCalled()
+    expect(routerMocks.push).not.toHaveBeenCalled()
+  })
+
+  it('resets isLoading to false after login failure', async () => {
+    vi.mocked(login).mockRejectedValue(new Error('500 Internal Server Error'))
+    const harness = setupLoginPage()
+    cleanup = harness.cleanup
+
+    harness.result.form.mobile = '13800138000'
+    harness.result.form.code = '123456'
+
+    await harness.result.handleLogin()
+
+    expect(harness.result.errorMsg.value).toBe(AUTH_COPY.loginFailed)
+    expect(harness.result.isLoading.value).toBe(false)
+  })
+
+  it('displays error when send-code fails and allows retry', async () => {
+    vi.mocked(sendVerifyCode).mockRejectedValue(new Error('Network error'))
+    const harness = setupLoginPage()
+    cleanup = harness.cleanup
+
+    harness.result.form.mobile = '13800138000'
+    await harness.result.handleSendCode()
+
+    expect(harness.result.errorMsg.value).toBe(AUTH_COPY.sendCodeFailed)
+    expect(harness.result.isSendingCode.value).toBe(false)
+
+    // User can retry — mock success this time
+    vi.mocked(sendVerifyCode).mockResolvedValue(undefined)
+    harness.result.errorMsg.value = ''
+    await harness.result.handleSendCode()
+
+    expect(sendVerifyCode).toHaveBeenCalledTimes(2)
+    expect(harness.result.errorMsg.value).toBe('')
+  })
+
+  it('sets isLoading true during login and false after completion', async () => {
+    let resolveLogin!: (value: LoginResponse) => void
+    const loginPromise = new Promise<LoginResponse>((resolve) => {
+      resolveLogin = resolve
+    })
+    vi.mocked(login).mockReturnValue(loginPromise)
+
+    const harness = setupLoginPage()
+    cleanup = harness.cleanup
+
+    harness.result.form.mobile = '13800138000'
+    harness.result.form.code = '123456'
+
+    const loginCall = harness.result.handleLogin()
+
+    // isLoading should be true while login is pending
+    expect(harness.result.isLoading.value).toBe(true)
+
+    // Resolve the login
+    resolveLogin(createLoginResponse())
+    await loginCall
+
+    expect(harness.result.isLoading.value).toBe(false)
+  })
+
+  it('runs countdown after send-code and blocks resend until 0', async () => {
+    vi.useFakeTimers()
+
+    vi.mocked(sendVerifyCode).mockResolvedValue(undefined)
+
+    const harness = setupLoginPage()
+    cleanup = harness.cleanup
+
+    harness.result.form.mobile = '13800138000'
+    await harness.result.handleSendCode()
+
+    expect(harness.result.isCountdownRunning.value).toBe(true)
+    expect(sendVerifyCode).toHaveBeenCalledTimes(1)
+
+    // Resend blocked while countdown active
+    await harness.result.handleSendCode()
+    expect(sendVerifyCode).toHaveBeenCalledTimes(1)
+
+    // Advance time: countdown goes from 60 to 30
+    vi.advanceTimersByTime(30_000)
+    expect(harness.result.countdownText.value).toContain('30')
+    expect(harness.result.isCountdownRunning.value).toBe(true)
+
+    // Still blocked mid-countdown
+    await harness.result.handleSendCode()
+    expect(sendVerifyCode).toHaveBeenCalledTimes(1)
+
+    // Advance past countdown end (remaining ~30 seconds)
+    vi.advanceTimersByTime(31_000)
+
+    expect(harness.result.isCountdownRunning.value).toBe(false)
+    expect(harness.result.countdownText.value).toBe(AUTH_COPY.sendCode)
+
+    // Resend now works
+    await harness.result.handleSendCode()
+    expect(sendVerifyCode).toHaveBeenCalledTimes(2)
   })
 })

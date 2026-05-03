@@ -2,14 +2,21 @@
 import { computed } from 'vue'
 import ProfileMobileBottomNav from './ProfileMobileBottomNav.vue'
 import ProfileSidebar from './ProfileSidebar.vue'
-import { useProfilePageContext } from './profilePageContext'
+import type { ProfileSectionKey, ProfileSectionOption } from '@/constants'
 
-const profile = useProfilePageContext()
+const props = defineProps<{
+  activeSection: ProfileSectionKey
+  tradeSections: ProfileSectionOption[]
+  accountSections: ProfileSectionOption[]
+  currentTitle: string
+  activeSectionLoading: boolean
+}>()
 
-const allSections = computed(() => [
-  ...profile.tradeSections.value,
-  ...profile.accountSections.value,
-])
+defineEmits<{
+  (e: 'open-section', section: ProfileSectionKey): void
+}>()
+
+const allSections = computed(() => [...props.tradeSections, ...props.accountSections])
 </script>
 
 <template>
@@ -18,26 +25,23 @@ const allSections = computed(() => [
       <div class="grid items-start gap-4 lg:grid-cols-[240px_1fr] lg:gap-6">
         <ProfileSidebar
           class="hidden lg:block"
-          :active-section="profile.activeSection.value"
-          :trade-sections="profile.tradeSections.value"
-          :account-sections="profile.accountSections.value"
-          @open-section="profile.openSection"
+          :active-section="activeSection"
+          :trade-sections="tradeSections"
+          :account-sections="accountSections"
+          @open-section="$emit('open-section', $event)"
         />
 
         <div class="space-y-4">
           <ProfileMobileBottomNav
-            :active-section="profile.activeSection.value"
+            :active-section="activeSection"
             :all-sections="allSections"
-            @open-section="profile.openSection"
+            @open-section="$emit('open-section', $event)"
           />
 
           <section
             class="rounded-2xl border border-border bg-background p-4 shadow-sm md:p-5 lg:p-6"
           >
-            <div
-              v-if="profile.activeSectionLoading.value"
-              class="flex min-h-[320px] items-center justify-center"
-            >
+            <div v-if="activeSectionLoading" class="flex min-h-[320px] items-center justify-center">
               <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
             </div>
 
@@ -46,7 +50,7 @@ const allSections = computed(() => [
                 class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4 md:mb-5"
               >
                 <h1 class="text-lg font-semibold text-foreground md:text-xl">
-                  {{ profile.currentTitle.value }}
+                  {{ currentTitle }}
                 </h1>
               </div>
 

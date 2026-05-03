@@ -1,14 +1,8 @@
-import { computed, watch, ref } from 'vue'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { computed, watch } from 'vue'
+import { useQuery, useQueries, useQueryClient } from '@tanstack/vue-query'
 import { fetchBannerList, fetchCategoryList, fetchEventPage, fetchCityList } from '@/api/event'
 import { convertCategoryVOToHomeItem, convertEventVOToCardItem } from '@/utils/mappers'
-import type {
-  HomeBannerItem,
-  HomeCategoryItem,
-  HomeEventCardItem,
-  PageResponseEventVO,
-  CityVO,
-} from '@/api/event'
+import type { HomeBannerItem, HomeCategoryItem, HomeEventCardItem, CityVO } from '@/api/event'
 import { HOME_CONFIG, COMMON_CONFIG, queryKeys } from '@/constants'
 
 interface HomeSectionViewModel {
@@ -16,12 +10,6 @@ interface HomeSectionViewModel {
   title: string
   linkUrl: string
   events: HomeEventCardItem[]
-}
-
-interface EventQueryResult {
-  data: PageResponseEventVO | undefined
-  isLoading: boolean
-  isError: boolean
 }
 
 export const useHomePage = () => {
@@ -63,61 +51,30 @@ export const useHomePage = () => {
     return cityIdMap.value.get(selectedCity.value)
   })
 
-  const eventQueryResults = ref<Map<string, EventQueryResult>>(new Map())
-  const eventQueriesLoading = ref<Set<string>>(new Set())
+  const categoriesData = computed(() => categoriesQuery.data.value ?? [])
 
-  const fetchCategoryEvents = async (categoryId: string) => {
-    if (eventQueriesLoading.value.has(categoryId)) {
-      return
-    }
-
-    eventQueriesLoading.value.add(categoryId)
-
-    try {
-      const data = await fetchEventPage({
-        page: 1,
-        size: HOME_CONFIG.EVENT_PAGE_SIZE,
-        categoryId,
-        cityId: selectedCityId.value,
-        sortField: 'recommendWeight',
-        sortOrder: 'desc',
-      })
-
-      eventQueryResults.value.set(categoryId, {
-        data,
-        isLoading: false,
-        isError: false,
-      })
-    } catch (err) {
-      console.error('Failed to fetch events for category:', categoryId, err)
-      eventQueryResults.value.set(categoryId, {
-        data: undefined,
-        isLoading: false,
-        isError: true,
-      })
-    } finally {
-      eventQueriesLoading.value.delete(categoryId)
-    }
-  }
-
-  watch(
-    [topCategories, citiesQuery.data],
-    ([newTopCategories]) => {
-      if (!newTopCategories || !citiesQuery.data.value) {
-        return
-      }
-      newTopCategories.forEach((category) => {
-        if (!eventQueryResults.value.has(category.id)) {
-          fetchCategoryEvents(category.id)
-        }
-      })
-    },
-    { immediate: true },
-  )
+  const categoryEventQueries = useQueries({
+    queries: computed(() =>
+      categoriesData.value.map((cat) => ({
+        queryKey: queryKeys.home.categoryEvents(cat.id, cat.name, selectedCityId.value),
+        queryFn: () =>
+          fetchEventPage({
+            page: 1,
+            size: HOME_CONFIG.EVENT_PAGE_SIZE,
+            categoryId: cat.id,
+            cityId: selectedCityId.value,
+            sortField: 'recommendWeight',
+            sortOrder: 'desc',
+          }),
+        staleTime: 5 * 60 * 1000,
+      })),
+    ),
+  })
 
   const eventSections = computed<HomeSectionViewModel[]>(() => {
     return topCategories.value.map((category) => {
-      const queryResult = eventQueryResults.value.get(category.id)
+      const idx = categoriesData.value.findIndex((cat) => cat.id === category.id)
+      const queryResult = idx >= 0 ? categoryEventQueries.value[idx] : undefined
       const events = (queryResult?.data?.records ?? []).map(convertEventVOToCardItem)
 
       return {
@@ -133,23 +90,18 @@ export const useHomePage = () => {
     () =>
       bannersQuery.isLoading.value ||
       categoriesQuery.isLoading.value ||
-      eventQueriesLoading.value.size > 0 ||
-      Array.from(eventQueryResults.value.values()).some((r) => r.isLoading),
+      categoryEventQueries.value.some((q) => q.isLoading),
   )
 
   const isError = computed(
     () =>
       bannersQuery.isError.value ||
       categoriesQuery.isError.value ||
-      Array.from(eventQueryResults.value.values()).some((r) => r.isError),
+      categoryEventQueries.value.some((q) => q.isError),
   )
 
   watch(selectedCity, async () => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.home.banners() })
-    eventQueryResults.value.clear()
-    topCategories.value.forEach((category) => {
-      fetchCategoryEvents(category.id)
-    })
   })
 
   return {

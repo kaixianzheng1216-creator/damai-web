@@ -271,6 +271,7 @@ declare global {
   const usePreferredReducedMotion: typeof import('@vueuse/core').usePreferredReducedMotion
   const usePreferredReducedTransparency: typeof import('@vueuse/core').usePreferredReducedTransparency
   const usePrevious: typeof import('@vueuse/core').usePrevious
+  const useQueries: typeof import('@tanstack/vue-query').useQueries
   const useQuery: typeof import('@tanstack/vue-query').useQuery
   const useQueryClient: typeof import('@tanstack/vue-query').useQueryClient
   const useRafFn: typeof import('@vueuse/core').useRafFn
@@ -626,6 +627,7 @@ declare module 'vue' {
     readonly usePreferredReducedMotion: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedMotion']>
     readonly usePreferredReducedTransparency: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedTransparency']>
     readonly usePrevious: UnwrapRef<typeof import('@vueuse/core')['usePrevious']>
+    readonly useQueries: UnwrapRef<typeof import('@tanstack/vue-query')['useQueries']>
     readonly useQuery: UnwrapRef<typeof import('@tanstack/vue-query')['useQuery']>
     readonly useQueryClient: UnwrapRef<typeof import('@tanstack/vue-query')['useQueryClient']>
     readonly useRafFn: UnwrapRef<typeof import('@vueuse/core')['useRafFn']>

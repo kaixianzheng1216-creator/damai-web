@@ -53,5 +53,7 @@ export const queryKeys = {
     banners: () => key('banners'),
     categories: () => key('categories'),
     cities: () => key('cities'),
+    categoryEvents: (categoryId: string, categoryName: string, cityId?: string) =>
+      key('home-category-events', categoryId, categoryName, cityId),
   },
 } as const
