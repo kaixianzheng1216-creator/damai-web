@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { createCityColumns } from '@/components/admin/listPageColumns'
+import { createCityColumns } from '@/components/admin/columns/cityColumns'
 import { Input } from '@/components/common/ui/input'
 import { useCityListPage } from '@/composables/admin'
 

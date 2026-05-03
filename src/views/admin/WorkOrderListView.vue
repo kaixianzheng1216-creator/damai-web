@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
-import { createWorkOrderColumns } from '@/components/admin/listPageColumns'
+import { createWorkOrderColumns } from '@/components/admin/columns/workOrderColumns'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import {
   Select,

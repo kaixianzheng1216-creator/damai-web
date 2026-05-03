@@ -4,7 +4,7 @@ import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import {
   createServiceColumns,
   createServiceOptionColumns,
-} from '@/components/admin/listPageColumns'
+} from '@/components/admin/columns/serviceColumns'
 import { Checkbox } from '@/components/common/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'

@@ -4,7 +4,7 @@ import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import {
   createCategoryChildColumns,
   createCategoryColumns,
-} from '@/components/admin/listPageColumns'
+} from '@/components/admin/columns/categoryColumns'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
 import { useCategoryListPage } from '@/composables/admin'

@@ -88,8 +88,11 @@ export function useAIChat(options: MaybeRefOrGetter<UseAIChatOptions> = {}) {
   }
 
   const lastSuggestions = computed(() => {
-    const lastAi = [...messages.value].reverse().find((m) => m.role === 'ai')
-    return lastAi?.suggestions ?? []
+    const msgs = messages.value
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      if (msgs[i]!.role === 'ai') return msgs[i]!.suggestions ?? []
+    }
+    return []
   })
 
   return {

@@ -1,4 +1,7 @@
 import dayjs from 'dayjs'
+// dayjs/locale/zh-cn 是全局副作用导入（~4KB），注册后所有 dayjs 实例均可通过 .locale('zh-cn') 使用中文。
+// formatDateTimeWithWeekday 依赖它生成中文星期缩写（周一/周二等）。
+// 本项目为中文票务平台，全局注册比逐实例传 locale 更简单，是可接受的取舍。
 import 'dayjs/locale/zh-cn'
 
 export const formatPrice = (price: number): string => {

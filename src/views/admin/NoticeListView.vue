@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { createNoticeColumns } from '@/components/admin/listPageColumns'
+import { createNoticeColumns } from '@/components/admin/columns/noticeColumns'
 import { Input } from '@/components/common/ui/input'
 import {
   Select,

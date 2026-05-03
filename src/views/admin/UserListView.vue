@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { createUserColumns } from '@/components/admin/listPageColumns'
+import { createUserColumns } from '@/components/admin/columns/userColumns'
 import { Input } from '@/components/common/ui/input'
 import { useAdminUserListPage } from '@/composables/admin/list-pages'
 

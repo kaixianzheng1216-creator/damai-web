@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { createAdminColumns } from '@/components/admin/listPageColumns'
+import { createAdminColumns } from '@/components/admin/columns/adminColumns'
 import { Input } from '@/components/common/ui/input'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { useAdminListPage } from '@/composables/admin/list-pages'

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { createBannerColumns } from '@/components/admin/listPageColumns'
+import { createBannerColumns } from '@/components/admin/columns/bannerColumns'
 import DateTimePicker from '@/components/common/DateTimePicker.vue'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { Input } from '@/components/common/ui/input'

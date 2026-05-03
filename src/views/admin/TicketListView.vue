@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { createTicketColumns } from '@/components/admin/listPageColumns'
+import { createTicketColumns } from '@/components/admin/columns/ticketColumns'
 import { Button } from '@/components/common/ui/button'
 import {
   Select,

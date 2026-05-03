@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createEventColumns } from '@/components/admin/listPageColumns'
+import { createEventColumns } from '@/components/admin/columns/eventColumns'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { Input } from '@/components/common/ui/input'
 import {

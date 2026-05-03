@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { createSeriesColumns } from '@/components/admin/listPageColumns'
+import { createSeriesColumns } from '@/components/admin/columns/seriesColumns'
 import { Input } from '@/components/common/ui/input'
 import { useSeriesListPage } from '@/composables/admin'
 
