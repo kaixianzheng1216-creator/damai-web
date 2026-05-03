@@ -18,6 +18,7 @@
 - **数据获取**: Axios + TanStack Vue Query v5
 - **验证**: Zod
 - **代码规范**: ESLint + Oxlint + Prettier
+- **Node 版本**: `^20.0.0 || >=22.0.0`
 
 ## 常用命令
 
@@ -70,7 +71,7 @@ src/
 - **认证头按路径注入**：`/front/*` → `Authorization-User`，`/admin/*` → `Authorization-Admin`，由拦截器自动处理。
 - **响应归一化**：`requestTransforms.ts` 递归处理响应字段——所有 `id` / `*Id` 转为 `string`，`datetime-local` 转为 ISO 8601，分页数字字段转为 `number`。
 - **文件上传**：使用 `uploadFormData(url, file)`，内部构造 `FormData`。
-- **API 函数命名**：遵循 `docs/api-naming.md` 规范——`fetchXxxPage`、`fetchXxxById`、`createXxx`、`updateXxx`、`deleteXxx`、`publishXxx`、`offlineXxx`。后台接口加 `Admin` 前缀（如 `fetchAdminEventPage`），当前用户视角使用 `My` 前缀（如 `fetchMyOrderPage`）。
+- **API 函数命名**：遵循 `fetchXxxPage`、`fetchXxxById`、`createXxx`、`updateXxx`、`deleteXxx`、`publishXxx`、`offlineXxx`。后台接口加 `Admin` 前缀（如 `fetchAdminEventPage`），当前用户视角使用 `My` 前缀（如 `fetchMyOrderPage`）。
 - **错误处理**：业务层可捕获 `ApiRequestError`（含 `code`、`response`、`status`）做精细处理。全局错误由 `request.ts` 兜底。
 
 ### 2. 实体 ID 策略（硬性约束）
@@ -79,7 +80,7 @@ src/
 
 - 后端已把 Long ID 序列化为 string。
 - 禁止在任何业务代码中把 ID 转回 number：`Number(id)`、`parseInt(id)`、`+id` 均会导致 CI 失败。
-- `scripts/audit-id-strategy.mjs` 在 `npm run ci` 时扫描 `src/views/` 和 `src/composables/` 中的违规用法。
+- `scripts/audit-id-strategy.mjs` 在 `npm run ci` 时扫描 `src/views/` 和 `src/composables/` 中的违规用法（**注意：不扫描 `src/api/` 和 `src/components/`**）。
 
 ### 3. Query Key 管理 (`src/constants/queryKeys.ts`)
 
@@ -104,8 +105,6 @@ src/
 **页面保持轻量**：视图层只负责读取一个 page composable，组合 feature components，处理 loading/error/success 三态。业务逻辑、表单状态、缓存失效、弹窗状态放在 composable 中。
 
 ### 5. Dialog 弹窗规范（硬性约束）
-
-详见 `docs/ui-guidelines.md`。核心规则：
 
 - **禁止在 Dialog 组件上使用 `v-if`**：ESLint 自定义规则 `dialog-no-vif-with-open` 强制检查。`v-if` 会跳过退出动画和副作用清理（scroll lock、focus trap），导致页面卡死。
 - **必须使用 `:open` prop 控制显示**，配合 `@update:open` 事件。
@@ -152,7 +151,7 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 
 ### 9. 自动导入配置
 
-`vite.config.ts` 中配置了 `unplugin-auto-import` 和 `unplugin-vue-components`。详见 `docs/auto-imports.md`。
+`vite.config.ts` 中配置了 `unplugin-auto-import` 和 `unplugin-vue-components`。
 
 **无需手动 import 的 API**：
 
@@ -199,7 +198,8 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 
 ### 13. OpenAPI 契约检查
 
-- `scripts/openapi-contract-report.mjs` 在 CI 中检查：所有前端 `request.get/post/put/patch/del()` 调用必须在 `docs/` 下的 OpenAPI JSON 文档中有对应定义。
+- `scripts/openapi-contract-report.mjs` 在 CI 中检查：所有前端 `request.get/post/put/patch/del()` 调用必须在 `docs/openapi/` 下的 OpenAPI JSON 文档中有对应定义。
+- 脚本通过硬编码的 `PREFIX_MAP` 将 `/api/account` 等前缀映射到对应的 OpenAPI 文件。新增 API 域名时需要同步更新该脚本，否则契约检查会跳过新域名的校验。
 - 如果新增 API 调用但未同步 OpenAPI 文档，CI 会失败。
 
 ### 14. 环境变量
@@ -207,6 +207,11 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 - `VITE_API_BASE_URL`：API 基础路径（用于 Vite 代理）。
 - `VITE_API_TARGET_URL`：代理转发目标地址（开发时指向后端服务）。
 - 本地开发覆写使用 `.env.local`（未入库）。
+
+### 15. CI 与平台
+
+- GitHub Actions 在 `windows-latest` 上运行，Node 版本 22。
+- CI 仅触发于 `main` / `master` 分支的 push 以及所有 pull_request。
 
 ## 代码风格速查
 
@@ -225,10 +230,5 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 
 ## 参考文档
 
-- `docs/architecture.md`：更详细的架构分层、API 边界、认证与路由说明。
-- `docs/ui-guidelines.md`：Dialog 使用规范（打开/关闭/确认/提交模式）。
-- `docs/api-naming.md`：API 函数命名规范（fetchXxxPage、Admin 前缀、My 前缀等）。
-- `docs/auto-imports.md`：完整的自动导入/注册清单与仍需手动 import 的项目。
-- `docs/refactor-checklist.md`：阶段性重构检查项。
-- `docs/openapi-workflow.md`：接口文档同步流程。
 - `README.md`：项目简介与基础命令。
+- `docs/openapi/`：OpenAPI JSON 接口契约文档（用于 CI 契约检查）。
