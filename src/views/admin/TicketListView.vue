@@ -3,7 +3,6 @@ import { defineAsyncComponent } from 'vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createTicketColumns } from '@/components/admin/listPageColumns'
 import { Button } from '@/components/common/ui/button'
-import { Input } from '@/components/common/ui/input'
 import {
   Select,
   SelectContent,
@@ -20,10 +19,6 @@ const ScanCheckinDialog = defineAsyncComponent(
 const {
   currentPage,
   pageSize,
-  searchUserId,
-  searchOrderId,
-  searchEventId,
-  searchSessionId,
   searchStatus,
   showScanDialog,
   isLoading,
@@ -68,34 +63,6 @@ const columns = createTicketColumns()
             </SelectItem>
           </SelectContent>
         </Select>
-        <Input
-          v-model="searchUserId"
-          placeholder="用户 ID"
-          class="h-8 w-28"
-          aria-label="按用户 ID 搜索电子票"
-          @input="handleSearch"
-        />
-        <Input
-          v-model="searchOrderId"
-          placeholder="订单 ID"
-          class="h-8 w-28"
-          aria-label="按订单 ID 搜索电子票"
-          @input="handleSearch"
-        />
-        <Input
-          v-model="searchEventId"
-          placeholder="活动 ID"
-          class="h-8 w-28"
-          aria-label="按活动 ID 搜索电子票"
-          @input="handleSearch"
-        />
-        <Input
-          v-model="searchSessionId"
-          placeholder="场次 ID"
-          class="h-8 w-28"
-          aria-label="按场次 ID 搜索电子票"
-          @input="handleSearch"
-        />
       </div>
     </template>
   </DataTableCrud>

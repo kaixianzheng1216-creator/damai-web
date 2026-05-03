@@ -3,7 +3,6 @@ import { defineAsyncComponent } from 'vue'
 import { createWorkOrderColumns } from '@/components/admin/listPageColumns'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
-import { Input } from '@/components/common/ui/input'
 import {
   Select,
   SelectContent,
@@ -20,7 +19,6 @@ const WorkOrderDetailDialog = defineAsyncComponent(
 const {
   currentPage,
   pageSize,
-  searchUserId,
   searchStatus,
   selectedWorkOrderId,
   replyContent,
@@ -73,12 +71,6 @@ const columns = createWorkOrderColumns({ openDetail, requestClose })
             </SelectItem>
           </SelectContent>
         </Select>
-        <Input
-          v-model="searchUserId"
-          placeholder="用户 ID"
-          class="h-8 w-28"
-          aria-label="搜索用户 ID"
-        />
       </div>
     </template>
   </DataTableCrud>

@@ -2,7 +2,6 @@
 import { defineAsyncComponent } from 'vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createOrderColumns } from '@/components/admin/listPageColumns'
-import { Input } from '@/components/common/ui/input'
 import {
   Select,
   SelectContent,
@@ -19,10 +18,10 @@ const OrderDetailDialog = defineAsyncComponent(
 const {
   currentPage,
   pageSize,
-  searchUserId,
   searchStatus,
   showDetailDialog,
   selectedOrder,
+  isDetailLoading,
   statusOptions,
   isLoading,
   list,
@@ -33,7 +32,7 @@ const {
   closeDetail,
 } = useOrderListPage()
 
-const columns = createOrderColumns({ openDetail })
+const columns = createOrderColumns()
 </script>
 
 <template>
@@ -49,6 +48,7 @@ const columns = createOrderColumns({ openDetail })
     :show-create-button="false"
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"
+    @row-click="openDetail"
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
@@ -62,13 +62,6 @@ const columns = createOrderColumns({ openDetail })
             </SelectItem>
           </SelectContent>
         </Select>
-        <Input
-          v-model="searchUserId"
-          placeholder="用户 ID"
-          class="h-8 w-40"
-          aria-label="按用户 ID 搜索订单"
-          @input="handleSearch"
-        />
       </div>
     </template>
   </DataTableCrud>
@@ -76,6 +69,7 @@ const columns = createOrderColumns({ openDetail })
   <OrderDetailDialog
     :order="selectedOrder"
     :open="showDetailDialog"
+    :loading="isDetailLoading"
     @update:open="!$event && closeDetail()"
     @close="closeDetail"
   />

@@ -18,7 +18,6 @@ export const ADMIN_WORK_ORDER_STATUS_OPTIONS = [
 export function useAdminWorkOrderListPage(): {
   currentPage: Ref<number>
   pageSize: Ref<number>
-  searchUserId: Ref<string>
   searchStatus: Ref<string>
   selectedWorkOrderId: Ref<string | null>
   replyContent: Ref<string>
@@ -47,7 +46,6 @@ export function useAdminWorkOrderListPage(): {
 
   const currentPage = ref(1)
   const pageSize = ref(10)
-  const searchUserId = ref('')
   const searchStatus = ref('all')
   const selectedWorkOrderId = ref<string | null>(null)
   const replyContent = ref('')
@@ -93,7 +91,6 @@ export function useAdminWorkOrderListPage(): {
     ...queryKeys.admin.workOrderList(),
     currentPage.value,
     pageSize.value,
-    searchUserId.value,
     searchStatus.value,
   ])
 
@@ -103,7 +100,6 @@ export function useAdminWorkOrderListPage(): {
       fetchAdminWorkOrderPage({
         page: currentPage.value,
         size: pageSize.value,
-        userId: searchUserId.value || undefined,
         status: searchStatus.value !== 'all' ? Number(searchStatus.value) : undefined,
         sortField: 'createAt',
         sortOrder: 'desc',
@@ -121,7 +117,7 @@ export function useAdminWorkOrderListPage(): {
   const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
   const selectedWorkOrder = computed(() => workOrderDetailQuery.data.value)
 
-  watch([searchUserId, searchStatus], () => {
+  watch(searchStatus, () => {
     currentPage.value = 1
   })
 
@@ -210,7 +206,6 @@ export function useAdminWorkOrderListPage(): {
   return {
     currentPage,
     pageSize,
-    searchUserId,
     searchStatus,
     selectedWorkOrderId,
     replyContent,

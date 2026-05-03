@@ -26,7 +26,7 @@ import {
   WORK_ORDER_STATUS,
 } from '@/constants'
 import { formatDateTime, formatPrice } from '@/utils/format'
-import { getOrderStatusBadgeClass, getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
+import { getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
 
 type RowAction<T> = (row: T) => void
 
@@ -79,24 +79,9 @@ export function createEventColumns(options: {
 }): ColumnDef<EventVO>[] {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      size: 100,
-    },
-    {
-      accessorKey: 'coverUrl',
-      header: '封面',
-      size: 80,
-      cell: ({ row }) => {
-        const url = row.original.coverUrl
-        return url
-          ? h('img', { src: url, class: 'h-10 w-auto rounded object-cover', alt: '封面' })
-          : '-'
-      },
-    },
-    {
       accessorKey: 'name',
       header: '活动名称',
+      size: 140,
     },
     {
       accessorKey: 'cityNameSnapshot',
@@ -106,7 +91,7 @@ export function createEventColumns(options: {
     {
       accessorKey: 'categoryNameSnapshot',
       header: '分类',
-      size: 120,
+      size: 140,
       cell: ({ row }) => {
         const parent = row.original.parentCategoryNameSnapshot
         const child = row.original.categoryNameSnapshot
@@ -116,32 +101,13 @@ export function createEventColumns(options: {
     {
       accessorKey: 'venueNameSnapshot',
       header: '场馆',
-      size: 120,
-    },
-    {
-      accessorKey: 'minPrice',
-      header: '票价',
       size: 140,
-      cell: ({ row }) => {
-        const min = row.original.minPrice
-        const max = row.original.maxPrice
-        if (min == null && max == null) return '-'
-        if (min != null && max != null && min !== max) {
-          return `${formatPrice(min)} - ${formatPrice(max)}`
-        }
-        return formatPrice(min ?? max ?? 0)
-      },
     },
-    {
-      accessorKey: 'firstSessionStartAt',
-      header: '首场时间',
-      size: 160,
-      cell: ({ row }) => formatDateTime(row.original.firstSessionStartAt, '-'),
-    },
+
     {
       accessorKey: 'followCount',
       header: '关注人数',
-      size: 100,
+      size: 80,
       cell: ({ row }) => row.original.followCount ?? '-',
     },
     {
@@ -153,13 +119,13 @@ export function createEventColumns(options: {
     {
       accessorKey: 'recommendWeight',
       header: '推荐权重',
-      size: 100,
+      size: 80,
       cell: ({ row }) => row.original.recommendWeight ?? '-',
     },
     {
       id: 'actions',
       header: '操作',
-      size: 280,
+      size: 220,
       cell: ({ row }) =>
         actionGroup([
           actionButton('编辑', 'outline', (event) =>
@@ -193,15 +159,14 @@ export function createAdminColumns(options: {
   toggleStatus: RowAction<AdminVO>
 }): ColumnDef<AdminVO>[] {
   return [
-    { accessorKey: 'id', header: 'ID', size: 180 },
     {
       accessorKey: 'avatarUrl',
       header: '头像',
       size: 80,
       cell: ({ row }) => accountAvatarCell(row.original.avatarUrl, `${row.original.username}头像`),
     },
-    { accessorKey: 'username', header: '用户名' },
-    { accessorKey: 'mobile', header: '手机号' },
+    { accessorKey: 'username', header: '用户名', size: 140 },
+    { accessorKey: 'mobile', header: '手机号', size: 140 },
     {
       accessorKey: 'status',
       header: '状态',
@@ -231,15 +196,14 @@ export function createUserColumns(options: {
   toggleStatus: RowAction<UserVO>
 }): ColumnDef<UserVO>[] {
   return [
-    { accessorKey: 'id', header: 'ID', size: 180 },
     {
       accessorKey: 'avatarUrl',
       header: '头像',
       size: 80,
       cell: ({ row }) => accountAvatarCell(row.original.avatarUrl, `${row.original.username}头像`),
     },
-    { accessorKey: 'username', header: '用户名' },
-    { accessorKey: 'mobile', header: '手机号' },
+    { accessorKey: 'username', header: '用户名', size: 140 },
+    { accessorKey: 'mobile', header: '手机号', size: 140 },
     {
       accessorKey: 'status',
       header: '状态',
@@ -249,7 +213,7 @@ export function createUserColumns(options: {
     {
       id: 'actions',
       header: '操作',
-      size: 120,
+      size: 100,
       cell: ({ row }) =>
         actionButton(
           row.original.status === USER_STATUS.NORMAL ? '封禁' : '解封',
@@ -265,15 +229,14 @@ export function createWorkOrderColumns(options: {
   requestClose: RowAction<WorkOrderVO>
 }): ColumnDef<WorkOrderVO>[] {
   return [
-    { accessorKey: 'id', header: 'ID', size: 120 },
     { accessorKey: 'workOrderNo', header: '工单号', size: 180 },
-    { accessorKey: 'title', header: '标题' },
+    { accessorKey: 'title', header: '标题', size: 140 },
     { accessorKey: 'userId', header: '用户 ID', size: 120 },
-    { accessorKey: 'typeLabel', header: '类型', size: 120 },
+    { accessorKey: 'typeLabel', header: '类型', size: 100 },
     {
       accessorKey: 'status',
       header: '状态',
-      size: 120,
+      size: 100,
       cell: ({ row }) =>
         h(
           Badge,
@@ -291,7 +254,7 @@ export function createWorkOrderColumns(options: {
     {
       accessorKey: 'related',
       header: '关联',
-      size: 140,
+      size: 180,
       cell: ({ row }) => {
         const orderId = row.original.relatedOrderId
         const ticketId = row.original.relatedTicketId
@@ -304,7 +267,7 @@ export function createWorkOrderColumns(options: {
     {
       accessorKey: 'closedBy',
       header: '关闭者',
-      size: 120,
+      size: 140,
       cell: ({ row }) => {
         if (row.original.status !== WORK_ORDER_STATUS.CLOSED) return '-'
         const type = row.original.closedByType
@@ -316,7 +279,7 @@ export function createWorkOrderColumns(options: {
     {
       id: 'actions',
       header: '操作',
-      size: 180,
+      size: 160,
       cell: ({ row }) =>
         actionGroup([
           actionButton('详情', 'outline', (event) =>
@@ -339,19 +302,14 @@ export function createBannerColumns(options: {
 }): ColumnDef<BannerVO>[] {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      size: 100,
-      cell: ({ row }) => String(row.getValue('id')),
-    },
-    {
       accessorKey: 'title',
       header: '标题',
+      size: 140,
     },
     {
       accessorKey: 'imageUrl',
       header: 'PC 封面',
-      size: 120,
+      size: 80,
       cell: ({ row }) => {
         const url = row.original.imageUrl
         return url
@@ -362,7 +320,7 @@ export function createBannerColumns(options: {
     {
       accessorKey: 'mobileImageUrl',
       header: '移动端封面',
-      size: 120,
+      size: 80,
       cell: ({ row }) => {
         const url = row.original.mobileImageUrl
         return url
@@ -432,14 +390,9 @@ export function createCategoryColumns(options: {
 }): ColumnDef<CategoryVO>[] {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      size: 180,
-      cell: ({ row }) => String(row.getValue('id')),
-    },
-    {
       accessorKey: 'name',
       header: '分类名',
+      size: 140,
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
@@ -457,7 +410,7 @@ export function createCategoryColumns(options: {
     {
       id: 'actions',
       header: '操作',
-      size: 240,
+      size: 220,
       cell: ({ row }) => {
         const isRootCategory = row.original.parentId === '0'
         return actionGroup([
@@ -483,14 +436,9 @@ export function createCategoryChildColumns(
 ): ColumnDef<CategoryVO>[] {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      size: 180,
-      cell: ({ row }) => String(row.getValue('id')),
-    },
-    {
       accessorKey: 'name',
       header: '子分类名',
+      size: 140,
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
@@ -514,13 +462,12 @@ export function createServiceColumns(options: {
   handleDeleteService: RowAction<ServiceGuaranteeVO>
 }): ColumnDef<ServiceGuaranteeVO>[] {
   return [
-    { accessorKey: 'id', header: 'ID', size: 180 },
-    { accessorKey: 'name', header: '服务名称' },
-    { accessorKey: 'sortOrder', header: '排序', size: 100 },
+    { accessorKey: 'name', header: '服务名称', size: 140 },
+    { accessorKey: 'sortOrder', header: '排序', size: 80 },
     {
       id: 'actions',
       header: '操作',
-      size: 240,
+      size: 220,
       cell: ({ row }) =>
         actionGroup([
           actionButton('管理选项', 'outline', (event) =>
@@ -541,9 +488,8 @@ export function createServiceOptionColumns(
   options: CrudColumnActions<ServiceGuaranteeOptionVO>,
 ): ColumnDef<ServiceGuaranteeOptionVO>[] {
   return [
-    { accessorKey: 'id', header: 'ID', size: 120 },
-    { accessorKey: 'name', header: '选项名称', size: 150 },
-    { accessorKey: 'description', header: '描述' },
+    { accessorKey: 'name', header: '选项名称', size: 140 },
+    { accessorKey: 'description', header: '描述', size: 180 },
     {
       accessorKey: 'isBooleanType',
       header: '布尔类型',
@@ -566,11 +512,10 @@ export function createServiceOptionColumns(
 
 export function createNoticeColumns(options: CrudColumnActions<NoticeVO>): ColumnDef<NoticeVO>[] {
   return [
-    { accessorKey: 'id', header: 'ID', size: 180 },
     {
       accessorKey: 'type',
       header: '类型',
-      size: 120,
+      size: 100,
       cell: ({ row }) => {
         const type = row.original.type
         return h(
@@ -580,8 +525,8 @@ export function createNoticeColumns(options: CrudColumnActions<NoticeVO>): Colum
         )
       },
     },
-    { accessorKey: 'name', header: '名称' },
-    { accessorKey: 'sortOrder', header: '排序', size: 100 },
+    { accessorKey: 'name', header: '名称', size: 140 },
+    { accessorKey: 'sortOrder', header: '排序', size: 80 },
     {
       id: 'actions',
       header: '操作',
@@ -598,19 +543,15 @@ export function createCityColumns(options: {
 }): ColumnDef<CityVO>[] {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      size: 180,
-      cell: ({ row }) => String(row.getValue('id')),
-    },
-    {
       accessorKey: 'name',
       header: '城市名',
+      size: 140,
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
       accessorKey: 'pinyin',
       header: '拼音',
+      size: 140,
       cell: ({ row }) => String(row.getValue('pinyin')),
     },
     {
@@ -650,14 +591,9 @@ export function createCityColumns(options: {
 export function createVenueColumns(options: CrudColumnActions<VenueVO>): ColumnDef<VenueVO>[] {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      size: 180,
-      cell: ({ row }) => String(row.getValue('id')),
-    },
-    {
       accessorKey: 'name',
       header: '场馆名',
+      size: 140,
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
@@ -681,6 +617,7 @@ export function createVenueColumns(options: CrudColumnActions<VenueVO>): ColumnD
     {
       accessorKey: 'address',
       header: '地址',
+      size: 180,
       cell: ({ row }) => String(row.getValue('address') ?? ''),
     },
     {
@@ -697,15 +634,9 @@ export function createParticipantColumns(
 ): ColumnDef<ParticipantVO>[] {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      size: 180,
-      cell: ({ row }) => String(row.getValue('id')),
-    },
-    {
       id: 'avatar',
       header: '头像',
-      size: 100,
+      size: 80,
       cell: ({ row }) => {
         const avatarUrl = row.original.avatarUrl
         return avatarUrl
@@ -726,12 +657,13 @@ export function createParticipantColumns(
     {
       accessorKey: 'name',
       header: '名称',
+      size: 140,
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
       accessorKey: 'followCount',
       header: '关注人数',
-      size: 100,
+      size: 80,
       cell: ({ row }) => row.original.followCount ?? '-',
     },
     {
@@ -748,14 +680,9 @@ export function createSeriesColumns(
 ): ColumnDef<SeriesEventVO>[] {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      size: 180,
-      cell: ({ row }) => String(row.getValue('id')),
-    },
-    {
       accessorKey: 'name',
       header: '系列名称',
+      size: 140,
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
@@ -769,13 +696,12 @@ export function createSeriesColumns(
 
 export function createTicketColumns(): ColumnDef<TicketVO>[] {
   return [
-    { accessorKey: 'id', header: 'ID', size: 100 },
-    { accessorKey: 'ticketNo', header: '票号', size: 200 },
-    { accessorKey: 'eventNameSnapshot', header: '活动' },
-    { accessorKey: 'venueNameSnapshot', header: '场馆', size: 120 },
-    { accessorKey: 'sessionNameSnapshot', header: '场次' },
+    { accessorKey: 'ticketNo', header: '票号', size: 180 },
+    { accessorKey: 'eventNameSnapshot', header: '活动', size: 140 },
+    { accessorKey: 'venueNameSnapshot', header: '场馆', size: 140 },
+    { accessorKey: 'sessionNameSnapshot', header: '场次', size: 140 },
     { accessorKey: 'ticketTypeNameSnapshot', header: '票档', size: 100 },
-    { accessorKey: 'passengerNameSnapshot', header: '购票人', size: 100 },
+    { accessorKey: 'passengerNameSnapshot', header: '购票人', size: 140 },
     {
       accessorKey: 'passengerIdTypeSnapshot',
       header: '证件信息',
@@ -790,7 +716,6 @@ export function createTicketColumns(): ColumnDef<TicketVO>[] {
         return `${typeLabel || ''} ${certNo || ''}`.trim()
       },
     },
-    { accessorKey: 'orderNo', header: '订单号', size: 200 },
     {
       accessorKey: 'status',
       header: '状态',
@@ -803,38 +728,15 @@ export function createTicketColumns(): ColumnDef<TicketVO>[] {
       size: 160,
       cell: ({ row }) => (row.original.usedAt ? formatDateTime(row.original.usedAt) : '--'),
     },
-    {
-      accessorKey: 'createAt',
-      header: '创建时间',
-      size: 160,
-      cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '--'),
-    },
   ]
 }
 
-export function createOrderColumns(options: {
-  openDetail: RowAction<TicketOrderVO>
-}): ColumnDef<TicketOrderVO>[] {
+export function createOrderColumns(): ColumnDef<TicketOrderVO>[] {
   return [
-    { accessorKey: 'orderNo', header: '订单号', size: 200 },
-    { accessorKey: 'eventNameSnapshot', header: '活动名称' },
-    {
-      accessorKey: 'userId',
-      header: '用户 ID',
-      size: 120,
-      cell: ({ row }) => String(row.getValue('userId') ?? ''),
-    },
-    {
-      accessorKey: 'statusLabel',
-      header: '状态',
-      size: 100,
-      cell: ({ row }) =>
-        h(
-          Badge,
-          { class: getOrderStatusBadgeClass(row.original.status) },
-          () => row.original.statusLabel,
-        ),
-    },
+    { accessorKey: 'orderNo', header: '订单号', size: 180 },
+    { accessorKey: 'eventNameSnapshot', header: '活动名称', size: 140 },
+    { accessorKey: 'venueNameSnapshot', header: '场馆', size: 140 },
+    { accessorKey: 'sessionNameSnapshot', header: '场次', size: 160 },
     {
       accessorKey: 'totalAmount',
       header: '金额',
@@ -842,33 +744,10 @@ export function createOrderColumns(options: {
       cell: ({ row }) => formatPrice(Number(row.getValue('totalAmount') ?? 0)),
     },
     {
-      accessorKey: 'quantity',
-      header: '数量',
-      size: 80,
-      cell: ({ row }) => `${row.getValue('quantity') ?? 0} 张`,
-    },
-    {
       accessorKey: 'createAt',
       header: '创建时间',
-      size: 170,
+      size: 160,
       cell: ({ row }) => (row.original.createAt ? formatDateTime(row.original.createAt) : '--'),
-    },
-    {
-      accessorKey: 'payTime',
-      header: '支付时间',
-      size: 170,
-      cell: ({ row }) => (row.original.payTime ? formatDateTime(row.original.payTime) : '--'),
-    },
-    {
-      id: 'actions',
-      header: '操作',
-      size: 100,
-      cell: ({ row }) =>
-        actionGroup([
-          actionButton('查看', 'outline', (event) =>
-            stopAndRun(event, () => options.openDetail(row.original)),
-          ),
-        ]),
     },
   ]
 }

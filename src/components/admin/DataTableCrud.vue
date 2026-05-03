@@ -89,51 +89,59 @@ const table = useVueTable({
         >
           <icon-lucide-loader2 class="h-6 w-6 animate-spin text-primary" />
         </div>
-        <div class="overflow-auto" :class="{ 'opacity-60': loading }">
-          <table class="w-full border">
-            <thead>
-              <tr
-                v-for="headerGroup in table.getHeaderGroups()"
-                :key="headerGroup.id"
-                class="bg-muted"
+        <Table class="border table-fixed" :class="{ 'opacity-60': loading }">
+          <colgroup>
+            <col
+              v-for="header in table.getHeaderGroups()[0]?.headers ?? []"
+              :key="header.id"
+              :style="{
+                width: header.column.getSize() + 'px',
+                minWidth: header.column.getSize() + 'px',
+              }"
+            />
+          </colgroup>
+          <TableHeader>
+            <TableRow
+              v-for="headerGroup in table.getHeaderGroups()"
+              :key="headerGroup.id"
+              class="bg-muted"
+            >
+              <TableHead
+                v-for="header in headerGroup.headers"
+                :key="header.id"
+                class="truncate !px-4 !py-3"
               >
-                <th
-                  v-for="header in headerGroup.headers"
-                  :key="header.id"
-                  class="px-4 py-3 text-left text-sm font-medium text-foreground"
+                <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <template v-if="data.length">
+              <TableRow
+                v-for="row in table.getRowModel().rows"
+                :key="row.id"
+                class="border-t hover:bg-muted/50 cursor-pointer"
+                @click="emit('row-click', row.original)"
+              >
+                <TableCell
+                  v-for="cell in row.getVisibleCells()"
+                  :key="cell.id"
+                  class="truncate !px-4 !py-3"
                 >
-                  <FlexRender
-                    :render="header.column.columnDef.header"
-                    :props="header.getContext()"
-                  />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-if="data.length">
-                <tr
-                  v-for="row in table.getRowModel().rows"
-                  :key="row.id"
-                  class="border-t hover:bg-muted/50 cursor-pointer"
-                  @click="emit('row-click', row.original)"
-                >
-                  <td
-                    v-for="cell in row.getVisibleCells()"
-                    :key="cell.id"
-                    class="px-4 py-3 text-sm"
-                  >
-                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-                  </td>
-                </tr>
-              </template>
-              <tr v-else>
-                <td :colspan="columns.length" class="px-4 py-16 text-center text-muted-foreground">
-                  暂无数据
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                  <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+                </TableCell>
+              </TableRow>
+            </template>
+            <TableRow v-else>
+              <TableCell
+                :colspan="columns.length"
+                class="!px-4 !py-16 text-center text-muted-foreground"
+              >
+                暂无数据
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </div>
     </template>
 

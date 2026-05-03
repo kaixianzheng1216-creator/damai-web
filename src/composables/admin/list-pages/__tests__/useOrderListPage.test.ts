@@ -6,10 +6,12 @@ import type { PageResponseTicketOrderVO, TicketOrderVO } from '@/api/trade'
 
 const tradeMocks = vi.hoisted(() => ({
   fetchAdminOrderPage: vi.fn(),
+  fetchAdminOrderById: vi.fn(),
 }))
 
 vi.mock('@/api/trade', () => ({
   fetchAdminOrderPage: tradeMocks.fetchAdminOrderPage,
+  fetchAdminOrderById: tradeMocks.fetchAdminOrderById,
 }))
 
 const createOrder = (id = 'order-1'): TicketOrderVO => ({
@@ -79,7 +81,6 @@ describe('useOrderListPage', () => {
       expect(tradeMocks.fetchAdminOrderPage).toHaveBeenCalledWith({
         page: 1,
         size: 10,
-        userId: undefined,
         status: undefined,
       })
     })
@@ -88,7 +89,6 @@ describe('useOrderListPage', () => {
       expect(harness.result.list.value).toEqual([createOrder()])
     })
 
-    harness.result.searchUserId.value = 'user-1'
     harness.result.searchStatus.value = '1'
     await nextTick()
 
@@ -96,7 +96,6 @@ describe('useOrderListPage', () => {
       expect(tradeMocks.fetchAdminOrderPage).toHaveBeenLastCalledWith({
         page: 1,
         size: 10,
-        userId: 'user-1',
         status: 1,
       })
     })
@@ -109,12 +108,13 @@ describe('useOrderListPage', () => {
     cleanup = harness.cleanup
 
     harness.result.currentPage.value = 3
-    harness.result.searchUserId.value = 'user-2'
+    harness.result.searchStatus.value = '1'
     await nextTick()
 
     expect(harness.result.currentPage.value).toBe(1)
 
-    harness.result.openDetail(order)
+    tradeMocks.fetchAdminOrderById.mockResolvedValue(order)
+    await harness.result.openDetail(order)
     expect(harness.result.selectedOrder.value).toEqual(order)
     expect(harness.result.showDetailDialog.value).toBe(true)
 

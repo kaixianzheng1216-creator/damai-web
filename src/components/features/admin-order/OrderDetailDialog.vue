@@ -15,6 +15,7 @@ import { getOrderStatusBadgeClass } from '@/utils/statusMappers'
 defineProps<{
   order: TicketOrderVO | null
   open: boolean
+  loading?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -29,12 +30,16 @@ const emit = defineEmits<{
     >
       <DialogHeader class="pb-2">
         <DialogTitle>订单详情</DialogTitle>
-        <DialogDescription v-if="order">
-          订单号：{{ order.orderNo || order.id }}
-        </DialogDescription>
+        <DialogDescription v-if="order"> 订单号：{{ order.orderNo }} </DialogDescription>
       </DialogHeader>
 
-      <div v-if="order" class="space-y-5">
+      <div v-if="order" class="space-y-5 relative">
+        <div
+          v-if="loading"
+          class="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-sm"
+        >
+          <icon-lucide-loader2 class="h-6 w-6 animate-spin text-primary" />
+        </div>
         <!-- 基本信息 -->
         <Card>
           <CardHeader class="pb-3">
@@ -47,6 +52,10 @@ const emit = defineEmits<{
           </CardHeader>
           <CardContent class="space-y-3 text-sm">
             <div class="grid grid-cols-2 gap-3">
+              <div>
+                <p class="text-muted-foreground">ID</p>
+                <p class="font-medium">{{ order.id || '--' }}</p>
+              </div>
               <div>
                 <p class="text-muted-foreground">活动名称</p>
                 <p class="font-medium">{{ order.eventNameSnapshot || '--' }}</p>
@@ -104,12 +113,8 @@ const emit = defineEmits<{
           <CardHeader class="pb-3">
             <CardTitle class="text-base">支付记录</CardTitle>
           </CardHeader>
-          <CardContent class="space-y-3">
-            <div
-              v-for="payment in order.payments"
-              :key="payment.id"
-              class="rounded-lg bg-muted/30 p-3 space-y-2 text-sm"
-            >
+          <CardContent class="space-y-4">
+            <div v-for="payment in order.payments" :key="payment.id" class="space-y-2 text-sm">
               <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">支付单号</span>
                 <span class="font-mono">{{ payment.paymentNo }}</span>
@@ -143,12 +148,8 @@ const emit = defineEmits<{
           <CardHeader class="pb-3">
             <CardTitle class="text-base">退款记录</CardTitle>
           </CardHeader>
-          <CardContent class="space-y-3">
-            <div
-              v-for="refund in order.refunds"
-              :key="refund.id"
-              class="rounded-lg bg-muted/30 p-3 space-y-2 text-sm"
-            >
+          <CardContent class="space-y-4">
+            <div v-for="refund in order.refunds" :key="refund.id" class="space-y-2 text-sm">
               <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">退款单号</span>
                 <span class="font-mono">{{ refund.refundNo }}</span>

@@ -1,6 +1,6 @@
 import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { fetchAdminOrderPage } from '@/api/trade'
+import { fetchAdminOrderById, fetchAdminOrderPage } from '@/api/trade'
 import { ORDER_STATUS, queryKeys } from '@/constants'
 import type { TicketOrderPageRequest, TicketOrderVO } from '@/api/trade'
 
@@ -16,38 +16,36 @@ const ORDER_STATUS_OPTIONS = [
 export function useOrderListPage(): {
   currentPage: Ref<number>
   pageSize: Ref<number>
-  searchUserId: Ref<string>
   searchStatus: Ref<string>
   showDetailDialog: Ref<boolean>
   selectedOrder: Ref<TicketOrderVO | null>
+  isDetailLoading: Ref<boolean>
   statusOptions: typeof ORDER_STATUS_OPTIONS
   isLoading: Ref<boolean>
   list: ComputedRef<TicketOrderVO[]>
   totalRow: ComputedRef<number>
   totalPages: ComputedRef<number>
   handleSearch: () => void
-  openDetail: (row: TicketOrderVO) => void
+  openDetail: (row: TicketOrderVO) => Promise<void>
   closeDetail: () => void
 } {
   const currentPage = ref(1)
   const pageSize = ref(10)
-  const searchUserId = ref('')
   const searchStatus = ref('all')
   const showDetailDialog = ref(false)
   const selectedOrder = ref<TicketOrderVO | null>(null)
+  const isDetailLoading = ref(false)
 
   const queryKey = computed(() => [
     ...queryKeys.admin.list('orders'),
     currentPage.value,
     pageSize.value,
-    searchUserId.value,
     searchStatus.value,
   ])
 
   const pageParams = computed<TicketOrderPageRequest>(() => ({
     page: currentPage.value,
     size: pageSize.value,
-    userId: searchUserId.value || undefined,
     status: searchStatus.value !== 'all' ? Number(searchStatus.value) : undefined,
   }))
 
@@ -60,7 +58,7 @@ export function useOrderListPage(): {
   const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
   const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 
-  watch([searchUserId, searchStatus], () => {
+  watch(searchStatus, () => {
     currentPage.value = 1
   })
 
@@ -68,9 +66,15 @@ export function useOrderListPage(): {
     currentPage.value = 1
   }
 
-  const openDetail = (row: TicketOrderVO) => {
-    selectedOrder.value = row
-    showDetailDialog.value = true
+  const openDetail = async (row: TicketOrderVO) => {
+    isDetailLoading.value = true
+    try {
+      const detail = await fetchAdminOrderById(row.id)
+      selectedOrder.value = detail
+      showDetailDialog.value = true
+    } finally {
+      isDetailLoading.value = false
+    }
   }
 
   const closeDetail = () => {
@@ -80,10 +84,10 @@ export function useOrderListPage(): {
   return {
     currentPage,
     pageSize,
-    searchUserId,
     searchStatus,
     showDetailDialog,
     selectedOrder,
+    isDetailLoading,
     statusOptions: ORDER_STATUS_OPTIONS,
     isLoading,
     list,

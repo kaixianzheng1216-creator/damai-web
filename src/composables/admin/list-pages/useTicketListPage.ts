@@ -15,10 +15,6 @@ export const TICKET_STATUS_OPTIONS = [
 export function useTicketListPage(): {
   currentPage: Ref<number>
   pageSize: Ref<number>
-  searchUserId: Ref<string>
-  searchOrderId: Ref<string>
-  searchEventId: Ref<string>
-  searchSessionId: Ref<string>
   searchStatus: Ref<string>
   showScanDialog: Ref<boolean>
   isLoading: Ref<boolean>
@@ -31,10 +27,6 @@ export function useTicketListPage(): {
 } {
   const currentPage = ref(1)
   const pageSize = ref(10)
-  const searchUserId = ref('')
-  const searchOrderId = ref('')
-  const searchEventId = ref('')
-  const searchSessionId = ref('')
   const searchStatus = ref<string>('all')
   const showScanDialog = ref(false)
 
@@ -42,10 +34,6 @@ export function useTicketListPage(): {
     ...queryKeys.admin.list('tickets'),
     currentPage.value,
     pageSize.value,
-    searchUserId.value,
-    searchOrderId.value,
-    searchEventId.value,
-    searchSessionId.value,
     searchStatus.value,
   ])
 
@@ -55,10 +43,6 @@ export function useTicketListPage(): {
       fetchAdminTicketPage({
         page: currentPage.value,
         size: pageSize.value,
-        userId: searchUserId.value || undefined,
-        orderId: searchOrderId.value || undefined,
-        eventId: searchEventId.value || undefined,
-        sessionId: searchSessionId.value || undefined,
         status: searchStatus.value !== 'all' ? Number(searchStatus.value) : undefined,
       }),
   })
@@ -78,10 +62,6 @@ export function useTicketListPage(): {
   return {
     currentPage,
     pageSize,
-    searchUserId,
-    searchOrderId,
-    searchEventId,
-    searchSessionId,
     searchStatus,
     showScanDialog,
     isLoading,
