@@ -30,7 +30,7 @@ const getDefaultConfirmText = (title: string) => {
 const getDefaultVariant = (title: string, description: string): ConfirmDialogVariant =>
   destructivePattern.test(`${title}${description}`) ? 'destructive' : 'default'
 
-export function useConfirmDialog(): {
+export function useAppConfirmDialog(): {
   confirmDialog: Ref<ConfirmDialogState>
   openConfirm: (
     title: string,

@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/vue-query'
 import { useStorage } from '@vueuse/core'
 import { chatWithAI } from '@/api/ai'
 import type { ChatMessage } from '@/api/ai/types'
-import { COMMON_CONFIG } from '@/constants'
+import { COMMON_CONFIG, AI_CHAT_COPY } from '@/constants'
 import { buildAIChatPrompt } from '@/utils/aiChatPrompt'
 
 function generateSessionId(): string {
@@ -22,9 +22,7 @@ export function useAIChat(options: MaybeRefOrGetter<UseAIChatOptions> = {}) {
 
   const flowNameRef = computed(() => optionsRef.value.flowName ?? 'assistant')
   const welcomeMessageRef = computed(
-    () =>
-      optionsRef.value.welcomeMessage ??
-      '你好！我是 Damai 智能助手，可以帮你找演出、推荐活动、解答购票问题。请问有什么可以帮你的？',
+    () => optionsRef.value.welcomeMessage ?? AI_CHAT_COPY.welcomeMessage,
   )
   const enableCityContext = toValue(options).enableCityContext ?? true
 
@@ -69,7 +67,7 @@ export function useAIChat(options: MaybeRefOrGetter<UseAIChatOptions> = {}) {
     onError: () => {
       messages.value.push({
         role: 'ai',
-        content: '抱歉，服务暂时不可用，请稍后再试。',
+        content: AI_CHAT_COPY.errorMessage,
       })
     },
   })

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
 import { createWorkOrderColumns } from '@/components/admin/listPageColumns'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import {
   Select,
@@ -55,9 +54,12 @@ const columns = createWorkOrderColumns({ openDetail, requestClose })
     :total-row="totalRow"
     title="工单管理"
     :show-create-button="false"
+    :confirm-dialog="confirmDialog"
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"
     @row-click="openDetail"
+    @close-confirm="closeConfirm"
+    @confirm="handleConfirm"
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
@@ -87,16 +89,5 @@ const columns = createWorkOrderColumns({ openDetail, requestClose })
     @close="closeDetail"
     @reply="submitReply"
     @close-work-order="requestClose()"
-  />
-
-  <ConfirmDialog
-    :open="confirmDialog.open"
-    :title="confirmDialog.title"
-    :description="confirmDialog.description"
-    :confirm-text="confirmDialog.confirmText"
-    :confirm-variant="confirmDialog.confirmVariant"
-    :loading="confirmDialog.isProcessing"
-    @close="closeConfirm"
-    @confirm="handleConfirm"
   />
 </template>

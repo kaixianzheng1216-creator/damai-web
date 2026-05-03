@@ -10,7 +10,7 @@ import {
   updateCityFeatured,
 } from '@/api/event/city'
 import type { CityCreateRequest, CityUpdateRequest, CityVO } from '@/api/event'
-import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 type CityForm = {
   name: string
@@ -71,7 +71,7 @@ export function useCityListPage(): {
 
   const featuredMutation = useMutation({
     mutationFn: ({ id, isFeatured }: { id: string; isFeatured: number }) =>
-      updateCityFeatured(id, isFeatured),
+      updateCityFeatured(id, isFeatured as 0 | 1),
     onSuccess: crud.invalidate,
   })
 

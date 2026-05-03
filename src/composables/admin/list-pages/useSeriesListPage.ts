@@ -3,7 +3,7 @@ import { useAdminCrud } from '../common/useAdminCrud'
 import { createSeries, deleteSeries, fetchAdminSeriesPage, updateSeries } from '@/api/event/series'
 import { queryKeys } from '@/constants'
 import type { SeriesCreateRequest, SeriesEventVO, SeriesUpdateRequest } from '@/api/event'
-import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 type SeriesForm = {
   name: string

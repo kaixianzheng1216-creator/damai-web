@@ -30,8 +30,6 @@ export const formatDateTime = (
   return `${date.year()}.${date.month() + 1}.${date.date()} ${date.format('HH:mm')}`
 }
 
-export const formatDateTimeWithoutWeekday = formatDateTime
-
 export const formatDateTimeLocalInput = (dateTime: string | Date | undefined | null): string => {
   if (!dateTime) return ''
   return dayjs(dateTime).format('YYYY-MM-DDTHH:mm')

@@ -4,8 +4,8 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { adminDeleteTicketType } from '@/api/event/event'
 import type { SessionVO, TicketTypeVO } from '@/api/event'
-import { queryKeys, TOAST_COPY } from '@/constants'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { queryKeys, TOAST_COPY, CONFIRM_COPY } from '@/constants'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
 
 interface UseSessionsAndTicketsTabOptions {
   eventId: MaybeRefOrGetter<string>
@@ -14,7 +14,7 @@ interface UseSessionsAndTicketsTabOptions {
 
 export function useSessionsAndTicketsTab(options: UseSessionsAndTicketsTabOptions) {
   const queryClient = useQueryClient()
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
 
   const showTicketTypeDialog = ref(false)
   const showInventoryDialog = ref(false)
@@ -62,7 +62,7 @@ export function useSessionsAndTicketsTab(options: UseSessionsAndTicketsTabOption
   }
 
   const handleDeleteTicketType = (ticketType: TicketTypeVO) => {
-    openConfirm('确认删除', `确认删除票种「${ticketType.name}」？`, () =>
+    openConfirm(CONFIRM_COPY.delete, `确认删除票种「${ticketType.name}」？`, () =>
       deleteTicketTypeMutation.mutateAsync(ticketType.id),
     )
   }

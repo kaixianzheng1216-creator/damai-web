@@ -3,7 +3,7 @@ import { useAdminCrud } from '../common/useAdminCrud'
 import { createVenue, deleteVenue, fetchAdminVenuesPage, updateVenue } from '@/api/event/venue'
 import { queryKeys } from '@/constants'
 import type { VenueCreateRequest, VenueUpdateRequest, VenueVO } from '@/api/event'
-import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 type VenueForm = {
   name: string

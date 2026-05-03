@@ -2,7 +2,6 @@
 import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createBannerColumns } from '@/components/admin/listPageColumns'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import DateTimePicker from '@/components/common/DateTimePicker.vue'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { Input } from '@/components/common/ui/input'
@@ -56,9 +55,12 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
     title="Banner 管理"
     @create="openCreate"
     @edit="openEdit"
+    :confirm-dialog="confirmDialog"
     @delete="handleDelete"
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"
+    @close-confirm="closeConfirm"
+    @confirm="handleConfirm"
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
@@ -177,15 +179,4 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
       </div>
     </div>
   </AdminFormDialog>
-
-  <ConfirmDialog
-    :open="confirmDialog.open"
-    :title="confirmDialog.title"
-    :description="confirmDialog.description"
-    :confirm-text="confirmDialog.confirmText"
-    :confirm-variant="confirmDialog.confirmVariant"
-    :loading="confirmDialog.isProcessing"
-    @close="closeConfirm"
-    @confirm="handleConfirm"
-  />
 </template>

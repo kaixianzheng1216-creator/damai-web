@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/common/ui/select'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useAdminEventListPage } from '@/composables/admin/list-pages'
 
 const {
@@ -47,9 +46,12 @@ const columns = createEventColumns({ openEdit, handleDelete, handlePublish, hand
     :page-size="pageSize"
     :total-row="totalRow"
     title="活动管理"
+    :confirm-dialog="confirmDialog"
     @create="openCreate"
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"
+    @close-confirm="closeConfirm"
+    @confirm="handleConfirm"
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
@@ -84,15 +86,4 @@ const columns = createEventColumns({ openEdit, handleDelete, handlePublish, hand
       </div>
     </template>
   </DataTableCrud>
-
-  <ConfirmDialog
-    :open="confirmDialog.open"
-    :title="confirmDialog.title"
-    :description="confirmDialog.description"
-    :confirm-text="confirmDialog.confirmText"
-    :confirm-variant="confirmDialog.confirmVariant"
-    :loading="confirmDialog.isProcessing"
-    @close="closeConfirm"
-    @confirm="handleConfirm"
-  />
 </template>

@@ -1,4 +1,4 @@
-import type { PaginatedResponse } from '../types'
+import type { PaginatedResponse } from '@/api/types'
 
 export interface TicketPageRequest {
   page: number

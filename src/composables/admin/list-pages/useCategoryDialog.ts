@@ -3,11 +3,11 @@ import { useMutation } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { createCategory, deleteCategory, updateCategory } from '@/api/event/category'
 import type { CategoryCreateRequest, CategoryUpdateRequest, CategoryVO } from '@/api/event'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
 import { useCategoryTree } from './useCategoryTree'
 
 export function useCategoryDialog(tree: ReturnType<typeof useCategoryTree>) {
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
 
   const showDialog = ref(false)
   const editingId = ref<string | null>(null)

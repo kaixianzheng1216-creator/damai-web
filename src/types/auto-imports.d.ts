@@ -356,9 +356,6 @@ declare global {
   // @ts-ignore
   export type { PassengerSlot, MaxTicketQuantityOptions } from '../utils/eventDetailState'
   import('../utils/eventDetailState')
-  // @ts-ignore
-  export type { UseAIChatOptions } from '../composables/ai/useAIChat'
-  import('../composables/ai/useAIChat')
 }
 
 // for vue template auto import
@@ -410,7 +407,6 @@ declare module 'vue' {
     readonly formatDateTimeLocalInput: UnwrapRef<typeof import('../utils/format')['formatDateTimeLocalInput']>
     readonly formatDateTimeRange: UnwrapRef<typeof import('../utils/format')['formatDateTimeRange']>
     readonly formatDateTimeWithWeekday: UnwrapRef<typeof import('../utils/format')['formatDateTimeWithWeekday']>
-    readonly formatDateTimeWithoutWeekday: UnwrapRef<typeof import('../utils/format')['formatDateTimeWithoutWeekday']>
     readonly formatPrice: UnwrapRef<typeof import('../utils/format')['formatPrice']>
     readonly formatPriceRange: UnwrapRef<typeof import('../utils/format')['formatPriceRange']>
     readonly formatRemainText: UnwrapRef<typeof import('../utils/checkoutState')['formatRemainText']>
@@ -516,7 +512,6 @@ declare module 'vue' {
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
-    readonly useAIChat: UnwrapRef<typeof import('../composables/ai/useAIChat')['useAIChat']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>

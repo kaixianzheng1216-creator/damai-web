@@ -9,7 +9,7 @@ import {
   AlertDialogCancel,
 } from '@/components/common/ui/alert-dialog'
 import { Button } from '@/components/common/ui/button'
-import type { ConfirmDialogVariant } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogVariant } from '@/composables/common/useAppConfirmDialog'
 
 const props = defineProps<{
   open: boolean

@@ -8,7 +8,7 @@ import {
   AIChatInput,
   AIChatMessageList,
 } from '@/components/features/ai'
-import { useAIChat } from '@/composables/useAIChat'
+import { useAIChat } from '@/composables/ai/useAIChat'
 import assistantAvatar from '@/assets/assistant/assistant.webp'
 
 const router = useRouter()

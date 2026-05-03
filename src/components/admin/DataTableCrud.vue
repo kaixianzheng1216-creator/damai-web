@@ -10,6 +10,8 @@ import {
 import TablePagination from './TablePagination.vue'
 import TableToolbar from './TableToolbar.vue'
 import TableCardView from './TableCardView.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 const props = withDefaults(
   defineProps<{
@@ -24,6 +26,7 @@ const props = withDefaults(
     totalRow?: number
     showCreateButton?: boolean
     showPagination?: boolean
+    confirmDialog?: ConfirmDialogState
   }>(),
   {
     pageSizeOptions: () => [10, 20, 30, 40, 50],
@@ -34,6 +37,7 @@ const props = withDefaults(
     showCreateButton: true,
     showPagination: true,
     columns: () => [],
+    confirmDialog: undefined,
   },
 )
 
@@ -44,6 +48,8 @@ const emit = defineEmits<{
   'update:currentPage': [page: number]
   'update:pageSize': [pageSize: number]
   'row-click': [row: TData]
+  closeConfirm: []
+  confirm: []
 }>()
 
 const sorting = ref<SortingState>([])
@@ -167,6 +173,17 @@ const table = useVueTable({
       :show-pagination="showPagination"
       @update:current-page="emit('update:currentPage', $event)"
       @update:page-size="emit('update:pageSize', $event)"
+    />
+
+    <ConfirmDialog
+      :open="confirmDialog?.open ?? false"
+      :title="confirmDialog?.title ?? ''"
+      :description="confirmDialog?.description ?? ''"
+      :confirm-text="confirmDialog?.confirmText ?? '确认'"
+      :confirm-variant="confirmDialog?.confirmVariant ?? 'default'"
+      :loading="confirmDialog?.isProcessing ?? false"
+      @close="emit('closeConfirm')"
+      @confirm="emit('confirm')"
     />
   </div>
 </template>

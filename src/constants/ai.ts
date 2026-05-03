@@ -28,4 +28,7 @@ export const AI_CHAT_COPY = {
   reset: '清空对话',
   send: '发送',
   passenger: '购票人',
+  welcomeMessage:
+    '你好！我是 Damai 智能助手，可以帮你找演出、推荐活动、解答购票问题。请问有什么可以帮你的？',
+  errorMessage: '抱歉，服务暂时不可用，请稍后再试。',
 } as const

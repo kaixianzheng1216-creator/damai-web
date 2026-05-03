@@ -6,8 +6,8 @@ import { fetchAdminCategoryList } from '@/api/event/category'
 import { fetchAdminCityList } from '@/api/event/city'
 import type { CategoryVO, CityVO, EventVO } from '@/api/event'
 import { queryKeys } from '@/constants'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
-import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 const adminEventsQueryKey = queryKeys.admin.list('events')
 const adminCitiesQueryKey = queryKeys.admin.list('cities')
@@ -39,7 +39,7 @@ export function useAdminEventListPage(): {
 } {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
 
   const currentPage = ref(1)
   const pageSize = ref(10)

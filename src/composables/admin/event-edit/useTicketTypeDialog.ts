@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { adminCreateTicketType, adminUpdateTicketType } from '@/api/event/event'
 import type { TicketTypeCreateRequest, TicketTypeUpdateRequest, TicketTypeVO } from '@/api/event'
-import { queryKeys, TOAST_COPY, FORM_COPY } from '@/constants'
+import { queryKeys, TOAST_COPY, FORM_COPY, TICKET_TYPE_COPY } from '@/constants'
 import { formatDateTimeLocalInput } from '@/utils/format'
 
 interface UseTicketTypeDialogOptions {
@@ -33,7 +33,9 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
 
   const editingTicketType = computed(() => toValue(options.editingTicketType))
   const isEditing = computed(() => Boolean(editingTicketType.value))
-  const dialogTitle = computed(() => (isEditing.value ? '编辑票种' : '添加票种'))
+  const dialogTitle = computed(() =>
+    isEditing.value ? TICKET_TYPE_COPY.editTitle : TICKET_TYPE_COPY.createTitle,
+  )
 
   const invalidateAll = () => {
     queryClient.invalidateQueries({

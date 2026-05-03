@@ -1,9 +1,9 @@
 import { type Ref, type ComputedRef } from 'vue'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
 import { useBannerList } from './useBannerList'
 import { useBannerDialog } from './useBannerDialog'
 import type { BannerCreateRequest, BannerUpdateRequest, BannerVO, CityVO } from '@/api/event'
-import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 export function useBannerListPage(): {
   currentPage: Ref<number>
@@ -37,7 +37,7 @@ export function useBannerListPage(): {
   closeConfirm: () => void
   handleConfirm: () => Promise<void>
 } {
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
 
   const {
     currentPage,

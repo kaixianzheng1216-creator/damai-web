@@ -1,5 +1,5 @@
 import { type Ref, type ComputedRef } from 'vue'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
 import { useServiceList } from './useServiceList'
 import { useServiceDialog } from './useServiceDialog'
 import { useServiceOptions } from './useServiceOptions'
@@ -11,7 +11,7 @@ import type {
   ServiceOptionCreateRequest,
   ServiceOptionUpdateRequest,
 } from '@/api/event'
-import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 export function useServiceListPage(): {
   currentPage: Ref<number>
@@ -60,7 +60,7 @@ export function useServiceListPage(): {
   closeConfirm: () => void
   handleConfirm: () => Promise<void>
 } {
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
 
   const {
     currentPage,

@@ -1,10 +1,10 @@
 import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { closeAdminWorkOrder, fetchAdminWorkOrderById, fetchAdminWorkOrderPage } from '@/api/trade'
+import { cancelAdminWorkOrder, fetchAdminWorkOrderById, fetchAdminWorkOrderPage } from '@/api/trade'
 import type { WorkOrderVO } from '@/api/trade'
 import { queryKeys, WORK_ORDER_STATUS } from '@/constants'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
-import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 import { useWorkOrderChat } from '@/composables/common/useWorkOrderChat'
 import { useAdminStore } from '@/stores/admin'
 
@@ -40,7 +40,7 @@ export function useAdminWorkOrderListPage(): {
   handleConfirm: () => Promise<void>
 } {
   const queryClient = useQueryClient()
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
   const chat = useWorkOrderChat()
   const adminStore = useAdminStore()
 
@@ -129,7 +129,7 @@ export function useAdminWorkOrderListPage(): {
   }
 
   const closeMutation = useMutation({
-    mutationFn: closeAdminWorkOrder,
+    mutationFn: cancelAdminWorkOrder,
     onSuccess: invalidateWorkOrders,
   })
 

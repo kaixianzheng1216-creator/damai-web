@@ -24,7 +24,6 @@ const {
   openCreate,
   openEdit,
   handleSubmit,
-  handleDelete,
   toggleStatus,
 } = useAdminListPage()
 
@@ -43,7 +42,6 @@ const columns = createAdminColumns({ openEdit, toggleStatus })
     title="管理员管理"
     @create="openCreate"
     @edit="openEdit"
-    @delete="handleDelete"
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"
   >

@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avat
 import { Button } from '@/components/common/ui/button'
 import EmptyState from '@/components/common/EmptyState.vue'
 import ErrorState from '@/components/common/ErrorState.vue'
+import LoadingState from '@/components/common/LoadingState.vue'
 import SearchResultListItem from '@/components/features/search/SearchResultListItem.vue'
 
 const {
@@ -28,9 +29,7 @@ const {
 <template>
   <div class="container mx-auto px-4 py-6 md:px-6">
     <!-- 参与方信息 -->
-    <div v-if="participantQuery.isLoading.value" class="flex min-h-[200px] flex-center">
-      <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
-    </div>
+    <LoadingState v-if="participantQuery.isLoading.value" min-height="200px" />
 
     <ErrorState
       v-else-if="participantQuery.isError.value"
@@ -88,9 +87,7 @@ const {
         </p>
 
         <div class="border border-border bg-background">
-          <div v-if="eventsQuery.isLoading.value" class="flex min-h-[420px] flex-center">
-            <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <LoadingState v-if="eventsQuery.isLoading.value" min-height="420px" />
 
           <ErrorState
             v-else-if="eventsQuery.isError.value"

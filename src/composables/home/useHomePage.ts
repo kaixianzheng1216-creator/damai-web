@@ -88,7 +88,8 @@ export const useHomePage = () => {
         isLoading: false,
         isError: false,
       })
-    } catch {
+    } catch (err) {
+      console.error('Failed to fetch events for category:', categoryId, err)
       eventQueryResults.value.set(categoryId, {
         data: undefined,
         isLoading: false,

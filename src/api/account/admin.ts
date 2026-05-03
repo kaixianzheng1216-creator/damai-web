@@ -23,5 +23,5 @@ export const createAdmin = (data: AdminCreateRequest): Promise<string> =>
 export const updateAdmin = (id: string, data: AdminUpdateRequest): Promise<void> =>
   request.put<void>(`/api/account/admin/admin/${id}`, data)
 
-export const updateAdminStatus = (id: string, status: number): Promise<void> =>
+export const updateAdminStatus = (id: string, status: 0 | 1): Promise<void> =>
   request.put<void>(`/api/account/admin/admin/${id}/status`, status)

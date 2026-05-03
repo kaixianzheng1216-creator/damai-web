@@ -9,7 +9,7 @@ export const fetchMyWorkOrderPage = (
 export const fetchMyWorkOrderById = (id: string): Promise<WorkOrderDetailVO> =>
   request.get<WorkOrderDetailVO>(`/api/order/front/work-orders/${id}`)
 
-export const closeMyWorkOrder = (id: string): Promise<void> =>
+export const cancelMyWorkOrder = (id: string): Promise<void> =>
   request.post<void>(`/api/order/front/work-orders/${id}/close`)
 
 export const fetchAdminWorkOrderPage = (
@@ -19,5 +19,5 @@ export const fetchAdminWorkOrderPage = (
 
 export const fetchAdminWorkOrderById = (id: string): Promise<WorkOrderDetailVO> =>
   request.get<WorkOrderDetailVO>(`/api/order/admin/work-orders/${id}`)
-export const closeAdminWorkOrder = (id: string): Promise<void> =>
+export const cancelAdminWorkOrder = (id: string): Promise<void> =>
   request.post<void>(`/api/order/admin/work-orders/${id}/close`)

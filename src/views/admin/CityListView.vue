@@ -2,7 +2,6 @@
 import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createCityColumns } from '@/components/admin/listPageColumns'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Input } from '@/components/common/ui/input'
 import { useCityListPage } from '@/composables/admin'
 
@@ -42,11 +41,14 @@ const columns = createCityColumns({ toggleFeatured, openEdit, handleDelete })
     :current-page="currentPage"
     :page-size="pageSize"
     title="城市管理"
+    :confirm-dialog="confirmDialog"
     @create="openCreate"
     @edit="openEdit"
     @delete="handleDelete"
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"
+    @close-confirm="closeConfirm"
+    @confirm="handleConfirm"
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
@@ -93,15 +95,4 @@ const columns = createCityColumns({ toggleFeatured, openEdit, handleDelete })
       </div>
     </div>
   </AdminFormDialog>
-
-  <ConfirmDialog
-    :open="confirmDialog.open"
-    :title="confirmDialog.title"
-    :description="confirmDialog.description"
-    :confirm-text="confirmDialog.confirmText"
-    :confirm-variant="confirmDialog.confirmVariant"
-    :loading="confirmDialog.isProcessing"
-    @close="closeConfirm"
-    @confirm="handleConfirm"
-  />
 </template>

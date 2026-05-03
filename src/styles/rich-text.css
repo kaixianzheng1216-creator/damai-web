@@ -1,0 +1,40 @@
+/* 富文本内容公用样式 - 供 RichTextEditor 与 EventDetailView 共享 */
+.rich-text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  text-align: left;
+}
+.rich-text h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0.875rem 0 0.4rem;
+}
+.rich-text h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.35rem;
+}
+.rich-text h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0.7rem 0 0.3rem;
+}
+.rich-text p {
+  margin: 0.25rem 0;
+}
+.rich-text ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+.rich-text ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+.rich-text li + li {
+  margin-top: 0.2rem;
+}
+.rich-text strong {
+  font-weight: 700;
+}

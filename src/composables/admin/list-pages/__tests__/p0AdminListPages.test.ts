@@ -60,7 +60,7 @@ const eventMocks = vi.hoisted(() => ({
 const tradeMocks = vi.hoisted(() => ({
   fetchAdminWorkOrderPage: vi.fn(),
   fetchAdminWorkOrderById: vi.fn(),
-  closeAdminWorkOrder: vi.fn(),
+  cancelAdminWorkOrder: vi.fn(),
 }))
 
 const routerMocks = vi.hoisted(() => ({

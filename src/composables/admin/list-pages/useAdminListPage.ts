@@ -1,11 +1,16 @@
-import { computed, reactive, ref, type Ref, type ComputedRef } from 'vue'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { computed, ref, type Ref, type ComputedRef } from 'vue'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
+import { useAdminCrud } from '../common/useAdminCrud'
 import { createAdmin, fetchAdminPage, updateAdmin, updateAdminStatus } from '@/api/account/admin'
 import type { AdminCreateRequest, AdminUpdateRequest, AdminVO } from '@/api/account'
 import { queryKeys, USER_STATUS } from '@/constants'
 
-const adminListQueryKey = queryKeys.admin.list('admins')
+type AdminForm = {
+  mobile: string
+  username: string
+  avatarUrl: string
+}
 
 export function useAdminListPage(): {
   currentPage: Ref<number>
@@ -18,46 +23,52 @@ export function useAdminListPage(): {
   totalPages: ComputedRef<number>
   showDialog: Ref<boolean>
   editingId: Ref<string | null>
-  form: AdminCreateRequest & AdminUpdateRequest
+  form: AdminForm
   dialogTitle: ComputedRef<string>
   isSaving: ComputedRef<boolean>
-  createMutation: {
-    mutateAsync: (payload: AdminCreateRequest) => Promise<unknown>
-    isPending: Ref<boolean>
-  }
-  updateMutation: {
-    mutateAsync: (vars: { id: string; data: AdminUpdateRequest }) => Promise<unknown>
-    isPending: Ref<boolean>
-  }
   statusMutation: { mutate: (vars: { id: string; status: number }) => void }
   handleSearch: () => void
   openCreate: () => void
   openEdit: (row: AdminVO) => void
   handleSubmit: () => Promise<void>
-  handleDelete: (_row: AdminVO) => void
   toggleStatus: (row: AdminVO) => void
 } {
-  const queryClient = useQueryClient()
+  const crud = useAdminCrud<AdminVO, AdminForm, AdminCreateRequest, AdminUpdateRequest>({
+    queryKeyBase: queryKeys.admin.list('admins'),
+    fetchPage: (params) =>
+      fetchAdminPage({
+        page: params.page,
+        size: params.size,
+      }),
+    createItem: (data) => createAdmin(data),
+    updateItem: (id, data) => updateAdmin(id, data as AdminUpdateRequest),
+    deleteItem: async () => {},
+    initialForm: {
+      mobile: '',
+      username: '',
+      avatarUrl: '',
+    },
+  })
 
-  const currentPage = ref(1)
-  const pageSize = ref(10)
+  // Admin-specific search fields (useAdminCrud only supports a single searchName)
   const searchUsername = ref('')
   const searchMobile = ref('')
 
-  const queryKey = computed(() => [
-    ...adminListQueryKey,
-    currentPage.value,
-    pageSize.value,
+  // Custom query with admin-specific search fields
+  const adminQueryKey = computed(() => [
+    ...queryKeys.admin.list('admins'),
+    crud.currentPage.value,
+    crud.pageSize.value,
     searchUsername.value,
     searchMobile.value,
   ])
 
   const { data, isLoading } = useQuery({
-    queryKey,
+    queryKey: adminQueryKey,
     queryFn: () =>
       fetchAdminPage({
-        page: currentPage.value,
-        size: pageSize.value,
+        page: crud.currentPage.value,
+        size: crud.pageSize.value,
         username: searchUsername.value || undefined,
         mobile: searchMobile.value || undefined,
       }),
@@ -67,118 +78,74 @@ export function useAdminListPage(): {
   const totalRow = computed(() => Number(data.value?.totalRow ?? 0))
   const totalPages = computed(() => Number(data.value?.totalPage ?? 1))
 
-  const showDialog = ref(false)
-  const editingId = ref<string | null>(null)
-  const form = reactive<AdminCreateRequest & AdminUpdateRequest>({
-    mobile: '',
-    username: '',
-    avatarUrl: '',
-  })
-
-  const dialogTitle = computed(() => (editingId.value ? '编辑管理员' : '新建管理员'))
-
   const handleSearch = () => {
-    currentPage.value = 1
+    crud.currentPage.value = 1
   }
 
-  const resetForm = () => {
-    form.mobile = ''
-    form.username = ''
-    form.avatarUrl = ''
-  }
+  const dialogTitle = computed(() => (crud.editingId.value ? '编辑管理员' : '新建管理员'))
 
-  const openCreate = () => {
-    resetForm()
-    editingId.value = null
-    showDialog.value = true
-  }
-
-  const openEdit = (row: AdminVO) => {
-    form.mobile = row.mobile
-    form.username = row.username
-    form.avatarUrl = row.avatarUrl
-    editingId.value = row.id
-    showDialog.value = true
-  }
-
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: adminListQueryKey })
-
-  const createMutation = useMutation({
-    mutationFn: (payload: AdminCreateRequest) => createAdmin(payload),
-    onSuccess: () => {
-      invalidate()
-      showDialog.value = false
-    },
-  })
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: AdminUpdateRequest }) => updateAdmin(id, data),
-    onSuccess: () => {
-      invalidate()
-      showDialog.value = false
-    },
-  })
+  const isSaving = computed(
+    () => crud.createMutation.isPending.value || crud.updateMutation.isPending.value,
+  )
 
   const statusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: number }) => updateAdminStatus(id, status),
-    onSuccess: invalidate,
+    mutationFn: ({ id, status }: { id: string; status: number }) =>
+      updateAdminStatus(id, status as 0 | 1),
+    onSuccess: () => crud.invalidate(),
   })
 
-  const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
-
-  const handleSubmit = async () => {
-    if (editingId.value) {
-      await updateMutation.mutateAsync({
-        id: editingId.value,
-        data: {
-          username: form.username || undefined,
-          mobile: form.mobile || undefined,
-          avatarUrl: form.avatarUrl || undefined,
-        },
-      })
-      return
-    }
-
-    if (!form.mobile) {
-      toast.error('请填写手机号')
-      return
-    }
-
-    await createMutation.mutateAsync({
-      mobile: form.mobile,
-      username: form.username || undefined,
-    })
+  const openEdit = (row: AdminVO) => {
+    crud.openEdit(row, (item) => ({
+      mobile: item.mobile,
+      username: item.username,
+      avatarUrl: item.avatarUrl,
+    }))
   }
+
+  const handleSubmit = () =>
+    crud.handleSubmit({
+      validate: () => {
+        if (!crud.editingId.value && !crud.form.mobile) {
+          toast.error('请填写手机号')
+          return false
+        }
+        return true
+      },
+      getCreateData: (f) => ({
+        mobile: f.mobile,
+        username: f.username || undefined,
+      }),
+      getUpdateData: (f) => ({
+        username: f.username || undefined,
+        mobile: f.mobile || undefined,
+        avatarUrl: f.avatarUrl || undefined,
+      }),
+    })
 
   const toggleStatus = (row: AdminVO) => {
     const status = row.status === USER_STATUS.NORMAL ? USER_STATUS.BANNED : USER_STATUS.NORMAL
     statusMutation.mutate({ id: row.id, status })
   }
 
-  const handleDelete = (_row: AdminVO) => {}
-
   return {
-    currentPage,
-    pageSize,
+    currentPage: crud.currentPage,
+    pageSize: crud.pageSize,
     searchUsername,
     searchMobile,
     isLoading,
     list,
     totalRow,
     totalPages,
-    showDialog,
-    editingId,
-    form,
+    showDialog: crud.showDialog,
+    editingId: crud.editingId,
+    form: crud.form,
     dialogTitle,
     isSaving,
-    createMutation,
-    updateMutation,
     statusMutation,
     handleSearch,
-    openCreate,
+    openCreate: crud.openCreate,
     openEdit,
     handleSubmit,
-    handleDelete,
     toggleStatus,
   }
 }

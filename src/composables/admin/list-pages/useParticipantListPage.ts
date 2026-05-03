@@ -8,7 +8,7 @@ import {
   updateParticipant,
 } from '@/api/event/participant'
 import type { ParticipantCreateRequest, ParticipantUpdateRequest, ParticipantVO } from '@/api/event'
-import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 type ParticipantForm = {
   name: string

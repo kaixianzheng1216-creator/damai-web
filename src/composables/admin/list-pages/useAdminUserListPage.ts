@@ -57,7 +57,7 @@ export function useAdminUserListPage(): {
 
   const statusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: number }) =>
-      updateAdminUserStatus(id, status),
+      updateAdminUserStatus(id, status as 0 | 1),
     onSuccess: invalidate,
   })
 

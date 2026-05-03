@@ -34,5 +34,5 @@ export const updateCity = (id: string, data: CityUpdateRequest): Promise<void> =
 export const deleteCity = (id: string): Promise<void> =>
   request.del<void>(`/api/event/admin/cities/${id}`)
 
-export const updateCityFeatured = (id: string, isFeatured: number): Promise<void> =>
+export const updateCityFeatured = (id: string, isFeatured: 0 | 1): Promise<void> =>
   request.patch<void>(`/api/event/admin/cities/${id}/featured`, { isFeatured })

@@ -3,6 +3,7 @@ import { formatDateTime } from '@/utils/format'
 import { getTicketStatusClass } from '@/utils/statusMappers'
 import { Badge } from '@/components/common/ui/badge'
 import ErrorState from '@/components/common/ErrorState.vue'
+import LoadingState from '@/components/common/LoadingState.vue'
 import { useTicketDetailPage } from '@/composables/ticket'
 import { PASSENGER_CERT_TYPES } from '@/constants'
 
@@ -22,9 +23,7 @@ function getCertTypeLabel(value?: number) {
           返回
         </Button>
 
-        <div v-if="isLoading" class="flex min-h-[400px] items-center justify-center">
-          <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
-        </div>
+        <LoadingState v-if="isLoading" />
 
         <ErrorState
           v-else-if="isError || isEmpty"

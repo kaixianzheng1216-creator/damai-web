@@ -5,8 +5,8 @@ import { toast } from 'vue3-toastify'
 import { adminBatchAddParticipants, adminDeleteEventParticipant } from '@/api/event/event'
 import { fetchAdminParticipantsPage } from '@/api/event/participant'
 import type { EventParticipantBatchAddRequest, EventParticipantVO } from '@/api/event'
-import { queryKeys, TOAST_COPY } from '@/constants'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { queryKeys, TOAST_COPY, CONFIRM_COPY } from '@/constants'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
 import { useQueryEnabled } from '@/composables/common/useQueryEnabled'
 
 interface UseEventParticipantsTabOptions {
@@ -19,7 +19,7 @@ const participantPageSize = 10
 
 export function useEventParticipantsTab(options: UseEventParticipantsTabOptions) {
   const queryClient = useQueryClient()
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
 
   const showParticipantDialog = ref(false)
   const participantDialogEnabled = useQueryEnabled(showParticipantDialog)
@@ -109,8 +109,10 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
   }
 
   const handleRemoveParticipant = (eventParticipant: EventParticipantVO) => {
-    openConfirm('确认移除', `确认移除参与方「${eventParticipant.participant.name}」？`, () =>
-      removeParticipantMutation.mutateAsync(eventParticipant.id),
+    openConfirm(
+      CONFIRM_COPY.remove,
+      `确认移除参与方「${eventParticipant.participant.name}」？`,
+      () => removeParticipantMutation.mutateAsync(eventParticipant.id),
     )
   }
 

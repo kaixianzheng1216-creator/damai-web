@@ -39,7 +39,7 @@ import {
   type ServiceOptionUpdateRequest,
 } from '@/api/event'
 import {
-  closeAdminWorkOrder,
+  cancelAdminWorkOrder,
   createTicketOrder,
   createRefund,
   fetchAdminWorkOrderById,
@@ -480,7 +480,7 @@ describe('API OpenAPI contracts', () => {
     })
 
     vi.clearAllMocks()
-    await closeAdminWorkOrder('work-order-1')
+    await cancelAdminWorkOrder('work-order-1')
     expectRequestMatchesOpenApi({
       service: 'order',
       method: 'post',

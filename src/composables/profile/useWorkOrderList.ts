@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { closeMyWorkOrder, fetchMyWorkOrderPage, fetchMyWorkOrderById } from '@/api/trade'
+import { cancelMyWorkOrder, fetchMyWorkOrderPage, fetchMyWorkOrderById } from '@/api/trade'
 import {
   WORK_ORDER_PAGE_SIZE,
   WORK_ORDER_STATUS,
@@ -114,7 +114,7 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
   }
 
   const closeWorkOrderMutation = useMutation({
-    mutationFn: closeMyWorkOrder,
+    mutationFn: cancelMyWorkOrder,
     onSuccess: async () => {
       await invalidateWorkOrders()
     },

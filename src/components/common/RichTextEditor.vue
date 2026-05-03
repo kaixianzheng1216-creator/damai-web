@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import '@/styles/rich-text.css'
 
 const props = withDefaults(
   defineProps<{
@@ -30,7 +31,7 @@ const editor = useEditor({
     }),
   ],
   editorProps: {
-    attributes: { class: 'tiptap-editor', 'aria-label': props.ariaLabel },
+    attributes: { class: 'tiptap-editor rich-text', 'aria-label': props.ariaLabel },
   },
   onUpdate({ editor }) {
     emit('update:modelValue', editor.getHTML())
@@ -200,7 +201,7 @@ const clearFormatting = () => {
   background: transparent;
 }
 .tb:hover:not(:disabled) {
-  background-color: rgba(0, 0, 0, 0.07);
+  background: rgb(0 0 0 / 0.07);
   color: #111827;
 }
 .tb:disabled {
@@ -208,13 +209,13 @@ const clearFormatting = () => {
   pointer-events: none;
 }
 .tb-on {
-  background-color: rgba(0, 0, 0, 0.1);
+  background: rgb(0 0 0 / 0.1);
   color: #111827;
 }
 .tb-sep {
   width: 1px;
   height: 18px;
-  background-color: #e5e7eb;
+  background: #e5e7eb;
   margin: 0 4px;
   flex-shrink: 0;
 }
@@ -224,41 +225,7 @@ const clearFormatting = () => {
 .tiptap-editor {
   min-height: 180px;
   padding: 12px 16px;
-  font-size: 0.9rem;
-  line-height: 1.7;
   outline: none;
-  text-align: left;
-}
-.tiptap-editor h2 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0.875rem 0 0.4rem;
-}
-.tiptap-editor h3 {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.35rem;
-}
-.tiptap-editor h4 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0.7rem 0 0.3rem;
-}
-.tiptap-editor p {
-  margin: 0.25rem 0;
-}
-.tiptap-editor ul {
-  list-style: disc;
-  padding-left: 1.25rem;
-  margin: 0.5rem 0;
-}
-.tiptap-editor ol {
-  list-style: decimal;
-  padding-left: 1.25rem;
-  margin: 0.5rem 0;
-}
-.tiptap-editor li + li {
-  margin-top: 0.2rem;
 }
 .tiptap-editor p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);

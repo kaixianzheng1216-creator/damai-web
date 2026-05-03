@@ -1,62 +1,15 @@
-{
-  "active_plan": "F:\\workspace4graduationproject\\damai-web\\.sisyphus\\plans\\card-status-refactor.md",
-  "started_at": "2026-05-02T14:28:18.361Z",
-  "session_ids": [
-    "ses_21954093dffeWHnhu9VhzyNDN7",
-    "ses_216df0c47ffe6szj6w9kE2Gst7",
-    "ses_216dec8d0ffetxWVwERbr8qLTr"
-  ],
-  "session_origins": {
-    "ses_21954093dffeWHnhu9VhzyNDN7": "direct",
-    "ses_216df0c47ffe6szj6w9kE2Gst7": "appended",
-    "ses_216dec8d0ffetxWVwERbr8qLTr": "appended"
-  },
-  "plan_name": "card-status-refactor",
-  "agent": "atlas",
-  "task_sessions": {
-    "todo:1": {
-      "task_key": "todo:1",
-      "task_label": "1",
-      "task_title": "Add `#topRight` slot to `CardListItem.vue`",
-      "session_id": "ses_216e7ffc0ffevkEa6a3k4B11IW",
-      "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-05-02T14:30:42.837Z"
-    },
-    "todo:2": {
-      "task_key": "todo:2",
-      "task_label": "2",
-      "task_title": "`OrderCard.vue` — move status badge to `#topRight`",
-      "session_id": "ses_216e53b1effeol2pyb2wcvSnTm",
-      "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-05-02T14:33:16.462Z"
-    },
-    "todo:3": {
-      "task_key": "todo:3",
-      "task_label": "3",
-      "task_title": "`TicketCard.vue` — move status to `#topRight`, keep button in `#bottomRight`",
-      "session_id": "ses_216e3a5afffeZOSRZeRLqM0aaz",
-      "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-05-02T14:35:17.281Z"
-    },
-    "todo:4": {
-      "task_key": "todo:4",
-      "task_label": "4",
-      "task_title": "`ProfileWorkOrdersSection.vue` — move status to `#topRight`",
-      "session_id": "ses_216e1e488ffeaKzQ6lIbdJkf3d",
-      "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-05-02T14:37:05.487Z"
-    },
-    "final-wave:f1": {
-      "task_key": "final-wave:f1",
-      "task_label": "F1",
-      "task_title": "**Plan Compliance Audit** — `oracle`",
-      "session_id": "ses_216dec8d0ffetxWVwERbr8qLTr",
-      "agent": "oracle",
-      "updated_at": "2026-05-02T14:42:47.281Z"
-    }
-  }
+﻿{
+    "agent":  "atlas",
+    "session_ids":  [
+                        "ses_212f32c47ffe643IbMuGScC5rq"
+                    ],
+    "active_plan":  "F:\\workspace4graduationproject\\damai-web\\.sisyphus\\plans\\refactor-cleanup.md",
+    "session_origins":  {
+                            "ses_212f32c47ffe643IbMuGScC5rq":  "direct"
+                        },
+    "task_sessions":  {
+
+                      },
+    "plan_name":  "refactor-cleanup",
+    "started_at":  "2026-05-03T17:54:56.434Z"
 }

@@ -4,8 +4,8 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { adminBatchAddSessions, adminDeleteSession, adminUpdateSession } from '@/api/event/event'
 import type { SessionItem, SessionUpdateRequest, SessionVO } from '@/api/event'
-import { queryKeys, TOAST_COPY, FORM_COPY } from '@/constants'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { queryKeys, TOAST_COPY, FORM_COPY, CONFIRM_COPY } from '@/constants'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
 import { formatDateTimeLocalInput } from '@/utils/format'
 
 interface UseSessionListOptions {
@@ -21,7 +21,7 @@ type BatchSessionRow = {
 
 export function useSessionList(options: UseSessionListOptions) {
   const queryClient = useQueryClient()
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
 
   const showSessionDialog = ref(false)
   const editingSessionId = ref<string | null>(null)
@@ -137,7 +137,7 @@ export function useSessionList(options: UseSessionListOptions) {
   }
 
   const handleDeleteSession = (session: SessionVO) => {
-    openConfirm('确认删除', `确认删除场次「${session.name}」？`, () =>
+    openConfirm(CONFIRM_COPY.delete, `确认删除场次「${session.name}」？`, () =>
       deleteSessionMutation.mutateAsync(session.id),
     )
   }

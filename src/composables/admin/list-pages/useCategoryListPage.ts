@@ -2,7 +2,7 @@ import { type Ref, type ComputedRef } from 'vue'
 import { useCategoryTree } from './useCategoryTree'
 import { useCategoryDialog } from './useCategoryDialog'
 import type { CategoryCreateRequest, CategoryUpdateRequest, CategoryVO } from '@/api/event'
-import type { ConfirmDialogState } from '@/composables/common/useConfirmDialog'
+import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 export { useCategoryTree } from './useCategoryTree'
 export { useCategoryDialog } from './useCategoryDialog'

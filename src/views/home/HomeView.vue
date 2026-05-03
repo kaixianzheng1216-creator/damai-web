@@ -2,6 +2,7 @@
 import { defineAsyncComponent } from 'vue'
 import { useHomePage } from '@/composables/home/useHomePage'
 import ErrorState from '@/components/common/ErrorState.vue'
+import LoadingState from '@/components/common/LoadingState.vue'
 
 const AIAssistant = defineAsyncComponent(() => import('@/components/common/AIAssistant.vue'))
 
@@ -10,10 +11,7 @@ const { banners, categories, eventSections, isLoading, isError } = useHomePage()
 
 <template>
   <div class="container mx-auto space-y-3 px-4 py-3 md:space-y-8 md:px-6 md:py-6">
-    <div v-if="isLoading" class="flex min-h-[400px] flex-col items-center justify-center space-y-4">
-      <icon-lucide-loader2 class="h-10 w-10 animate-spin text-primary" />
-      <p class="animate-pulse text-muted-foreground">正在为您加载精彩演出...</p>
-    </div>
+    <LoadingState v-if="isLoading" size="lg" message="正在为您加载精彩演出..." />
 
     <ErrorState v-else-if="isError" class="min-h-[60vh]" />
 

@@ -7,7 +7,9 @@ import EventPassengerDialog from '@/components/features/event/EventPassengerDial
 import EventDetailHero from '@/components/features/event/EventDetailHero.vue'
 import EventDetailSidebar from '@/components/features/event/EventDetailSidebar.vue'
 import ErrorState from '@/components/common/ErrorState.vue'
+import LoadingState from '@/components/common/LoadingState.vue'
 import { useEventDetailPage } from '@/composables/event/useEventDetailPage'
+import '@/styles/rich-text.css'
 
 const {
   activeTab,
@@ -57,9 +59,7 @@ const sanitizedDescription = computed(() =>
 
 <template>
   <div class="container mx-auto px-4 py-6 md:px-6">
-    <div v-if="isLoading" class="flex min-h-[520px] flex-center">
-      <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
-    </div>
+    <LoadingState v-if="isLoading" min-height="520px" />
 
     <ErrorState
       v-else-if="isError || !detail"
@@ -117,7 +117,7 @@ const sanitizedDescription = computed(() =>
             <h2 class="text-xl font-medium text-foreground">活动描述</h2>
             <div
               v-if="sanitizedDescription"
-              class="mt-5 rich-text-content"
+              class="mt-5 rich-text"
               v-html="sanitizedDescription"
             ></div>
           </template>
@@ -160,46 +160,3 @@ const sanitizedDescription = computed(() =>
     />
   </div>
 </template>
-
-<style>
-/* 富文本内容样式 - 与 RichTextEditor 保持一致 */
-.rich-text-content {
-  font-size: 0.9rem;
-  line-height: 1.7;
-  text-align: left;
-}
-.rich-text-content h2 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0.875rem 0 0.4rem;
-}
-.rich-text-content h3 {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.35rem;
-}
-.rich-text-content h4 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0.7rem 0 0.3rem;
-}
-.rich-text-content p {
-  margin: 0.25rem 0;
-}
-.rich-text-content ul {
-  list-style: disc;
-  padding-left: 1.25rem;
-  margin: 0.5rem 0;
-}
-.rich-text-content ol {
-  list-style: decimal;
-  padding-left: 1.25rem;
-  margin: 0.5rem 0;
-}
-.rich-text-content li + li {
-  margin-top: 0.2rem;
-}
-.rich-text-content strong {
-  font-weight: 700;
-}
-</style>

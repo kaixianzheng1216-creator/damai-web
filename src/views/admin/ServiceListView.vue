@@ -5,7 +5,6 @@ import {
   createServiceColumns,
   createServiceOptionColumns,
 } from '@/components/admin/listPageColumns'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { Checkbox } from '@/components/common/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
@@ -70,9 +69,12 @@ const optionColumns = createServiceOptionColumns({
     :current-page="currentPage"
     :page-size="pageSize"
     title="服务保障管理"
+    :confirm-dialog="confirmDialog"
     @create="openCreateService"
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"
+    @close-confirm="closeConfirm"
+    @confirm="handleConfirm"
   >
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
@@ -165,15 +167,4 @@ const optionColumns = createServiceOptionColumns({
       </div>
     </div>
   </AdminFormDialog>
-
-  <ConfirmDialog
-    :open="confirmDialog.open"
-    :title="confirmDialog.title"
-    :description="confirmDialog.description"
-    :confirm-text="confirmDialog.confirmText"
-    :confirm-variant="confirmDialog.confirmVariant"
-    :loading="confirmDialog.isProcessing"
-    @close="closeConfirm"
-    @confirm="handleConfirm"
-  />
 </template>

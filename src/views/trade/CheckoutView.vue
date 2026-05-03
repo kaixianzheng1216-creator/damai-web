@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { PAYMENT_COPY } from '@/constants'
 import { Button } from '@/components/common/ui/button'
 import ErrorState from '@/components/common/ErrorState.vue'
+import LoadingState from '@/components/common/LoadingState.vue'
 import {
   CheckoutOrderCard,
   CheckoutPaymentPanel,
@@ -58,9 +59,7 @@ const handleCancelOrder = () => {
 
 <template>
   <div class="container mx-auto px-4 py-6 md:px-6">
-    <div v-if="isLoading" class="flex min-h-[520px] items-center justify-center">
-      <icon-lucide-loader2 class="h-8 w-8 animate-spin text-primary" />
-    </div>
+    <LoadingState v-if="isLoading" min-height="520px" />
 
     <ErrorState
       v-else-if="isError || !order"

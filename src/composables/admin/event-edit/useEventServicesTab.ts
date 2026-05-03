@@ -9,8 +9,8 @@ import type {
   EventServiceGuaranteeVO,
   ServiceGuaranteeVO,
 } from '@/api/event'
-import { queryKeys, TOAST_COPY } from '@/constants'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { queryKeys, TOAST_COPY, CONFIRM_COPY } from '@/constants'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
 import { useQueryEnabled } from '@/composables/common/useQueryEnabled'
 
 interface UseEventServicesTabOptions {
@@ -26,7 +26,7 @@ interface SelectedService {
 
 export function useEventServicesTab(options: UseEventServicesTabOptions) {
   const queryClient = useQueryClient()
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
 
   const showServiceDialog = ref(false)
   const serviceDialogEnabled = useQueryEnabled(showServiceDialog)
@@ -127,8 +127,10 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
   }
 
   const handleRemoveService = (eventService: EventServiceGuaranteeVO) => {
-    openConfirm('确认移除', `确认移除服务保障「${eventService.serviceGuarantee.name}」？`, () =>
-      removeServiceMutation.mutateAsync(eventService.id),
+    openConfirm(
+      CONFIRM_COPY.remove,
+      `确认移除服务保障「${eventService.serviceGuarantee.name}」？`,
+      () => removeServiceMutation.mutateAsync(eventService.id),
     )
   }
 

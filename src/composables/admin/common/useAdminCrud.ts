@@ -1,6 +1,7 @@
 import { shallowRef, reactive, computed, watch, type UnwrapNestedRefs } from 'vue'
 import { useQuery, useMutation, useQueryClient, type QueryKey } from '@tanstack/vue-query'
-import { useConfirmDialog } from '@/composables/common/useConfirmDialog'
+import { useAppConfirmDialog } from '@/composables/common/useAppConfirmDialog'
+import { ADMIN_CRUD_COPY } from '@/constants'
 import type { PaginatedResponse } from '@/api/types'
 
 export type AdminCrudId = string
@@ -9,6 +10,7 @@ export interface AdminPageParams {
   page?: number
   size?: number
   name?: string
+  [key: string]: unknown
 }
 
 type FormCb<TForm, TResult> = (form: Readonly<UnwrapNestedRefs<TForm>>) => TResult
@@ -27,6 +29,7 @@ export function useAdminCrud<
   initialForm: TForm
   defaultPageSize?: number
   getDeleteConfirmMessage?: (item: TItem) => { title: string; description: string }
+  extraSearchParams?: MaybeRefOrGetter<Record<string, unknown>>
 }) {
   const {
     queryKeyBase,
@@ -37,20 +40,27 @@ export function useAdminCrud<
     initialForm,
     defaultPageSize = 10,
     getDeleteConfirmMessage,
+    extraSearchParams,
   } = options
 
   const queryClient = useQueryClient()
-  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useConfirmDialog()
+  const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
 
   const currentPage = shallowRef(1)
   const pageSize = shallowRef(defaultPageSize)
   const searchName = shallowRef('')
+
+  const extraParamsValue = computed<Record<string, unknown>>(() => {
+    if (!extraSearchParams) return {}
+    return (toValue(extraSearchParams) as Record<string, unknown> | null | undefined) ?? {}
+  })
 
   const queryKey = computed(() => [
     ...queryKeyBase,
     currentPage.value,
     pageSize.value,
     searchName.value,
+    ...Object.values(extraParamsValue.value),
   ])
 
   const { data, isLoading, refetch } = useQuery({
@@ -60,6 +70,7 @@ export function useAdminCrud<
         page: currentPage.value,
         size: pageSize.value,
         name: searchName.value || undefined,
+        ...extraParamsValue.value,
       }),
   })
 
@@ -71,7 +82,9 @@ export function useAdminCrud<
   const editingId = shallowRef<AdminCrudId | null>(null)
   const form = reactive({ ...initialForm }) as UnwrapNestedRefs<TForm>
 
-  const dialogTitle = computed(() => (editingId.value ? '编辑' : '新建'))
+  const dialogTitle = computed(() =>
+    editingId.value ? ADMIN_CRUD_COPY.edit : ADMIN_CRUD_COPY.create,
+  )
 
   const resetForm = () => {
     Object.assign(form, { ...initialForm })
@@ -119,7 +132,7 @@ export function useAdminCrud<
     onSuccess: invalidate,
   })
 
-  watch(searchName, () => {
+  watch([searchName, extraParamsValue], () => {
     currentPage.value = 1
   })
 
@@ -143,7 +156,10 @@ export function useAdminCrud<
   const handleDelete = (item: TItem) => {
     const { title, description } = getDeleteConfirmMessage
       ? getDeleteConfirmMessage(item)
-      : { title: '确认删除', description: '确认删除该项目？' }
+      : {
+          title: ADMIN_CRUD_COPY.confirmDeleteTitle,
+          description: ADMIN_CRUD_COPY.confirmDeleteDescription,
+        }
 
     openConfirm(title, description, async () => {
       await deleteMutation.mutateAsync(item.id)

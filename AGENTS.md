@@ -36,6 +36,8 @@
 | `npm run format:check` | Prettier 检查模式（CI 用）                                                                                         |
 
 > **提交前务必运行 `npm run ci`。** pre-commit hook（`.husky/pre-commit`）只运行 `lint-staged`（ESLint + Prettier 格式化 staged 文件），**不跑类型检查、测试和审计脚本**。依赖 CI 通过 `npm run ci`。
+>
+> `prepare: husky` 会在 `npm install` 时自动启用 git hooks，无需手动初始化。
 
 ## 项目结构
 
@@ -69,7 +71,7 @@ src/
   - `showError?: boolean` — 禁用自动 toast（**默认值因方法而异**：`get` 默认为 `true`，`post/put/patch/del` 默认为 `false`）
   - `rawResponse?: boolean` — 返回完整 `ApiResponse<T>` 而非只返回 `data`
 - **认证头按路径注入**：`/front/*` → `Authorization-User`，`/admin/*` → `Authorization-Admin`，由拦截器自动处理。
-- **响应归一化**：`requestTransforms.ts` 递归处理响应字段——所有 `id` / `*Id` 转为 `string`，`datetime-local` 转为 ISO 8601，分页数字字段转为 `number`。
+- **请求/响应归一化**：`requestTransforms.ts` 递归处理——响应中所有 `id` / `*Id` 转为 `string`，分页数字字段转为 `number`；请求数据中的 `datetime-local` 字段在发送前转为 ISO 8601。
 - **文件上传**：使用 `uploadFormData(url, file)`，内部构造 `FormData`。
 - **API 函数命名**：遵循 `fetchXxxPage`、`fetchXxxById`、`createXxx`、`updateXxx`、`deleteXxx`、`publishXxx`、`offlineXxx`。后台接口加 `Admin` 前缀（如 `fetchAdminEventPage`），当前用户视角使用 `My` 前缀（如 `fetchMyOrderPage`）。
 - **错误处理**：业务层可捕获 `ApiRequestError`（含 `code`、`response`、`status`）做精细处理。全局错误由 `request.ts` 兜底。
@@ -108,7 +110,8 @@ src/
 
 - **禁止在 Dialog 组件上使用 `v-if`**：ESLint 自定义规则 `dialog-no-vif-with-open` 强制检查。`v-if` 会跳过退出动画和副作用清理（scroll lock、focus trap），导致页面卡死。
 - **必须使用 `:open` prop 控制显示**，配合 `@update:open` 事件。
-- **所有业务 Dialog 使用 `useDialog()` 管理状态**（`open`、`data`、`isLoading`、`openDialog(payload?)`、`closeDialog()`）。
+- **所有业务 Dialog 使用 `useDialog()` 管理状态**（`open`、`data`、`isLoading`、`withLoading`、`openDialog(payload?)`、`closeDialog()`）。
+- `useDialog().withLoading`：包装异步函数的 loading 态管理 helper，接收 `() => Promise<void>`，自动设置/清除 `isLoading`。用于 Dialog 确认提交时包裹 mutation，确保 loading 状态在请求完成后正确复位。
 - **禁止 Dialog 套 Dialog**：两个弹窗同时 open 会导致 `DismissableLayer` 冲突。
 - 参考模板：`src/components/_templates/DialogTemplate.vue`、`FormDialogTemplate.vue`。
 
@@ -133,10 +136,19 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 
 视图负责接线：表格数据/分页/loading 来自 composable；搜索项通过 `v-model` 绑定；增删改调用 composable action。查询、mutation、确认弹窗状态、缓存失效都放在 page composable 中。
 
+**推荐使用 `useAdminCrud`（`src/composables/admin/common/useAdminCrud.ts`）**作为后台列表页 composable 的基础模式。它封装了分页、搜索、CRUD mutation、确认弹窗等通用逻辑，接受 4 个类型参数：
+
+- `TItem`：列表项类型（需含 `{ id: AdminCrudId }`）
+- `TForm`：表单数据类型
+- `TCreateRequest`：创建请求体类型（默认 `TForm`）
+- `TUpdateRequest`：更新请求体类型（默认 `Partial<TForm>`）
+
+配置项包括 `queryKeyBase`、`fetchPage`、`createItem`/`updateItem`/`deleteItem`、`initialForm`，返回 `list`、`totalRow`、`showDialog`、`form`、`handleSubmit`、`handleDelete` 等常用状态与方法。现有后台列表页应优先采用此模式，减少重复代码。
+
 ### 7. 路由 (`src/router/index.ts`)
 
 - 单文件路由配置，无模块拆分。
-- 三套布局：`MainLayout`（前台）、`AdminLayout`（后台）、`EmptyLayout`（登录页等）。
+- 三套布局：`MainLayout`（前台）、`AdminLayout`（后台）、`EmptyLayout`。登录页面不包裹布局组件，直接渲染。
 - 路由守卫使用两个 meta 标志：
   - `requiresAuth`：需要用户登录
   - `requiresAdmin`：需要管理员登录
@@ -146,7 +158,7 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 ### 8. 状态管理 (`src/stores/`)
 
 - 仅两个 Pinia store：`user.ts` 和 `admin.ts`。
-- 使用 `createAuthStore` composable（`@vueuse/core` 的 `useStorage`）持久化到 `localStorage`。
+- 使用 `createAuthStore` 自定义 composable（位于 `src/composables/common/`，内部基于 `@vueuse/core` 的 `useStorage`）持久化到 `localStorage`。
 - 统一模式：`ref` 存 token/info，computed `isLoggedIn`，`setXxxInfo(data, token?)`，`clearXxxInfo()`。
 
 ### 9. 自动导入配置
@@ -179,7 +191,7 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 - 默认 stale time: 5 分钟
 - 默认 GC time: 30 分钟
 - 窗口聚焦时不重新获取（`refetchOnWindowFocus: false`）
-- Query 与 Mutation 的注册发生在 `MainLayout.vue` / `AdminLayout.vue`
+- Query 与 Mutation 的注册发生在 `main.ts`
 
 ### 11. 样式与格式化
 

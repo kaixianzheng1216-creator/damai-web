@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, effectScope, nextTick, ref, type EffectScope } from 'vue'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
-import { closeMyWorkOrder, fetchMyWorkOrderPage, fetchMyWorkOrderById } from '@/api/trade'
+import { cancelMyWorkOrder, fetchMyWorkOrderPage, fetchMyWorkOrderById } from '@/api/trade'
 import { WORK_ORDER_STATUS } from '@/constants'
 import { useWorkOrderList } from '../useWorkOrderList'
 import type { PageResponseWorkOrderVO, WorkOrderDetailVO, WorkOrderVO } from '@/api/trade'
@@ -35,7 +35,7 @@ vi.mock('@/stores/user', () => ({
 vi.mock('@/api/trade', () => ({
   fetchMyWorkOrderPage: vi.fn(),
   fetchMyWorkOrderById: vi.fn(),
-  closeMyWorkOrder: vi.fn(),
+  cancelMyWorkOrder: vi.fn(),
 }))
 
 const createWorkOrder = (overrides: Partial<WorkOrderVO> = {}): WorkOrderVO => ({
@@ -206,7 +206,7 @@ describe('useWorkOrderList', () => {
   it('closes work order and invalidates queries', async () => {
     const workOrder = createWorkOrder()
     vi.mocked(fetchMyWorkOrderPage).mockResolvedValue(createPage([workOrder]))
-    vi.mocked(closeMyWorkOrder).mockResolvedValue(undefined)
+    vi.mocked(cancelMyWorkOrder).mockResolvedValue(undefined)
     const harness = setupWorkOrderList()
     cleanup = harness.cleanup
 
@@ -215,7 +215,7 @@ describe('useWorkOrderList', () => {
 
     await harness.result.confirmCloseWorkOrder()
 
-    expect(closeMyWorkOrder.mock.calls[0]?.[0]).toBe('wo-1')
+    expect(cancelMyWorkOrder.mock.calls[0]?.[0]).toBe('wo-1')
     expect(harness.invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['my-work-order-page'],
     })

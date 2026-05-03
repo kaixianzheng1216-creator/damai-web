@@ -70,6 +70,23 @@ export const TOAST_COPY = {
   avatarUploadFailed: '头像上传失败，请重试',
 } as const
 
+export const ADMIN_CRUD_COPY = {
+  edit: '编辑',
+  create: '新建',
+  confirmDeleteTitle: '确认删除',
+  confirmDeleteDescription: '确认删除该项目？',
+} as const
+
+export const TICKET_TYPE_COPY = {
+  editTitle: '编辑票种',
+  createTitle: '添加票种',
+} as const
+
+export const CONFIRM_COPY = {
+  delete: '确认删除',
+  remove: '确认移除',
+} as const
+
 export const FORM_COPY = {
   sessionAddFailedRetry: '添加失败，请重试',
   sessionUpdateFailedRetry: '更新失败，请重试',
@@ -81,15 +98,4 @@ export const FORM_COPY = {
   fillTotalQtyError: '请填写大于 0 的总库存',
   adjustFailedRetry: '调整失败，请重试',
   enterNonZeroAdjustQty: '请输入非 0 的调整数量',
-} as const
-
-export const COMMON_COPY = {
-  save: '保存',
-  cancel: '取消',
-  confirm: '确认',
-  delete: '删除',
-  saving: '保存中...',
-  loading: '加载中...',
-  loadFailed: '加载失败，请稍后重试',
-  noData: '暂无数据',
 } as const
