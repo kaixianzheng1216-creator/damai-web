@@ -1,0 +1,59 @@
+{
+  "active_plan": "F:\\workspace4graduationproject\\damai-web\\.sisyphus\\plans\\codebase-optimization.md",
+  "started_at": "2026-05-03T14:36:12.006Z",
+  "session_ids": [
+    "ses_211d88887ffe27t61IBu06y3tW"
+  ],
+  "session_origins": {
+    "ses_211d88887ffe27t61IBu06y3tW": "direct"
+  },
+  "plan_name": "codebase-optimization",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "清理6个未使用依赖（package.json）",
+      "session_id": "ses_211ba0842ffeWCqv4N0BAcB5dO",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-03T14:42:07.108Z"
+    },
+    "todo:2": {
+      "task_key": "todo:2",
+      "task_label": "2",
+      "task_title": "修复20个img标签的alt属性（16个文件）",
+      "session_id": "ses_211b43654ffeVfd24rcsuVrQun",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-03T14:54:01.495Z"
+    },
+    "todo:3": {
+      "task_key": "todo:3",
+      "task_label": "3",
+      "task_title": "修复index.html标题和lang属性",
+      "session_id": "ses_211a9d2c1ffeYwnU6OGz3UhVuk",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-03T14:56:23.529Z"
+    },
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "移除冗余staleTime覆盖（2个文件）",
+      "session_id": "ses_211a81f9fffe44o2H4wwwHMyHQ",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-03T14:59:26.534Z"
+    },
+    "todo:5": {
+      "task_key": "todo:5",
+      "task_label": "5",
+      "task_title": "规范化useWorkOrderChat.ts中的console.warn（保持console.warn但加模块前缀）",
+      "session_id": "ses_211a4799dffenvsTLy3XvaxUpK",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-03T15:04:32.855Z"
+    }
+  }
+}

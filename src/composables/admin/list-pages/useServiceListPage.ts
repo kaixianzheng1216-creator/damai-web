@@ -1,4 +1,4 @@
-import { computed, reactive, ref, watch, type Ref, type ComputedRef } from 'vue'
+import { computed, reactive, ref, type Ref, type ComputedRef } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { useAdminCrud } from '../common/useAdminCrud'
@@ -42,7 +42,7 @@ export function useServiceListPage(): {
   list: ComputedRef<ServiceGuaranteeVO[]>
   totalRow: ComputedRef<number>
   totalPages: ComputedRef<number>
-  selectedService: Ref<ServiceGuaranteeVO | null>
+  selectedService: ComputedRef<ServiceGuaranteeVO | null>
   currentOptions: ComputedRef<ServiceGuaranteeVO['options']>
   showServiceDialog: Ref<boolean>
   showOptionsDialog: Ref<boolean>
@@ -139,19 +139,15 @@ export function useServiceListPage(): {
 
   // ── Selected service tracking ──
 
-  const selectedService = ref<ServiceGuaranteeVO | null>(null)
-  const currentOptions = computed(() => selectedService.value?.options ?? [])
+  const selectedServiceId = ref<string | null>(null)
 
-  const syncSelectedService = () => {
-    const serviceId = selectedService.value?.id
-    if (!serviceId) return
-    const fresh = crud.list.value.find((service) => service.id === serviceId)
-    if (fresh) selectedService.value = fresh
-  }
-
-  watch(crud.list, () => {
-    syncSelectedService()
+  const selectedService = computed<ServiceGuaranteeVO | null>(() => {
+    const serviceId = selectedServiceId.value
+    if (!serviceId) return null
+    return crud.list.value.find((service) => service.id === serviceId) ?? null
   })
+
+  const currentOptions = computed(() => selectedService.value?.options ?? [])
 
   // ── Options management ──
 
@@ -174,7 +170,7 @@ export function useServiceListPage(): {
 
   const openManageOptions = (row: ServiceGuaranteeVO) => {
     const fresh = crud.list.value.find((service) => service.id === row.id)
-    selectedService.value = fresh ?? row
+    selectedServiceId.value = fresh?.id ?? row.id
     showOptionsDialog.value = true
   }
 

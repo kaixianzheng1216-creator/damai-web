@@ -1,0 +1,4 @@
+﻿
+> damai-web@0.0.0 lint:check
+> eslint . --cache=false
+
