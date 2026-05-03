@@ -76,7 +76,7 @@ const handleParticipantDialogOpenChange = (value: boolean) => {
           <div class="flex items-center gap-3">
             <img
               :src="participant.participant.avatarUrl"
-              :alt="participant.participant.name"
+              alt="参与者头像"
               class="w-8 h-8 rounded-full object-cover"
             />
             <div class="font-medium">{{ participant.participant.name }}</div>
@@ -139,7 +139,7 @@ const handleParticipantDialogOpenChange = (value: boolean) => {
             />
             <img
               :src="participant.avatarUrl"
-              :alt="participant.name"
+              alt="参与者封面"
               class="w-9 h-9 rounded-full object-cover"
             />
             <Label

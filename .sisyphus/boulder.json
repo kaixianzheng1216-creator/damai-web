@@ -54,6 +54,42 @@
       "agent": "Sisyphus-Junior",
       "category": "quick",
       "updated_at": "2026-05-03T15:04:32.855Z"
+    },
+    "todo:7": {
+      "task_key": "todo:7",
+      "task_label": "7",
+      "task_title": "用独立tiptap扩展替换StarterKit（减少bundle）",
+      "session_id": "ses_211932c0bffemMHcuA1tAu0NVU",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-03T15:46:20.218Z"
+    },
+    "todo:8": {
+      "task_key": "todo:8",
+      "task_label": "8",
+      "task_title": "用useAdminCrud重构6个admin CRUD composable",
+      "session_id": "ses_2117a3afcffexFUnsE15O4coJl",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-05-03T15:56:16.868Z"
+    },
+    "todo:10": {
+      "task_key": "todo:10",
+      "task_label": "10",
+      "task_title": "为3个admin列表页添加虚拟滚动",
+      "session_id": "ses_21170fc0effe7SQV3FgGWwSU6a",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-05-03T16:13:40.417Z"
+    },
+    "final-wave:f1": {
+      "task_key": "final-wave:f1",
+      "task_label": "F1",
+      "task_title": "**Plan Compliance Audit** — `oracle`",
+      "session_id": "ses_211500ef9ffeylVMnYZtQg7NTz",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-03T16:36:44.100Z"
     }
   }
 }

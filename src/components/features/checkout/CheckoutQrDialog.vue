@@ -39,7 +39,7 @@ defineEmits<{
         <div v-if="qrCodeBase64" class="text-center">
           <img
             :src="qrCodeBase64"
-            :alt="PAYMENT_COPY.qrCodeAlt"
+            alt="支付二维码"
             class="mx-auto h-52 w-52 rounded-md border border-border"
           />
           <p class="mt-2 text-xs text-muted-foreground">{{ PAYMENT_COPY.tradeNo }}{{ tradeNo }}</p>

@@ -92,7 +92,7 @@ const renderCard = (item: AiChatItem) => {
         <img
           v-if="msg.role === 'ai'"
           :src="assistantAvatar"
-          :alt="AI_CHAT_COPY.title"
+          alt="AI助手头像"
           class="mr-2 mt-1 h-7 w-7 shrink-0 rounded-full object-cover"
         />
 
@@ -134,7 +134,7 @@ const renderCard = (item: AiChatItem) => {
         <img
           v-if="msg.role === 'user' && userStore.isLoggedIn"
           :src="userStore.userInfo?.avatarUrl || AVATAR_PLACEHOLDERS.SMALL"
-          alt="我"
+          alt="用户头像"
           class="ml-2 mt-1 h-7 w-7 shrink-0 rounded-full object-cover"
         />
         <div
@@ -148,7 +148,7 @@ const renderCard = (item: AiChatItem) => {
       <div v-if="isPending" class="flex justify-start">
         <img
           :src="assistantAvatar"
-          :alt="AI_CHAT_COPY.title"
+          alt="AI助手头像"
           class="mr-2 mt-1 h-7 w-7 shrink-0 rounded-full object-cover"
         />
         <div class="rounded-[2px_16px_16px_16px] bg-card px-4 py-3 shadow-sm">

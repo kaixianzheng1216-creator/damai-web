@@ -40,7 +40,7 @@ watch(api, (newApi) => {
             <source :srcset="banner.mobileImageUrl || banner.imageUrl" media="(max-width: 767px)" />
             <img
               :src="banner.imageUrl"
-              :alt="banner.title"
+              alt="首页Banner"
               loading="lazy"
               class="h-full w-full object-cover"
             />

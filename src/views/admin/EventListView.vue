@@ -47,6 +47,7 @@ const columns = createEventColumns({ openEdit, handleDelete, handlePublish, hand
     :total-row="totalRow"
     title="活动管理"
     :confirm-dialog="confirmDialog"
+    virtual-scroll
     @create="openCreate"
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"

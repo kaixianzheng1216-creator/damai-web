@@ -62,7 +62,7 @@ const canBuyNow = computed(() => !props.isCreatingOrder && !purchaseDisabledReas
     <div class="aspect-[3/4] w-[220px] flex-shrink-0 overflow-hidden rounded-sm">
       <img
         :src="detail.event.coverUrl"
-        :alt="detail.event.name"
+        alt="活动宣传图"
         loading="lazy"
         class="h-full w-full object-cover"
       />

@@ -208,12 +208,24 @@ function createWorkOrderChat() {
     })
   }
 
-  function onReconnect(callback: () => void): void {
-    reconnectCallbacks.push(callback)
+  function offReconnect(callback: () => void): void {
+    const idx = reconnectCallbacks.indexOf(callback)
+    if (idx !== -1) reconnectCallbacks.splice(idx, 1)
   }
 
-  function onError(callback: (error: string) => void): void {
+  function offError(callback: (msg: string) => void): void {
+    const idx = errorCallbacks.indexOf(callback)
+    if (idx !== -1) errorCallbacks.splice(idx, 1)
+  }
+
+  function onReconnect(callback: () => void): () => void {
+    reconnectCallbacks.push(callback)
+    return () => offReconnect(callback)
+  }
+
+  function onError(callback: (msg: string) => void): () => void {
     errorCallbacks.push(callback)
+    return () => offError(callback)
   }
 
   function doDisconnect(): void {
@@ -244,7 +256,9 @@ function createWorkOrderChat() {
     unsubscribe,
     sendMessage,
     onReconnect,
+    offReconnect,
     onError,
+    offError,
   }
 }
 

@@ -101,7 +101,8 @@ const startScanner = async () => {
     controls = await reader.decodeFromVideoDevice(undefined, videoRef.value, (res, _err) => {
       if (res) handleScanResult(res.getText())
     })
-  } catch {
+  } catch (error) {
+    console.error('[ScanCheckin] Scan failed:', error)
     showResult('error', '摄像头启动失败，请检查权限或使用手动输入')
   }
 }
@@ -147,7 +148,8 @@ const doImportAndStart = async () => {
         startScanner()
       }, 100)
     }
-  } catch {
+  } catch (error) {
+    console.error('[ScanCheckin] Scanner cleanup failed:', error)
     loadingScanner.value = false
     importError.value = true
     zxingImportPromise = null // Allow retry

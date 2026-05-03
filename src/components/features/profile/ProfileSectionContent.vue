@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import ProfileFollowedEventsSection from './ProfileFollowedEventsSection.vue'
 import ProfileFollowedParticipantsSection from './ProfileFollowedParticipantsSection.vue'
 import ProfileInfoSection from './ProfileInfoSection.vue'
@@ -6,7 +7,8 @@ import ProfileOrdersSection from './ProfileOrdersSection.vue'
 import ProfilePassengersSection from './ProfilePassengersSection.vue'
 import ProfileTicketsSection from './ProfileTicketsSection.vue'
 import ProfileWorkOrdersSection from './ProfileWorkOrdersSection.vue'
-import type { ProfileSectionKey } from '@/constants'
+import type { ProfileInfo } from '@/api/account'
+import type { ProfileSectionKey, OrderFilterKey, WorkOrderFilterKey } from '@/constants'
 import type { usePassengerManagement } from '@/composables/profile/usePassengerManagement'
 import type { useOrderList } from '@/composables/profile/useOrderList'
 import type { useTicketList } from '@/composables/profile/useTicketList'
@@ -21,7 +23,7 @@ type WorkOrderListState = ReturnType<typeof useWorkOrderList>
 type FollowListState = ReturnType<typeof useFollowList>
 type UserInfoState = ReturnType<typeof useProfileUserInfo>
 
-defineProps<{
+const props = defineProps<{
   activeSection: ProfileSectionKey
   userInfo: UserInfoState
   passengerManagement: PassengerManagementState
@@ -30,13 +32,63 @@ defineProps<{
   workOrderList: WorkOrderListState
   followList: FollowListState
 }>()
+
+const emit = defineEmits<{
+  'update:info-form': [value: ProfileInfo]
+  'update:order-filter': [value: OrderFilterKey]
+  'update:work-order-filter': [value: WorkOrderFilterKey]
+}>()
+
+// Local copies to avoid mutating props
+const localInfoForm = ref<ProfileInfo>({ ...props.userInfo.infoForm })
+const localOrderFilter = ref<OrderFilterKey>(props.orderList.orderFilter.value)
+const localWorkOrderFilter = ref<WorkOrderFilterKey>(props.workOrderList.workOrderFilter.value)
+
+// Sync prop → local
+watch(
+  () => ({ ...props.userInfo.infoForm }),
+  (v) => {
+    localInfoForm.value = v
+  },
+  { deep: true },
+)
+
+watch(
+  () => props.orderList.orderFilter.value,
+  (v) => {
+    localOrderFilter.value = v
+  },
+)
+
+watch(
+  () => props.workOrderList.workOrderFilter.value,
+  (v) => {
+    localWorkOrderFilter.value = v
+  },
+)
+
+// Sync local → parent
+watch(
+  localInfoForm,
+  (v) => {
+    emit('update:info-form', v)
+  },
+  { deep: true },
+)
+
+watch(localOrderFilter, (v) => {
+  emit('update:order-filter', v)
+})
+
+watch(localWorkOrderFilter, (v) => {
+  emit('update:work-order-filter', v)
+})
 </script>
 
 <template>
-  <!-- eslint-disable vue/no-mutating-props -->
   <ProfileInfoSection
     v-if="activeSection === 'info'"
-    v-model:form="userInfo.infoForm"
+    v-model:form="localInfoForm"
     :display-avatar="userInfo.displayAvatar.value"
     :years="userInfo.years"
     :months="userInfo.months"
@@ -62,13 +114,12 @@ defineProps<{
 
   <ProfileOrdersSection
     v-else-if="activeSection === 'orders'"
-    :order-filter="orderList.orderFilter.value"
+    v-model:order-filter="localOrderFilter"
     :paginated-orders="orderList.paginatedOrders.value"
     :order-page="orderList.orderPage.value"
     :order-page-size="orderList.orderPageSize.value"
     :order-total-pages="orderList.orderTotalPages.value"
     :order-total-row="orderList.orderTotalRow.value"
-    @update:order-filter="orderList.orderFilter.value = $event"
     @update:order-page="orderList.updateOrderPage"
     @update:order-page-size="orderList.updateOrderPageSize"
   />
@@ -86,13 +137,12 @@ defineProps<{
 
   <ProfileWorkOrdersSection
     v-else-if="activeSection === 'work-orders'"
-    :work-order-filter="workOrderList.workOrderFilter.value"
+    v-model:work-order-filter="localWorkOrderFilter"
     :work-orders="workOrderList.workOrders.value"
     :work-order-page="workOrderList.workOrderPage.value"
     :work-order-page-size="workOrderList.workOrderPageSize.value"
     :work-order-total-pages="workOrderList.workOrderTotalPages.value"
     :work-order-total-row="workOrderList.workOrderTotalRow.value"
-    @update:work-order-filter="workOrderList.workOrderFilter.value = $event"
     @update:work-order-page="workOrderList.updateWorkOrderPage"
     @update:work-order-page-size="workOrderList.updateWorkOrderPageSize"
     @open-detail="workOrderList.openWorkOrderDetail"
@@ -121,5 +171,4 @@ defineProps<{
     @update:page-size="followList.updateFollowedParticipantsPageSize"
     @toggle-follow="followList.handleUnfollowParticipant"
   />
-  <!-- eslint-enable vue/no-mutating-props -->
 </template>

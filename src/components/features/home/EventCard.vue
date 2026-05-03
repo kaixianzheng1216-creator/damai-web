@@ -13,7 +13,7 @@ const formatPriceText = (priceText: string) => priceText.replace(/\s*元$/, '\u0
     <div class="relative mb-2 aspect-[3/4] flex-shrink-0 overflow-hidden rounded-lg md:mb-3">
       <img
         :src="event.coverImageUrl"
-        :alt="event.seriesName"
+        alt="活动封面"
         loading="lazy"
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />

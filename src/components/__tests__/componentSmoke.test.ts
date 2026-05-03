@@ -133,7 +133,7 @@ describe('component smoke coverage', () => {
       },
     })
 
-    expect(wrapper.get('img').attributes('alt')).toBe('个人头像')
+    expect(wrapper.get('img').attributes('alt')).toBe('用户头像')
 
     await findButtonByText(wrapper, '保存').trigger('click')
     expect(wrapper.emitted('save')).toHaveLength(1)

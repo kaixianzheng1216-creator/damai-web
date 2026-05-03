@@ -44,6 +44,7 @@ const columns = createTicketColumns()
     :total-row="totalRow"
     title="电子票管理"
     :show-create-button="false"
+    virtual-scroll
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"
   >

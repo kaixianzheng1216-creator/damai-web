@@ -98,7 +98,8 @@ export const useHeaderState = () => {
   const handleLogout = async () => {
     try {
       await logout()
-    } catch {
+    } catch (error) {
+      console.error('[useHeaderState] Logout failed:', error)
       // 忽略登出错误，继续清除本地状态
     } finally {
       userStore.clearUserInfo()

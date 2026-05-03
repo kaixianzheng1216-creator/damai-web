@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
+import Document from '@tiptap/extension-document'
+import Paragraph from '@tiptap/extension-paragraph'
+import Text from '@tiptap/extension-text'
+import Bold from '@tiptap/extension-bold'
+import Heading from '@tiptap/extension-heading'
+import BulletList from '@tiptap/extension-bullet-list'
+import OrderedList from '@tiptap/extension-ordered-list'
+import ListItem from '@tiptap/extension-list-item'
+import History from '@tiptap/extension-history'
 import '@/styles/rich-text.css'
 
 const props = withDefaults(
@@ -22,13 +30,15 @@ const emit = defineEmits<{
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
-    StarterKit.configure({
-      blockquote: false,
-      code: false,
-      codeBlock: false,
-      horizontalRule: false,
-      strike: false,
-    }),
+    Document,
+    Paragraph,
+    Text,
+    Bold,
+    Heading,
+    BulletList,
+    OrderedList,
+    ListItem,
+    History,
   ],
   editorProps: {
     attributes: { class: 'tiptap-editor rich-text', 'aria-label': props.ariaLabel },

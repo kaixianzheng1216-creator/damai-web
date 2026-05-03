@@ -128,7 +128,8 @@ const handleFile = async (file: File) => {
 
     const url = await uploadFile(file)
     emit('update:modelValue', url)
-  } catch {
+  } catch (error) {
+    console.error('[ImageUpload] Upload failed:', error)
     setUploadError('上传失败，请稍后重试')
   } finally {
     isUploading.value = false
@@ -182,7 +183,7 @@ const handleDragLeave = (e: DragEvent) => {
     >
       <img
         :src="modelValue"
-        :alt="previewAlt"
+        alt="已上传图片预览"
         class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
       />
       <div

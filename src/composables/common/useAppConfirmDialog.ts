@@ -88,7 +88,7 @@ export function useAppConfirmDialog(): {
       await confirmDialog.value.onConfirm()
       confirmDialog.value.open = false
     } catch {
-      // Keep the dialog open so the user can retry after the mutation layer reports the error.
+      // 对话框保持打开，允许重试
     } finally {
       confirmDialog.value.isProcessing = false
     }

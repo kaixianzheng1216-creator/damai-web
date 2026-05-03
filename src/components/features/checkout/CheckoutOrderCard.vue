@@ -27,7 +27,7 @@ defineProps<{
     <div class="grid gap-8 md:grid-cols-[220px_1fr]">
       <img
         :src="order.eventCoverUrlSnapshot"
-        :alt="order.eventNameSnapshot"
+        alt="订单封面"
         class="h-[293px] w-[220px] rounded-lg border border-border object-cover"
       />
       <div class="space-y-4">

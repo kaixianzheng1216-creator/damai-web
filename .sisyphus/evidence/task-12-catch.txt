@@ -1,0 +1,15 @@
+﻿=== F:\workspace4graduationproject\damai-web\src\components\common\ImageUpload.vue ===
+console.error('[ImageUpload] Upload failed:', error)
+=== F:\workspace4graduationproject\damai-web\src\components\features\admin-ticket\ScanCheckinDialog.vue ===
+console.error('[ScanCheckin] Scan failed:', error)
+console.error('[ScanCheckin] Scanner cleanup failed:', error)
+=== F:\workspace4graduationproject\damai-web\src\composables\auth\useLoginPage.ts ===
+console.error('[useLoginPage] Send code failed:', error)
+console.error('[useLoginPage] Login failed:', error)
+=== F:\workspace4graduationproject\damai-web\src\composables\common\useAppConfirmDialog.ts ===
+=== F:\workspace4graduationproject\damai-web\src\composables\common\useHeaderState.ts ===
+console.error('[useHeaderState] Logout failed:', error)
+=== F:\workspace4graduationproject\damai-web\src\composables\profile\useAvatarUpload.ts ===
+console.error('[useAvatarUpload] Upload failed:', error)
+=== F:\workspace4graduationproject\damai-web\src\composables\profile\usePassengerForm.ts ===
+console.error('[usePassengerForm] Mutation failed:', error)

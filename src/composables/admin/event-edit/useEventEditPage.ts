@@ -25,7 +25,6 @@ export function useEventEditPage() {
     queryFn: () =>
       eventId.value ? fetchAdminEventById(eventId.value) : Promise.resolve(undefined),
     enabled: computed(() => Boolean(eventId.value)),
-    staleTime: 1000 * 60 * 5,
   })
 
   const eventData = computed(() => eventDetailData.value?.event)

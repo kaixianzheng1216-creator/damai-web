@@ -21,7 +21,7 @@ withDefaults(
     >
       <img
         :src="item.coverUrl"
-        :alt="item.name"
+        alt="活动缩略图"
         loading="lazy"
         class="h-full w-full object-cover"
       />

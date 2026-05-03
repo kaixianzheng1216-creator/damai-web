@@ -370,7 +370,7 @@ Wave FINAL (所有任务后 - 4个并行review):
   - Message: `chore(query): remove redundant staleTime overrides matching global default`
   - Files: `src/composables/admin/event-edit/useEventEditPage.ts`, `src/composables/home/useHomePage.ts`
 
-- [ ] 5. 规范化useWorkOrderChat.ts中的console.warn（保持console.warn但加模块前缀）
+- [x] 5. 规范化useWorkOrderChat.ts中的console.warn（保持console.warn但加模块前缀）
 
   **What to do**:
   - L77: `console.warn('[useWorkOrderChat] Cannot connect: no token provided')` → 已有前缀 ✅（跳过）
@@ -417,7 +417,7 @@ Wave FINAL (所有任务后 - 4个并行review):
   - Message: `chore(logs): standardize console.warn/error prefixes in useWorkOrderChat`
   - Files: `src/composables/common/useWorkOrderChat.ts`
 
-- [ ] 6. 修复2处eslint-disable vue/no-mutating-props违规
+- [x] 6. 修复2处eslint-disable vue/no-mutating-props违规
 
   **What to do**:
   - `ProfileDialogs.vue:23-56`: 移除 `// eslint-disable vue/no-mutating-props`，改为使用局部变量+emit模式
@@ -467,7 +467,7 @@ Wave FINAL (所有任务后 - 4个并行review):
   - Message: `fix(lint): resolve vue/no-mutating-props violations in ProfileDialogs and ProfileSectionContent`
   - Files: `src/components/features/profile/ProfileDialogs.vue`, `src/components/features/profile/ProfileSectionContent.vue`
 
-- [ ] 7. 用独立tiptap扩展替换StarterKit（减少bundle）
+- [x] 7. 用独立tiptap扩展替换StarterKit（减少bundle）
 
   **What to do**:
   - 在 `RichTextEditor.vue` 中将：
@@ -542,7 +542,7 @@ Wave FINAL (所有任务后 - 4个并行review):
   - Message: `perf(bundle): replace tiptap StarterKit with individual extensions`
   - Files: `src/components/common/RichTextEditor.vue`
 
-- [ ] 8. 用useAdminCrud重构6个admin CRUD composable
+- [x] 8. 用useAdminCrud重构6个admin CRUD composable
 
   **What to do**:
   按复杂度从低到高逐个重构以下6个composable使用 `useAdminCrud`：
@@ -608,7 +608,7 @@ Wave FINAL (所有任务后 - 4个并行review):
   - Message: `refactor(admin): migrate {ComposableName} to useAdminCrud`
   - Files: 对应的composable文件（每个composable一个commit）
 
-- [ ] 9. 修复useServiceListPage.ts watch→computed反模式
+- [x] 9. 修复useServiceListPage.ts watch→computed反模式
 
   **What to do**:
   - `useServiceListPage.ts:152`: 当前使用 `watch(crud.list, () => { syncSelectedService() })` 监听list变化后调用另一个函数
@@ -654,7 +654,7 @@ Wave FINAL (所有任务后 - 4个并行review):
   - Message: `refactor(admin): replace watch with computed in useServiceListPage selectedService`
   - Files: `src/composables/admin/list-pages/useServiceListPage.ts`
 
-- [ ] 10. 为3个admin列表页添加虚拟滚动
+- [x] 10. 为3个admin列表页添加虚拟滚动
 
   **What to do**:
   - 安装 `@tanstack/vue-virtual`（如未安装）
@@ -707,7 +707,7 @@ Wave FINAL (所有任务后 - 4个并行review):
   - Message: `perf(admin): add virtual scrolling to {PageName}`
   - Files: 对应的vue文件
 
-- [ ] 11. 将EventEditView中3个Tab改为异步加载
+- [x] 11. 将EventEditView中3个Tab改为异步加载
 
   **What to do**:
   - `EventEditView.vue` 中 `BasicTab`、`ParticipantsTab`、`InfoTab` 当前为静态import
@@ -763,7 +763,7 @@ Wave FINAL (所有任务后 - 4个并行review):
   - Message: `perf(admin): lazy-load BasicTab, ParticipantsTab, InfoTab in EventEditView`
   - Files: `src/views/admin/EventEditView.vue`
 
-- [ ] 12. 改善9个空catch块（添加错误日志）
+- [x] 12. 改善9个空catch块（添加错误日志）
 
   **What to do**:
   为以下文件中的空 `catch {}` 块添加最小错误处理（`console.error`）：
@@ -814,7 +814,7 @@ Wave FINAL (所有任务后 - 4个并行review):
   - Message: `fix(error): add console.error to empty catch blocks across 7 files`
   - Files: 7个文件
 
-- [ ] 13. 为useWorkOrderChat.ts添加回调清理机制
+- [x] 13. 为useWorkOrderChat.ts添加回调清理机制
 
   **What to do**:
   - 在 `useWorkOrderChat.ts` 中添加：
@@ -870,19 +870,19 @@ Wave FINAL (所有任务后 - 4个并行review):
 
 > 4个review agent并行运行。ALL必须APPROVE。展示综合结果并等待用户明确"okay"后方可标记完成。
 
-- [ ] F1. **Plan Compliance Audit** — `oracle`
+- [x] F1. **Plan Compliance Audit** — `oracle`
       Read the plan end-to-end. For each "Must Have": verify implementation exists (read file, curl endpoint, run command). For each "Must NOT Have": search codebase for forbidden patterns — reject with file:line if found. Check evidence files exist in .sisyphus/evidence/. Compare deliverables against plan.
       Output: `Must Have [N/N] | Must NOT Have [N/N] | Tasks [N/N] | VERDICT: APPROVE/REJECT`
 
-- [ ] F2. **Code Quality Review** — `unspecified-high`
+- [x] F2. **Code Quality Review** — `unspecified-high`
       Run `npm run ci` (type-check + lint + oxlint + audit + openapi + test + format + build). Review all changed files for: `as any`/`@ts-ignore`, empty catches, console.log in prod, commented-out code, unused imports. Check AI slop: excessive comments, over-abstraction, generic names.
       Output: `Build [PASS/FAIL] | Lint [PASS/FAIL] | Tests [N pass/N fail] | Files [N clean/N issues] | VERDICT`
 
-- [ ] F3. **Real Manual QA** — `unspecified-high` (+ `playwright` skill if UI)
+- [x] F3. **Real Manual QA** — `unspecified-high` (+ `playwright` skill if UI)
       Start from clean state. Execute EVERY QA scenario from EVERY task — follow exact steps, capture evidence. Test cross-task integration (features working together, not isolation). Test edge cases: empty state, invalid input, rapid actions. Save to `.sisyphus/evidence/final-qa/`.
       Output: `Scenarios [N/N pass] | Integration [N/N] | Edge Cases [N tested] | VERDICT`
 
-- [ ] F4. **Scope Fidelity Check** — `deep`
+- [x] F4. **Scope Fidelity Check** — `deep`
       For each task: read "What to do", read actual diff (git log/diff). Verify 1:1 — everything in spec was built (no missing), nothing beyond spec was built (no creep). Check "Must NOT do" compliance. Detect cross-task contamination: Task N touching Task M's files. Flag unaccounted changes.
       Output: `Tasks [N/N compliant] | Contamination [CLEAN/N issues] | Unaccounted [CLEAN/N files] | VERDICT`
 

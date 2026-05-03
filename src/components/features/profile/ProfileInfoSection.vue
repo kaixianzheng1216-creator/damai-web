@@ -50,7 +50,7 @@ const handleAvatarChange = (event: Event) => {
         <div class="flex flex-col items-center gap-3">
           <img
             :src="displayAvatar"
-            alt="个人头像"
+            alt="用户头像"
             class="h-20 w-20 rounded-full border border-border object-cover"
           />
           <button

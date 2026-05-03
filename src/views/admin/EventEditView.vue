@@ -5,9 +5,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui
 import { EVENT_STATUS } from '@/constants'
 import { useEventEditPage } from '@/composables/admin'
 
-import BasicTab from '@/components/features/admin-event-edit/BasicTab.vue'
-import ParticipantsTab from '@/components/features/admin-event-edit/ParticipantsTab.vue'
-import InfoTab from '@/components/features/admin-event-edit/InfoTab.vue'
+const BasicTab = defineAsyncComponent({
+  loader: () => import('@/components/features/admin-event-edit/BasicTab.vue'),
+  loadingComponent: {
+    template:
+      '<div class="flex items-center justify-center py-12 text-muted-foreground">加载中...</div>',
+  },
+})
+const ParticipantsTab = defineAsyncComponent({
+  loader: () => import('@/components/features/admin-event-edit/ParticipantsTab.vue'),
+  loadingComponent: {
+    template:
+      '<div class="flex items-center justify-center py-12 text-muted-foreground">加载中...</div>',
+  },
+})
+const InfoTab = defineAsyncComponent({
+  loader: () => import('@/components/features/admin-event-edit/InfoTab.vue'),
+  loadingComponent: {
+    template:
+      '<div class="flex items-center justify-center py-12 text-muted-foreground">加载中...</div>',
+  },
+})
 
 interface SavableTab {
   save: () => Promise<void> | void

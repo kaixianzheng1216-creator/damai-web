@@ -59,7 +59,8 @@ export function useLoginPage(options: UseLoginPageOptions) {
       isSendingCode.value = true
       await sendVerifyCode({ mobile: form.mobile, accountType: options.accountType })
       startCountdown()
-    } catch {
+    } catch (error) {
+      console.error('[useLoginPage] Send code failed:', error)
       errorMsg.value = AUTH_COPY.sendCodeFailed
     } finally {
       isSendingCode.value = false
@@ -84,7 +85,8 @@ export function useLoginPage(options: UseLoginPageOptions) {
       })
       options.saveSession(response)
       await router.push(options.resolveRedirect(router.currentRoute.value))
-    } catch {
+    } catch (error) {
+      console.error('[useLoginPage] Login failed:', error)
       errorMsg.value = AUTH_COPY.loginFailed
     } finally {
       isLoading.value = false

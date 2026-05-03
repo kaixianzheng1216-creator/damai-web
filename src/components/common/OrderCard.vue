@@ -25,7 +25,7 @@ const linkTarget = computed(() => props.to || `/checkout/${props.id}`)
       <img
         v-if="eventCoverUrlSnapshot"
         :src="eventCoverUrlSnapshot"
-        :alt="eventNameSnapshot"
+        alt="订单封面"
         class="aspect-[3/4] h-auto w-24 rounded-lg object-cover"
       />
       <div

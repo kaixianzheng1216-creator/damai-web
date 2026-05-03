@@ -36,7 +36,7 @@ const linkTarget = computed(() => props.to || `/detail/${props.id}`)
     <template #cover>
       <img
         :src="coverUrl || ''"
-        :alt="name"
+        alt="活动封面"
         class="aspect-[3/4] h-auto w-24 rounded-lg object-cover"
       />
     </template>

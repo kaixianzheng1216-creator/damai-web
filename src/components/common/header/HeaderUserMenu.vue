@@ -36,11 +36,7 @@ const emit = defineEmits<{
           type="button"
           class="flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted"
         >
-          <img
-            :src="avatarUrl"
-            :alt="`${displayName}头像`"
-            class="h-8 w-8 rounded-full object-cover"
-          />
+          <img :src="avatarUrl" alt="用户头像" class="h-8 w-8 rounded-full object-cover" />
           <span class="max-w-[96px] truncate text-sm text-foreground">{{ displayName }}</span>
           <icon-lucide-chevron-down class="h-4 w-4 text-muted-foreground" />
         </button>

@@ -66,7 +66,6 @@ export const useHomePage = () => {
             sortField: 'recommendWeight',
             sortOrder: 'desc',
           }),
-        staleTime: 5 * 60 * 1000,
       })),
     ),
   })

@@ -50,7 +50,7 @@ const handleUnfollowClick = (participantId: string) => {
             <template #cover>
               <img
                 :src="item.participant.avatarUrl || ''"
-                :alt="item.participant.name"
+                alt="参与者头像"
                 class="aspect-square h-auto w-24 rounded-full object-cover"
               />
             </template>

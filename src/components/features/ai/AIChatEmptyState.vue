@@ -23,11 +23,7 @@ defineEmits<{
   <div
     class="mx-auto flex min-h-full w-full max-w-[800px] flex-col items-center justify-center px-4 py-12"
   >
-    <img
-      :src="assistantAvatar"
-      :alt="AI_CHAT_COPY.title"
-      class="mb-6 h-auto max-h-36 w-auto object-contain"
-    />
+    <img :src="assistantAvatar" alt="AI助手" class="mb-6 h-auto max-h-36 w-auto object-contain" />
     <h2 class="mb-2 text-center text-2xl font-bold text-foreground">
       {{ emptyTitle }}
     </h2>

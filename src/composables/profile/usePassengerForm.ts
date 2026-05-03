@@ -72,7 +72,8 @@ export const usePassengerForm = () => {
     try {
       await createPassengerMutation.mutateAsync(requestData)
       closePassengerModalSafe()
-    } catch {
+    } catch (error) {
+      console.error('[usePassengerForm] Mutation failed:', error)
       // Error handled by mutation onError
     }
   }

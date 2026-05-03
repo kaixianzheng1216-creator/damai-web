@@ -31,7 +31,7 @@ const linkTarget = computed(() => props.to || `/ticket/${props.id}`)
     <template #cover>
       <img
         :src="eventCoverUrlSnapshot || ''"
-        :alt="eventNameSnapshot"
+        alt="电子票封面"
         class="aspect-[3/4] h-auto w-24 rounded-lg object-cover"
       />
     </template>
