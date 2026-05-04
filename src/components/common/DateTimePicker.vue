@@ -97,16 +97,17 @@ const handleOpenChange = (value: boolean) => {
 <template>
   <Popover :open="open" @update:open="handleOpenChange">
     <PopoverTrigger as-child>
-      <button
+      <Button
         type="button"
-        class="flex h-9 w-full items-center rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        variant="outline"
+        class="w-full justify-start font-normal"
         :class="displayText ? 'text-foreground' : 'text-muted-foreground'"
         :aria-label="triggerAriaLabel"
         :disabled="disabled"
       >
         <icon-lucide-calendar class="mr-2 h-4 w-4 shrink-0 opacity-50" />
         {{ displayText || placeholder }}
-      </button>
+      </Button>
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0" align="start">
       <Calendar

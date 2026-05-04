@@ -1,4 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import dayjs from 'dayjs'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { createRefund, type TicketOrderVO } from '@/api/trade'
@@ -21,8 +22,8 @@ export function useRefundDialog(options: UseRefundDialogOptions) {
     }
 
     const isPaidStatus = order.status === ORDER_STATUS.PAID
-    const sessionTime = new Date(order.sessionStartAtSnapshot ?? '').getTime()
-    const isBeforeSession = Number.isFinite(sessionTime) && sessionTime > Date.now()
+    const sessionTime = dayjs(order.sessionStartAtSnapshot)
+    const isBeforeSession = sessionTime.isValid() && dayjs().isBefore(sessionTime)
     return isPaidStatus && isBeforeSession
   })
 

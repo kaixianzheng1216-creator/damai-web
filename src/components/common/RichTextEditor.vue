@@ -10,6 +10,7 @@ import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
 import History from '@tiptap/extension-history'
+import { Button } from '@/components/common/ui/button'
 import '@/styles/rich-text.css'
 
 const props = withDefaults(
@@ -96,140 +97,121 @@ const clearFormatting = () => {
     <!-- Toolbar -->
     <div class="flex items-center gap-px border-b px-1.5 py-1 bg-muted/30 flex-wrap">
       <!-- Undo / Redo -->
-      <button
+      <Button
         type="button"
-        class="tb"
+        variant="ghost"
+        size="icon"
+        class="h-7 w-7"
         :disabled="!editor?.can().undo()"
         title="撤销"
         @click="editor?.chain().focus().undo().run()"
       >
         <icon-lucide-undo-2 class="h-4 w-4" />
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
-        class="tb"
+        variant="ghost"
+        size="icon"
+        class="h-7 w-7"
         :disabled="!editor?.can().redo()"
         title="重做"
         @click="editor?.chain().focus().redo().run()"
       >
         <icon-lucide-redo-2 class="h-4 w-4" />
-      </button>
+      </Button>
 
-      <div class="tb-sep" />
+      <div class="w-px h-[18px] bg-border mx-1 shrink-0" />
 
       <!-- Heading Dropdown -->
       <div class="relative">
-        <button
+        <Button
           type="button"
-          class="tb px-2 gap-1 text-xs font-medium min-w-[68px] justify-between"
+          variant="ghost"
+          size="sm"
+          class="h-7 gap-1 px-2 text-xs font-medium min-w-[68px] justify-between"
           @click="showHeadingMenu = !showHeadingMenu"
           @blur="showHeadingMenu = false"
         >
           <span>{{ currentHeadingLabel() }}</span>
           <icon-lucide-chevron-down class="h-3 w-3 opacity-60" />
-        </button>
+        </Button>
         <div
           v-if="showHeadingMenu"
           class="absolute top-full left-0 mt-0.5 z-50 min-w-[100px] rounded-md border bg-background shadow-md py-1"
         >
-          <button
-            type="button"
+          <Button
             v-for="opt in headingOptions"
             :key="opt.label"
-            class="w-full text-left px-3 py-1.5 text-sm hover:bg-muted/60 transition-colors"
+            type="button"
+            variant="ghost"
+            class="w-full justify-start px-3 py-1.5 text-sm font-normal h-auto"
             @mousedown.prevent="applyHeading(opt)"
           >
             {{ opt.label }}
-          </button>
+          </Button>
         </div>
       </div>
 
-      <div class="tb-sep" />
+      <div class="w-px h-[18px] bg-border mx-1 shrink-0" />
 
       <!-- Bold -->
-      <button
+      <Button
         type="button"
-        class="tb font-bold"
-        :class="{ 'tb-on': editor?.isActive('bold') }"
+        variant="ghost"
+        size="icon"
+        class="h-7 w-7 font-bold"
+        :class="{ 'bg-accent text-accent-foreground': editor?.isActive('bold') }"
         title="粗体"
         @click="editor?.chain().focus().toggleBold().run()"
       >
         B
-      </button>
+      </Button>
 
-      <div class="tb-sep" />
+      <div class="w-px h-[18px] bg-border mx-1 shrink-0" />
 
       <!-- Lists -->
-      <button
+      <Button
         type="button"
-        class="tb"
-        :class="{ 'tb-on': editor?.isActive('bulletList') }"
+        variant="ghost"
+        size="icon"
+        class="h-7 w-7"
+        :class="{ 'bg-accent text-accent-foreground': editor?.isActive('bulletList') }"
         title="无序列表"
         @click="editor?.chain().focus().toggleBulletList().run()"
       >
         <icon-lucide-list class="h-4 w-4" />
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
-        class="tb"
-        :class="{ 'tb-on': editor?.isActive('orderedList') }"
+        variant="ghost"
+        size="icon"
+        class="h-7 w-7"
+        :class="{ 'bg-accent text-accent-foreground': editor?.isActive('orderedList') }"
         title="有序列表"
         @click="editor?.chain().focus().toggleOrderedList().run()"
       >
         <icon-lucide-list-ordered class="h-4 w-4" />
-      </button>
+      </Button>
 
-      <div class="tb-sep" />
+      <div class="w-px h-[18px] bg-border mx-1 shrink-0" />
 
       <!-- Clear Formatting -->
-      <button type="button" class="tb" title="清除格式" @click="clearFormatting">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        class="h-7 w-7"
+        title="清除格式"
+        @click="clearFormatting"
+      >
         <icon-lucide-remove-formatting class="h-4 w-4" />
-      </button>
+      </Button>
     </div>
 
     <!-- Editor Area -->
     <EditorContent :editor="editor" />
   </div>
 </template>
-
-<style scoped>
-.tb {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 28px;
-  min-width: 28px;
-  padding: 0 4px;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: #6b7280;
-  transition:
-    background-color 0.15s,
-    color 0.15s;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-}
-.tb:hover:not(:disabled) {
-  background: rgb(0 0 0 / 0.07);
-  color: #111827;
-}
-.tb:disabled {
-  opacity: 0.35;
-  pointer-events: none;
-}
-.tb-on {
-  background: rgb(0 0 0 / 0.1);
-  color: #111827;
-}
-.tb-sep {
-  width: 1px;
-  height: 18px;
-  background: #e5e7eb;
-  margin: 0 4px;
-  flex-shrink: 0;
-}
-</style>
 
 <style>
 .tiptap-editor {

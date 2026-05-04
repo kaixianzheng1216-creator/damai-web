@@ -117,12 +117,18 @@ export function useServiceListPage(): {
     }))
   }
 
+  const serviceSchema = z.object({
+    name: z.string().min(1, '请填写服务保障名称'),
+    sortOrder: z.number().optional(),
+  })
+
   const handleServiceSubmit = () =>
     crud.handleSubmit({
       validate: () => {
         if (crud.editingId.value) return true
-        if (!crud.form.name) {
-          toast.error('请填写服务保障名称')
+        const result = serviceSchema.safeParse(crud.form)
+        if (!result.success) {
+          toast.error(result.error.issues[0]?.message ?? '请填写服务保障名称')
           return false
         }
         return true

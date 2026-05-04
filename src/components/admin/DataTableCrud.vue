@@ -7,7 +7,6 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/vue-table'
-import { useVirtualizer } from '@tanstack/vue-virtual'
 import TablePagination from './TablePagination.vue'
 import TableToolbar from './TableToolbar.vue'
 import TableCardView from './TableCardView.vue'
@@ -28,8 +27,6 @@ const props = withDefaults(
     showCreateButton?: boolean
     showPagination?: boolean
     confirmDialog?: ConfirmDialogState
-    virtualScroll?: boolean
-    virtualScrollHeight?: string
   }>(),
   {
     pageSizeOptions: () => [10, 20, 30, 40, 50],
@@ -41,8 +38,6 @@ const props = withDefaults(
     showPagination: true,
     columns: () => [],
     confirmDialog: undefined,
-    virtualScroll: false,
-    virtualScrollHeight: '600px',
   },
 )
 
@@ -82,23 +77,6 @@ const table = useVueTable({
     },
   },
 })
-
-// Virtual scrolling setup
-const scrollContainerRef = ref<HTMLDivElement | null>(null)
-
-const allRows = computed(() => table.getRowModel().rows)
-
-const rowVirtualizer = useVirtualizer(
-  computed(() => ({
-    count: allRows.value.length,
-    getScrollElement: () => scrollContainerRef.value,
-    estimateSize: () => 48,
-    overscan: 5,
-  })),
-)
-
-const virtualRows = computed(() => rowVirtualizer.value.getVirtualItems())
-const totalHeight = computed(() => rowVirtualizer.value.getTotalSize())
 </script>
 
 <template>
@@ -118,94 +96,7 @@ const totalHeight = computed(() => rowVirtualizer.value.getTotalSize())
           <icon-lucide-loader2 class="h-6 w-6 animate-spin text-primary" />
         </div>
 
-        <!-- Virtual scrolling mode -->
-        <template v-if="virtualScroll">
-          <div class="overflow-x-auto">
-            <table
-              class="w-full caption-bottom text-sm border table-fixed border-b-0 rounded-t-md"
-              :class="{ 'opacity-60': loading }"
-            >
-              <colgroup>
-                <col
-                  v-for="header in table.getHeaderGroups()[0]?.headers ?? []"
-                  :key="header.id"
-                  :style="{
-                    width: header.column.getSize() + 'px',
-                    minWidth: header.column.getSize() + 'px',
-                  }"
-                />
-              </colgroup>
-              <thead data-slot="table-header" class="[&_tr]:border-b">
-                <TableRow
-                  v-for="headerGroup in table.getHeaderGroups()"
-                  :key="headerGroup.id"
-                  class="bg-muted"
-                >
-                  <TableHead
-                    v-for="header in headerGroup.headers"
-                    :key="header.id"
-                    class="truncate !px-4 !py-3"
-                  >
-                    <FlexRender
-                      :render="header.column.columnDef.header"
-                      :props="header.getContext()"
-                    />
-                  </TableHead>
-                </TableRow>
-              </thead>
-            </table>
-            <div
-              ref="scrollContainerRef"
-              class="overflow-y-auto border-x border-b rounded-b-md"
-              :style="{ maxHeight: virtualScrollHeight }"
-            >
-              <div
-                :style="{
-                  height: `${totalHeight}px`,
-                  position: 'relative',
-                  width: '100%',
-                }"
-              >
-                <div
-                  v-for="virtualRow in virtualRows"
-                  :key="String(virtualRow.key)"
-                  :ref="(el) => rowVirtualizer.measureElement(el as HTMLElement)"
-                  :data-index="virtualRow.index"
-                  :style="{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }"
-                  class="flex hover:bg-muted/50 cursor-pointer border-b transition-colors"
-                  @click="
-                    allRows[virtualRow.index] &&
-                    emit('row-click', allRows[virtualRow.index]!.original)
-                  "
-                >
-                  <div
-                    v-for="cell in allRows[virtualRow.index]?.getVisibleCells() ?? []"
-                    :key="cell.id"
-                    :style="{
-                      width: cell.column.getSize() + 'px',
-                      minWidth: cell.column.getSize() + 'px',
-                    }"
-                    class="truncate flex items-center px-4 py-3"
-                  >
-                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-                  </div>
-                </div>
-              </div>
-              <div v-if="!data.length" class="px-4 py-16 text-center text-muted-foreground">
-                暂无数据
-              </div>
-            </div>
-          </div>
-        </template>
-
-        <!-- Non-virtualized table (original behavior) -->
-        <Table v-else class="border table-fixed" :class="{ 'opacity-60': loading }">
+        <Table class="border table-fixed" :class="{ 'opacity-60': loading }">
           <colgroup>
             <col
               v-for="header in table.getHeaderGroups()[0]?.headers ?? []"

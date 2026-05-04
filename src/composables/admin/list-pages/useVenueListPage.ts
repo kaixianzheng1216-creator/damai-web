@@ -1,4 +1,5 @@
 import { computed, type Ref, type ComputedRef } from 'vue'
+import { toast } from 'vue3-toastify'
 import { useAdminCrud } from '../common/useAdminCrud'
 import { createVenue, deleteVenue, fetchAdminVenuesPage, updateVenue } from '@/api/event/venue'
 import { queryKeys } from '@/constants'
@@ -74,10 +75,24 @@ export function useVenueListPage(): {
     }))
   }
 
+  const venueSchema = z.object({
+    name: z.string().min(1, '请填写场馆名称'),
+    province: z.string().min(1, '请填写省份'),
+    city: z.string().min(1, '请填写城市'),
+    district: z.string().optional(),
+    address: z.string().min(1, '请填写地址'),
+  })
+
   const handleSubmit = () =>
     crud.handleSubmit({
-      validate: () =>
-        Boolean(crud.form.name && crud.form.province && crud.form.city && crud.form.address),
+      validate: () => {
+        const result = venueSchema.safeParse(crud.form)
+        if (!result.success) {
+          toast.error(result.error.issues[0]?.message ?? '请填写完整的场馆信息')
+          return false
+        }
+        return true
+      },
       getCreateData: () => ({
         name: crud.form.name,
         province: crud.form.province,

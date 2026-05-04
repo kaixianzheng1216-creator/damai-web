@@ -65,11 +65,7 @@ const linkTarget = computed(() => props.to || `/checkout/${props.id}`)
       <p class="text-xs text-muted-foreground">{{ orderNo }}</p>
     </template>
     <template #topRight>
-      <span
-        class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
-      >
-        {{ statusLabel }}
-      </span>
+      <Badge>{{ statusLabel }}</Badge>
     </template>
   </CardListItem>
 </template>

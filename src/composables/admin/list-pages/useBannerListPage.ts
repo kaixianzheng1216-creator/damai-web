@@ -126,20 +126,24 @@ export function useBannerListPage(): {
     }))
   }
 
+  const bannerSchema = z.object({
+    cityId: z.string().min(1, '请填写完整的 Banner 信息'),
+    title: z.string().min(1, '请填写完整的 Banner 信息'),
+    imageUrl: z.string().min(1, '请填写完整的 Banner 信息'),
+    mobileImageUrl: z.string().min(1, '请填写完整的 Banner 信息'),
+    jumpUrl: z.string().min(1, '请填写完整的 Banner 信息'),
+    displayStartAt: z.string().min(1, '请填写完整的 Banner 信息'),
+    displayEndAt: z.string().min(1, '请填写完整的 Banner 信息'),
+    sortOrder: z.number().optional(),
+  })
+
   const handleSubmit = () =>
     crud.handleSubmit({
       validate: () => {
         if (crud.editingId.value) return true
-        if (
-          !crud.form.cityId ||
-          !crud.form.title ||
-          !crud.form.imageUrl ||
-          !crud.form.mobileImageUrl ||
-          !crud.form.jumpUrl ||
-          !crud.form.displayStartAt ||
-          !crud.form.displayEndAt
-        ) {
-          toast.error('请填写完整的 Banner 信息')
+        const result = bannerSchema.safeParse(crud.form)
+        if (!result.success) {
+          toast.error(result.error.issues[0]?.message ?? '请填写完整的 Banner 信息')
           return false
         }
         return true

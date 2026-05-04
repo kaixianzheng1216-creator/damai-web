@@ -96,6 +96,11 @@ export function useCategoryDialog(tree: ReturnType<typeof useCategoryTree>) {
     onSuccess: tree.invalidateAndSyncParent,
   })
 
+  const categorySchema = z.object({
+    name: z.string().min(1, '请填写分类名称'),
+    sortOrder: z.number(),
+  })
+
   const handleSubmit = async () => {
     if (editingId.value) {
       await updateMutation.mutateAsync({
@@ -104,8 +109,9 @@ export function useCategoryDialog(tree: ReturnType<typeof useCategoryTree>) {
       })
       return
     }
-    if (!form.name) {
-      toast.error('请填写分类名称')
+    const result = categorySchema.safeParse(form)
+    if (!result.success) {
+      toast.error(result.error.issues[0]?.message ?? '请填写分类名称')
       return
     }
     await createMutation.mutateAsync({ name: form.name, parentId: '0', sortOrder: form.sortOrder })
@@ -120,8 +126,9 @@ export function useCategoryDialog(tree: ReturnType<typeof useCategoryTree>) {
       })
       return
     }
-    if (!childForm.name) {
-      toast.error('请填写子分类名称')
+    const result = categorySchema.safeParse(childForm)
+    if (!result.success) {
+      toast.error(result.error.issues[0]?.message ?? '请填写子分类名称')
       return
     }
     await createChildMutation.mutateAsync({

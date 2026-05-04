@@ -46,11 +46,13 @@ export const PROFILE_DIALOG_COPY = {
   closeWorkOrderConfirmText: '关闭',
 } as const
 
+import dayjs from 'dayjs'
+
 export const PROFILE_CONFIG = {
   YEAR_RANGE: 26,
   MONTH_COUNT: 12,
   DAY_COUNT: 31,
-  START_YEAR: new Date().getFullYear(),
+  START_YEAR: dayjs().year(),
   BIRTH_YEAR_DEFAULT: '2002',
   BIRTH_MONTH_DEFAULT: '1',
   BIRTH_DAY_DEFAULT: '1',

@@ -1,6 +1,8 @@
 <script setup lang="ts">
+const { y } = useWindowScroll({ behavior: 'smooth' })
+
 const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  y.value = 0
 }
 </script>
 

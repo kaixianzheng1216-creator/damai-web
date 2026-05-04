@@ -1,5 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import { useRouter, type RouteLocationNormalizedLoaded, type RouteLocationRaw } from 'vue-router'
+import { useMutation } from '@tanstack/vue-query'
 import { z } from 'zod'
 import { login, sendVerifyCode, type LoginParams, type LoginResponse } from '@/api/account'
 import { AUTH_COPY, PROFILE_CONFIG, VALIDATION_PATTERNS } from '@/constants'
@@ -15,8 +16,6 @@ interface UseLoginPageOptions {
 
 export function useLoginPage(options: UseLoginPageOptions) {
   const router = useRouter()
-  const isLoading = ref(false)
-  const isSendingCode = ref(false)
   const errorMsg = ref('')
 
   const form = reactive({
@@ -39,7 +38,37 @@ export function useLoginPage(options: UseLoginPageOptions) {
     countdown.value > 0 ? options.resendCodeText(countdown.value) : options.sendCodeText,
   )
 
-  const handleSendCode = async () => {
+  const sendCodeMutation = useMutation({
+    mutationFn: () => sendVerifyCode({ mobile: form.mobile, accountType: options.accountType }),
+    onSuccess: () => {
+      errorMsg.value = ''
+      startCountdown()
+    },
+    onError: (error) => {
+      console.error('[useLoginPage] Send code failed:', error)
+      errorMsg.value = AUTH_COPY.sendCodeFailed
+    },
+  })
+
+  const loginMutation = useMutation({
+    mutationFn: () =>
+      login({
+        mobile: form.mobile,
+        code: form.code,
+        accountType: options.accountType,
+      }),
+    onSuccess: async (response) => {
+      errorMsg.value = ''
+      options.saveSession(response)
+      await router.push(options.resolveRedirect(router.currentRoute.value))
+    },
+    onError: (error) => {
+      console.error('[useLoginPage] Login failed:', error)
+      errorMsg.value = AUTH_COPY.loginFailed
+    },
+  })
+
+  const handleSendCode = () => {
     errorMsg.value = ''
     const mobileCheck = z
       .string()
@@ -55,19 +84,10 @@ export function useLoginPage(options: UseLoginPageOptions) {
       return
     }
 
-    try {
-      isSendingCode.value = true
-      await sendVerifyCode({ mobile: form.mobile, accountType: options.accountType })
-      startCountdown()
-    } catch (error) {
-      console.error('[useLoginPage] Send code failed:', error)
-      errorMsg.value = AUTH_COPY.sendCodeFailed
-    } finally {
-      isSendingCode.value = false
-    }
+    sendCodeMutation.mutate()
   }
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     errorMsg.value = ''
 
     const validated = schema.safeParse(form)
@@ -76,27 +96,13 @@ export function useLoginPage(options: UseLoginPageOptions) {
       return
     }
 
-    try {
-      isLoading.value = true
-      const response = await login({
-        mobile: form.mobile,
-        code: form.code,
-        accountType: options.accountType,
-      })
-      options.saveSession(response)
-      await router.push(options.resolveRedirect(router.currentRoute.value))
-    } catch (error) {
-      console.error('[useLoginPage] Login failed:', error)
-      errorMsg.value = AUTH_COPY.loginFailed
-    } finally {
-      isLoading.value = false
-    }
+    loginMutation.mutate()
   }
 
   return {
     form,
-    isLoading,
-    isSendingCode,
+    isLoading: computed(() => loginMutation.isPending.value),
+    isSendingCode: computed(() => sendCodeMutation.isPending.value),
     isCountdownRunning,
     errorMsg,
     countdownText,

@@ -169,10 +169,14 @@ export function useAdminWorkOrderListPage(): {
     replyError.value = ''
   }
 
+  const replySchema = z.string().min(1, '请输入回复内容')
+
   const submitReply = async () => {
     const content = replyContent.value.trim()
-    if (!content) {
-      replyError.value = '请输入回复内容'
+
+    const result = replySchema.safeParse(content)
+    if (!result.success) {
+      replyError.value = result.error.issues[0]?.message ?? '请输入回复内容'
       return
     }
 

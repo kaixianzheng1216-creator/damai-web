@@ -89,10 +89,11 @@ const closedMessage = computed(() =>
 )
 
 const messagesRef = ref<HTMLDivElement | null>(null)
+const { y } = useScroll(messagesRef)
 
 function scrollToBottom() {
   if (messagesRef.value) {
-    messagesRef.value.scrollTop = messagesRef.value.scrollHeight
+    y.value = messagesRef.value.scrollHeight
   }
 }
 

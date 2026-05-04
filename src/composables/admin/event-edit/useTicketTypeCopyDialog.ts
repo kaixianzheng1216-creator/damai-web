@@ -68,8 +68,12 @@ export function useTicketTypeCopyDialog(options: UseTicketTypeCopyDialogOptions)
     const sourceSession = toValue(options.sourceSession)
     if (!sourceSession) return
 
-    if (copyTargetSessionIds.value.length === 0) {
-      toast.error(TOAST_COPY.selectTargetSession)
+    const result = z
+      .array(z.string())
+      .min(1, TOAST_COPY.selectTargetSession)
+      .safeParse(copyTargetSessionIds.value)
+    if (!result.success) {
+      toast.error(result.error.issues[0]?.message ?? TOAST_COPY.selectTargetSession)
       return
     }
 

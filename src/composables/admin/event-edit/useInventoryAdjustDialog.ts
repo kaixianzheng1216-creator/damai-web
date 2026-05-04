@@ -14,6 +14,11 @@ interface UseInventoryAdjustDialogOptions {
   onSaved: () => void
 }
 
+const adjustInventorySchema = z.object({
+  ticketType: z.custom<TicketTypeVO>((v) => v != null, FORM_COPY.enterNonZeroAdjustQty),
+  adjustQty: z.number().refine((v) => v !== 0, FORM_COPY.enterNonZeroAdjustQty),
+})
+
 export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOptions) {
   const queryClient = useQueryClient()
   const adjustQty = ref(0)
@@ -58,15 +63,18 @@ export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOption
 
   const handleAdjustInventory = async () => {
     const ticketType = toValue(options.ticketType)
-    if (!ticketType || adjustQty.value === 0) {
-      adjustError.value = FORM_COPY.enterNonZeroAdjustQty
-      toast.error(TOAST_COPY.enterAdjustQty)
+    const result = adjustInventorySchema.safeParse({ ticketType, adjustQty: adjustQty.value })
+
+    if (!result.success) {
+      const firstError = result.error.issues[0]?.message ?? TOAST_COPY.enterAdjustQty
+      adjustError.value = firstError
+      toast.error(firstError)
       return
     }
 
     adjustError.value = ''
     await adjustInventoryMutation.mutateAsync({
-      ticketTypeId: ticketType.id,
+      ticketTypeId: ticketType!.id,
       data: { adjustQty: adjustQty.value },
     })
   }

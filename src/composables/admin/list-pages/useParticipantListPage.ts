@@ -1,4 +1,5 @@
 import { computed, type Ref, type ComputedRef } from 'vue'
+import { toast } from 'vue3-toastify'
 import { useAdminCrud } from '../common/useAdminCrud'
 import { queryKeys } from '@/constants'
 import {
@@ -75,9 +76,21 @@ export function useParticipantListPage(): {
     }))
   }
 
+  const participantSchema = z.object({
+    name: z.string().min(1, '请填写参与方名称'),
+    avatarUrl: z.string().optional(),
+  })
+
   const handleSubmit = () =>
     crud.handleSubmit({
-      validate: () => Boolean(crud.form.name),
+      validate: () => {
+        const result = participantSchema.safeParse(crud.form)
+        if (!result.success) {
+          toast.error(result.error.issues[0]?.message ?? '请填写参与方名称')
+          return false
+        }
+        return true
+      },
       getCreateData: () => ({
         name: crud.form.name,
         avatarUrl: crud.form.avatarUrl || undefined,

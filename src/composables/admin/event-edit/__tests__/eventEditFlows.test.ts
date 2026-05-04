@@ -261,7 +261,7 @@ describe('event edit flows', () => {
     )
 
     await harness.result.handleSaveTicketType()
-    expect(toastMocks.error).toHaveBeenCalledWith('请填写完整信息')
+    expect(toastMocks.error).toHaveBeenCalledWith('请填写票种名称和有效售价')
     expect(eventApiMocks.adminCreateTicketType).not.toHaveBeenCalled()
 
     Object.assign(harness.result.form, {
@@ -307,7 +307,7 @@ describe('event edit flows', () => {
     )
 
     await harness.result.handleAdjustInventory()
-    expect(toastMocks.error).toHaveBeenCalledWith('请输入调整数量')
+    expect(toastMocks.error).toHaveBeenCalledWith('请输入非 0 的调整数量')
 
     harness.result.adjustQty.value = 5
     await harness.result.handleAdjustInventory()

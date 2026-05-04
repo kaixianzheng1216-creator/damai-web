@@ -21,7 +21,7 @@ export const formatDateTimeWithWeekday = (dateTime: string | Date | undefined | 
   if (!dateTime) return ''
   const date = dayjs(dateTime)
   const weekday = date.locale('zh-cn').format('ddd')
-  return `${date.year()}.${date.month() + 1}.${date.date()} ${weekday} ${date.format('HH:mm')}`
+  return date.format(`YYYY.M.D ${weekday} HH:mm`)
 }
 
 export const formatDateTime = (
@@ -29,8 +29,7 @@ export const formatDateTime = (
   fallback: string = '',
 ): string => {
   if (!dateTime) return fallback
-  const date = dayjs(dateTime)
-  return `${date.year()}.${date.month() + 1}.${date.date()} ${date.format('HH:mm')}`
+  return dayjs(dateTime).format('YYYY.M.D HH:mm')
 }
 
 export const formatDateTimeLocalInput = (dateTime: string | Date | undefined | null): string => {
@@ -40,8 +39,7 @@ export const formatDateTimeLocalInput = (dateTime: string | Date | undefined | n
 
 export const formatDate = (dateTime: string | Date | undefined | null): string => {
   if (!dateTime) return ''
-  const date = dayjs(dateTime)
-  return `${date.year()}.${date.month() + 1}.${date.date()}`
+  return dayjs(dateTime).format('YYYY.M.D')
 }
 
 export const formatDateTimeRange = (
@@ -50,7 +48,7 @@ export const formatDateTimeRange = (
 ): string => {
   if (!start) return ''
   const startDate = dayjs(start)
-  const startStr = `${startDate.year()}.${startDate.month() + 1}.${startDate.date()} ${startDate.format('HH:mm')}`
+  const startStr = startDate.format('YYYY.M.D HH:mm')
 
   if (!end) return startStr
 
@@ -61,6 +59,5 @@ export const formatDateTimeRange = (
     return `${startStr} — ${endDate.format('HH:mm')}`
   }
 
-  const endStr = `${endDate.year()}.${endDate.month() + 1}.${endDate.date()} ${endDate.format('HH:mm')}`
-  return `${startStr} — ${endStr}`
+  return `${startStr} — ${endDate.format('YYYY.M.D HH:mm')}`
 }

@@ -102,11 +102,19 @@ export function useAdminListPage(): {
     }))
   }
 
+  const adminSchema = z.object({
+    mobile: z.string().min(1, '请填写手机号'),
+    username: z.string().optional(),
+    avatarUrl: z.string().optional(),
+  })
+
   const handleSubmit = () =>
     crud.handleSubmit({
       validate: () => {
-        if (!crud.editingId.value && !crud.form.mobile) {
-          toast.error('请填写手机号')
+        if (crud.editingId.value) return true
+        const result = adminSchema.safeParse(crud.form)
+        if (!result.success) {
+          toast.error(result.error.issues[0]?.message ?? '请填写手机号')
           return false
         }
         return true

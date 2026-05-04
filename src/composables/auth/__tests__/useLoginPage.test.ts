@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, effectScope, type EffectScope } from 'vue'
+import { flushPromises } from '@vue/test-utils'
+import { VueQueryPlugin, QueryClient } from '@tanstack/vue-query'
 import { login, sendVerifyCode, type LoginResponse } from '@/api/account'
 import { AUTH_COPY } from '@/constants'
 import { useLoginPage } from '../useLoginPage'
@@ -37,7 +39,12 @@ const createLoginResponse = (): LoginResponse => ({
 })
 
 function setupLoginPage(saveSession = vi.fn()) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  })
+  testQueryClient = queryClient
   const app = createApp({})
+  app.use(VueQueryPlugin, { queryClient })
   let scope: EffectScope | undefined
 
   const result = app.runWithContext(() => {
@@ -65,15 +72,19 @@ function setupLoginPage(saveSession = vi.fn()) {
     saveSession,
     cleanup: () => {
       scope?.stop()
+      queryClient.clear()
     },
   }
 }
 
 let cleanup: (() => void) | undefined
+let testQueryClient: QueryClient | undefined
 
 afterEach(() => {
   cleanup?.()
   cleanup = undefined
+  testQueryClient?.clear()
+  testQueryClient = undefined
   vi.clearAllMocks()
   vi.useRealTimers()
   routerMocks.currentRoute.value.query = { redirect: '/profile' }
@@ -102,12 +113,14 @@ describe('useLoginPage', () => {
     harness.result.form.code = '123456'
 
     await harness.result.handleSendCode()
+    await flushPromises()
     expect(sendVerifyCode).toHaveBeenCalledWith({
       mobile: '13800138000',
       accountType: 'user',
     })
 
     await harness.result.handleLogin()
+    await flushPromises()
 
     expect(login).toHaveBeenCalledWith({
       mobile: '13800138000',
@@ -127,6 +140,7 @@ describe('useLoginPage', () => {
     harness.result.form.code = '000000'
 
     await harness.result.handleLogin()
+    await flushPromises()
 
     expect(harness.result.errorMsg.value).toBe(AUTH_COPY.loginFailed)
     expect(harness.saveSession).not.toHaveBeenCalled()
@@ -142,6 +156,7 @@ describe('useLoginPage', () => {
     harness.result.form.code = '123456'
 
     await harness.result.handleLogin()
+    await flushPromises()
 
     expect(harness.result.errorMsg.value).toBe(AUTH_COPY.loginFailed)
     expect(harness.result.isLoading.value).toBe(false)
@@ -154,6 +169,7 @@ describe('useLoginPage', () => {
 
     harness.result.form.mobile = '13800138000'
     await harness.result.handleSendCode()
+    await flushPromises()
 
     expect(harness.result.errorMsg.value).toBe(AUTH_COPY.sendCodeFailed)
     expect(harness.result.isSendingCode.value).toBe(false)
@@ -162,6 +178,7 @@ describe('useLoginPage', () => {
     vi.mocked(sendVerifyCode).mockResolvedValue(undefined)
     harness.result.errorMsg.value = ''
     await harness.result.handleSendCode()
+    await flushPromises()
 
     expect(sendVerifyCode).toHaveBeenCalledTimes(2)
     expect(harness.result.errorMsg.value).toBe('')
@@ -181,6 +198,7 @@ describe('useLoginPage', () => {
     harness.result.form.code = '123456'
 
     const loginCall = harness.result.handleLogin()
+    await flushPromises()
 
     // isLoading should be true while login is pending
     expect(harness.result.isLoading.value).toBe(true)
@@ -188,6 +206,7 @@ describe('useLoginPage', () => {
     // Resolve the login
     resolveLogin(createLoginResponse())
     await loginCall
+    await flushPromises()
 
     expect(harness.result.isLoading.value).toBe(false)
   })
@@ -202,6 +221,7 @@ describe('useLoginPage', () => {
 
     harness.result.form.mobile = '13800138000'
     await harness.result.handleSendCode()
+    await flushPromises()
 
     expect(harness.result.isCountdownRunning.value).toBe(true)
     expect(sendVerifyCode).toHaveBeenCalledTimes(1)

@@ -19,11 +19,12 @@ defineEmits<{
 
 const userStore = useUserStore()
 const scrollContainer = ref<HTMLDivElement>()
+const { y } = useScroll(scrollContainer)
 
 const scrollToBottom = async () => {
   await nextTick()
   if (scrollContainer.value) {
-    scrollContainer.value.scrollTop = scrollContainer.value.scrollHeight
+    y.value = scrollContainer.value.scrollHeight
   }
 }
 
@@ -89,12 +90,10 @@ const renderCard = (item: AiChatItem) => {
         class="flex"
         :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
       >
-        <img
-          v-if="msg.role === 'ai'"
-          :src="assistantAvatar"
-          alt="AI助手头像"
-          class="mr-2 mt-1 h-7 w-7 shrink-0 rounded-full object-cover"
-        />
+        <Avatar v-if="msg.role === 'ai'" class="mr-2 mt-1 h-7 w-7">
+          <AvatarImage :src="assistantAvatar" alt="AI助手头像" />
+          <AvatarFallback>AI</AvatarFallback>
+        </Avatar>
 
         <div class="max-w-[85%] md:max-w-[75%]">
           <div
@@ -131,26 +130,27 @@ const renderCard = (item: AiChatItem) => {
           </div>
         </div>
 
-        <img
-          v-if="msg.role === 'user' && userStore.isLoggedIn"
-          :src="userStore.userInfo?.avatarUrl || AVATAR_PLACEHOLDERS.SMALL"
-          alt="用户头像"
-          class="ml-2 mt-1 h-7 w-7 shrink-0 rounded-full object-cover"
-        />
-        <div
-          v-else-if="msg.role === 'user'"
-          class="ml-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary"
-        >
-          <icon-lucide-user class="h-4 w-4 text-primary-foreground" />
-        </div>
+        <Avatar v-if="msg.role === 'user' && userStore.isLoggedIn" class="ml-2 mt-1 h-7 w-7">
+          <AvatarImage
+            :src="userStore.userInfo?.avatarUrl || AVATAR_PLACEHOLDERS.SMALL"
+            alt="用户头像"
+          />
+          <AvatarFallback class="bg-primary text-primary-foreground">
+            <icon-lucide-user class="h-4 w-4" />
+          </AvatarFallback>
+        </Avatar>
+        <Avatar v-else-if="msg.role === 'user'" class="ml-2 mt-1 h-7 w-7">
+          <AvatarFallback class="bg-primary text-primary-foreground">
+            <icon-lucide-user class="h-4 w-4" />
+          </AvatarFallback>
+        </Avatar>
       </div>
 
       <div v-if="isPending" class="flex justify-start">
-        <img
-          :src="assistantAvatar"
-          alt="AI助手头像"
-          class="mr-2 mt-1 h-7 w-7 shrink-0 rounded-full object-cover"
-        />
+        <Avatar class="mr-2 mt-1 h-7 w-7">
+          <AvatarImage :src="assistantAvatar" alt="AI助手头像" />
+          <AvatarFallback>AI</AvatarFallback>
+        </Avatar>
         <div class="rounded-[2px_16px_16px_16px] bg-card px-4 py-3 shadow-sm">
           <div class="flex items-center gap-1.5">
             <div

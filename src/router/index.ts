@@ -202,9 +202,4 @@ router.beforeEach((to, _from) => {
   }
 })
 
-router.afterEach((to) => {
-  const title = typeof to.meta.title === 'string' ? to.meta.title : ''
-  document.title = title ? `${title} - Damai` : 'Damai'
-})
-
 export default router

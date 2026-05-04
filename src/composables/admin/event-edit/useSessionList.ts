@@ -19,6 +19,14 @@ type BatchSessionRow = {
   endAt: string
 }
 
+const sessionSchema = z.object({
+  name: z.string().min(1, FORM_COPY.fillSessionName),
+  startAt: z.string(),
+  endAt: z.string(),
+})
+
+const batchSessionSchema = z.array(sessionSchema).min(1, FORM_COPY.fillAtLeastOneSession)
+
 export function useSessionList(options: UseSessionListOptions) {
   const queryClient = useQueryClient()
   const { confirmDialog, openConfirm, closeConfirm, handleConfirm } = useAppConfirmDialog()
@@ -113,11 +121,14 @@ export function useSessionList(options: UseSessionListOptions) {
 
   const handleSaveSession = async () => {
     if (editingSessionId.value) {
-      if (!sessionForm.name) {
-        sessionError.value = FORM_COPY.fillSessionName
-        toast.error(TOAST_COPY.fillSessionName)
+      const result = sessionSchema.safeParse(sessionForm)
+      if (!result.success) {
+        const firstError = result.error.issues[0]?.message ?? TOAST_COPY.fillSessionName
+        sessionError.value = firstError
+        toast.error(firstError)
         return
       }
+
       sessionError.value = ''
       await updateSessionMutation.mutateAsync({
         sessionId: editingSessionId.value,
@@ -127,11 +138,15 @@ export function useSessionList(options: UseSessionListOptions) {
     }
 
     const validRows = batchSessionRows.value.filter((row) => row.name)
-    if (validRows.length === 0) {
-      sessionError.value = FORM_COPY.fillAtLeastOneSession
-      toast.error(TOAST_COPY.fillAtLeastOneSession)
+    const result = batchSessionSchema.safeParse(validRows)
+
+    if (!result.success) {
+      const firstError = result.error.issues[0]?.message ?? TOAST_COPY.fillAtLeastOneSession
+      sessionError.value = firstError
+      toast.error(firstError)
       return
     }
+
     sessionError.value = ''
     await batchAddSessionsMutation.mutateAsync(validRows)
   }

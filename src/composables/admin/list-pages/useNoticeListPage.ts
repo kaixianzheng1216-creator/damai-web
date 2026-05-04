@@ -75,12 +75,21 @@ export function useNoticeListPage(): {
     }))
   }
 
+  const noticeSchema = z.object({
+    type: z.number(),
+    name: z.string().min(1, '请填写须知名称'),
+    sortOrder: z.number().optional(),
+  })
+
   const handleSubmit = () =>
     crud.handleSubmit({
       validate: () => {
-        if (crud.form.name) return true
-        toast.error('请填写须知名称')
-        return false
+        const result = noticeSchema.safeParse(crud.form)
+        if (!result.success) {
+          toast.error(result.error.issues[0]?.message ?? '请填写须知名称')
+          return false
+        }
+        return true
       },
       getCreateData: () => ({
         type: crud.form.type,

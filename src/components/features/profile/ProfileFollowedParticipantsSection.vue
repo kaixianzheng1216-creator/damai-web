@@ -48,11 +48,12 @@ const handleUnfollowClick = (participantId: string) => {
         <template v-for="item in data" :key="item.id">
           <CardListItem v-if="item.participant" :to="'/participant/' + item.participantId">
             <template #cover>
-              <img
-                :src="item.participant.avatarUrl || ''"
-                alt="参与者头像"
-                class="aspect-square h-auto w-24 rounded-full object-cover"
-              />
+              <Avatar class="aspect-square h-auto w-24">
+                <AvatarImage :src="item.participant.avatarUrl || ''" alt="参与者头像" />
+                <AvatarFallback>
+                  <icon-lucide-user class="h-8 w-8" />
+                </AvatarFallback>
+              </Avatar>
             </template>
             <template #title>
               <p class="line-clamp-1 text-sm font-bold text-foreground">

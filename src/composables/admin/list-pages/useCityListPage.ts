@@ -1,5 +1,6 @@
 import { computed, type Ref, type ComputedRef } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
+import { toast } from 'vue3-toastify'
 import { useAdminCrud } from '../common/useAdminCrud'
 import { queryKeys } from '@/constants'
 import {
@@ -83,9 +84,22 @@ export function useCityListPage(): {
     }))
   }
 
+  const citySchema = z.object({
+    name: z.string().min(1, '请填写城市名称'),
+    pinyin: z.string().min(1, '请填写城市拼音'),
+    firstLetter: z.string().min(1, '请填写城市首字母'),
+  })
+
   const handleSubmit = () =>
     crud.handleSubmit({
-      validate: () => Boolean(crud.form.name && crud.form.pinyin && crud.form.firstLetter),
+      validate: () => {
+        const result = citySchema.safeParse(crud.form)
+        if (!result.success) {
+          toast.error(result.error.issues[0]?.message ?? '请填写完整的城市信息')
+          return false
+        }
+        return true
+      },
       getCreateData: () => ({
         name: crud.form.name,
         pinyin: crud.form.pinyin,

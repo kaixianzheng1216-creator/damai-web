@@ -17,6 +17,19 @@ interface UseTicketTypeDialogOptions {
 
 type TicketTypeForm = TicketTypeCreateRequest & Partial<TicketTypeUpdateRequest>
 
+const ticketTypeSchema = z.object({
+  name: z.string().min(1, FORM_COPY.fillTicketTypeNameAndPrice),
+  salePrice: z.number().positive(FORM_COPY.fillTicketTypeNameAndPrice),
+  orderLimit: z.number().min(1),
+  accountLimit: z.number().min(1),
+  saleStartAt: z.string(),
+  saleEndAt: z.string(),
+})
+
+const createTicketTypeSchema = ticketTypeSchema.extend({
+  totalQty: z.number().positive(FORM_COPY.fillTotalQtyError),
+})
+
 export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
   const queryClient = useQueryClient()
 
@@ -110,15 +123,20 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
   })
 
   const handleSaveTicketType = async () => {
-    if (!form.name || form.salePrice <= 0) {
-      formError.value = FORM_COPY.fillTicketTypeNameAndPrice
-      toast.error(TOAST_COPY.fillCompleteInfo)
+    const ticketType = editingTicketType.value
+    const schema = ticketType ? ticketTypeSchema : createTicketTypeSchema
+    const result = schema.safeParse(form)
+
+    if (!result.success) {
+      const firstError = result.error.issues[0]?.message ?? TOAST_COPY.fillCompleteInfo
+      formError.value = firstError
+      toast.error(firstError)
       return
     }
 
-    const ticketType = editingTicketType.value
+    formError.value = ''
+
     if (ticketType) {
-      formError.value = ''
       await updateTicketTypeMutation.mutateAsync({
         ticketTypeId: ticketType.id,
         data: {
@@ -133,13 +151,6 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
       return
     }
 
-    if (form.totalQty <= 0) {
-      formError.value = FORM_COPY.fillTotalQtyError
-      toast.error(TOAST_COPY.fillTotalQty)
-      return
-    }
-
-    formError.value = ''
     await createTicketTypeMutation.mutateAsync({
       name: form.name,
       salePrice: form.salePrice,

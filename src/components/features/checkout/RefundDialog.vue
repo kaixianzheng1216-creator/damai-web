@@ -25,6 +25,11 @@ const reason = ref('')
 const error = ref('')
 const maxLength = 200
 
+const refundSchema = z
+  .string()
+  .min(1, '请输入退款原因')
+  .max(maxLength, `退款原因不能超过 ${maxLength} 字`)
+
 watch(
   () => props.open,
   (val) => {
@@ -37,12 +42,9 @@ watch(
 
 const handleSubmit = () => {
   const trimmed = reason.value.trim()
-  if (!trimmed) {
-    error.value = '请输入退款原因'
-    return
-  }
-  if (trimmed.length > maxLength) {
-    error.value = `退款原因不能超过 ${maxLength} 字`
+  const result = refundSchema.safeParse(trimmed)
+  if (!result.success) {
+    error.value = result.error.issues[0]?.message ?? '请输入退款原因'
     return
   }
   error.value = ''

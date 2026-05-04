@@ -2,14 +2,11 @@ import { ref, computed, watch, toRef, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
 import { useStorage } from '@vueuse/core'
+import { nanoid } from 'nanoid'
 import { chatWithAI } from '@/api/ai'
 import type { ChatMessage } from '@/api/ai/types'
 import { COMMON_CONFIG, AI_CHAT_COPY } from '@/constants'
 import { buildAIChatPrompt } from '@/utils/aiChatPrompt'
-
-function generateSessionId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-}
 
 export interface UseAIChatOptions {
   flowName?: string
@@ -28,11 +25,11 @@ export function useAIChat(options: MaybeRefOrGetter<UseAIChatOptions> = {}) {
 
   const selectedCity = useStorage('selected-city', COMMON_CONFIG.DEFAULT_CITY)
 
-  const sessionId = ref<string>(generateSessionId())
+  const sessionId = ref<string>(nanoid())
   const messages = ref<ChatMessage[]>([])
 
   const resetSession = () => {
-    sessionId.value = generateSessionId()
+    sessionId.value = nanoid()
     messages.value = [
       {
         role: 'ai',

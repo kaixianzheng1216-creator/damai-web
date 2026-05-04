@@ -31,7 +31,6 @@ const columns = createUserColumns({ toggleStatus })
     :total-row="totalRow"
     title="用户管理"
     :show-create-button="false"
-    virtual-scroll
     @update:current-page="currentPage = $event"
     @update:page-size="pageSize = $event"
   >

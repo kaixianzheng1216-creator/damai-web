@@ -33,8 +33,8 @@ const acceptedLabel = computed(() =>
     .filter(Boolean)
     .join('、'),
 )
-const uploadHelpId = `image-upload-help-${Math.random().toString(36).slice(2)}`
-const uploadErrorId = `image-upload-error-${Math.random().toString(36).slice(2)}`
+const uploadHelpId = `${useId()}-help`
+const uploadErrorId = `${useId()}-error`
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
@@ -42,8 +42,15 @@ const emit = defineEmits<{
 
 const fileInput = ref<HTMLInputElement>()
 const isUploading = shallowRef(false)
-const isDragging = shallowRef(false)
 const uploadError = shallowRef('')
+
+const dropZoneRef = ref<HTMLElement>()
+const { isOverDropZone } = useDropZone(dropZoneRef, {
+  onDrop: (files) => {
+    if (files?.[0]) handleFile(files[0])
+  },
+  dataTypes: props.acceptedTypes,
+})
 
 interface ImageDimensions {
   width: number
@@ -151,28 +158,6 @@ const triggerUpload = () => {
   }
   fileInput.value?.click()
 }
-
-const handleDrop = async (e: DragEvent) => {
-  e.preventDefault()
-  e.stopPropagation()
-  isDragging.value = false
-  const file = e.dataTransfer?.files[0]
-  if (file) {
-    await handleFile(file)
-  }
-}
-
-const handleDragOver = (e: DragEvent) => {
-  e.preventDefault()
-  e.stopPropagation()
-  isDragging.value = true
-}
-
-const handleDragLeave = (e: DragEvent) => {
-  e.preventDefault()
-  e.stopPropagation()
-  isDragging.value = false
-}
 </script>
 
 <template>
@@ -202,12 +187,13 @@ const handleDragLeave = (e: DragEvent) => {
     </div>
     <div v-else class="flex flex-col gap-2">
       <div
+        ref="dropZoneRef"
         :class="[
           'flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
           resolvedAspect,
           uploadError
             ? 'border-destructive bg-destructive/5'
-            : isDragging
+            : isOverDropZone
               ? 'border-primary bg-primary/5'
               : 'border-muted-foreground/25',
         ]"
@@ -219,9 +205,6 @@ const handleDragLeave = (e: DragEvent) => {
         @click="triggerUpload"
         @keydown.enter.prevent="triggerUpload"
         @keydown.space.prevent="triggerUpload"
-        @drop="handleDrop"
-        @dragover="handleDragOver"
-        @dragleave="handleDragLeave"
       >
         <div class="flex flex-col items-center gap-2 text-center">
           <div class="flex-center h-12 w-12 rounded-full bg-primary/10">
@@ -229,7 +212,7 @@ const handleDragLeave = (e: DragEvent) => {
           </div>
           <div class="space-y-1">
             <p class="text-sm font-medium text-foreground">
-              {{ isUploading ? '上传中...' : isDragging ? '松开上传图片' : '点击或拖拽上传' }}
+              {{ isUploading ? '上传中...' : isOverDropZone ? '松开上传图片' : '点击或拖拽上传' }}
             </p>
             <p :id="uploadHelpId" class="text-xs text-muted-foreground">
               支持 {{ acceptedLabel }} 格式，最大 {{ maxSizeMb }}MB

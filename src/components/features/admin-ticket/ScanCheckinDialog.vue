@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onUnmounted, watch } from 'vue'
+import { computed, ref, onUnmounted, watch } from 'vue'
 import type { BrowserQRCodeReader, IScannerControls } from '@zxing/browser'
+import { useMutation } from '@tanstack/vue-query'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
@@ -30,7 +31,6 @@ const getTicketCheckinErrorMessage = (error: unknown) => {
 
 const videoRef = ref<HTMLVideoElement>()
 const manualToken = ref('')
-const isSubmitting = ref(false)
 const lastScannedToken = ref('')
 const result = ref<{ type: 'success' | 'error'; message: string } | null>(null)
 const scanCompleted = ref(false)
@@ -43,15 +43,24 @@ let zxingImportPromise: Promise<typeof import('@zxing/browser')> | null = null
 let pendingImport = false
 
 let controls: IScannerControls | null = null
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
+const checkinMutation = useMutation({
+  mutationFn: adminCheckinTicket,
+  onSuccess: (_data, token) => {
+    showResult('success', `检票成功：${token}`)
+    manualToken.value = ''
+    lastScannedToken.value = ''
+  },
+  onError: (error) => {
+    showResult('error', getTicketCheckinErrorMessage(error))
+  },
+})
+
+const isSubmitting = computed(() => checkinMutation.isPending.value)
 
 const stopScanner = () => {
   controls?.stop()
   controls = null
-  if (debounceTimer) {
-    clearTimeout(debounceTimer)
-    debounceTimer = null
-  }
 }
 
 const showResult = (type: 'success' | 'error', message: string) => {
@@ -60,33 +69,23 @@ const showResult = (type: 'success' | 'error', message: string) => {
   scanCompleted.value = true
 }
 
-const submit = async (token: string) => {
+const submit = (token: string) => {
   const t = token.trim()
-  if (!t || isSubmitting.value) return
-
-  isSubmitting.value = true
-  try {
-    await adminCheckinTicket(t)
-    showResult('success', `检票成功：${t}`)
-    manualToken.value = ''
-    lastScannedToken.value = ''
-  } catch (error: unknown) {
-    showResult('error', getTicketCheckinErrorMessage(error))
-  } finally {
-    isSubmitting.value = false
-  }
+  if (!t || checkinMutation.isPending.value) return
+  checkinMutation.mutate(t)
 }
+
+const debouncedSubmit = useDebounceFn((token: string) => {
+  submit(token)
+  setTimeout(() => {
+    lastScannedToken.value = ''
+  }, 2000)
+}, 300)
 
 const handleScanResult = (token: string) => {
   if (token === lastScannedToken.value) return
   lastScannedToken.value = token
-  if (debounceTimer) clearTimeout(debounceTimer)
-  debounceTimer = setTimeout(() => {
-    submit(token)
-    debounceTimer = setTimeout(() => {
-      lastScannedToken.value = ''
-    }, 2000)
-  }, 300)
+  debouncedSubmit(token)
 }
 
 const startScanner = async () => {

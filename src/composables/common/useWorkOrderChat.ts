@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import dayjs from 'dayjs'
 import type { Client, StompSubscription } from '@stomp/stompjs'
 import { toast } from 'vue3-toastify'
 import type { WorkOrderReplyVO } from '@/api/trade'
@@ -32,13 +33,13 @@ interface WSChatMessage {
 function mapWSMessageToReplyVO(msg: WSChatMessage): WorkOrderReplyVO {
   const rawTs = msg.timestamp
   const parsed = typeof rawTs === 'string' ? Number(rawTs) : typeof rawTs === 'number' ? rawTs : NaN
-  const ts = Number.isFinite(parsed) && parsed > 0 ? parsed : Date.now()
+  const ts = Number.isFinite(parsed) && parsed > 0 ? parsed : dayjs().valueOf()
 
   return {
     id: `ws-${ts}`,
     senderType: msg.senderType === 'USER' ? 0 : 1,
     content: msg.content,
-    createAt: new Date(ts).toISOString(),
+    createAt: dayjs(ts).toISOString(),
   }
 }
 

@@ -1,4 +1,5 @@
 import { computed, type Ref, type ComputedRef } from 'vue'
+import { toast } from 'vue3-toastify'
 import { useAdminCrud } from '../common/useAdminCrud'
 import { createSeries, deleteSeries, fetchAdminSeriesPage, updateSeries } from '@/api/event/series'
 import { queryKeys } from '@/constants'
@@ -62,9 +63,20 @@ export function useSeriesListPage(): {
     }))
   }
 
+  const seriesSchema = z.object({
+    name: z.string().min(1, '请填写系列名称'),
+  })
+
   const handleSubmit = () =>
     crud.handleSubmit({
-      validate: () => Boolean(crud.form.name),
+      validate: () => {
+        const result = seriesSchema.safeParse(crud.form)
+        if (!result.success) {
+          toast.error(result.error.issues[0]?.message ?? '请填写系列名称')
+          return false
+        }
+        return true
+      },
       getCreateData: () => ({
         name: crud.form.name,
       }),

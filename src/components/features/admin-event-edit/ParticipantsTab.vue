@@ -74,11 +74,12 @@ const handleParticipantDialogOpenChange = (value: boolean) => {
           class="flex items-center justify-between p-3 border rounded-lg"
         >
           <div class="flex items-center gap-3">
-            <img
-              :src="participant.participant.avatarUrl"
-              alt="参与者头像"
-              class="w-8 h-8 rounded-full object-cover"
-            />
+            <Avatar class="w-8 h-8">
+              <AvatarImage :src="participant.participant.avatarUrl" alt="参与者头像" />
+              <AvatarFallback>
+                <icon-lucide-user class="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
             <div class="font-medium">{{ participant.participant.name }}</div>
           </div>
           <Button
@@ -137,11 +138,12 @@ const handleParticipantDialogOpenChange = (value: boolean) => {
               @update:checked="() => toggleParticipant(participant.id)"
               @click.stop
             />
-            <img
-              :src="participant.avatarUrl"
-              alt="参与者封面"
-              class="w-9 h-9 rounded-full object-cover"
-            />
+            <Avatar class="w-9 h-9">
+              <AvatarImage :src="participant.avatarUrl" alt="参与者封面" />
+              <AvatarFallback>
+                <icon-lucide-user class="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
             <Label
               :for="`participant-option-${participant.id}`"
               class="font-medium cursor-pointer"
