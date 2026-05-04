@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router'
 import type { OrderItem } from '@/api/account'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import OrderCard from '@/components/common/OrderCard.vue'
-import { cn } from '@/utils'
+import { Button } from '@/components/common/ui/button'
 import { ORDER_FILTER_OPTIONS, type OrderFilterKey } from '@/constants'
 
 const router = useRouter()
@@ -42,22 +42,17 @@ const emit = defineEmits<{
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
         <div class="flex flex-wrap gap-2">
-          <button
-            type="button"
+          <Button
             v-for="item in ORDER_FILTER_OPTIONS"
             :key="item.key"
-            :class="
-              cn(
-                'rounded-full px-3 py-1 text-sm',
-                orderFilter === item.key
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/80',
-              )
-            "
+            type="button"
+            size="sm"
+            :variant="orderFilter === item.key ? undefined : 'ghost'"
+            class="rounded-full"
             @click="emit('update:orderFilter', item.key)"
           >
             {{ item.label }}
-          </button>
+          </Button>
         </div>
       </div>
     </template>

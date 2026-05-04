@@ -16,6 +16,7 @@ declare global {
   const calculateMaxTicketQuantity: typeof import('../utils/eventDetailState').calculateMaxTicketQuantity
   const clsx: typeof import('clsx').clsx
   const cn: typeof import('../utils/index').cn
+  const computeVisiblePages: typeof import('../utils/pagination').computeVisiblePages
   const computed: typeof import('vue').computed
   const computedAsync: typeof import('@vueuse/core').computedAsync
   const computedEager: typeof import('@vueuse/core').computedEager
@@ -40,6 +41,7 @@ declare global {
   const customRef: typeof import('vue').customRef
   const debouncedRef: typeof import('@vueuse/core').debouncedRef
   const debouncedWatch: typeof import('@vueuse/core').debouncedWatch
+  const deepMapObject: typeof import('../utils/object').deepMapObject
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
   const defineComponent: typeof import('vue').defineComponent
   const defineStore: typeof import('pinia').defineStore
@@ -72,6 +74,7 @@ declare global {
   const inject: typeof import('vue').inject
   const injectLocal: typeof import('@vueuse/core').injectLocal
   const isDefined: typeof import('@vueuse/core').isDefined
+  const isPlainObject: typeof import('../utils/object').isPlainObject
   const isProxy: typeof import('vue').isProxy
   const isReactive: typeof import('vue').isReactive
   const isReadonly: typeof import('vue').isReadonly
@@ -375,6 +378,7 @@ declare module 'vue' {
     readonly calculateMaxTicketQuantity: UnwrapRef<typeof import('../utils/eventDetailState')['calculateMaxTicketQuantity']>
     readonly clsx: UnwrapRef<typeof import('clsx')['clsx']>
     readonly cn: UnwrapRef<typeof import('../utils/index')['cn']>
+    readonly computeVisiblePages: UnwrapRef<typeof import('../utils/pagination')['computeVisiblePages']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
     readonly computedEager: UnwrapRef<typeof import('@vueuse/core')['computedEager']>
@@ -399,6 +403,7 @@ declare module 'vue' {
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly debouncedRef: UnwrapRef<typeof import('@vueuse/core')['debouncedRef']>
     readonly debouncedWatch: UnwrapRef<typeof import('@vueuse/core')['debouncedWatch']>
+    readonly deepMapObject: UnwrapRef<typeof import('../utils/object')['deepMapObject']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
@@ -430,6 +435,7 @@ declare module 'vue' {
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
+    readonly isPlainObject: UnwrapRef<typeof import('../utils/object')['isPlainObject']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>

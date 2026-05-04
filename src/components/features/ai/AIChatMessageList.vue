@@ -3,6 +3,7 @@ import { nextTick, ref, watch } from 'vue'
 import type { ChatMessage, AiChatItem } from '@/api/ai/types'
 import { AI_CHAT_COPY, AVATAR_PLACEHOLDERS } from '@/constants'
 import { useUserStore } from '@/stores/user'
+import { Button } from '@/components/common/ui/button'
 import EventCard from '@/components/common/EventCard.vue'
 import OrderCard from '@/components/common/OrderCard.vue'
 import TicketCard from '@/components/common/TicketCard.vue'
@@ -19,13 +20,11 @@ defineEmits<{
 
 const userStore = useUserStore()
 const scrollContainer = ref<HTMLDivElement>()
-const { y } = useScroll(scrollContainer)
+const bottomRef = ref<HTMLDivElement>()
 
 const scrollToBottom = async () => {
   await nextTick()
-  if (scrollContainer.value) {
-    y.value = scrollContainer.value.scrollHeight
-  }
+  bottomRef.value?.scrollIntoView({ behavior: 'smooth' })
 }
 
 watch(
@@ -111,15 +110,17 @@ const renderCard = (item: AiChatItem) => {
             v-if="msg.role === 'ai' && msg.suggestions?.length"
             class="mt-2 flex flex-wrap gap-2"
           >
-            <button
+            <Button
               v-for="suggestion in msg.suggestions"
               :key="suggestion"
               type="button"
-              class="h-auto cursor-pointer rounded-full bg-primary/10 px-4 py-1.5 text-xs font-medium text-foreground transition-all hover:bg-primary/15 hover:text-primary active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              variant="outline"
+              size="sm"
+              class="h-auto rounded-full px-4 py-1.5 text-xs"
               @click="$emit('suggestion', suggestion)"
             >
               {{ suggestion }}
-            </button>
+            </Button>
           </div>
 
           <div v-if="msg.role === 'ai' && msg.items?.length" class="mt-5 space-y-3">
@@ -164,5 +165,6 @@ const renderCard = (item: AiChatItem) => {
         </div>
       </div>
     </div>
+    <div ref="bottomRef" />
   </div>
 </template>

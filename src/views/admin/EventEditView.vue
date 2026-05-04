@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineAsyncComponent, ref } from 'vue'
 import { Button } from '@/components/common/ui/button'
+import { Badge } from '@/components/common/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui/tabs'
 import { EVENT_STATUS } from '@/constants'
 import { useEventEditPage } from '@/composables/admin'
@@ -86,17 +87,9 @@ const handleSaveChanges = async () => {
         <p class="text-muted-sm mt-1">管理活动的基本信息、场次和票种</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <span
-          v-if="isEdit && eventData"
-          class="text-sm px-2.5 py-0.5 rounded-full border font-medium"
-          :class="
-            eventData.status === EVENT_STATUS.PUBLISHED
-              ? 'text-green-700 border-green-300 bg-green-50'
-              : 'text-muted-foreground border-border bg-muted/40'
-          "
-        >
+        <Badge v-if="isEdit && eventData" variant="secondary">
           {{ eventData.statusLabel }}
-        </span>
+        </Badge>
         <Button
           v-if="isEdit && eventData?.status === EVENT_STATUS.PUBLISHED"
           variant="outline"

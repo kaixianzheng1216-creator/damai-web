@@ -128,14 +128,14 @@ const handleUpdateBatchRows = (rows: { name: string; startAt: string; endAt: str
           </div>
         </CardHeader>
         <CardContent>
-          <button
-            type="button"
+          <Button
             v-if="!session.ticketTypes || session.ticketTypes.length === 0"
-            class="w-full text-sm text-muted-foreground text-center py-5 border border-dashed rounded-md hover:border-primary hover:text-primary transition-colors cursor-pointer"
+            variant="outline"
+            class="w-full border-dashed"
             @click="emit('create-ticket-type', session.id)"
           >
             + 新增票种
-          </button>
+          </Button>
           <div v-else class="space-y-2">
             <div
               v-for="tt in session.ticketTypes"

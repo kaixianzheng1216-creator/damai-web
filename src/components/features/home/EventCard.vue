@@ -4,8 +4,6 @@ import type { HomeEventCardItem } from '@/api/event'
 defineProps<{
   event: HomeEventCardItem
 }>()
-
-const formatPriceText = (priceText: string) => priceText.replace(/\s*元$/, '\u00A0元')
 </script>
 
 <template>
@@ -38,7 +36,7 @@ const formatPriceText = (priceText: string) => priceText.replace(/\s*元$/, '\u0
       <div
         class="mt-auto whitespace-nowrap pt-2 text-base font-bold leading-none text-primary md:pt-4 md:text-xl"
       >
-        {{ formatPriceText(event.priceText) }}
+        {{ event.priceText }}
       </div>
     </div>
   </RouterLink>

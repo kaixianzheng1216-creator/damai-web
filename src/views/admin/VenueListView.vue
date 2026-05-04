@@ -3,6 +3,7 @@ import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createVenueColumns } from '@/components/admin/columns/venueColumns'
 import { Input } from '@/components/common/ui/input'
+import { Label } from '@/components/common/ui/label'
 import { useVenueListPage } from '@/composables/admin'
 
 const {
@@ -70,33 +71,25 @@ const columns = createVenueColumns({ openEdit, handleDelete })
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label for="venue-name" class="text-sm font-medium">
-          场馆名 <span class="text-destructive">*</span>
-        </label>
+        <Label for="venue-name"> 场馆名 <span class="text-destructive">*</span> </Label>
         <Input id="venue-name" v-model="form.name" placeholder="请输入场馆名" />
       </div>
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <div class="grid gap-2">
-          <label for="venue-province" class="text-sm font-medium">
-            省份 <span class="text-destructive">*</span>
-          </label>
+          <Label for="venue-province"> 省份 <span class="text-destructive">*</span> </Label>
           <Input id="venue-province" v-model="form.province" placeholder="省份" />
         </div>
         <div class="grid gap-2">
-          <label for="venue-city" class="text-sm font-medium">
-            城市 <span class="text-destructive">*</span>
-          </label>
+          <Label for="venue-city"> 城市 <span class="text-destructive">*</span> </Label>
           <Input id="venue-city" v-model="form.city" placeholder="城市" />
         </div>
         <div class="grid gap-2">
-          <label for="venue-district" class="text-sm font-medium">区县</label>
+          <Label for="venue-district">区县</Label>
           <Input id="venue-district" v-model="form.district" placeholder="区县" />
         </div>
       </div>
       <div class="grid gap-2">
-        <label for="venue-address" class="text-sm font-medium">
-          详细地址 <span class="text-destructive">*</span>
-        </label>
+        <Label for="venue-address"> 详细地址 <span class="text-destructive">*</span> </Label>
         <Input id="venue-address" v-model="form.address" placeholder="请输入详细地址" />
       </div>
     </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick, watch } from 'vue'
+import { Button } from '@/components/common/ui/button'
 
 const props = defineProps<{
   label: string
@@ -40,27 +41,24 @@ useResizeObserver(listRef, checkOverflow)
       class="flex flex-1 flex-wrap gap-2 transition-all duration-200"
       :class="expanded ? '' : 'max-h-[36px] overflow-hidden'"
     >
-      <button
-        type="button"
+      <Button
         v-for="item in options"
         :key="item.value"
-        :class="
-          cn(
-            'rounded-sm px-3 py-1.5 text-sm whitespace-nowrap transition-colors',
-            item.value === activeValue
-              ? 'bg-primary text-primary-foreground'
-              : 'text-foreground hover:bg-muted',
-          )
-        "
+        type="button"
+        size="sm"
+        :variant="item.value === activeValue ? undefined : 'ghost'"
+        class="rounded-sm whitespace-nowrap"
         @click="emit('change', item.value)"
       >
         {{ item.label }}
-      </button>
+      </Button>
     </div>
-    <button
-      type="button"
+    <Button
       v-if="overflows || expanded"
-      class="flex shrink-0 items-center gap-0.5 pt-1 text-sm text-primary transition-colors hover:text-primary/80"
+      type="button"
+      variant="ghost"
+      size="sm"
+      class="shrink-0 pt-1"
       @click="expanded = !expanded"
     >
       {{ expanded ? '收起' : '更多' }}
@@ -68,6 +66,6 @@ useResizeObserver(listRef, checkOverflow)
         class="h-3.5 w-3.5 transition-transform duration-200"
         :class="expanded ? 'rotate-180' : ''"
       />
-    </button>
+    </Button>
   </div>
 </template>

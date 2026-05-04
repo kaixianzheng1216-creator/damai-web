@@ -27,7 +27,7 @@ const props = withDefaults(
 <template>
   <div
     :class="
-      cn('flex', message ? 'flex-col space-y-4' : 'flex-center', 'animate-in fade-in', props.class)
+      cn('flex flex-center', message ? 'flex-col space-y-4' : '', 'animate-in fade-in', props.class)
     "
     :style="{ minHeight: props.minHeight }"
   >

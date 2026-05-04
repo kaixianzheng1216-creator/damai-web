@@ -14,23 +14,23 @@ import {
 // ---------------------------------------------------------------------------
 describe('formatPrice', () => {
   it('converts 0 cents to ¥0.00', () => {
-    expect(formatPrice(0)).toBe('¥0.00')
+    expect(formatPrice(0)).toBe('¥0.00\u00A0元')
   })
 
   it('converts whole-yuan amounts correctly', () => {
-    expect(formatPrice(19900)).toBe('¥199.00')
+    expect(formatPrice(19900)).toBe('¥199.00\u00A0元')
   })
 
   it('converts single cent to ¥0.01', () => {
-    expect(formatPrice(1)).toBe('¥0.01')
+    expect(formatPrice(1)).toBe('¥0.01\u00A0元')
   })
 
   it('handles negative prices', () => {
-    expect(formatPrice(-500)).toBe('¥-5.00')
+    expect(formatPrice(-500)).toBe('-¥5.00\u00A0元')
   })
 
   it('handles large amounts with rounding', () => {
-    expect(formatPrice(123456)).toBe('¥1234.56')
+    expect(formatPrice(123456)).toBe('¥1,234.56\u00A0元')
   })
 })
 
@@ -39,19 +39,19 @@ describe('formatPrice', () => {
 // ---------------------------------------------------------------------------
 describe('formatPriceRange', () => {
   it('returns single price when min equals max', () => {
-    expect(formatPriceRange(19900, 19900)).toBe('¥199.00')
+    expect(formatPriceRange(19900, 19900)).toBe('¥199.00\u00A0元')
   })
 
   it('returns single ¥0.00 when both prices are zero', () => {
-    expect(formatPriceRange(0, 0)).toBe('¥0.00')
+    expect(formatPriceRange(0, 0)).toBe('¥0.00\u00A0元')
   })
 
   it('returns range with em-dash separator when prices differ', () => {
-    expect(formatPriceRange(100, 19900)).toBe('¥1.00 — ¥199.00')
+    expect(formatPriceRange(100, 19900)).toBe('¥1.00\u00A0元 — ¥199.00\u00A0元')
   })
 
   it('handles negative min with positive max', () => {
-    expect(formatPriceRange(-100, 500)).toBe('¥-1.00 — ¥5.00')
+    expect(formatPriceRange(-100, 500)).toBe('-¥1.00\u00A0元 — ¥5.00\u00A0元')
   })
 })
 

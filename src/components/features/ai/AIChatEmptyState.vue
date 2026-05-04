@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AI_CHAT_COPY } from '@/constants'
+import { Button } from '@/components/common/ui/button'
 
 withDefaults(
   defineProps<{
@@ -31,15 +32,16 @@ defineEmits<{
       {{ emptyDescription }}
     </p>
     <div class="flex flex-wrap justify-center gap-3">
-      <button
+      <Button
         v-for="prompt in quickPrompts"
         :key="prompt"
         type="button"
-        class="h-auto cursor-pointer rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all hover:border-primary hover:text-primary active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        variant="outline"
+        class="h-auto rounded-full px-5 py-2.5"
         @click="$emit('prompt', prompt)"
       >
         {{ prompt }}
-      </button>
+      </Button>
     </div>
   </div>
 </template>

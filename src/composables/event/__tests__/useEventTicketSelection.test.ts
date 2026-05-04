@@ -94,7 +94,7 @@ describe('useEventTicketSelection', () => {
     expect(result.selectedTicketTypeId.value).toBe('on-sale')
     expect(result.ticketTypeIds.value).toEqual(['off-sale', 'on-sale'])
     expect(result.selectedPassengerIds.value).toEqual(['p1'])
-    expect(result.totalPrice.value).toBe('¥1.88')
+    expect(result.totalPrice.value).toBe('¥1.88\u00A0元')
 
     result.ticketQuantity.value = 2
     await nextTick()

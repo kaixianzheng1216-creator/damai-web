@@ -3,6 +3,7 @@ import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createCityColumns } from '@/components/admin/columns/cityColumns'
 import { Input } from '@/components/common/ui/input'
+import { Label } from '@/components/common/ui/label'
 import { useCityListPage } from '@/composables/admin'
 
 const {
@@ -71,21 +72,15 @@ const columns = createCityColumns({ toggleFeatured, openEdit, handleDelete })
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label for="city-name" class="text-sm font-medium">
-          城市名 <span class="text-destructive">*</span>
-        </label>
+        <Label for="city-name"> 城市名 <span class="text-destructive">*</span> </Label>
         <Input id="city-name" v-model="form.name" placeholder="请输入城市名" />
       </div>
       <div class="grid gap-2">
-        <label for="city-pinyin" class="text-sm font-medium">
-          拼音 <span class="text-destructive">*</span>
-        </label>
+        <Label for="city-pinyin"> 拼音 <span class="text-destructive">*</span> </Label>
         <Input id="city-pinyin" v-model="form.pinyin" placeholder="请输入拼音，如 beijing" />
       </div>
       <div class="grid gap-2">
-        <label for="city-first-letter" class="text-sm font-medium">
-          首字母 <span class="text-destructive">*</span>
-        </label>
+        <Label for="city-first-letter"> 首字母 <span class="text-destructive">*</span> </Label>
         <Input
           id="city-first-letter"
           v-model="form.firstLetter"

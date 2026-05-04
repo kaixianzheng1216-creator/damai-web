@@ -3,6 +3,7 @@ import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createAdminColumns } from '@/components/admin/columns/adminColumns'
 import { Input } from '@/components/common/ui/input'
+import { Label } from '@/components/common/ui/label'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { useAdminListPage } from '@/composables/admin/list-pages'
 
@@ -74,9 +75,7 @@ const columns = createAdminColumns({ openEdit, toggleStatus })
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label for="admin-mobile" class="text-sm font-medium">
-          手机号 <span class="text-destructive">*</span>
-        </label>
+        <Label for="admin-mobile"> 手机号 <span class="text-destructive">*</span> </Label>
         <Input
           id="admin-mobile"
           v-model="form.mobile"
@@ -86,11 +85,11 @@ const columns = createAdminColumns({ openEdit, toggleStatus })
         />
       </div>
       <div class="grid gap-2">
-        <label for="admin-username" class="text-sm font-medium">用户名</label>
+        <Label for="admin-username">用户名</Label>
         <Input id="admin-username" v-model="form.username" placeholder="请输入用户名（可选）" />
       </div>
       <div v-if="editingId" class="grid gap-2">
-        <label class="text-sm font-medium">头像</label>
+        <Label class="text-sm font-medium">头像</Label>
         <ImageUpload
           v-model="form.avatarUrl"
           preview-alt="管理员头像预览"

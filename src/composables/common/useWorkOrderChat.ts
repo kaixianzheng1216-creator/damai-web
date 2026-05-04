@@ -4,19 +4,6 @@ import type { Client, StompSubscription } from '@stomp/stompjs'
 import { toast } from 'vue3-toastify'
 import type { WorkOrderReplyVO } from '@/api/trade'
 
-// ─── Dynamic Stomp Import (deduplicated) ──────────────────────
-
-let _ClientClass: typeof Client | null = null
-let _importPromise: Promise<void> | null = null
-
-async function _loadStompClient(): Promise<void> {
-  if (_ClientClass) return
-  _importPromise ??= import('@stomp/stompjs').then((m) => {
-    _ClientClass = m.Client
-  })
-  await _importPromise
-}
-
 // ─── Internal WS Message Types ────────────────────────────────
 
 interface WSChatMessage {
@@ -71,8 +58,7 @@ function createWorkOrderChat() {
   }
 
   async function connect(token: string): Promise<void> {
-    await _loadStompClient()
-    const Client = _ClientClass!
+    const { Client } = await import('@stomp/stompjs')
 
     if (!token) {
       console.warn('[useWorkOrderChat] Cannot connect: no token provided')
@@ -246,7 +232,6 @@ function createWorkOrderChat() {
 
   function disconnect(): void {
     doDisconnect()
-    instance = null
   }
 
   return {
@@ -263,11 +248,6 @@ function createWorkOrderChat() {
   }
 }
 
-// ─── Singleton ────────────────────────────────────────────────
+// ─── Singleton (via VueUse createSharedComposable) ────────────
 
-let instance: ReturnType<typeof createWorkOrderChat> | null = null
-
-export function useWorkOrderChat() {
-  if (!instance) instance = createWorkOrderChat()
-  return instance
-}
+export const useWorkOrderChat = createSharedComposable(createWorkOrderChat)

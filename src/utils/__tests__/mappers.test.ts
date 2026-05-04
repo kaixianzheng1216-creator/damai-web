@@ -113,8 +113,8 @@ describe('convertEventVOToCardItem', () => {
       saleStatus: '售票中',
       categoryName: '演唱会',
     })
-    // priceText: formatPrice(29900) → '¥299.00'
-    expect(result.priceText).toBe('¥299.00')
+    // priceText: formatPrice(29900) → '¥299.00\u00A0元'
+    expect(result.priceText).toBe('¥299.00\u00A0元')
     // dateText: formatDateTimeWithWeekday('2026-06-20T19:00:00') → '2026.6.20 周六 19:00'
     expect(result.dateText).toMatch(/^2026\.6\.20/)
   })

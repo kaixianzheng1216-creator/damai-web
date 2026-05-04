@@ -3,6 +3,7 @@ import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createSeriesColumns } from '@/components/admin/columns/seriesColumns'
 import { Input } from '@/components/common/ui/input'
+import { Label } from '@/components/common/ui/label'
 import { useSeriesListPage } from '@/composables/admin'
 
 const {
@@ -70,9 +71,7 @@ const columns = createSeriesColumns({ openEdit, handleDelete })
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label for="series-name" class="text-sm font-medium">
-          系列名称 <span class="text-destructive">*</span>
-        </label>
+        <Label for="series-name"> 系列名称 <span class="text-destructive">*</span> </Label>
         <Input id="series-name" v-model="form.name" placeholder="请输入系列名称" />
       </div>
     </div>

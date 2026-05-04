@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ProfileSectionOption, ProfileSectionKey } from '@/constants'
+import { Button } from '@/components/common/ui/button'
 
 defineProps<{
   activeSection: ProfileSectionKey
@@ -13,19 +14,16 @@ const emit = defineEmits<{
 
 <template>
   <div class="flex gap-2 overflow-x-auto scrollbar-hide lg:hidden">
-    <button
-      type="button"
+    <Button
       v-for="section in allSections"
       :key="section.key"
-      class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors"
-      :class="
-        activeSection === section.key
-          ? 'bg-primary text-primary-foreground'
-          : 'bg-muted text-muted-foreground hover:text-foreground'
-      "
+      type="button"
+      size="sm"
+      :variant="activeSection === section.key ? undefined : 'ghost'"
+      class="shrink-0 rounded-full"
       @click="emit('open-section', section.key)"
     >
       {{ section.label }}
-    </button>
+    </Button>
   </div>
 </template>

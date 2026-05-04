@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AccountSettingItem } from '@/api/account'
+import { Button } from '@/components/common/ui/button'
 
 defineProps<{
   accountSettings: AccountSettingItem[]
@@ -28,9 +29,9 @@ const emit = defineEmits<{
             <p v-if="item.value" class="text-sm text-muted-foreground">{{ item.value }}</p>
           </div>
         </div>
-        <button type="button" class="text-sky-600 hover:underline" @click="emit('action', item)">
+        <Button variant="link" class="text-sky-600" type="button" @click="emit('action', item)">
           {{ item.actionText }}
-        </button>
+        </Button>
       </div>
     </div>
   </div>

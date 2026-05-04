@@ -4,6 +4,7 @@ import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createParticipantColumns } from '@/components/admin/columns/participantColumns'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { Input } from '@/components/common/ui/input'
+import { Label } from '@/components/common/ui/label'
 import { useParticipantListPage } from '@/composables/admin'
 
 const {
@@ -71,13 +72,11 @@ const columns = createParticipantColumns({ openEdit, handleDelete })
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label for="participant-name" class="text-sm font-medium">
-          名称 <span class="text-destructive">*</span>
-        </label>
+        <Label for="participant-name"> 名称 <span class="text-destructive">*</span> </Label>
         <Input id="participant-name" v-model="form.name" placeholder="请输入参与方名称" />
       </div>
       <div class="grid gap-2">
-        <label class="text-sm font-medium">头像</label>
+        <Label>头像</Label>
         <ImageUpload
           v-model="form.avatarUrl"
           preview-alt="参与方头像预览"

@@ -89,12 +89,10 @@ const closedMessage = computed(() =>
 )
 
 const messagesRef = ref<HTMLDivElement | null>(null)
-const { y } = useScroll(messagesRef)
+const bottomRef = ref<HTMLDivElement | null>(null)
 
 function scrollToBottom() {
-  if (messagesRef.value) {
-    y.value = messagesRef.value.scrollHeight
-  }
+  bottomRef.value?.scrollIntoView({ behavior: 'smooth' })
 }
 
 watch(
@@ -242,6 +240,7 @@ const handleKeydown = (e: KeyboardEvent) => {
             </div>
           </section>
         </div>
+        <div ref="bottomRef" />
       </div>
 
       <template v-if="workOrder && !isLoading">

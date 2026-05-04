@@ -2,8 +2,8 @@
 import type { WorkOrderVO } from '@/api/trade'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import CardListItem from '@/components/common/CardListItem.vue'
+import { Button } from '@/components/common/ui/button'
 import { WORK_ORDER_FILTER_OPTIONS, type WorkOrderFilterKey } from '@/constants'
-import { cn } from '@/utils'
 import { formatDateTime } from '@/utils/format'
 
 defineProps<{
@@ -38,22 +38,17 @@ const emit = defineEmits<{
     <template #toolbar>
       <div class="flex flex-wrap items-center gap-2">
         <div class="flex flex-wrap gap-2">
-          <button
-            type="button"
+          <Button
             v-for="item in WORK_ORDER_FILTER_OPTIONS"
             :key="item.key"
-            :class="
-              cn(
-                'rounded-full px-3 py-1 text-sm',
-                workOrderFilter === item.key
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/80',
-              )
-            "
+            type="button"
+            size="sm"
+            :variant="workOrderFilter === item.key ? undefined : 'ghost'"
+            class="rounded-full"
             @click="emit('update:workOrderFilter', item.key)"
           >
             {{ item.label }}
-          </button>
+          </Button>
         </div>
       </div>
     </template>
@@ -82,10 +77,7 @@ const emit = defineEmits<{
             <hr class="border-border" />
           </template>
           <template #topRight>
-            <span
-              class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
-              >{{ workOrder.statusLabel }}</span
-            >
+            <Badge variant="secondary">{{ workOrder.statusLabel }}</Badge>
           </template>
           <template #bottomLeft>
             <p class="text-xs text-muted-foreground">{{ workOrder.workOrderNo || workOrder.id }}</p>

@@ -4,8 +4,14 @@ import dayjs from 'dayjs'
 // 本项目为中文票务平台，全局注册比逐实例传 locale 更简单，是可接受的取舍。
 import 'dayjs/locale/zh-cn'
 
+const currencyFormatter = new Intl.NumberFormat('zh-CN', {
+  style: 'currency',
+  currency: 'CNY',
+  minimumFractionDigits: 2,
+})
+
 export const formatPrice = (price: number): string => {
-  return `¥${(price / 100).toFixed(2)}`
+  return currencyFormatter.format(price / 100) + '\u00A0元'
 }
 
 export const formatPriceRange = (minPrice: number, maxPrice: number): string => {

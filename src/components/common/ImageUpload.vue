@@ -57,6 +57,9 @@ interface ImageDimensions {
   height: number
 }
 
+const tempImageFile = ref<File | null>(null)
+const tempImageUrl = useObjectUrl(tempImageFile)
+
 const setUploadError = (message: string) => {
   uploadError.value = message
   toast.error(message)
@@ -72,21 +75,19 @@ const validateFileSize = (file: File) => {
   return file.size <= props.maxSizeMb * 1024 * 1024
 }
 
-const getImageDimensions = (file: File) =>
-  new Promise<ImageDimensions>((resolve, reject) => {
-    const url = URL.createObjectURL(file)
-    const image = new Image()
+const getImageDimensions = async (file: File) => {
+  tempImageFile.value = file
+  await nextTick()
+  const url = tempImageUrl.value
+  if (!url) throw new Error('无法生成图片链接')
 
-    image.onload = () => {
-      URL.revokeObjectURL(url)
-      resolve({ width: image.naturalWidth, height: image.naturalHeight })
-    }
-    image.onerror = () => {
-      URL.revokeObjectURL(url)
-      reject(new Error('无法读取图片尺寸'))
-    }
+  return new Promise<ImageDimensions>((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => resolve({ width: image.naturalWidth, height: image.naturalHeight })
+    image.onerror = () => reject(new Error('无法读取图片尺寸'))
     image.src = url
   })
+}
 
 const validateImageDimensions = ({ width, height }: ImageDimensions) => {
   if (props.minWidth && width < props.minWidth) {
@@ -189,7 +190,7 @@ const triggerUpload = () => {
       <div
         ref="dropZoneRef"
         :class="[
-          'flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+          'flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 transition-all duration-300',
           resolvedAspect,
           uploadError
             ? 'border-destructive bg-destructive/5'
@@ -197,28 +198,27 @@ const triggerUpload = () => {
               ? 'border-primary bg-primary/5'
               : 'border-muted-foreground/25',
         ]"
-        role="button"
-        tabindex="0"
-        :aria-label="uploadLabel"
-        :aria-invalid="Boolean(uploadError)"
-        :aria-describedby="uploadError ? uploadErrorId : uploadHelpId"
-        @click="triggerUpload"
-        @keydown.enter.prevent="triggerUpload"
-        @keydown.space.prevent="triggerUpload"
       >
-        <div class="flex flex-col items-center gap-2 text-center">
-          <div class="flex-center h-12 w-12 rounded-full bg-primary/10">
-            <icon-lucide-upload-cloud class="h-6 w-6 text-primary" />
+        <Button
+          variant="ghost"
+          type="button"
+          class="h-auto w-full py-0 cursor-pointer"
+          @click="triggerUpload"
+        >
+          <div class="flex flex-col items-center gap-2 text-center">
+            <div class="flex-center h-12 w-12 rounded-full bg-primary/10">
+              <icon-lucide-upload-cloud class="h-6 w-6 text-primary" />
+            </div>
+            <div class="space-y-1">
+              <p class="text-sm font-medium text-foreground">
+                {{ isUploading ? '上传中...' : isOverDropZone ? '松开上传图片' : '点击或拖拽上传' }}
+              </p>
+              <p :id="uploadHelpId" class="text-xs text-muted-foreground">
+                支持 {{ acceptedLabel }} 格式，最大 {{ maxSizeMb }}MB
+              </p>
+            </div>
           </div>
-          <div class="space-y-1">
-            <p class="text-sm font-medium text-foreground">
-              {{ isUploading ? '上传中...' : isOverDropZone ? '松开上传图片' : '点击或拖拽上传' }}
-            </p>
-            <p :id="uploadHelpId" class="text-xs text-muted-foreground">
-              支持 {{ acceptedLabel }} 格式，最大 {{ maxSizeMb }}MB
-            </p>
-          </div>
-        </div>
+        </Button>
       </div>
       <p v-if="uploadError" :id="uploadErrorId" class="text-xs text-destructive">
         {{ uploadError }}

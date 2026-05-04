@@ -47,7 +47,7 @@ export const useEventTicketSelection = ({ detail, passengers }: UseEventTicketSe
   const totalPrice = computed(() =>
     selectedTicketType.value
       ? formatPrice((selectedTicketType.value.salePrice ?? 0) * ticketQuantity.value)
-      : '¥0.00',
+      : formatPrice(0),
   )
   const selectedPassengers = computed<PassengerItem[]>(() =>
     getSelectedPassengers(selectedPassengerIds.value, passengers.value),

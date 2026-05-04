@@ -3,6 +3,7 @@ import AdminFormDialog from '@/components/admin/LazyAdminFormDialog'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
 import { createNoticeColumns } from '@/components/admin/columns/noticeColumns'
 import { Input } from '@/components/common/ui/input'
+import { Label } from '@/components/common/ui/label'
 import {
   Select,
   SelectContent,
@@ -89,9 +90,7 @@ const columns = createNoticeColumns({ openEdit, handleDelete })
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label id="notice-type-label" class="text-sm font-medium">
-          类型 <span class="text-destructive">*</span>
-        </label>
+        <Label id="notice-type-label"> 类型 <span class="text-destructive">*</span> </Label>
         <Select
           :model-value="String(form.type)"
           :disabled="Boolean(editingId)"
@@ -107,13 +106,11 @@ const columns = createNoticeColumns({ openEdit, handleDelete })
         </Select>
       </div>
       <div class="grid gap-2">
-        <label for="notice-name" class="text-sm font-medium">
-          名称 <span class="text-destructive">*</span>
-        </label>
+        <Label for="notice-name"> 名称 <span class="text-destructive">*</span> </Label>
         <Input id="notice-name" v-model="form.name" placeholder="请输入须知名称" />
       </div>
       <div class="grid gap-2">
-        <label for="notice-sort-order" class="text-sm font-medium">排序</label>
+        <Label for="notice-sort-order">排序</Label>
         <Input
           id="notice-sort-order"
           v-model.number="form.sortOrder"

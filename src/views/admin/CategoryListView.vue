@@ -7,6 +7,7 @@ import {
 } from '@/components/admin/columns/categoryColumns'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
+import { Label } from '@/components/common/ui/label'
 import { useCategoryListPage } from '@/composables/admin'
 
 const {
@@ -92,13 +93,11 @@ const childColumns = createCategoryChildColumns({
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label for="category-name" class="text-sm font-medium">
-          分类名 <span class="text-destructive">*</span>
-        </label>
+        <Label for="category-name"> 分类名 <span class="text-destructive">*</span> </Label>
         <Input id="category-name" v-model="form.name" placeholder="请输入分类名" />
       </div>
       <div class="grid gap-2">
-        <label for="category-sort-order" class="text-sm font-medium">排序</label>
+        <Label for="category-sort-order">排序</Label>
         <Input
           id="category-sort-order"
           v-model.number="form.sortOrder"
@@ -139,13 +138,11 @@ const childColumns = createCategoryChildColumns({
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label for="child-category-name" class="text-sm font-medium">
-          子分类名 <span class="text-destructive">*</span>
-        </label>
+        <Label for="child-category-name"> 子分类名 <span class="text-destructive">*</span> </Label>
         <Input id="child-category-name" v-model="childForm.name" placeholder="请输入子分类名" />
       </div>
       <div class="grid gap-2">
-        <label for="child-category-sort-order" class="text-sm font-medium">排序</label>
+        <Label for="child-category-sort-order">排序</Label>
         <Input
           id="child-category-sort-order"
           v-model.number="childForm.sortOrder"

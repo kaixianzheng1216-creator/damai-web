@@ -5,6 +5,7 @@ import { createBannerColumns } from '@/components/admin/columns/bannerColumns'
 import DateTimePicker from '@/components/common/DateTimePicker.vue'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { Input } from '@/components/common/ui/input'
+import { Label } from '@/components/common/ui/label'
 import {
   Select,
   SelectContent,
@@ -96,15 +97,11 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
     <div class="grid gap-4">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div class="grid gap-2">
-          <label for="banner-title" class="text-sm font-medium">
-            标题 <span class="text-destructive">*</span>
-          </label>
+          <Label for="banner-title"> 标题 <span class="text-destructive">*</span> </Label>
           <Input id="banner-title" v-model="form.title" placeholder="请输入 Banner 标题" />
         </div>
         <div class="grid gap-2">
-          <label id="banner-city-label" class="text-sm font-medium">
-            城市 <span class="text-destructive">*</span>
-          </label>
+          <Label id="banner-city-label"> 城市 <span class="text-destructive">*</span> </Label>
           <Select v-model="form.cityId">
             <SelectTrigger aria-labelledby="banner-city-label">
               <SelectValue placeholder="请选择城市" />
@@ -120,9 +117,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div class="grid gap-2">
-          <label class="text-sm font-medium">
-            PC 端图片 <span class="text-destructive">*</span>
-          </label>
+          <Label> PC 端图片 <span class="text-destructive">*</span> </Label>
           <ImageUpload
             v-model="form.imageUrl"
             aspect-class="aspect-[5/2]"
@@ -131,9 +126,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
           />
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">
-            移动端图片 <span class="text-destructive">*</span>
-          </label>
+          <Label> 移动端图片 <span class="text-destructive">*</span> </Label>
           <ImageUpload
             v-model="form.mobileImageUrl"
             aspect-class="aspect-video"
@@ -144,15 +137,13 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
       </div>
 
       <div class="grid gap-2">
-        <label for="banner-jump-url" class="text-sm font-medium">
-          跳转 URL <span class="text-destructive">*</span>
-        </label>
+        <Label for="banner-jump-url"> 跳转 URL <span class="text-destructive">*</span> </Label>
         <Input id="banner-jump-url" v-model="form.jumpUrl" placeholder="请输入跳转链接" />
       </div>
 
       <div class="grid gap-4">
         <div class="grid gap-2">
-          <label class="text-sm font-medium">展示开始时间</label>
+          <Label>展示开始时间</Label>
           <DateTimePicker
             v-model="form.displayStartAt"
             aria-label="选择 Banner 展示开始时间"
@@ -160,7 +151,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
           />
         </div>
         <div class="grid gap-2">
-          <label class="text-sm font-medium">展示结束时间</label>
+          <Label>展示结束时间</Label>
           <DateTimePicker
             v-model="form.displayEndAt"
             aria-label="选择 Banner 展示结束时间"
@@ -168,7 +159,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
           />
         </div>
         <div class="grid gap-2">
-          <label for="banner-sort-order" class="text-sm font-medium">排序</label>
+          <Label for="banner-sort-order">排序</Label>
           <Input
             id="banner-sort-order"
             v-model.number="form.sortOrder"

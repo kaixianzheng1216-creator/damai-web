@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, onUnmounted, watch } from 'vue'
+import { computed, ref, onUnmounted, watch, nextTick } from 'vue'
 import type { BrowserQRCodeReader, IScannerControls } from '@zxing/browser'
 import { useMutation } from '@tanstack/vue-query'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
+import { Alert, AlertDescription, AlertTitle } from '@/components/common/ui/alert'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
 import { adminCheckinTicket } from '@/api/ticket/ticket'
@@ -75,11 +76,13 @@ const submit = (token: string) => {
   checkinMutation.mutate(t)
 }
 
+const resetTokenTimeout = useTimeoutFn(() => {
+  lastScannedToken.value = ''
+}, 2000)
+
 const debouncedSubmit = useDebounceFn((token: string) => {
   submit(token)
-  setTimeout(() => {
-    lastScannedToken.value = ''
-  }, 2000)
+  resetTokenTimeout.start()
 }, 300)
 
 const handleScanResult = (token: string) => {
@@ -106,12 +109,11 @@ const startScanner = async () => {
   }
 }
 
-const resetAndRestart = () => {
+const resetAndRestart = async () => {
   result.value = null
   scanCompleted.value = false
-  setTimeout(() => {
-    startScanner()
-  }, 100)
+  await nextTick()
+  startScanner()
 }
 
 const handleOpen = (val: boolean) => {
@@ -143,9 +145,8 @@ const doImportAndStart = async () => {
 
     if (pendingImport) {
       // Wait for next tick to ensure video element is rendered
-      setTimeout(() => {
-        startScanner()
-      }, 100)
+      await nextTick()
+      startScanner()
     }
   } catch (error) {
     console.error('[ScanCheckin] Scanner cleanup failed:', error)
@@ -239,19 +240,12 @@ onUnmounted(stopScanner)
         </template>
 
         <!-- 结果提示 (扫描完成时持久显示) -->
-        <div
-          v-if="result"
-          :class="[
-            'rounded-lg px-4 py-3 text-sm font-medium',
-            result.type === 'success'
-              ? 'bg-green-50 text-green-700 border border-green-200'
-              : 'bg-destructive/10 text-destructive border border-destructive/20',
-          ]"
-        >
-          <icon-lucide-check-circle v-if="result.type === 'success'" class="inline mr-1 h-4 w-4" />
-          <icon-lucide-x-circle v-else class="inline mr-1 h-4 w-4" />
-          {{ result.message }}
-        </div>
+        <Alert v-if="result" :variant="result.type === 'success' ? undefined : 'destructive'">
+          <icon-lucide-check-circle v-if="result.type === 'success'" class="h-4 w-4" />
+          <icon-lucide-x-circle v-else class="h-4 w-4" />
+          <AlertTitle>{{ result.type === 'success' ? '成功' : '失败' }}</AlertTitle>
+          <AlertDescription>{{ result.message }}</AlertDescription>
+        </Alert>
 
         <!-- 继续扫描按钮 (仅在扫描完成后显示) -->
         <div v-if="scanCompleted" class="flex gap-2">

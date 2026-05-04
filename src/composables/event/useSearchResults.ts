@@ -22,18 +22,9 @@ export const useSearchResults = (queryParams: ComputedRef<EventPageRequest>) => 
 
   const sortOptions = computed(() => SORT_OPTIONS)
 
-  const visiblePages = computed(() => {
-    const currentPage = queryParams.value.page ?? 1
-    const pages = new Set<number>([1, totalPages.value])
-
-    for (let page = currentPage - 2; page <= currentPage + 2; page += 1) {
-      if (page >= 1 && page <= totalPages.value) {
-        pages.add(page)
-      }
-    }
-
-    return [...pages].sort((a, b) => a - b)
-  })
+  const visiblePages = computed(() =>
+    computeVisiblePages(queryParams.value.page ?? 1, totalPages.value),
+  )
 
   const pushQuery = async (query: Record<string, string | undefined>) => {
     await router.push({

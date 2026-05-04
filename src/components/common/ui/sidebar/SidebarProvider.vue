@@ -37,11 +37,18 @@ const open = useVModel(props, 'open', emits, {
   passive: (props.open === undefined) as false,
 }) as Ref<boolean>
 
+const sidebarCookie = computed({
+  get: () => document.cookie.includes(`${SIDEBAR_COOKIE_NAME}=true`),
+  set: (value) => {
+    document.cookie = `${SIDEBAR_COOKIE_NAME}=${value}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+  },
+})
+
 function setOpen(value: boolean) {
   open.value = value // emits('update:open', value)
 
   // This sets the cookie to keep the sidebar state.
-  document.cookie = `${SIDEBAR_COOKIE_NAME}=${open.value}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+  sidebarCookie.value = open.value
 }
 
 function setOpenMobile(value: boolean) {

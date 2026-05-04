@@ -1,6 +1,7 @@
 import { computed, shallowRef } from 'vue'
 import { CalendarDate } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
+import dayjs from 'dayjs'
 import { useDialog } from '@/composables/common'
 
 interface UseEventSearchDateDialogOptions {
@@ -8,22 +9,14 @@ interface UseEventSearchDateDialogOptions {
   onConfirm: (date: string) => void | Promise<void>
 }
 
-const padDatePart = (value: number) => String(value).padStart(2, '0')
-
 export const formatCalendarDate = (date: CalendarDate) =>
-  `${date.year}-${padDatePart(date.month)}-${padDatePart(date.day)}`
+  dayjs(`${date.year}-${date.month}-${date.day}`).format('YYYY-MM-DD')
 
 export const parseCalendarDate = (date: string | undefined) => {
-  if (!date) {
-    return undefined
-  }
-
-  const [year, month, day] = date.split('-').map(Number)
-  if (!year || !month || !day) {
-    return undefined
-  }
-
-  return new CalendarDate(year, month, day)
+  if (!date) return undefined
+  const d = dayjs(date, 'YYYY-MM-DD')
+  if (!d.isValid()) return undefined
+  return new CalendarDate(d.year(), d.month() + 1, d.date())
 }
 
 export const useEventSearchDateDialog = ({

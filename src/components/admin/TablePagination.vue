@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { Button } from '@/components/common/ui/button'
-import { Label } from '@/components/common/ui/label'
+import {
+  Pagination,
+  PaginationFirst,
+  PaginationLast,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/common/ui/pagination'
 import {
   Select,
   SelectContent,
@@ -32,29 +37,7 @@ const emit = defineEmits<{
   'update:pageSize': [pageSize: number]
 }>()
 
-const handleFirstPage = () => {
-  if (props.currentPage > 1) {
-    emit('update:currentPage', 1)
-  }
-}
-
-const handlePreviousPage = () => {
-  if (props.currentPage > 1) {
-    emit('update:currentPage', props.currentPage - 1)
-  }
-}
-
-const handleNextPage = () => {
-  if (props.currentPage < props.totalPages) {
-    emit('update:currentPage', props.currentPage + 1)
-  }
-}
-
-const handleLastPage = () => {
-  if (props.currentPage < props.totalPages) {
-    emit('update:currentPage', props.totalPages)
-  }
-}
+const totalCount = computed(() => props.totalPages * props.pageSize)
 </script>
 
 <template>
@@ -77,50 +60,50 @@ const handleLastPage = () => {
           </SelectContent>
         </Select>
       </div>
-      <div class="flex w-fit items-center justify-center text-sm font-medium">
-        第 {{ currentPage }} 页 / 共 {{ totalPages }} 页
-      </div>
-      <div class="ml-auto flex items-center gap-2 lg:ml-0">
-        <Button
-          variant="outline"
-          class="hidden h-8 w-8 p-0 lg:flex"
-          :disabled="currentPage <= 1"
-          @click="handleFirstPage"
-        >
-          <span class="sr-only">首页</span>
-          <icon-lucide-chevrons-left class="size-4" />
-        </Button>
-        <Button
-          variant="outline"
-          class="size-8"
-          size="icon"
-          :disabled="currentPage <= 1"
-          @click="handlePreviousPage"
-        >
-          <span class="sr-only">上一页</span>
-          <icon-lucide-chevron-left class="size-4" />
-        </Button>
-        <Button
-          variant="outline"
-          class="size-8"
-          size="icon"
-          :disabled="currentPage >= totalPages"
-          @click="handleNextPage"
-        >
-          <span class="sr-only">下一页</span>
-          <icon-lucide-chevron-right class="size-4" />
-        </Button>
-        <Button
-          variant="outline"
-          class="hidden size-8 lg:flex"
-          size="icon"
-          :disabled="currentPage >= totalPages"
-          @click="handleLastPage"
-        >
-          <span class="sr-only">末页</span>
-          <icon-lucide-chevrons-right class="size-4" />
-        </Button>
-      </div>
+      <Pagination
+        :total="totalCount"
+        :items-per-page="pageSize"
+        :page="currentPage"
+        :sibling-count="0"
+        class="mx-0 w-fit"
+        @update:page="emit('update:currentPage', $event)"
+      >
+        <div class="flex w-fit items-center justify-center gap-2 text-sm font-medium">
+          <PaginationFirst
+            size="icon"
+            class="hidden h-8 w-8 lg:flex"
+            @click="emit('update:currentPage', 1)"
+          >
+            <span class="sr-only">首页</span>
+            <icon-lucide-chevrons-left class="size-4" />
+          </PaginationFirst>
+          <PaginationPrevious
+            size="icon"
+            class="size-8"
+            @click="emit('update:currentPage', currentPage - 1)"
+          >
+            <span class="sr-only">上一页</span>
+            <icon-lucide-chevron-left class="size-4" />
+          </PaginationPrevious>
+          <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+          <PaginationNext
+            size="icon"
+            class="size-8"
+            @click="emit('update:currentPage', currentPage + 1)"
+          >
+            <span class="sr-only">下一页</span>
+            <icon-lucide-chevron-right class="size-4" />
+          </PaginationNext>
+          <PaginationLast
+            size="icon"
+            class="hidden size-8 lg:flex"
+            @click="emit('update:currentPage', totalPages)"
+          >
+            <span class="sr-only">末页</span>
+            <icon-lucide-chevrons-right class="size-4" />
+          </PaginationLast>
+        </div>
+      </Pagination>
     </div>
   </div>
 </template>

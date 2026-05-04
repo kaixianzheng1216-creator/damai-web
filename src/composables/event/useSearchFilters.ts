@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { z } from 'zod'
 import { fetchCityList, fetchCategoryList } from '@/api/event'
 import { DEFAULT_SEARCH_QUERY, TIME_OPTIONS } from '@/constants/search'
 import { queryKeys } from '@/constants'
@@ -8,14 +9,30 @@ import dayjs from 'dayjs'
 
 type FilterField = 'cityId' | 'categoryId' | 'timeType' | 'date'
 
-const parseQueryNumber = (value: unknown, fallback: number) => {
-  const parsed = Number(value)
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback
-}
-
-const parseQueryString = (value: unknown) => {
-  return typeof value === 'string' && value.length > 0 ? value : undefined
-}
+const queryParamSchema = z.object({
+  name: z.string().default(DEFAULT_SEARCH_QUERY.keyword).catch(DEFAULT_SEARCH_QUERY.keyword),
+  cityId: z.string().optional().catch(undefined),
+  categoryId: z.string().optional().catch(undefined),
+  timeType: z.coerce
+    .number()
+    .default(DEFAULT_SEARCH_QUERY.timeType)
+    .catch(DEFAULT_SEARCH_QUERY.timeType),
+  date: z.string().optional().catch(undefined),
+  sortType: z.coerce
+    .number()
+    .default(DEFAULT_SEARCH_QUERY.sortType)
+    .catch(DEFAULT_SEARCH_QUERY.sortType),
+  sortField: z
+    .string()
+    .default(DEFAULT_SEARCH_QUERY.sortField)
+    .catch(DEFAULT_SEARCH_QUERY.sortField),
+  sortOrder: z
+    .string()
+    .default(DEFAULT_SEARCH_QUERY.sortOrder)
+    .catch(DEFAULT_SEARCH_QUERY.sortOrder),
+  page: z.coerce.number().default(DEFAULT_SEARCH_QUERY.page).catch(DEFAULT_SEARCH_QUERY.page),
+  size: z.coerce.number().default(DEFAULT_SEARCH_QUERY.size).catch(DEFAULT_SEARCH_QUERY.size),
+})
 
 const findParentCategoryId = (categories: CategoryVO[], categoryId: string) => {
   for (const category of categories) {
@@ -42,37 +59,15 @@ export const useSearchFilters = () => {
 
   const selectedParentCategoryId = ref<string | undefined>()
 
-  const queryParams = computed<EventPageRequest>(() => ({
-    name:
-      typeof route.query.keyword === 'string' ? route.query.keyword : DEFAULT_SEARCH_QUERY.keyword,
-    cityId: parseQueryString(route.query.cityId),
-    categoryId: parseQueryString(route.query.categoryId),
-    timeType:
-      typeof route.query.timeType === 'string'
-        ? parseQueryNumber(route.query.timeType, DEFAULT_SEARCH_QUERY.timeType)
-        : DEFAULT_SEARCH_QUERY.timeType,
-    date: parseQueryString(route.query.date),
-    sortType:
-      typeof route.query.sortType === 'string'
-        ? parseQueryNumber(route.query.sortType, DEFAULT_SEARCH_QUERY.sortType)
-        : DEFAULT_SEARCH_QUERY.sortType,
-    sortField:
-      typeof route.query.sortField === 'string'
-        ? route.query.sortField
-        : DEFAULT_SEARCH_QUERY.sortField,
-    sortOrder:
-      typeof route.query.sortOrder === 'string'
-        ? route.query.sortOrder
-        : DEFAULT_SEARCH_QUERY.sortOrder,
-    page:
-      typeof route.query.page === 'string'
-        ? parseQueryNumber(route.query.page, DEFAULT_SEARCH_QUERY.page)
-        : DEFAULT_SEARCH_QUERY.page,
-    size:
-      typeof route.query.size === 'string'
-        ? parseQueryNumber(route.query.size, DEFAULT_SEARCH_QUERY.size)
-        : DEFAULT_SEARCH_QUERY.size,
-  }))
+  const queryParams = computed<EventPageRequest>(() => {
+    const input: Record<string, unknown> = { ...route.query }
+    if ('keyword' in input && !('name' in input)) {
+      input.name = input.keyword
+    }
+    const parsed = queryParamSchema.safeParse(input)
+    if (!parsed.success) return DEFAULT_SEARCH_QUERY as unknown as EventPageRequest
+    return parsed.data
+  })
 
   const cityOptions = computed(() => {
     const cities = citiesQuery.data.value ?? []

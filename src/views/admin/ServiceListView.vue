@@ -8,6 +8,7 @@ import {
 import { Checkbox } from '@/components/common/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Input } from '@/components/common/ui/input'
+import { Label } from '@/components/common/ui/label'
 import { useServiceListPage } from '@/composables/admin'
 import { BOOLEAN_TYPE } from '@/constants'
 
@@ -97,13 +98,11 @@ const optionColumns = createServiceOptionColumns({
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label for="service-name" class="text-sm font-medium">
-          服务名称 <span class="text-destructive">*</span>
-        </label>
+        <Label for="service-name"> 服务名称 <span class="text-destructive">*</span> </Label>
         <Input id="service-name" v-model="serviceForm.name" placeholder="请输入服务保障名称" />
       </div>
       <div class="grid gap-2">
-        <label for="service-sort-order" class="text-sm font-medium">排序</label>
+        <Label for="service-sort-order">排序</Label>
         <Input
           id="service-sort-order"
           v-model.number="serviceForm.sortOrder"
@@ -141,13 +140,11 @@ const optionColumns = createServiceOptionColumns({
   >
     <div class="grid gap-4">
       <div class="grid gap-2">
-        <label for="service-option-name" class="text-sm font-medium">
-          选项名称 <span class="text-destructive">*</span>
-        </label>
+        <Label for="service-option-name"> 选项名称 <span class="text-destructive">*</span> </Label>
         <Input id="service-option-name" v-model="optionForm.name" placeholder="请输入选项名称" />
       </div>
       <div class="grid gap-2">
-        <label for="service-option-description" class="text-sm font-medium">描述</label>
+        <Label for="service-option-description">描述</Label>
         <Input
           id="service-option-description"
           v-model="optionForm.description"
@@ -160,7 +157,7 @@ const optionColumns = createServiceOptionColumns({
           :checked="optionForm.isBooleanType === BOOLEAN_TYPE.YES"
           @update:checked="setOptionBooleanType"
         />
-        <label for="service-option-boolean-type" class="text-sm font-medium">布尔类型</label>
+        <Label for="service-option-boolean-type">布尔类型</Label>
         <span class="text-sm text-muted-foreground">
           {{ optionForm.isBooleanType === BOOLEAN_TYPE.YES ? '是' : '否' }}
         </span>
