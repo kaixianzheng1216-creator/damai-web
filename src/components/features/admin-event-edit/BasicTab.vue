@@ -47,6 +47,7 @@ defineExpose({ save })
           <Label id="event-basic-cover-label">封面</Label>
           <ImageUpload
             v-model="basicForm.coverUrl"
+            upload-mode="admin"
             aspect-class="aspect-[3/4]"
             preview-alt="活动封面预览"
             upload-label="上传活动封面"

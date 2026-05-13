@@ -1,10 +1,12 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
-const DOCS_DIR = 'docs'
+const DOCS_DIR = 'docs/openapi'
 const API_DIR = 'src/api'
 const REQUEST_CALL_PATTERN =
-  /request\.(get|post|put|patch|del)\s*(?:<[\s\S]*?>+)?\s*\(\s*([`'"])([\s\S]*?)\2/g
+  /request\s*\.\s*(get|post|put|patch|del)\s*(?:<[\s\S]*?>+)?\s*\(\s*([`'"])([\s\S]*?)\2/g
+const UPLOAD_FORM_DATA_CALL_PATTERN =
+  /uploadFormData\s*(?:<[\s\S]*?>+)?\s*\(\s*([`'"])([\s\S]*?)\1/g
 
 const METHOD_MAP = {
   get: 'get',
@@ -85,6 +87,21 @@ for (const filePath of apiFiles) {
     apiCalls.push({
       filePath: relative(process.cwd(), filePath),
       method: METHOD_MAP[requestMethod],
+      path: normalized.path.replace(/\{[^}]+\}/g, '{$}'),
+      rawUrl,
+    })
+  }
+
+  while ((match = UPLOAD_FORM_DATA_CALL_PATTERN.exec(source))) {
+    const [, , rawUrl] = match
+    const normalized = normalizeApiPath(rawUrl)
+    if (!normalized) {
+      continue
+    }
+
+    apiCalls.push({
+      filePath: relative(process.cwd(), filePath),
+      method: 'post',
       path: normalized.path.replace(/\{[^}]+\}/g, '{$}'),
       rawUrl,
     })

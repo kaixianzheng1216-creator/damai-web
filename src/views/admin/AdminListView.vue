@@ -92,6 +92,7 @@ const columns = createAdminColumns({ openEdit, toggleStatus })
         <Label class="text-sm font-medium">头像</Label>
         <ImageUpload
           v-model="form.avatarUrl"
+          upload-mode="admin"
           preview-alt="管理员头像预览"
           upload-label="上传管理员头像"
         />

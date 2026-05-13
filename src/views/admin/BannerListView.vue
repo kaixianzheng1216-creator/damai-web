@@ -120,6 +120,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
           <Label> PC 端图片 <span class="text-destructive">*</span> </Label>
           <ImageUpload
             v-model="form.imageUrl"
+            upload-mode="admin"
             aspect-class="aspect-[5/2]"
             preview-alt="Banner PC 端图片预览"
             upload-label="上传 Banner PC 端图片"
@@ -129,6 +130,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
           <Label> 移动端图片 <span class="text-destructive">*</span> </Label>
           <ImageUpload
             v-model="form.mobileImageUrl"
+            upload-mode="admin"
             aspect-class="aspect-video"
             preview-alt="Banner 移动端图片预览"
             upload-label="上传 Banner 移动端图片"

@@ -132,7 +132,7 @@ interface ExpectRequestOptions {
   responseSchema: string
 }
 
-const DOCS_DIR = join(process.cwd(), 'docs')
+const DOCS_DIR = join(process.cwd(), 'docs', 'openapi')
 
 const gatewayPrefixByService: Record<ServiceName, string> = {
   account: '/api/account',

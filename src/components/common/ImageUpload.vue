@@ -2,7 +2,7 @@
 import { computed, ref, shallowRef } from 'vue'
 import { toast } from 'vue3-toastify'
 import { Button } from '@/components/common/ui/button'
-import { uploadFile } from '@/api/file/index'
+import { uploadAdminFile, uploadFile } from '@/api/file/index'
 
 const props = withDefaults(
   defineProps<{
@@ -16,6 +16,7 @@ const props = withDefaults(
     maxHeight?: number
     previewAlt?: string
     uploadLabel?: string
+    uploadMode?: 'front' | 'admin'
   }>(),
   {
     aspectClass: 'aspect-video',
@@ -23,6 +24,7 @@ const props = withDefaults(
     maxSizeMb: 10,
     previewAlt: '图片预览',
     uploadLabel: '上传图片',
+    uploadMode: 'front',
   },
 )
 const resolvedAspect = computed(() => props.aspectClass)
@@ -134,7 +136,8 @@ const handleFile = async (file: File) => {
       return
     }
 
-    const url = await uploadFile(file)
+    const upload = props.uploadMode === 'admin' ? uploadAdminFile : uploadFile
+    const url = await upload(file)
     emit('update:modelValue', url)
   } catch (error) {
     console.error('[ImageUpload] Upload failed:', error)

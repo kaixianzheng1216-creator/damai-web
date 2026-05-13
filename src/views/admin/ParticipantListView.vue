@@ -79,6 +79,7 @@ const columns = createParticipantColumns({ openEdit, handleDelete })
         <Label>头像</Label>
         <ImageUpload
           v-model="form.avatarUrl"
+          upload-mode="admin"
           preview-alt="参与方头像预览"
           upload-label="上传参与方头像"
         />
