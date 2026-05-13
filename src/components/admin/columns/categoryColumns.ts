@@ -8,6 +8,7 @@ import {
   type RowAction,
   type CrudColumnActions,
 } from './columnUtils'
+import { ADMIN_COLUMN_WIDTH, contentColumn, fixedColumn } from './columnWidths'
 
 export function createCategoryColumns(options: {
   openManageChildren: RowAction<CategoryVO>
@@ -18,25 +19,25 @@ export function createCategoryColumns(options: {
     {
       accessorKey: 'name',
       header: '分类名',
-      size: 140,
+      ...contentColumn(ADMIN_COLUMN_WIDTH.name),
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
       accessorKey: 'sortOrder',
       header: '排序',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.sort),
       cell: ({ row }) => String(row.getValue('sortOrder') ?? ''),
     },
     {
       accessorKey: 'parentId',
       header: '父分类ID',
-      size: 180,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.entityId),
       cell: ({ row }) => String(row.getValue('parentId') ?? ''),
     },
     {
       id: 'actions',
       header: '操作',
-      size: 220,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsXl),
       cell: ({ row }) => {
         const isRootCategory = row.original.parentId === '0'
         return actionGroup([
@@ -64,19 +65,19 @@ export function createCategoryChildColumns(
     {
       accessorKey: 'name',
       header: '子分类名',
-      size: 140,
+      ...contentColumn(ADMIN_COLUMN_WIDTH.name),
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
       accessorKey: 'sortOrder',
       header: '排序',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.sort),
       cell: ({ row }) => String(row.getValue('sortOrder') ?? ''),
     },
     {
       id: 'actions',
       header: '操作',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsMd),
       cell: ({ row }) => editDeleteActions(row.original, options),
     },
   ]

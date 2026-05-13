@@ -50,7 +50,7 @@ export const queryKeys = {
     detail: (id?: QueryKeyPart) => key('ticket-detail', id),
   },
   home: {
-    banners: () => key('banners'),
+    banners: (cityId?: QueryKeyPart) => key('banners', cityId),
     categories: () => key('categories'),
     cities: () => key('cities'),
     categoryEvents: (categoryId: string, categoryName: string, cityId?: string) =>

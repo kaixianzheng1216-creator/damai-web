@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="TData">
 import {
+  type Column,
   FlexRender,
   getCoreRowModel,
   getSortedRowModel,
@@ -7,6 +8,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/vue-table'
+import type { CSSProperties } from 'vue'
 import TablePagination from './TablePagination.vue'
 import TableToolbar from './TableToolbar.vue'
 import TableCardView from './TableCardView.vue'
@@ -53,6 +55,7 @@ const emit = defineEmits<{
 }>()
 
 const sorting = ref<SortingState>([])
+const ACTIONS_COLUMN_ID = 'actions'
 
 const table = useVueTable({
   get data() {
@@ -77,6 +80,27 @@ const table = useVueTable({
     },
   },
 })
+
+const shouldRenderWidthFiller = computed(() => props.columns.length > 0)
+const hasActionsColumn = computed(() =>
+  table.getAllLeafColumns().some((column) => column.id === ACTIONS_COLUMN_ID),
+)
+const shouldRenderTrailingFiller = computed(
+  () => shouldRenderWidthFiller.value && !hasActionsColumn.value,
+)
+
+const shouldRenderFillerBeforeColumn = (column: Column<TData, unknown>) =>
+  shouldRenderWidthFiller.value && column.id === ACTIONS_COLUMN_ID
+
+const getColumnStyle = (column: Column<TData, unknown>): CSSProperties => {
+  const width = `${column.getSize()}px`
+
+  return {
+    width,
+    minWidth: width,
+    maxWidth: width,
+  }
+}
 </script>
 
 <template>
@@ -98,14 +122,11 @@ const table = useVueTable({
 
         <Table class="border table-fixed" :class="{ 'opacity-60': loading }">
           <colgroup>
-            <col
-              v-for="header in table.getHeaderGroups()[0]?.headers ?? []"
-              :key="header.id"
-              :style="{
-                width: header.column.getSize() + 'px',
-                minWidth: header.column.getSize() + 'px',
-              }"
-            />
+            <template v-for="header in table.getHeaderGroups()[0]?.headers ?? []" :key="header.id">
+              <col v-if="shouldRenderFillerBeforeColumn(header.column)" />
+              <col :style="getColumnStyle(header.column)" />
+            </template>
+            <col v-if="shouldRenderTrailingFiller" />
           </colgroup>
           <TableHeader>
             <TableRow
@@ -113,13 +134,20 @@ const table = useVueTable({
               :key="headerGroup.id"
               class="bg-muted"
             >
-              <TableHead
-                v-for="header in headerGroup.headers"
-                :key="header.id"
-                class="truncate !px-4 !py-3"
-              >
-                <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
-              </TableHead>
+              <template v-for="header in headerGroup.headers" :key="header.id">
+                <TableHead
+                  v-if="shouldRenderFillerBeforeColumn(header.column)"
+                  aria-hidden="true"
+                  class="!px-0 !py-3"
+                />
+                <TableHead class="truncate !px-4 !py-3" :style="getColumnStyle(header.column)">
+                  <FlexRender
+                    :render="header.column.columnDef.header"
+                    :props="header.getContext()"
+                  />
+                </TableHead>
+              </template>
+              <TableHead v-if="shouldRenderTrailingFiller" aria-hidden="true" class="!px-0 !py-3" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -130,18 +158,26 @@ const table = useVueTable({
                 class="border-t hover:bg-muted/50 cursor-pointer"
                 @click="emit('row-click', row.original)"
               >
+                <template v-for="cell in row.getVisibleCells()" :key="cell.id">
+                  <TableCell
+                    v-if="shouldRenderFillerBeforeColumn(cell.column)"
+                    aria-hidden="true"
+                    class="!px-0 !py-3"
+                  />
+                  <TableCell class="truncate !px-4 !py-3" :style="getColumnStyle(cell.column)">
+                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+                  </TableCell>
+                </template>
                 <TableCell
-                  v-for="cell in row.getVisibleCells()"
-                  :key="cell.id"
-                  class="truncate !px-4 !py-3"
-                >
-                  <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-                </TableCell>
+                  v-if="shouldRenderTrailingFiller"
+                  aria-hidden="true"
+                  class="!px-0 !py-3"
+                />
               </TableRow>
             </template>
             <TableRow v-else>
               <TableCell
-                :colspan="columns.length"
+                :colspan="columns.length + (shouldRenderWidthFiller ? 1 : 0)"
                 class="!px-4 !py-16 text-center text-muted-foreground"
               >
                 暂无数据

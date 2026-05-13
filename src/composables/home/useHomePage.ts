@@ -1,5 +1,5 @@
-import { computed, watch } from 'vue'
-import { useQuery, useQueries, useQueryClient } from '@tanstack/vue-query'
+import { computed } from 'vue'
+import { useQuery, useQueries } from '@tanstack/vue-query'
 import { fetchBannerList, fetchCategoryList, fetchEventPage, fetchCityList } from '@/api/event'
 import { convertCategoryVOToHomeItem, convertEventVOToCardItem } from '@/utils/mappers'
 import type { HomeBannerItem, HomeCategoryItem, HomeEventCardItem, CityVO } from '@/api/event'
@@ -13,13 +13,7 @@ interface HomeSectionViewModel {
 }
 
 export const useHomePage = () => {
-  const queryClient = useQueryClient()
   const selectedCity = useStorage('selected-city', COMMON_CONFIG.DEFAULT_CITY)
-
-  const bannersQuery = useQuery({
-    queryKey: queryKeys.home.banners(),
-    queryFn: () => fetchBannerList(),
-  })
 
   const categoriesQuery = useQuery({
     queryKey: queryKeys.home.categories(),
@@ -49,6 +43,16 @@ export const useHomePage = () => {
 
   const selectedCityId = computed<string | undefined>(() => {
     return cityIdMap.value.get(selectedCity.value)
+  })
+
+  const bannersQuery = useQuery({
+    queryKey: computed(() => queryKeys.home.banners(selectedCityId.value)),
+    queryFn: () => {
+      const cityId = selectedCityId.value
+      if (!cityId) return Promise.resolve([])
+      return fetchBannerList(cityId)
+    },
+    enabled: computed(() => Boolean(selectedCityId.value)),
   })
 
   const categoriesData = computed(() => categoriesQuery.data.value ?? [])
@@ -89,6 +93,7 @@ export const useHomePage = () => {
     () =>
       bannersQuery.isLoading.value ||
       categoriesQuery.isLoading.value ||
+      citiesQuery.isLoading.value ||
       categoryEventQueries.value.some((q) => q.isLoading),
   )
 
@@ -96,12 +101,9 @@ export const useHomePage = () => {
     () =>
       bannersQuery.isError.value ||
       categoriesQuery.isError.value ||
+      citiesQuery.isError.value ||
       categoryEventQueries.value.some((q) => q.isError),
   )
-
-  watch(selectedCity, async () => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.home.banners() })
-  })
 
   return {
     selectedCity,

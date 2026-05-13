@@ -3,6 +3,7 @@ import type { ColumnDef } from '@tanstack/vue-table'
 import type { BannerVO, CityVO } from '@/api/event'
 import { formatDateTime } from '@/utils/format'
 import { editDeleteActions, type RowAction } from './columnUtils'
+import { ADMIN_COLUMN_WIDTH, contentColumn, fixedColumn } from './columnWidths'
 
 export function createBannerColumns(options: {
   citiesMap: Ref<Map<string, CityVO>>
@@ -13,12 +14,12 @@ export function createBannerColumns(options: {
     {
       accessorKey: 'title',
       header: '标题',
-      size: 140,
+      ...contentColumn(ADMIN_COLUMN_WIDTH.title),
     },
     {
       accessorKey: 'imageUrl',
       header: 'PC 封面',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.image),
       cell: ({ row }) => {
         const url = row.original.imageUrl
         return url
@@ -29,7 +30,7 @@ export function createBannerColumns(options: {
     {
       accessorKey: 'mobileImageUrl',
       header: '移动端封面',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.image),
       cell: ({ row }) => {
         const url = row.original.mobileImageUrl
         return url
@@ -40,7 +41,7 @@ export function createBannerColumns(options: {
     {
       accessorKey: 'cityId',
       header: '城市',
-      size: 100,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.city),
       cell: ({ row }) => {
         const cityId = String(row.getValue('cityId'))
         return options.citiesMap.value.get(cityId)?.name ?? cityId
@@ -49,7 +50,7 @@ export function createBannerColumns(options: {
     {
       accessorKey: 'jumpUrl',
       header: '跳转链接',
-      size: 160,
+      ...contentColumn(ADMIN_COLUMN_WIDTH.url),
       cell: ({ row }) => {
         const url = row.original.jumpUrl
         return url
@@ -58,7 +59,7 @@ export function createBannerColumns(options: {
               {
                 href: url,
                 target: '_blank',
-                class: 'text-primary hover:underline truncate block max-w-[140px]',
+                class: 'text-primary hover:underline truncate block',
               },
               url,
             )
@@ -68,25 +69,25 @@ export function createBannerColumns(options: {
     {
       accessorKey: 'sortOrder',
       header: '排序',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.sort),
       cell: ({ row }) => String(row.getValue('sortOrder') ?? ''),
     },
     {
       accessorKey: 'displayStartAt',
       header: '展示开始时间',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.dateTime),
       cell: ({ row }) => formatDateTime(row.original.displayStartAt),
     },
     {
       accessorKey: 'displayEndAt',
       header: '展示结束时间',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.dateTime),
       cell: ({ row }) => formatDateTime(row.original.displayEndAt),
     },
     {
       id: 'actions',
       header: '操作',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsMd),
       cell: ({ row }) => editDeleteActions(row.original, options),
     },
   ]

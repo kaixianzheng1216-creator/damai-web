@@ -4,19 +4,40 @@ import { Badge } from '@/components/common/ui/badge'
 import type { TicketVO } from '@/api/ticket/types'
 import { PASSENGER_CERT_TYPES } from '@/constants'
 import { formatDateTime } from '@/utils/format'
+import { ADMIN_COLUMN_WIDTH, contentColumn, fixedColumn } from './columnWidths'
 
 export function createTicketColumns(): ColumnDef<TicketVO>[] {
   return [
-    { accessorKey: 'ticketNo', header: '票号', size: 180 },
-    { accessorKey: 'eventNameSnapshot', header: '活动', size: 140 },
-    { accessorKey: 'venueNameSnapshot', header: '场馆', size: 140 },
-    { accessorKey: 'sessionNameSnapshot', header: '场次', size: 140 },
-    { accessorKey: 'ticketTypeNameSnapshot', header: '票档', size: 100 },
-    { accessorKey: 'passengerNameSnapshot', header: '购票人', size: 140 },
+    { accessorKey: 'ticketNo', header: '票号', ...fixedColumn(ADMIN_COLUMN_WIDTH.code) },
+    {
+      accessorKey: 'eventNameSnapshot',
+      header: '活动',
+      ...contentColumn(ADMIN_COLUMN_WIDTH.title),
+    },
+    {
+      accessorKey: 'venueNameSnapshot',
+      header: '场馆',
+      ...contentColumn(ADMIN_COLUMN_WIDTH.name),
+    },
+    {
+      accessorKey: 'sessionNameSnapshot',
+      header: '场次',
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.name),
+    },
+    {
+      accessorKey: 'ticketTypeNameSnapshot',
+      header: '票档',
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.type),
+    },
+    {
+      accessorKey: 'passengerNameSnapshot',
+      header: '购票人',
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.name),
+    },
     {
       accessorKey: 'passengerIdTypeSnapshot',
       header: '证件信息',
-      size: 180,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.code),
       cell: ({ row }) => {
         const typeValue = row.original.passengerIdTypeSnapshot
         const typeLabel = typeValue
@@ -30,13 +51,13 @@ export function createTicketColumns(): ColumnDef<TicketVO>[] {
     {
       accessorKey: 'status',
       header: '状态',
-      size: 100,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.status),
       cell: ({ row }) => h(Badge, { variant: 'outline' }, () => row.original.statusLabel),
     },
     {
       accessorKey: 'usedAt',
       header: '使用时间',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.dateTime),
       cell: ({ row }) => (row.original.usedAt ? formatDateTime(row.original.usedAt) : '--'),
     },
   ]

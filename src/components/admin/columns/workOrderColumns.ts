@@ -6,20 +6,21 @@ import { WORK_ORDER_STATUS } from '@/constants'
 import { formatDateTime } from '@/utils/format'
 import { getWorkOrderStatusBadgeClass } from '@/utils/statusMappers'
 import { actionGroup, actionButton, stopAndRun, type RowAction } from './columnUtils'
+import { ADMIN_COLUMN_WIDTH, contentColumn, fixedColumn } from './columnWidths'
 
 export function createWorkOrderColumns(options: {
   openDetail: RowAction<WorkOrderVO>
   requestClose: RowAction<WorkOrderVO>
 }): ColumnDef<WorkOrderVO>[] {
   return [
-    { accessorKey: 'workOrderNo', header: '工单号', size: 180 },
-    { accessorKey: 'title', header: '标题', size: 140 },
-    { accessorKey: 'userId', header: '用户 ID', size: 120 },
-    { accessorKey: 'typeLabel', header: '类型', size: 100 },
+    { accessorKey: 'workOrderNo', header: '工单号', ...fixedColumn(ADMIN_COLUMN_WIDTH.code) },
+    { accessorKey: 'title', header: '标题', ...contentColumn(ADMIN_COLUMN_WIDTH.title) },
+    { accessorKey: 'userId', header: '用户 ID', ...fixedColumn(ADMIN_COLUMN_WIDTH.entityId) },
+    { accessorKey: 'typeLabel', header: '类型', ...fixedColumn(ADMIN_COLUMN_WIDTH.type) },
     {
       accessorKey: 'status',
       header: '状态',
-      size: 100,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.status),
       cell: ({ row }) =>
         h(
           Badge,
@@ -30,14 +31,14 @@ export function createWorkOrderColumns(options: {
     {
       accessorKey: 'createAt',
       header: '创建时间',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.dateTime),
       cell: ({ row }) => formatDateTime(row.original.createAt, '-'),
     },
 
     {
       accessorKey: 'related',
       header: '关联',
-      size: 180,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.code),
       cell: ({ row }) => {
         const orderId = row.original.relatedOrderId
         const ticketId = row.original.relatedTicketId
@@ -50,7 +51,7 @@ export function createWorkOrderColumns(options: {
     {
       accessorKey: 'closedBy',
       header: '关闭者',
-      size: 140,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.entityId),
       cell: ({ row }) => {
         if (row.original.status !== WORK_ORDER_STATUS.CLOSED) return '-'
         const type = row.original.closedByType
@@ -62,7 +63,7 @@ export function createWorkOrderColumns(options: {
     {
       id: 'actions',
       header: '操作',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsMd),
       cell: ({ row }) =>
         actionGroup([
           actionButton('详情', 'outline', (event) =>

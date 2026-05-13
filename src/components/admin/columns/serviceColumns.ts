@@ -11,6 +11,7 @@ import {
   type RowAction,
   type CrudColumnActions,
 } from './columnUtils'
+import { ADMIN_COLUMN_WIDTH, contentColumn, fixedColumn } from './columnWidths'
 
 export function createServiceColumns(options: {
   openManageOptions: RowAction<ServiceGuaranteeVO>
@@ -18,12 +19,12 @@ export function createServiceColumns(options: {
   handleDeleteService: RowAction<ServiceGuaranteeVO>
 }): ColumnDef<ServiceGuaranteeVO>[] {
   return [
-    { accessorKey: 'name', header: '服务名称', size: 140 },
-    { accessorKey: 'sortOrder', header: '排序', size: 80 },
+    { accessorKey: 'name', header: '服务名称', ...contentColumn(ADMIN_COLUMN_WIDTH.name) },
+    { accessorKey: 'sortOrder', header: '排序', ...fixedColumn(ADMIN_COLUMN_WIDTH.sort) },
     {
       id: 'actions',
       header: '操作',
-      size: 220,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsXl),
       cell: ({ row }) =>
         actionGroup([
           actionButton('管理选项', 'outline', (event) =>
@@ -44,12 +45,16 @@ export function createServiceOptionColumns(
   options: CrudColumnActions<ServiceGuaranteeOptionVO>,
 ): ColumnDef<ServiceGuaranteeOptionVO>[] {
   return [
-    { accessorKey: 'name', header: '选项名称', size: 140 },
-    { accessorKey: 'description', header: '描述', size: 180 },
+    { accessorKey: 'name', header: '选项名称', ...contentColumn(ADMIN_COLUMN_WIDTH.name) },
+    {
+      accessorKey: 'description',
+      header: '描述',
+      ...contentColumn(ADMIN_COLUMN_WIDTH.description),
+    },
     {
       accessorKey: 'isBooleanType',
       header: '布尔类型',
-      size: 100,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.boolean),
       cell: ({ row }) => {
         const isBoolean = row.original.isBooleanType === BOOLEAN_TYPE.YES
         return h(Badge, { class: 'border border-border bg-transparent text-foreground' }, () =>
@@ -60,7 +65,7 @@ export function createServiceOptionColumns(
     {
       id: 'actions',
       header: '操作',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsMd),
       cell: ({ row }) => editDeleteActions(row.original, options),
     },
   ]

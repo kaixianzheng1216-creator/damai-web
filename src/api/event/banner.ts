@@ -10,8 +10,8 @@ import type {
 
 // ─── Front ───────────────────────────────────────────────
 
-export const fetchBannerList = (cityId?: string): Promise<BannerVO[]> =>
-  request.get<BannerVO[]>('/api/event/front/banners', cityId ? { params: { cityId } } : undefined)
+export const fetchBannerList = (cityId: string): Promise<BannerVO[]> =>
+  request.get<BannerVO[]>('/api/event/front/banners', { params: { cityId } })
 
 // ─── Admin ───────────────────────────────────────────────
 

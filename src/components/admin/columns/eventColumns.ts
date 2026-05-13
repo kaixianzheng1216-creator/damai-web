@@ -4,6 +4,7 @@ import { Badge } from '@/components/common/ui/badge'
 import type { EventVO } from '@/api/event'
 import { EVENT_STATUS } from '@/constants'
 import { actionGroup, actionButton, stopAndRun, type RowAction } from './columnUtils'
+import { ADMIN_COLUMN_WIDTH, contentColumn, fixedColumn } from './columnWidths'
 
 export function createEventColumns(options: {
   openEdit: RowAction<EventVO>
@@ -15,17 +16,17 @@ export function createEventColumns(options: {
     {
       accessorKey: 'name',
       header: '活动名称',
-      size: 140,
+      ...contentColumn(ADMIN_COLUMN_WIDTH.title),
     },
     {
       accessorKey: 'cityNameSnapshot',
       header: '城市',
-      size: 100,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.city),
     },
     {
       accessorKey: 'categoryNameSnapshot',
       header: '分类',
-      size: 140,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.name),
       cell: ({ row }) => {
         const parent = row.original.parentCategoryNameSnapshot
         const child = row.original.categoryNameSnapshot
@@ -35,31 +36,31 @@ export function createEventColumns(options: {
     {
       accessorKey: 'venueNameSnapshot',
       header: '场馆',
-      size: 140,
+      ...contentColumn(ADMIN_COLUMN_WIDTH.name),
     },
 
     {
       accessorKey: 'followCount',
       header: '关注人数',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.count),
       cell: ({ row }) => row.original.followCount ?? '-',
     },
     {
       accessorKey: 'statusLabel',
       header: '状态',
-      size: 100,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.status),
       cell: ({ row }) => h(Badge, { variant: 'outline' }, () => row.original.statusLabel),
     },
     {
       accessorKey: 'recommendWeight',
       header: '推荐权重',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.count),
       cell: ({ row }) => row.original.recommendWeight ?? '-',
     },
     {
       id: 'actions',
       header: '操作',
-      size: 220,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsXl),
       cell: ({ row }) =>
         actionGroup([
           actionButton('编辑', 'outline', (event) =>

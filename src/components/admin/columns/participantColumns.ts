@@ -2,6 +2,7 @@ import { h } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
 import type { ParticipantVO } from '@/api/event'
 import { editDeleteActions, type CrudColumnActions } from './columnUtils'
+import { ADMIN_COLUMN_WIDTH, contentColumn, fixedColumn } from './columnWidths'
 
 export function createParticipantColumns(
   options: CrudColumnActions<ParticipantVO>,
@@ -10,7 +11,7 @@ export function createParticipantColumns(
     {
       id: 'avatar',
       header: '头像',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.avatar),
       cell: ({ row }) => {
         const avatarUrl = row.original.avatarUrl
         return avatarUrl
@@ -31,19 +32,19 @@ export function createParticipantColumns(
     {
       accessorKey: 'name',
       header: '名称',
-      size: 140,
+      ...contentColumn(ADMIN_COLUMN_WIDTH.name),
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
       accessorKey: 'followCount',
       header: '关注人数',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.count),
       cell: ({ row }) => row.original.followCount ?? '-',
     },
     {
       id: 'actions',
       header: '操作',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsMd),
       cell: ({ row }) => editDeleteActions(row.original, options),
     },
   ]

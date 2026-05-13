@@ -3,6 +3,7 @@ import type { ColumnDef } from '@tanstack/vue-table'
 import type { CityVO } from '@/api/event'
 import { Button } from '@/components/common/ui/button'
 import { editDeleteActions, stopAndRun, type RowAction } from './columnUtils'
+import { ADMIN_COLUMN_WIDTH, contentColumn, fixedColumn } from './columnWidths'
 
 export function createCityColumns(options: {
   toggleFeatured: RowAction<CityVO>
@@ -13,25 +14,25 @@ export function createCityColumns(options: {
     {
       accessorKey: 'name',
       header: '城市名',
-      size: 140,
+      ...contentColumn(ADMIN_COLUMN_WIDTH.name),
       cell: ({ row }) => String(row.getValue('name')),
     },
     {
       accessorKey: 'pinyin',
       header: '拼音',
-      size: 140,
+      ...contentColumn(ADMIN_COLUMN_WIDTH.name),
       cell: ({ row }) => String(row.getValue('pinyin')),
     },
     {
       accessorKey: 'firstLetter',
       header: '首字母',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.sort),
       cell: ({ row }) => String(row.getValue('firstLetter')),
     },
     {
       accessorKey: 'isFeatured',
       header: '热门',
-      size: 100,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.status),
       cell: ({ row }) => {
         const isFeatured = row.original.isFeatured === 1
         return h(
@@ -50,7 +51,7 @@ export function createCityColumns(options: {
     {
       id: 'actions',
       header: '操作',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsMd),
       cell: ({ row }) => editDeleteActions(row.original, options),
     },
   ]

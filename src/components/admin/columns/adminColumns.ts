@@ -9,6 +9,7 @@ import {
   accountAvatarCell,
   type RowAction,
 } from './columnUtils'
+import { ADMIN_COLUMN_WIDTH, fixedColumn } from './columnWidths'
 
 export function createAdminColumns(options: {
   openEdit: RowAction<AdminVO>
@@ -18,21 +19,21 @@ export function createAdminColumns(options: {
     {
       accessorKey: 'avatarUrl',
       header: '头像',
-      size: 80,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.avatar),
       cell: ({ row }) => accountAvatarCell(row.original.avatarUrl, `${row.original.username}头像`),
     },
-    { accessorKey: 'username', header: '用户名', size: 140 },
-    { accessorKey: 'mobile', header: '手机号', size: 140 },
+    { accessorKey: 'username', header: '用户名', ...fixedColumn(ADMIN_COLUMN_WIDTH.name) },
+    { accessorKey: 'mobile', header: '手机号', ...fixedColumn(ADMIN_COLUMN_WIDTH.phone) },
     {
       accessorKey: 'status',
       header: '状态',
-      size: 100,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.status),
       cell: ({ row }) => accountStatusBadge(row.original.status),
     },
     {
       id: 'actions',
       header: '操作',
-      size: 160,
+      ...fixedColumn(ADMIN_COLUMN_WIDTH.actionsMd),
       cell: ({ row }) =>
         actionGroup([
           actionButton('编辑', 'outline', (event) =>
