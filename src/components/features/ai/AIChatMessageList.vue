@@ -27,6 +27,15 @@ const scrollToBottom = async () => {
   bottomRef.value?.scrollIntoView({ behavior: 'smooth' })
 }
 
+const isLastAiMessage = (currentIndex: number) => {
+  for (let i = props.messages.length - 1; i >= 0; i--) {
+    if (props.messages[i]?.role === 'ai') {
+      return i === currentIndex
+    }
+  }
+  return false
+}
+
 watch(
   () => [props.messages.length, props.isPending],
   () => scrollToBottom(),
@@ -107,7 +116,7 @@ const renderCard = (item: AiChatItem) => {
           </div>
 
           <div
-            v-if="msg.role === 'ai' && msg.suggestions?.length"
+            v-if="msg.role === 'ai' && msg.suggestions?.length && isLastAiMessage(index)"
             class="mt-2 flex flex-wrap gap-2"
           >
             <Button
@@ -125,7 +134,7 @@ const renderCard = (item: AiChatItem) => {
 
           <div v-if="msg.role === 'ai' && msg.items?.length" class="mt-5 space-y-3">
             <p class="text-xs text-muted-foreground">{{ AI_CHAT_COPY.recommended }}</p>
-            <div class="space-y-5">
+            <div class="flex flex-col gap-4">
               <component :is="renderCard(item)" v-for="item in msg.items" :key="item.id" />
             </div>
           </div>

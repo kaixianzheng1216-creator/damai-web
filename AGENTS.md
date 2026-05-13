@@ -25,7 +25,8 @@
 | 命令                   | 说明                                                                                                               |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `npm run dev`          | 启动开发服务器（带代理和 SSL）                                                                                     |
-| `npm run build`        | 类型检查 + 生产构建                                                                                                |
+| `npm run build`        | 并行运行类型检查 + 生产构建（`run-p type-check build-only`）                                                       |
+| `npm run build-only`   | 仅生产构建（不跑类型检查）                                                                                         |
 | `npm run type-check`   | `vue-tsc --build`                                                                                                  |
 | `npm run test`         | `vitest run`（环境: happy-dom）                                                                                    |
 | `npm run ci`           | **完整质量门禁**：type-check → lint:check → lint:oxlint → audit:ids → openapi:report → test → format:check → build |
@@ -45,14 +46,13 @@
 src/
 ├── api/                # API 请求（按领域：account/ event/ trade/ ticket/ ai/ file/）
 ├── components/
-│   ├── _templates/     # Dialog/FormDialog 参考模板
 │   ├── common/ui/      # shadcn-vue 基础组件（自动注册）
 │   ├── common/         # 通用业务组件（如 TheHeader, ConfirmDialog）
 │   ├── admin/          # 后台专用组件（自动注册）
 │   └── features/       # 业务功能组件（自动注册）
 ├── composables/        # 组合式函数（按领域划分，含 common/ 通用逻辑）
 ├── constants/          # 常量、枚举、queryKeys、校验规则、文案
-├── layouts/            # MainLayout, AdminLayout, EmptyLayout
+├── layouts/            # MainLayout（前台）、AdminLayout（后台）
 ├── router/             # 路由配置（单文件 index.ts）
 ├── stores/             # Pinia 状态（user.ts, admin.ts）
 ├── styles/             # 全局样式与 Tailwind 入口
@@ -113,7 +113,7 @@ src/
 - **所有业务 Dialog 使用 `useDialog()` 管理状态**（`open`、`data`、`isLoading`、`withLoading`、`openDialog(payload?)`、`closeDialog()`）。
 - `useDialog().withLoading`：包装异步函数的 loading 态管理 helper，接收 `() => Promise<void>`，自动设置/清除 `isLoading`。用于 Dialog 确认提交时包裹 mutation，确保 loading 状态在请求完成后正确复位。
 - **禁止 Dialog 套 Dialog**：两个弹窗同时 open 会导致 `DismissableLayer` 冲突。
-- 参考模板：`src/components/_templates/DialogTemplate.vue`、`FormDialogTemplate.vue`。
+- 业务 Dialog 状态管理参考 `useDialog()` 的实现（`src/composables/common/useDialog.ts`）。
 
 ```vue
 <!-- 正确 -->
@@ -130,8 +130,8 @@ src/
 ```text
 src/views/admin/FooListView.vue
 src/composables/admin/list-pages/useFooListPage.ts
-src/components/admin/listPageColumns.ts   # 列定义
-src/api/<domain>/foo.ts                   # API 函数与类型
+src/components/admin/columns/fooColumns.ts   # 列定义
+src/api/<domain>/foo.ts                      # API 函数与类型
 ```
 
 视图负责接线：表格数据/分页/loading 来自 composable；搜索项通过 `v-model` 绑定；增删改调用 composable action。查询、mutation、确认弹窗状态、缓存失效都放在 page composable 中。
@@ -148,12 +148,13 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 ### 7. 路由 (`src/router/index.ts`)
 
 - 单文件路由配置，无模块拆分。
-- 三套布局：`MainLayout`（前台）、`AdminLayout`（后台）、`EmptyLayout`。登录页面不包裹布局组件，直接渲染。
+- 两套布局：`MainLayout`（前台）、`AdminLayout`（后台）。登录页面不包裹布局组件，直接渲染。
 - 路由守卫使用两个 meta 标志：
   - `requiresAuth`：需要用户登录
   - `requiresAdmin`：需要管理员登录
 - 登录失效由 `request.ts` 全局处理（code `10002`），业务层不重复写跳转逻辑。
-- `router.afterEach` 根据 `meta.title` 自动设置 `document.title`（后缀 `- Damai`）。
+- 已登录用户访问登录页会被重定向到首页。
+- `App.vue` 中通过 `useTitle` 根据 `meta.title` 自动设置 `document.title`（后缀 `- Damai`）。
 
 ### 8. 状态管理 (`src/stores/`)
 
@@ -168,7 +169,7 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 **无需手动 import 的 API**：
 
 - Vue、Vue Router、Pinia、`@vueuse/core`
-- TanStack Query：`useQuery`、`useMutation`、`useQueryClient`
+- TanStack Query：`useQuery`、`useMutation`、`useQueryClient`、`useQueries`
 - Zod（`z`）、`clsx`、`twMerge`
 
 **自动导入目录**：
@@ -207,6 +208,7 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 - 优先为 composable 写单测（mock API 函数，不访问真实后端）。
 - 组件测试保持黑盒：断言渲染文本、按钮事件、emit 事件，不依赖内部私有状态。
 - 新增后台列表页建议补 `useXxxListPage.test.ts`，覆盖查询参数、分页复位和 mutation 成功后的 query key 失效。
+- **`tsconfig.app.json` 排除了 `src/**/**tests**/\*`**，测试文件不参与 `vue-tsc` 类型检查构建。
 
 ### 13. OpenAPI 契约检查
 
@@ -224,6 +226,10 @@ src/api/<domain>/foo.ts                   # API 函数与类型
 
 - GitHub Actions 在 `windows-latest` 上运行，Node 版本 22。
 - CI 仅触发于 `main` / `master` 分支的 push 以及所有 pull_request。
+
+### 16. 运行时注意事项
+
+- `main.ts` 中重写了 `console.warn` 以静默 `@tanstack/vue-table` 与 `shadcn-vue` 的已知无害警告（`"Slot \"default\" invoked outside of the render function"`）。不要移除该逻辑，否则控制台会被大量警告淹没。
 
 ## 代码风格速查
 

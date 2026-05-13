@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent, ref } from 'vue'
 import { Button } from '@/components/common/ui/button'
-import { Badge } from '@/components/common/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui/tabs'
 import { EVENT_STATUS } from '@/constants'
 import { useEventEditPage } from '@/composables/admin'
@@ -50,7 +49,6 @@ const {
   eventInfo,
   sessionsData,
   publishMutation,
-  offlineMutation,
   handleCreated,
   goBack,
   invalidateEventDetail,
@@ -87,19 +85,6 @@ const handleSaveChanges = async () => {
         <p class="text-muted-sm mt-1">管理活动的基本信息、场次和票种</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <Badge v-if="isEdit && eventData" variant="secondary">
-          {{ eventData.statusLabel }}
-        </Badge>
-        <Button
-          v-if="isEdit && eventData?.status === EVENT_STATUS.PUBLISHED"
-          variant="outline"
-          size="sm"
-          class="text-muted-foreground hover:text-destructive hover:border-destructive/40"
-          @click="offlineMutation.mutate()"
-          :disabled="offlineMutation.isPending.value"
-        >
-          {{ offlineMutation.isPending.value ? '处理中...' : '下线活动' }}
-        </Button>
         <Button variant="outline" size="sm" @click="goBack">
           <icon-lucide-arrow-left class="mr-1.5 h-4 w-4" />
           返回列表
@@ -164,7 +149,7 @@ const handleSaveChanges = async () => {
 
   <!-- Fixed Bottom Action Bar -->
   <div
-    class="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+    class="fixed bottom-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:left-[var(--sidebar-width)]"
   >
     <div class="flex items-center justify-end gap-3 px-6 py-3">
       <Button variant="outline" @click="goBack">取消</Button>

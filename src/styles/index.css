@@ -113,9 +113,9 @@
 
   --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.2 0 0);
+  --secondary: oklch(0.967 0.001 286.375);
 
-  --secondary-foreground: oklch(1 0 0);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
 
   --muted: oklch(0.967 0.001 286.375);
 

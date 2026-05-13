@@ -12,7 +12,7 @@ defineEmits<{
 </script>
 
 <template>
-  <RouterLink v-if="to" :to="to" class="outline-none" @click.stop>
+  <RouterLink v-if="to" :to="to" class="outline-none block" @click.stop>
     <Card class="flex-row gap-5 p-5 cursor-pointer hover:shadow-md">
       <div class="shrink-0">
         <slot name="cover" />

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { AI_QUICK_PROMPTS, AI_SUPPORT_QUICK_PROMPTS, AI_CHAT_COPY } from '@/constants'
 import {
   AIChatEmptyState,
@@ -11,7 +11,6 @@ import {
 import { useAIChat } from '@/composables/ai/useAIChat'
 import assistantAvatar from '@/assets/assistant/assistant.webp'
 
-const router = useRouter()
 const route = useRoute()
 const inputValue = ref('')
 const inputRef = ref<InstanceType<typeof AIChatInput>>()
@@ -39,7 +38,7 @@ const chatSubtitle = computed(() =>
   isSupportMode.value ? '为你查询订单、解答售后问题' : AI_CHAT_COPY.subtitle,
 )
 
-const { messages, isPending, submit, resetSession } = useAIChat(chatOptions)
+const { messages, isPending, submit } = useAIChat(chatOptions)
 
 const hasChatStarted = computed(() => messages.value.some((message) => message.role === 'user'))
 
@@ -56,28 +55,13 @@ const handleSubmit = (text: string) => {
   inputValue.value = ''
   focusInput()
 }
-
-const handleReset = () => {
-  resetSession()
-  inputValue.value = ''
-  focusInput()
-}
-
-const goBack = () => {
-  resetSession()
-  if (isSupportMode.value) {
-    router.push('/profile')
-  } else {
-    router.back()
-  }
-}
 </script>
 
 <template>
   <div
     class="grid grid-rows-[auto_1fr_auto] overflow-hidden bg-muted/40 h-[calc(100dvh-var(--layout-header)-var(--layout-mobile-nav))] md:h-[calc(100vh-var(--layout-header-desktop))]"
   >
-    <AIChatHeader :title="chatTitle" :subtitle="chatSubtitle" @back="goBack" @reset="handleReset" />
+    <AIChatHeader :title="chatTitle" :subtitle="chatSubtitle" />
 
     <AIChatEmptyState
       v-if="!hasChatStarted"
