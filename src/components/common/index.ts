@@ -1,7 +1,0 @@
-export { default as TheHeader } from './TheHeader.vue'
-export { default as HeaderUserMenu } from './header/HeaderUserMenu.vue'
-export { default as HeaderCitySelector } from './header/HeaderCitySelector.vue'
-export { default as HeaderSearchBar } from './header/HeaderSearchBar.vue'
-export { default as ImageUpload } from './ImageUpload.vue'
-export { default as Button } from './ui/button/Button.vue'
-export { default as Input } from './ui/input/Input.vue'

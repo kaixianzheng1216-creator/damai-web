@@ -142,6 +142,49 @@
         }
       }
     },
+    "/inner/ticket/order/{orderId}": {
+      "get": {
+        "tags": [
+          "电子票内部接口"
+        ],
+        "summary": "获取指定订单的电子票列表",
+        "operationId": "getTicketsByOrderId",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "订单 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseTicketVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/inner/ticket/my": {
       "get": {
         "tags": [

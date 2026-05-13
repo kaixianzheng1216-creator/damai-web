@@ -1,5 +1,0 @@
-export { default as HomeBanner } from './HomeBanner.vue'
-export { default as EventSection } from './EventSection.vue'
-export { default as EventCard } from './EventCard.vue'
-export { default as CategoryNav } from './CategoryNav.vue'
-export { default as HomeFloatingSupport } from './HomeFloatingSupport.vue'

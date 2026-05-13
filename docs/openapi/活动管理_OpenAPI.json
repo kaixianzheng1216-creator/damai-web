@@ -4240,18 +4240,22 @@
           {
             "name": "cityId",
             "in": "query",
+            "description": "城市 ID",
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int64"
+              "format": "int64",
+              "description": "城市 ID"
             }
           },
           {
             "name": "title",
             "in": "query",
+            "description": "标题",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "标题"
             }
           },
           {
@@ -4801,34 +4805,43 @@
       },
       "BannerUpdateRequest": {
         "type": "object",
+        "description": "Banner 更新请求",
         "properties": {
           "cityId": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "城市 ID"
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "description": "标题"
           },
           "imageUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "桌面端图片 URL"
           },
           "mobileImageUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "移动端图片 URL"
           },
           "jumpUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "跳转 URL"
           },
           "sortOrder": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "排序值"
           },
           "displayStartAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "展示开始时间"
           },
           "displayEndAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "展示结束时间"
           }
         }
       },
@@ -5283,34 +5296,47 @@
       },
       "BannerCreateRequest": {
         "type": "object",
+        "description": "Banner 创建请求",
         "properties": {
           "cityId": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "城市 ID"
           },
           "title": {
             "type": "string",
+            "description": "标题",
             "minLength": 1
           },
           "imageUrl": {
             "type": "string",
+            "description": "桌面端图片 URL",
             "minLength": 1
           },
           "mobileImageUrl": {
             "type": "string",
+            "description": "移动端图片 URL",
             "minLength": 1
           },
           "jumpUrl": {
             "type": "string",
+            "description": "跳转 URL",
             "minLength": 1
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
           },
           "displayStartAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "展示开始时间"
           },
           "displayEndAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "展示结束时间"
           }
         },
         "required": [
@@ -5320,6 +5346,7 @@
           "imageUrl",
           "jumpUrl",
           "mobileImageUrl",
+          "sortOrder",
           "title"
         ]
       },
@@ -5934,7 +5961,7 @@
             "type": "string",
             "description": "票种名称"
           },
-          "price": {
+          "salePrice": {
             "type": "integer",
             "format": "int32",
             "description": "票价（分）"

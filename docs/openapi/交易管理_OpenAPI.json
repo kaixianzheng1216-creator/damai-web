@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://26.166.16.133:18084",
+      "url": "http://192.168.10.1:18084",
       "description": "Generated server url"
     }
   ],
@@ -106,49 +106,6 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponseWorkOrderVO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/front/work-orders/{id}/replies": {
-      "post": {
-        "tags": [
-          "工单前台接口"
-        ],
-        "summary": "用户回复工单",
-        "operationId": "addUserReply",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "工单 ID",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WorkOrderReplyCreateRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseVoid"
                 }
               }
             }
@@ -325,49 +282,6 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseVoid"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/work-orders/{id}/replies": {
-      "post": {
-        "tags": [
-          "工单管理接口"
-        ],
-        "summary": "客服回复工单",
-        "operationId": "addAdminReply",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "工单 ID",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WorkOrderReplyCreateRequest"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
             "description": "OK",
@@ -1127,25 +1041,6 @@
             "type": "string",
             "description": "问题描述"
           },
-          "lastReplyPreview": {
-            "type": "string",
-            "description": "最后回复预览"
-          },
-          "lastReplyAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "最后回复时间"
-          },
-          "userHasUnread": {
-            "type": "integer",
-            "format": "int32",
-            "description": "用户是否有未读：0-否 1-是"
-          },
-          "adminHasUnread": {
-            "type": "integer",
-            "format": "int32",
-            "description": "客服是否有未读：0-否 1-是"
-          },
           "createAt": {
             "type": "string",
             "format": "date-time",
@@ -1162,21 +1057,6 @@
             "description": "关闭者 ID"
           }
         }
-      },
-      "WorkOrderReplyCreateRequest": {
-        "type": "object",
-        "description": "工单回复请求",
-        "properties": {
-          "content": {
-            "type": "string",
-            "description": "回复内容",
-            "maxLength": 2000,
-            "minLength": 0
-          }
-        },
-        "required": [
-          "content"
-        ]
       },
       "ApiResponseVoid": {
         "type": "object",
@@ -1782,25 +1662,6 @@
           "content": {
             "type": "string",
             "description": "问题描述"
-          },
-          "lastReplyPreview": {
-            "type": "string",
-            "description": "最后回复预览"
-          },
-          "lastReplyAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "最后回复时间"
-          },
-          "userHasUnread": {
-            "type": "integer",
-            "format": "int32",
-            "description": "用户是否有未读：0-否 1-是"
-          },
-          "adminHasUnread": {
-            "type": "integer",
-            "format": "int32",
-            "description": "客服是否有未读：0-否 1-是"
           },
           "createAt": {
             "type": "string",

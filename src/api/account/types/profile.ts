@@ -32,27 +32,8 @@ export interface OrderItem {
   quantity?: number
 }
 
-export interface AccountSettingItem {
-  key: 'mobile' | 'identity'
-  title: string
-  description: string
-  value: string
-  actionText: string
-  status: 'success' | 'warning'
-}
-
 export interface PassengerFormData {
   name: string
   certType: string
   certNo: string
-}
-
-export interface MobileFormData {
-  mobile: string
-  code: string
-}
-
-export interface IdentityFormData {
-  realName: string
-  idCard: string
 }

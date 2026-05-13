@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://26.166.16.133:18087",
+      "url": "http://192.168.10.1:18087",
       "description": "Generated server url"
     }
   ],

@@ -28,6 +28,10 @@ coverage
 
 .eslintcache
 
+# Local agent state
+.claude/
+.sisyphus/
+
 # Cypress
 /cypress/videos/
 /cypress/screenshots/

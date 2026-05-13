@@ -1,9 +1,0 @@
-﻿
-      console.warn('[useWorkOrderChat] Cannot connect: no token provided')
-          console.warn(
-        console.error('[useWorkOrderChat] STOMP error:', errorMsg)
-        console.error('[useWorkOrderChat] WebSocket error:', event)
-        console.error('[useWorkOrderChat] Failed to parse message:', err)
-      console.warn('[useWorkOrderChat] Cannot send message: not connected')
-
-

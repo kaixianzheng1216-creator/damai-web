@@ -1,4 +1,0 @@
-﻿LINT EXIT CODE: 0
-TYPE-CHECK EXIT CODE: 0
-vue/no-mutating-props in ProfileDialogs.vue: 0 instances
-vue/no-mutating-props in ProfileSectionContent.vue: 0 instances
