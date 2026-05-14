@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="TData">
 import {
+  type Cell,
   type Column,
   FlexRender,
   getCoreRowModel,
@@ -13,6 +14,12 @@ import TablePagination from './TablePagination.vue'
 import TableToolbar from './TableToolbar.vue'
 import TableCardView from './TableCardView.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/common/ui/tooltip'
 import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialog'
 
 const props = withDefaults(
@@ -92,6 +99,42 @@ const shouldRenderTrailingFiller = computed(
 const shouldRenderFillerBeforeColumn = (column: Column<TData, unknown>) =>
   shouldRenderWidthFiller.value && column.id === ACTIONS_COLUMN_ID
 
+type CellTitleResolver<TData> = (row: TData) => unknown
+type CellTitleMeta<TData> = {
+  cellTitle?: false | CellTitleResolver<TData>
+}
+
+const formatCellTitle = (value: unknown): string | undefined => {
+  if (value === null || value === undefined) {
+    return undefined
+  }
+
+  if (typeof value === 'string') {
+    const title = value.trim()
+    return title.length > 0 ? title : undefined
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+    return String(value)
+  }
+
+  return undefined
+}
+
+const getCellTitle = (cell: Cell<TData, unknown>): string | undefined => {
+  const meta = cell.column.columnDef.meta as CellTitleMeta<TData> | undefined
+
+  if (meta?.cellTitle === false) {
+    return undefined
+  }
+
+  if (typeof meta?.cellTitle === 'function') {
+    return formatCellTitle(meta.cellTitle(cell.row.original))
+  }
+
+  return formatCellTitle(cell.getValue())
+}
+
 const getColumnStyle = (column: Column<TData, unknown>): CSSProperties => {
   const width = `${column.getSize()}px`
 
@@ -120,71 +163,97 @@ const getColumnStyle = (column: Column<TData, unknown>): CSSProperties => {
           <icon-lucide-loader2 class="h-6 w-6 animate-spin text-primary" />
         </div>
 
-        <Table class="border table-fixed" :class="{ 'opacity-60': loading }">
-          <colgroup>
-            <template v-for="header in table.getHeaderGroups()[0]?.headers ?? []" :key="header.id">
-              <col v-if="shouldRenderFillerBeforeColumn(header.column)" />
-              <col :style="getColumnStyle(header.column)" />
-            </template>
-            <col v-if="shouldRenderTrailingFiller" />
-          </colgroup>
-          <TableHeader>
-            <TableRow
-              v-for="headerGroup in table.getHeaderGroups()"
-              :key="headerGroup.id"
-              class="bg-muted"
-            >
-              <template v-for="header in headerGroup.headers" :key="header.id">
-                <TableHead
-                  v-if="shouldRenderFillerBeforeColumn(header.column)"
-                  aria-hidden="true"
-                  class="!px-0 !py-3"
-                />
-                <TableHead class="truncate !px-4 !py-3" :style="getColumnStyle(header.column)">
-                  <FlexRender
-                    :render="header.column.columnDef.header"
-                    :props="header.getContext()"
-                  />
-                </TableHead>
-              </template>
-              <TableHead v-if="shouldRenderTrailingFiller" aria-hidden="true" class="!px-0 !py-3" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <template v-if="data.length">
-              <TableRow
-                v-for="row in table.getRowModel().rows"
-                :key="row.id"
-                class="border-t hover:bg-muted/50 cursor-pointer"
-                @click="emit('row-click', row.original)"
+        <TooltipProvider :delay-duration="200">
+          <Table class="border table-fixed" :class="{ 'opacity-60': loading }">
+            <colgroup>
+              <template
+                v-for="header in table.getHeaderGroups()[0]?.headers ?? []"
+                :key="header.id"
               >
-                <template v-for="cell in row.getVisibleCells()" :key="cell.id">
-                  <TableCell
-                    v-if="shouldRenderFillerBeforeColumn(cell.column)"
+                <col v-if="shouldRenderFillerBeforeColumn(header.column)" />
+                <col :style="getColumnStyle(header.column)" />
+              </template>
+              <col v-if="shouldRenderTrailingFiller" />
+            </colgroup>
+            <TableHeader>
+              <TableRow
+                v-for="headerGroup in table.getHeaderGroups()"
+                :key="headerGroup.id"
+                class="bg-muted"
+              >
+                <template v-for="header in headerGroup.headers" :key="header.id">
+                  <TableHead
+                    v-if="shouldRenderFillerBeforeColumn(header.column)"
                     aria-hidden="true"
                     class="!px-0 !py-3"
                   />
-                  <TableCell class="truncate !px-4 !py-3" :style="getColumnStyle(cell.column)">
-                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-                  </TableCell>
+                  <TableHead class="truncate !px-4 !py-3" :style="getColumnStyle(header.column)">
+                    <FlexRender
+                      :render="header.column.columnDef.header"
+                      :props="header.getContext()"
+                    />
+                  </TableHead>
                 </template>
-                <TableCell
+                <TableHead
                   v-if="shouldRenderTrailingFiller"
                   aria-hidden="true"
                   class="!px-0 !py-3"
                 />
               </TableRow>
-            </template>
-            <TableRow v-else>
-              <TableCell
-                :colspan="columns.length + (shouldRenderWidthFiller ? 1 : 0)"
-                class="!px-4 !py-16 text-center text-muted-foreground"
-              >
-                暂无数据
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              <template v-if="data.length">
+                <TableRow
+                  v-for="row in table.getRowModel().rows"
+                  :key="row.id"
+                  class="border-t hover:bg-muted/50 cursor-pointer"
+                  @click="emit('row-click', row.original)"
+                >
+                  <template v-for="cell in row.getVisibleCells()" :key="cell.id">
+                    <TableCell
+                      v-if="shouldRenderFillerBeforeColumn(cell.column)"
+                      aria-hidden="true"
+                      class="!px-0 !py-3"
+                    />
+                    <TableCell class="truncate !px-4 !py-3" :style="getColumnStyle(cell.column)">
+                      <Tooltip v-if="getCellTitle(cell)">
+                        <TooltipTrigger as-child>
+                          <span class="block truncate">
+                            <FlexRender
+                              :render="cell.column.columnDef.cell"
+                              :props="cell.getContext()"
+                            />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent class="max-w-96 whitespace-normal break-words text-left">
+                          {{ getCellTitle(cell) }}
+                        </TooltipContent>
+                      </Tooltip>
+                      <FlexRender
+                        v-else
+                        :render="cell.column.columnDef.cell"
+                        :props="cell.getContext()"
+                      />
+                    </TableCell>
+                  </template>
+                  <TableCell
+                    v-if="shouldRenderTrailingFiller"
+                    aria-hidden="true"
+                    class="!px-0 !py-3"
+                  />
+                </TableRow>
+              </template>
+              <TableRow v-else>
+                <TableCell
+                  :colspan="columns.length + (shouldRenderWidthFiller ? 1 : 0)"
+                  class="!px-4 !py-16 text-center text-muted-foreground"
+                >
+                  暂无数据
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TooltipProvider>
       </div>
     </template>
 

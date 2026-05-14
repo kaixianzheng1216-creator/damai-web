@@ -6,6 +6,12 @@ import { EVENT_STATUS } from '@/constants'
 import { actionGroup, actionButton, stopAndRun, type RowAction } from './columnUtils'
 import { ADMIN_COLUMN_WIDTH, contentColumn, fixedColumn } from './columnWidths'
 
+const formatEventCategory = (event: EventVO) => {
+  const parent = event.parentCategoryNameSnapshot
+  const child = event.categoryNameSnapshot
+  return parent && child ? `${parent} / ${child}` : child || parent || '-'
+}
+
 export function createEventColumns(options: {
   openEdit: RowAction<EventVO>
   handleDelete: RowAction<EventVO>
@@ -27,10 +33,9 @@ export function createEventColumns(options: {
       accessorKey: 'categoryNameSnapshot',
       header: '分类',
       ...fixedColumn(ADMIN_COLUMN_WIDTH.name),
-      cell: ({ row }) => {
-        const parent = row.original.parentCategoryNameSnapshot
-        const child = row.original.categoryNameSnapshot
-        return parent && child ? `${parent} / ${child}` : child || parent || '-'
+      cell: ({ row }) => formatEventCategory(row.original),
+      meta: {
+        cellTitle: formatEventCategory,
       },
     },
     {

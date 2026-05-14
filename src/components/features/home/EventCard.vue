@@ -13,7 +13,7 @@ defineProps<{
         :src="event.coverImageUrl"
         alt="活动封面"
         loading="lazy"
-        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        class="h-full w-full object-cover"
       />
     </div>
 
