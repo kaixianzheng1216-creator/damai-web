@@ -72,10 +72,10 @@ watch(displayBanners, (banners) => {
     </CarouselContent>
 
     <CarouselPrevious
-      class="absolute left-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 rounded-full bg-black/30 text-white opacity-0 transition-opacity hover:bg-black/50 md:flex md:opacity-0 md:group-hover:opacity-100"
+      class="absolute left-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 rounded-full bg-black/30 text-white opacity-0 transition-opacity hover:bg-black/50 hover:text-white md:flex md:opacity-0 md:group-hover:opacity-100"
     />
     <CarouselNext
-      class="absolute right-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 rounded-full bg-black/30 text-white opacity-0 transition-opacity hover:bg-black/50 md:flex md:opacity-0 md:group-hover:opacity-100"
+      class="absolute right-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 rounded-full bg-black/30 text-white opacity-0 transition-opacity hover:bg-black/50 hover:text-white md:flex md:opacity-0 md:group-hover:opacity-100"
     />
 
     <div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5 md:bottom-4 md:gap-2">
