@@ -15,10 +15,12 @@ defineProps<{
   selectedChannel: number
   qrCodeBase64: string
   tradeNo: string
+  isQueryingPayment: boolean
 }>()
 
 defineEmits<{
   'update:open': [value: boolean]
+  queryPayment: []
 }>()
 </script>
 
@@ -50,6 +52,11 @@ defineEmits<{
         </div>
       </div>
       <DialogFooter>
+        <Button :disabled="isQueryingPayment || !tradeNo" @click="$emit('queryPayment')">
+          <icon-lucide-loader2 v-if="isQueryingPayment" class="mr-2 h-4 w-4 animate-spin" />
+          <icon-lucide-refresh-cw v-else class="mr-2 h-4 w-4" />
+          {{ PAYMENT_COPY.queryPaymentStatus }}
+        </Button>
         <Button variant="outline" @click="$emit('update:open', false)">
           {{ PAYMENT_COPY.close }}
         </Button>

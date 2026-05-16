@@ -2,7 +2,7 @@ import type { PaymentVO } from '@/api/trade'
 import dayjs from 'dayjs'
 import { ORDER_STATUS } from '@/constants'
 
-type PaymentInfoSource = Pick<PaymentVO, 'qrCodeBase64' | 'outTradeNo' | 'paymentNo'>
+type PaymentInfoSource = Pick<PaymentVO, 'id' | 'qrCodeBase64' | 'outTradeNo' | 'paymentNo'>
 
 export function getCheckoutStatusFlags(status: number) {
   return {
@@ -40,6 +40,7 @@ export function resolveCheckoutPaymentInfo(
   const firstOrderPayment = orderPayments?.[0]
 
   return {
+    paymentId: paymentData?.id || firstOrderPayment?.id || '',
     qrCodeBase64: paymentData?.qrCodeBase64 || firstOrderPayment?.qrCodeBase64 || '',
     tradeNo:
       paymentData?.outTradeNo ||

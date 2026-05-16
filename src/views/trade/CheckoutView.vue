@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { PAYMENT_COPY } from '@/constants'
 import { Button } from '@/components/common/ui/button'
 import ErrorState from '@/components/common/ErrorState.vue'
@@ -21,6 +20,7 @@ const {
   selectedMethod,
   showQrCodeDialog,
   createPaymentMutation,
+  queryPaymentMutation,
   cancelTicketOrderMutation,
   statusLabel,
   remainText,
@@ -34,14 +34,11 @@ const {
   goDetail,
 } = useCheckoutPage()
 
-const isCreatingPayment = computed(() => createPaymentMutation.isPending.value)
-const isCancellingOrder = computed(() => cancelTicketOrderMutation.isPending.value)
-
 const { showRefundDialog, canRefund, refundMutation, openRefundDialog, closeRefundDialog } =
   useRefundDialog({ order })
 
 const handleCreatePayment = () => {
-  if (!isPending.value || isCreatingPayment.value) {
+  if (!isPending.value || createPaymentMutation.isPending.value) {
     return
   }
 
@@ -49,11 +46,19 @@ const handleCreatePayment = () => {
 }
 
 const handleCancelOrder = () => {
-  if (!isPending.value || isCancellingOrder.value) {
+  if (!isPending.value || cancelTicketOrderMutation.isPending.value) {
     return
   }
 
   cancelTicketOrderMutation.mutate()
+}
+
+const handleQueryPayment = () => {
+  if (!isPending.value || queryPaymentMutation.isPending.value) {
+    return
+  }
+
+  queryPaymentMutation.mutate()
 }
 </script>
 
@@ -81,7 +86,6 @@ const handleCancelOrder = () => {
         :is-paid="isPaid"
         :is-cancelled="isCancelled"
         :is-closed="isClosed"
-        :refunds="order.refunds"
       />
 
       <CheckoutPaymentPanel
@@ -91,8 +95,8 @@ const handleCancelOrder = () => {
         :is-paid="isPaid"
         :is-cancelled="isCancelled"
         :is-closed="isClosed"
-        :is-creating-payment="isCreatingPayment"
-        :is-cancelling-order="isCancellingOrder"
+        :is-creating-payment="createPaymentMutation.isPending.value"
+        :is-cancelling-order="cancelTicketOrderMutation.isPending.value"
         :can-refund="canRefund"
         @create-payment="handleCreatePayment"
         @cancel-order="handleCancelOrder"
@@ -105,6 +109,8 @@ const handleCancelOrder = () => {
         :selected-channel="selectedChannel"
         :qr-code-base64="qrCodeBase64"
         :trade-no="tradeNo"
+        :is-querying-payment="queryPaymentMutation.isPending.value"
+        @query-payment="handleQueryPayment"
       />
     </div>
 

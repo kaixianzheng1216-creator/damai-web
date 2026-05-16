@@ -29,6 +29,14 @@ export const ORDER_STATUS_LABEL = {
   [ORDER_STATUS.REFUNDED]: '已退款',
 } as const satisfies Record<OrderStatusValue, string>
 
+export const PAYMENT_STATUS = {
+  PENDING: 0,
+  SUCCESS: 1,
+  FAILED: 2,
+} as const
+
+export type PaymentStatusValue = (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS]
+
 export const TICKET_STATUS = {
   UNUSED: 0,
   USED: 1,
@@ -148,6 +156,7 @@ export const PAYMENT_COPY = {
   tradeNo: '交易号：',
   payNow: '立即支付',
   qrPay: '扫码支付',
+  queryPaymentStatus: '查询支付结果',
   cancelOrder: '取消订单',
   paid: '已支付',
   cancelled: '已取消',

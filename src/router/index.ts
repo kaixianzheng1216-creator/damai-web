@@ -193,12 +193,18 @@ router.beforeEach((to, _from) => {
   const userStore = useUserStore()
   const adminStore = useAdminStore()
 
+  if (to.name === 'login' && userStore.isLoggedIn) {
+    return { name: 'home' }
+  }
+
+  if (to.name === 'admin-login' && adminStore.isLoggedIn) {
+    return { name: 'admin-dashboard' }
+  }
+
   if (to.meta.requiresAdmin && !adminStore.adminToken) {
     return { name: 'admin-login', query: { redirect: to.fullPath } }
   } else if (to.meta.requiresAuth && !userStore.isLoggedIn) {
     return { name: 'login', query: { redirect: to.fullPath } }
-  } else if (to.name === 'login' && userStore.isLoggedIn) {
-    return { name: 'home' }
   }
 })
 

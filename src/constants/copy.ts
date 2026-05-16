@@ -49,6 +49,9 @@ export const TOAST_COPY = {
 
   // checkout
   paymentCreateFailed: '创建支付失败，请重试',
+  paymentQueryFailed: '查询支付状态失败，请稍后重试',
+  paymentConfirmed: '已确认支付成功',
+  paymentStillPending: '支付宝暂未返回支付成功',
   orderCancelFailed: '取消订单失败，请重试',
 
   // event edit (publish / offline)

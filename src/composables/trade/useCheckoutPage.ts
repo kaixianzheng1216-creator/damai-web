@@ -7,12 +7,19 @@ import type { PaymentVO } from '@/api/trade'
 import {
   PAYMENT_CHANNELS,
   PAYMENT_METHODS,
+  PAYMENT_STATUS,
   TIME_UNITS,
   CHECKOUT_CONFIG,
   queryKeys,
   TOAST_COPY,
 } from '@/constants'
-import { fetchMyOrderById, fetchMyOrderStatus, createPayment, cancelTicketOrder } from '@/api/trade'
+import {
+  fetchMyOrderById,
+  fetchMyOrderStatus,
+  createPayment,
+  queryPaymentStatus,
+  cancelTicketOrder,
+} from '@/api/trade'
 import type { OrderStatusVO } from '@/api/trade'
 import {
   formatRemainText,
@@ -71,8 +78,21 @@ export const useCheckoutPage = () => {
   const paymentInfo = computed(() =>
     resolveCheckoutPaymentInfo(paymentData.value, order.value?.payments),
   )
+  const paymentId = computed(() => paymentInfo.value.paymentId)
   const qrCodeBase64 = computed(() => paymentInfo.value.qrCodeBase64)
   const tradeNo = computed(() => paymentInfo.value.tradeNo)
+
+  const assertPendingOrder = () => {
+    if (!isPending.value) {
+      throw new Error('Order is not pending')
+    }
+  }
+
+  const refreshOrderQueries = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.trade.orderStatus(orderId) }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.trade.order(orderId) }),
+    ])
 
   watch(isPaid, (paid) => {
     if (paid) {
@@ -83,9 +103,7 @@ export const useCheckoutPage = () => {
 
   const createPaymentMutation = useMutation({
     mutationFn: () => {
-      if (!isPending.value) {
-        return Promise.reject(new Error('Order is not pending'))
-      }
+      assertPendingOrder()
 
       return createPayment(orderId.value, {
         channel: selectedChannel.value,
@@ -95,19 +113,43 @@ export const useCheckoutPage = () => {
     onSuccess: async (data) => {
       paymentData.value = data
       showQrCodeDialog.value = true
-      await queryClient.invalidateQueries({ queryKey: queryKeys.trade.orderStatus(orderId) })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.trade.order(orderId) })
+      await refreshOrderQueries()
     },
     onError: () => {
       toast.error(TOAST_COPY.paymentCreateFailed)
     },
   })
 
+  const queryPaymentMutation = useMutation({
+    mutationFn: () => {
+      assertPendingOrder()
+
+      if (!paymentId.value) {
+        throw new Error('Payment is not created')
+      }
+
+      return queryPaymentStatus(paymentId.value)
+    },
+    onSuccess: async (data) => {
+      paymentData.value = data
+      await refreshOrderQueries()
+
+      if (data.status === PAYMENT_STATUS.SUCCESS) {
+        toast.success(TOAST_COPY.paymentConfirmed)
+        return
+      }
+
+      toast.info(TOAST_COPY.paymentStillPending)
+    },
+    onError: () => {
+      toast.error(TOAST_COPY.paymentQueryFailed)
+    },
+  })
+
   const cancelTicketOrderMutation = useMutation({
     mutationFn: () => cancelTicketOrder(orderId.value),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.trade.orderStatus(orderId) })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.trade.order(orderId) })
+      await refreshOrderQueries()
     },
     onError: () => {
       toast.error(TOAST_COPY.orderCancelFailed)
@@ -134,6 +176,7 @@ export const useCheckoutPage = () => {
     selectedMethod,
     showQrCodeDialog,
     createPaymentMutation,
+    queryPaymentMutation,
     cancelTicketOrderMutation,
     statusLabel,
     remainText,

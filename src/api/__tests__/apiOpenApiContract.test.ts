@@ -43,6 +43,7 @@ import {
   cancelAdminWorkOrder,
   createTicketOrder,
   createRefund,
+  queryPaymentStatus,
   fetchAdminWorkOrderById,
   fetchAdminWorkOrderPage,
   fetchMyPurchaseCounts,
@@ -60,6 +61,7 @@ import {
   fetchMyTicketPage,
   type PageResponseTicketVO,
   type TicketPageRequest,
+  type TicketVO,
 } from '@/api/ticket'
 
 const requestMock = vi.hoisted(() => ({
@@ -434,13 +436,15 @@ describe('API OpenAPI contracts', () => {
     })
 
     vi.clearAllMocks()
-    await adminCheckinTicket('qr-token')
+    const checkinPromise = adminCheckinTicket('qr-token')
+    expectTypeOf(checkinPromise).toEqualTypeOf<Promise<TicketVO>>()
+    await checkinPromise
     expectRequestMatchesOpenApi({
       service: 'ticket',
       method: 'post',
       docPath: '/admin/tickets/checkin/{qrCodeToken}',
       pathParams: { qrCodeToken: 'qr-token' },
-      responseSchema: 'ApiResponseVoid',
+      responseSchema: 'ApiResponseTicketVO',
     })
   })
 
@@ -752,5 +756,17 @@ describe('API OpenAPI contracts', () => {
     expect(schemaName(getJsonSchema(operation)?.['$ref'])).toBe('PaymentCreateRequest')
     expectBodyMatchesSchema(doc, 'PaymentCreateRequest', paymentBody)
     expect(schemaName(getResponseSchema(operation)?.['$ref'])).toBe('ApiResponsePaymentVO')
+  })
+
+  it('keeps active payment query endpoint aligned with the order OpenAPI schema', async () => {
+    await queryPaymentStatus('payment-1')
+
+    expectRequestMatchesOpenApi({
+      service: 'order',
+      method: 'post',
+      docPath: '/front/payments/{id}/query',
+      pathParams: { id: 'payment-1' },
+      responseSchema: 'ApiResponsePaymentVO',
+    })
   })
 })

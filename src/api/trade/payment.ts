@@ -14,6 +14,9 @@ export const createTicketOrder = (data: TicketOrderCreateRequest): Promise<Order
 export const createPayment = (id: string, data: PaymentCreateRequest): Promise<PaymentVO> =>
   request.post<PaymentVO>(`/api/order/front/ticket-orders/${id}/pay`, data)
 
+export const queryPaymentStatus = (id: string): Promise<PaymentVO> =>
+  request.post<PaymentVO>(`/api/order/front/payments/${id}/query`)
+
 export const cancelTicketOrder = (id: string): Promise<void> =>
   request.post<void>(`/api/order/front/ticket-orders/${id}/cancel`)
 

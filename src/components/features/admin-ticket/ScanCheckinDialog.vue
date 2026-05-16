@@ -4,9 +4,13 @@ import type { BrowserQRCodeReader, IScannerControls } from '@zxing/browser'
 import { useMutation } from '@tanstack/vue-query'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog'
 import { Alert, AlertDescription, AlertTitle } from '@/components/common/ui/alert'
+import { Badge } from '@/components/common/ui/badge'
 import { Input } from '@/components/common/ui/input'
 import { Button } from '@/components/common/ui/button'
 import { adminCheckinTicket } from '@/api/ticket/ticket'
+import type { TicketVO } from '@/api/ticket'
+import { formatDateTime } from '@/utils/format'
+import { getTicketStatusClass } from '@/utils/statusMappers'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
@@ -34,6 +38,7 @@ const videoRef = ref<HTMLVideoElement>()
 const manualToken = ref('')
 const lastScannedToken = ref('')
 const result = ref<{ type: 'success' | 'error'; message: string } | null>(null)
+const checkedTicket = ref<TicketVO | null>(null)
 const scanCompleted = ref(false)
 
 // Dynamic import state
@@ -47,12 +52,14 @@ let controls: IScannerControls | null = null
 
 const checkinMutation = useMutation({
   mutationFn: adminCheckinTicket,
-  onSuccess: (_data, token) => {
-    showResult('success', `检票成功：${token}`)
+  onSuccess: (ticket) => {
+    checkedTicket.value = ticket
+    showResult('success', '检票成功')
     manualToken.value = ''
     lastScannedToken.value = ''
   },
   onError: (error) => {
+    checkedTicket.value = null
     showResult('error', getTicketCheckinErrorMessage(error))
   },
 })
@@ -96,6 +103,7 @@ const startScanner = async () => {
   if (!videoRef.value || !ReaderClass) return
   stopScanner()
   result.value = null
+  checkedTicket.value = null
   scanCompleted.value = false
 
   try {
@@ -111,6 +119,7 @@ const startScanner = async () => {
 
 const resetAndRestart = async () => {
   result.value = null
+  checkedTicket.value = null
   scanCompleted.value = false
   await nextTick()
   startScanner()
@@ -166,6 +175,7 @@ watch(
   (newVal) => {
     if (newVal) {
       result.value = null
+      checkedTicket.value = null
       scanCompleted.value = false
       pendingImport = true
       doImportAndStart()
@@ -179,7 +189,7 @@ onUnmounted(stopScanner)
 <template>
   <Dialog :open="open" @update:open="handleOpen">
     <DialogContent
-      class="w-[calc(100vw-2rem)] max-w-md"
+      class="w-[calc(100vw-2rem)] max-w-xl"
       :show-close-button="!isSubmitting"
       @open-auto-focus.prevent
     >
@@ -246,6 +256,61 @@ onUnmounted(stopScanner)
           <AlertTitle>{{ result.type === 'success' ? '成功' : '失败' }}</AlertTitle>
           <AlertDescription>{{ result.message }}</AlertDescription>
         </Alert>
+
+        <div v-if="checkedTicket" class="rounded-lg border bg-muted/20 p-4">
+          <div class="mb-3 flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-sm text-muted-foreground">{{ checkedTicket.ticketNo }}</p>
+              <h3 class="mt-1 line-clamp-2 font-semibold leading-snug">
+                {{ checkedTicket.eventNameSnapshot }}
+              </h3>
+            </div>
+            <Badge class="shrink-0" :class="getTicketStatusClass(checkedTicket.status)">
+              {{ checkedTicket.statusLabel }}
+            </Badge>
+          </div>
+
+          <dl class="grid gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
+            <div>
+              <dt class="text-muted-foreground">购票人</dt>
+              <dd class="font-medium">{{ checkedTicket.passengerNameSnapshot }}</dd>
+            </div>
+            <div>
+              <dt class="text-muted-foreground">证件信息</dt>
+              <dd class="font-medium">身份证 {{ checkedTicket.passengerIdNoMaskedSnapshot }}</dd>
+            </div>
+            <div>
+              <dt class="text-muted-foreground">场馆</dt>
+              <dd class="font-medium">{{ checkedTicket.venueNameSnapshot }}</dd>
+            </div>
+            <div>
+              <dt class="text-muted-foreground">场馆地址</dt>
+              <dd class="font-medium">{{ checkedTicket.venueAddressSnapshot }}</dd>
+            </div>
+            <div>
+              <dt class="text-muted-foreground">场次</dt>
+              <dd class="font-medium">
+                {{ formatDateTime(checkedTicket.sessionStartAtSnapshot, '--') }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-muted-foreground">票档</dt>
+              <dd class="font-medium">{{ checkedTicket.ticketTypeNameSnapshot }}</dd>
+            </div>
+            <div>
+              <dt class="text-muted-foreground">订单号</dt>
+              <dd class="break-all font-medium">{{ checkedTicket.orderNo }}</dd>
+            </div>
+            <div>
+              <dt class="text-muted-foreground">二维码 Token</dt>
+              <dd class="break-all font-medium">{{ checkedTicket.qrCodeToken }}</dd>
+            </div>
+            <div>
+              <dt class="text-muted-foreground">使用时间</dt>
+              <dd class="font-medium">{{ formatDateTime(checkedTicket.usedAt, '--') }}</dd>
+            </div>
+          </dl>
+        </div>
 
         <!-- 继续扫描按钮 (仅在扫描完成后显示) -->
         <div v-if="scanCompleted" class="flex gap-2">

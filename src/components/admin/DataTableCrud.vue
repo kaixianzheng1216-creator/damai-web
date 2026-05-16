@@ -102,6 +102,7 @@ const shouldRenderFillerBeforeColumn = (column: Column<TData, unknown>) =>
 type CellTitleResolver<TData> = (row: TData) => unknown
 type CellTitleMeta<TData> = {
   cellTitle?: false | CellTitleResolver<TData>
+  multiline?: boolean
 }
 
 const formatCellTitle = (value: unknown): string | undefined => {
@@ -135,6 +136,12 @@ const getCellTitle = (cell: Cell<TData, unknown>): string | undefined => {
   return formatCellTitle(cell.getValue())
 }
 
+const isMultilineCell = (cell: Cell<TData, unknown>) => {
+  const meta = cell.column.columnDef.meta as CellTitleMeta<TData> | undefined
+
+  return meta?.multiline === true
+}
+
 const getColumnStyle = (column: Column<TData, unknown>): CSSProperties => {
   const width = `${column.getSize()}px`
 
@@ -146,9 +153,14 @@ const getColumnStyle = (column: Column<TData, unknown>): CSSProperties => {
 }
 
 const getCellClass = (cell: Cell<TData, unknown>) => [
-  'truncate !px-4 !py-3',
+  isMultilineCell(cell)
+    ? 'whitespace-normal break-words align-top !px-4 !py-3'
+    : 'truncate !px-4 !py-3',
   cell.column.id === ACTIONS_COLUMN_ID ? 'relative z-10 overflow-visible' : '',
 ]
+
+const getCellContentClass = (cell: Cell<TData, unknown>) =>
+  isMultilineCell(cell) ? 'block whitespace-normal break-words leading-6' : 'block truncate'
 
 const handleCellClick = (event: MouseEvent, cell: Cell<TData, unknown>) => {
   if (cell.column.id === ACTIONS_COLUMN_ID) {
@@ -233,7 +245,7 @@ const handleCellClick = (event: MouseEvent, cell: Cell<TData, unknown>) => {
                     >
                       <Tooltip v-if="getCellTitle(cell)">
                         <TooltipTrigger as-child>
-                          <span class="block truncate">
+                          <span :class="getCellContentClass(cell)">
                             <FlexRender
                               :render="cell.column.columnDef.cell"
                               :props="cell.getContext()"

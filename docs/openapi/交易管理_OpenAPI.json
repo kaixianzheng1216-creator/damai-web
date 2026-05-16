@@ -965,6 +965,39 @@
           }
         }
       }
+    },
+    "/front/payments/{id}/query": {
+      "post": {
+        "tags": [
+          "支付前台接口"
+        ],
+        "summary": "主动查询支付宝支付状态",
+        "operationId": "queryPaymentStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "支付 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePaymentVO"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

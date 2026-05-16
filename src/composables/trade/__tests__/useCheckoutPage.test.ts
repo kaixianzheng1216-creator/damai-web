@@ -8,6 +8,7 @@ import {
   fetchMyOrderStatus,
   fetchOrderById,
   fetchOrderStatus,
+  queryPaymentStatus,
   type PaymentVO,
   type TicketOrderVO,
 } from '@/api/trade'
@@ -25,7 +26,7 @@ vi.mock('vue-router', () => ({
 }))
 
 vi.mock('vue3-toastify', () => ({
-  toast: { error: vi.fn() },
+  toast: { error: vi.fn(), info: vi.fn(), success: vi.fn() },
 }))
 
 vi.mock('@/api/trade', () => ({
@@ -34,6 +35,7 @@ vi.mock('@/api/trade', () => ({
   fetchOrderStatus: vi.fn(),
   fetchMyOrderStatus: vi.fn(),
   createPayment: vi.fn(),
+  queryPaymentStatus: vi.fn(),
   cancelTicketOrder: vi.fn(),
 }))
 
@@ -131,6 +133,7 @@ beforeEach(() => {
     status: ORDER_STATUS.PENDING,
   })
   vi.mocked(createPayment).mockResolvedValue(createPaymentResult())
+  vi.mocked(queryPaymentStatus).mockResolvedValue(createPaymentResult())
   vi.mocked(cancelTicketOrder).mockResolvedValue(undefined)
 })
 
@@ -154,6 +157,21 @@ describe('useCheckoutPage', () => {
     })
     expect(harness.result.showQrCodeDialog.value).toBe(true)
     expect(harness.result.qrCodeBase64.value).toBe('new-qr')
+    expect(harness.result.tradeNo.value).toBe('TRADE-1')
+    expect(harness.invalidateSpy.mock.calls.map(([arg]) => arg.queryKey?.[0])).toEqual(
+      expect.arrayContaining(['order-status', 'ticket-order']),
+    )
+  })
+
+  it('queries payment status and invalidates order queries', async () => {
+    const harness = setupCheckout()
+    cleanup = harness.cleanup
+
+    await harness.result.createPaymentMutation.mutateAsync()
+    await harness.result.queryPaymentMutation.mutateAsync()
+    await flushPromises()
+
+    expect(queryPaymentStatus).toHaveBeenCalledWith('payment-1')
     expect(harness.result.tradeNo.value).toBe('TRADE-1')
     expect(harness.invalidateSpy.mock.calls.map(([arg]) => arg.queryKey?.[0])).toEqual(
       expect.arrayContaining(['order-status', 'ticket-order']),

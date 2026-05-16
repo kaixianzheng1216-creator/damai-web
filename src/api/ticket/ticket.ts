@@ -10,5 +10,5 @@ export const fetchMyTicketById = (id: string): Promise<TicketVO> =>
 export const fetchAdminTicketPage = (params: TicketPageRequest): Promise<PageResponseTicketVO> =>
   request.get<PageResponseTicketVO>('/api/ticket/admin/tickets/page', { params })
 
-export const adminCheckinTicket = (qrCodeToken: string): Promise<void> =>
-  request.post<void>(`/api/ticket/admin/tickets/checkin/${qrCodeToken}`)
+export const adminCheckinTicket = (qrCodeToken: string): Promise<TicketVO> =>
+  request.post<TicketVO>(`/api/ticket/admin/tickets/checkin/${qrCodeToken}`)
