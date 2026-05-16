@@ -36,8 +36,10 @@ const emit = defineEmits<{
     @row-click="emit('open-detail', $event)"
   >
     <template #toolbar>
-      <div class="flex flex-wrap items-center gap-2">
-        <div class="flex flex-wrap gap-2">
+      <div
+        class="-mx-1 min-w-0 flex-1 overflow-x-auto px-1 scrollbar-hide sm:mx-0 sm:overflow-visible sm:px-0"
+      >
+        <div class="flex w-max gap-2 sm:w-auto sm:flex-wrap">
           <Button
             v-for="item in WORK_ORDER_FILTER_OPTIONS"
             :key="item.key"
@@ -64,13 +66,13 @@ const emit = defineEmits<{
             <p class="line-clamp-2 text-sm font-bold text-foreground">{{ workOrder.title }}</p>
           </template>
           <template #details>
-            <p class="flex items-center gap-1 text-xs text-muted-foreground">
-              <icon-lucide-tags class="h-3 w-3 shrink-0" />{{ workOrder.typeLabel || '其他' }}
+            <p class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+              <icon-lucide-tags class="h-3 w-3 shrink-0" />
+              <span class="truncate">{{ workOrder.typeLabel || '其他' }}</span>
             </p>
-            <p class="flex items-center gap-1 text-xs text-muted-foreground">
-              <icon-lucide-clock class="h-3 w-3 shrink-0" />{{
-                formatDateTime(workOrder.createAt, '-')
-              }}
+            <p class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+              <icon-lucide-clock class="h-3 w-3 shrink-0" />
+              <span class="truncate">{{ formatDateTime(workOrder.createAt, '-') }}</span>
             </p>
           </template>
           <template #middle>
@@ -80,7 +82,9 @@ const emit = defineEmits<{
             <Badge variant="secondary">{{ workOrder.statusLabel }}</Badge>
           </template>
           <template #bottomLeft>
-            <p class="text-xs text-muted-foreground">{{ workOrder.workOrderNo || workOrder.id }}</p>
+            <p class="truncate text-xs text-muted-foreground">
+              {{ workOrder.workOrderNo || workOrder.id }}
+            </p>
           </template>
         </CardListItem>
       </div>

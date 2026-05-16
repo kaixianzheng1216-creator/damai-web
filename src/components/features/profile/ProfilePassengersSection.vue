@@ -37,7 +37,7 @@ const emit = defineEmits<{
     <template #toolbar>
       <Input
         :model-value="passengerKeyword"
-        class="h-8 w-40"
+        class="h-8 w-full sm:w-40"
         placeholder="搜索姓名"
         aria-label="搜索购票人姓名"
         @update:model-value="emit('update:passengerKeyword', String($event))"
@@ -45,17 +45,19 @@ const emit = defineEmits<{
     </template>
 
     <template #cardTemplate="{ data }">
-      <div class="space-y-4">
+      <div class="space-y-3 sm:space-y-4">
         <CardListItem v-for="passenger in data" :key="passenger.id">
           <template #title>
             <p class="line-clamp-2 text-sm font-bold text-foreground">{{ passenger.name }}</p>
           </template>
           <template #details>
-            <p class="flex items-center gap-1 text-xs text-muted-foreground">
-              <icon-lucide-id-card class="h-3 w-3 shrink-0" />证件类型: {{ passenger.certType }}
+            <p class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+              <icon-lucide-id-card class="h-3 w-3 shrink-0" />
+              <span class="truncate">证件类型: {{ passenger.certType }}</span>
             </p>
-            <p class="flex items-center gap-1 text-xs text-muted-foreground">
-              <icon-lucide-hash class="h-3 w-3 shrink-0" />证件号: {{ passenger.certNo }}
+            <p class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+              <icon-lucide-hash class="h-3 w-3 shrink-0" />
+              <span class="truncate">证件号: {{ passenger.certNo }}</span>
             </p>
           </template>
           <template #bottomRight>

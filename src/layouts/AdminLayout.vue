@@ -51,7 +51,7 @@ const breadcrumbs = computed(() => {
           </Breadcrumb>
         </div>
       </header>
-      <main class="flex-1 p-6 overflow-auto">
+      <main class="flex-1 overflow-auto p-4 sm:p-6">
         <RouterView />
       </main>
     </SidebarInset>

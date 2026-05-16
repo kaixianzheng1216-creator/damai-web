@@ -18,6 +18,8 @@ import type {
   EventParticipantSortRequest,
   EventInfoCreateRequest,
   TicketTypeCopyRequest,
+  TicketAvailabilityVO,
+  TicketInventoryVO,
 } from './types'
 
 // ─── Front ───────────────────────────────────────────────
@@ -28,6 +30,13 @@ export const fetchEventPage = (params: EventPageRequest): Promise<PageResponseEv
 export const fetchEventDetailById = (id: string): Promise<EventDetailVO> =>
   request.get<EventDetailVO>(`/api/event/front/events/${id}`)
 
+export const fetchTicketAvailability = (
+  ticketTypeIds: string[],
+): Promise<Record<string, TicketAvailabilityVO>> =>
+  request.get<Record<string, TicketAvailabilityVO>>('/api/event/front/events/ticket-availability', {
+    params: { ticketTypeIds: ticketTypeIds.map(String) },
+  })
+
 // ─── Admin ───────────────────────────────────────────────
 
 export const fetchAdminEventPage = (
@@ -37,6 +46,15 @@ export const fetchAdminEventPage = (
 
 export const fetchAdminEventById = (id: string): Promise<EventDetailVO> =>
   request.get<EventDetailVO>(`/api/event/admin/events/${id}`)
+
+export const fetchAdminTicketInventories = (
+  eventId: string,
+  ticketTypeIds: string[],
+): Promise<Record<string, TicketInventoryVO>> =>
+  request.get<Record<string, TicketInventoryVO>>(
+    `/api/event/admin/events/${eventId}/ticket-inventories`,
+    { params: { ticketTypeIds: ticketTypeIds.map(String) } },
+  )
 
 export const createEvent = (data: EventCreateRequest): Promise<string> =>
   request.post<RawEntityId>('/api/event/admin/events', data).then(normalizeEntityId)

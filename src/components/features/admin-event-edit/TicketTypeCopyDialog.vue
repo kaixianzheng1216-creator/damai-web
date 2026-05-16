@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
-import { Checkbox } from '@/components/common/ui/checkbox'
 import { Label } from '@/components/common/ui/label'
 import {
   Dialog,
@@ -30,7 +29,7 @@ const {
   copyTargetSessionIds,
   targetSessions,
   copyTicketTypesMutation,
-  toggleCopyTarget,
+  setCopyTarget,
   handleCopyTicketTypes,
 } = useTicketTypeCopyDialog({
   eventId: () => props.eventId,
@@ -46,6 +45,15 @@ const handleOpenChange = (value: boolean) => {
   if (!value && !isCopying.value) {
     emit('update:open', false)
   }
+}
+
+const handleTargetChecked = (sessionId: string, checked: boolean | 'indeterminate') => {
+  setCopyTarget(sessionId, checked)
+}
+
+const handleTargetChange = (sessionId: string, event: Event) => {
+  const target = event.target as HTMLInputElement | null
+  handleTargetChecked(sessionId, target?.checked === true)
 }
 </script>
 
@@ -66,20 +74,32 @@ const handleOpenChange = (value: boolean) => {
         <div class="grid gap-2">
           <Label>选择目标场次</Label>
           <div class="space-y-2">
-            <div
+            <label
               v-for="session in targetSessions"
               :key="session.id"
-              class="flex items-center gap-2 cursor-pointer"
+              :for="`copy-target-${session.id}`"
+              class="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1.5 hover:bg-muted/40"
             >
-              <Checkbox
+              <input
                 :id="`copy-target-${session.id}`"
+                type="checkbox"
+                class="sr-only"
                 :checked="copyTargetSessionIds.includes(session.id)"
-                @update:checked="() => toggleCopyTarget(session.id)"
+                @change="handleTargetChange(session.id, $event)"
               />
-              <Label :for="`copy-target-${session.id}`" class="cursor-pointer text-sm">
-                {{ session.name }}
-              </Label>
-            </div>
+              <span
+                class="grid size-4 shrink-0 place-items-center rounded-[4px] border border-input shadow-xs"
+                :class="
+                  copyTargetSessionIds.includes(session.id)
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'bg-background text-transparent'
+                "
+                aria-hidden="true"
+              >
+                <icon-lucide-check class="size-3.5" />
+              </span>
+              <span class="text-sm">{{ session.name }}</span>
+            </label>
           </div>
         </div>
       </div>

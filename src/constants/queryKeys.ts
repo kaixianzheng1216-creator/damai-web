@@ -9,6 +9,10 @@ export const queryKeys = {
     list: (name: string) => key(`admin-${name}`),
     detail: (name: string, id?: QueryKeyPart) => key(`admin-${name}-detail`, id),
     eventDetail: (id?: QueryKeyPart) => key('admin-event-detail', id),
+    eventTicketInventories: (id?: QueryKeyPart, ticketTypeIds?: QueryKeyPart) =>
+      ticketTypeIds !== undefined
+        ? key('admin-event-ticket-inventories', id, ticketTypeIds)
+        : key('admin-event-ticket-inventories', id),
     workOrderList: () => key('admin-work-order-list'),
     workOrderDetail: (id?: QueryKeyPart) =>
       id !== undefined ? key('admin-work-order-detail', id) : key('admin-work-order-detail'),
@@ -18,6 +22,8 @@ export const queryKeys = {
   },
   event: {
     detail: (id?: QueryKeyPart) => key('event-detail', id),
+    ticketAvailability: (ticketTypeIds?: QueryKeyPart) =>
+      key('event-ticket-availability', ticketTypeIds),
     search: (params: QueryKeyPart) => key('event-search', params),
     cityOptions: () => key('city-options'),
     searchCities: () => key('search-cities'),

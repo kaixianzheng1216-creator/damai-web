@@ -1,10 +1,10 @@
 import { computed, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useMutation } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { createEvent, updateEvent } from '@/api/event/event'
 import type { EventCreateRequest, EventUpdateRequest } from '@/api/event'
-import { queryKeys, TOAST_COPY } from '@/constants'
+import { TOAST_COPY } from '@/constants'
 import type { EventBasicForm } from './useEventBasicForm'
 
 const eventBasicSchema = z.object({
@@ -28,20 +28,9 @@ export function useEventBasicSubmit(
   options: UseEventBasicSubmitOptions,
   basicForm: EventBasicForm,
 ) {
-  const queryClient = useQueryClient()
-
-  const invalidateAll = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.admin.list('events') })
-    const eventId = toValue(options.eventId)
-    if (eventId) {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.eventDetail(eventId) })
-    }
-  }
-
   const createMutation = useMutation({
     mutationFn: (payload: EventCreateRequest) => createEvent(payload),
     onSuccess: (eventId) => {
-      toast.success(TOAST_COPY.eventCreated)
       options.onCreated(eventId)
     },
     onError: () => {
@@ -52,8 +41,6 @@ export function useEventBasicSubmit(
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: EventUpdateRequest }) => updateEvent(id, data),
     onSuccess: () => {
-      toast.success(TOAST_COPY.eventUpdated)
-      invalidateAll()
       options.onUpdated()
     },
     onError: () => {
@@ -71,22 +58,23 @@ export function useEventBasicSubmit(
     seriesId: basicForm.seriesId === 'none' ? undefined : basicForm.seriesId,
   })
 
-  const save = async () => {
+  const save = async (): Promise<boolean> => {
     const result = eventBasicSchema.safeParse(basicForm)
     if (!result.success) {
       const firstError = result.error.issues[0]?.message ?? TOAST_COPY.fillCompleteInfo
       toast.error(firstError)
-      return
+      return false
     }
 
     const submitData = buildSubmitData()
     const eventId = toValue(options.eventId)
     if (toValue(options.isEdit) && eventId) {
       await updateMutation.mutateAsync({ id: eventId, data: submitData })
-      return
+      return true
     }
 
     await createMutation.mutateAsync(submitData)
+    return true
   }
 
   return {

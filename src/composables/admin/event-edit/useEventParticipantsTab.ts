@@ -125,6 +125,20 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
     selectedParticipantIds.value.push(participantId)
   }
 
+  const setParticipantSelected = (participantId: string, checked: boolean | 'indeterminate') => {
+    const index = selectedParticipantIds.value.indexOf(participantId)
+    if (checked !== true) {
+      if (index > -1) {
+        selectedParticipantIds.value.splice(index, 1)
+      }
+      return
+    }
+
+    if (index === -1) {
+      selectedParticipantIds.value.push(participantId)
+    }
+  }
+
   return {
     confirmDialog,
     showParticipantDialog,
@@ -138,6 +152,7 @@ export function useEventParticipantsTab(options: UseEventParticipantsTabOptions)
     handleAddParticipants,
     handleRemoveParticipant,
     toggleParticipant,
+    setParticipantSelected,
     closeConfirm,
     handleConfirm,
   }

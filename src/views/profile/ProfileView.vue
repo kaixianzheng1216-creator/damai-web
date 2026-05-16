@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   ProfileDialogs,
   ProfilePageShell,
   ProfileSectionContent,
 } from '@/components/features/profile'
+import { logout } from '@/api/account'
 import { useProfileSection } from '@/composables/profile/useProfileSection'
 import { usePassengerManagement } from '@/composables/profile/usePassengerManagement'
 import { useOrderList } from '@/composables/profile/useOrderList'
@@ -12,8 +14,12 @@ import { useTicketList } from '@/composables/profile/useTicketList'
 import { useWorkOrderList } from '@/composables/profile/useWorkOrderList'
 import { useFollowList } from '@/composables/profile/useFollowList'
 import { useProfileUserInfo } from '@/composables/profile/useProfileUserInfo'
+import type { OrderFilterKey, WorkOrderFilterKey } from '@/constants'
+import { useUserStore } from '@/stores/user'
 
 const profileSection = useProfileSection()
+const router = useRouter()
+const userStore = useUserStore()
 
 const isPassengersSection = computed(() => profileSection.activeSection.value === 'passengers')
 const isOrdersSection = computed(() => profileSection.activeSection.value === 'orders')
@@ -56,6 +62,29 @@ const activeSectionLoading = computed(() => {
       return false
   }
 })
+
+const updateOrderFilter = (value: OrderFilterKey) => {
+  orderList.orderFilter.value = value
+}
+
+const updateWorkOrderFilter = (value: WorkOrderFilterKey) => {
+  workOrderList.workOrderFilter.value = value
+}
+
+const updateWorkOrderReplyContent = (value: string) => {
+  workOrderList.replyContent.value = value
+}
+
+const handleLogout = async () => {
+  try {
+    await logout()
+  } catch (error) {
+    console.error('[ProfileView] Logout failed:', error)
+  } finally {
+    userStore.clearUserInfo()
+    await router.push('/')
+  }
+}
 </script>
 
 <template>
@@ -66,6 +95,7 @@ const activeSectionLoading = computed(() => {
     :current-title="profileSection.currentTitle.value"
     :active-section-loading="activeSectionLoading"
     @open-section="profileSection.openSection"
+    @logout="handleLogout"
   >
     <ProfileSectionContent
       :active-section="profileSection.activeSection.value"
@@ -75,8 +105,14 @@ const activeSectionLoading = computed(() => {
       :ticket-list="ticketList"
       :work-order-list="workOrderList"
       :follow-list="followList"
+      @update:order-filter="updateOrderFilter"
+      @update:work-order-filter="updateWorkOrderFilter"
     />
   </ProfilePageShell>
 
-  <ProfileDialogs :passenger-management="passengerManagement" :work-order-list="workOrderList" />
+  <ProfileDialogs
+    :passenger-management="passengerManagement"
+    :work-order-list="workOrderList"
+    @update:reply-content="updateWorkOrderReplyContent"
+  />
 </template>

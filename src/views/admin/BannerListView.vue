@@ -122,6 +122,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
             v-model="form.imageUrl"
             upload-mode="admin"
             aspect-class="aspect-[5/2]"
+            compact
             preview-alt="Banner PC 端图片预览"
             upload-label="上传 Banner PC 端图片"
           />
@@ -132,6 +133,7 @@ const columns = createBannerColumns({ citiesMap, openEdit, handleDelete })
             v-model="form.mobileImageUrl"
             upload-mode="admin"
             aspect-class="aspect-video"
+            compact
             preview-alt="Banner 移动端图片预览"
             upload-label="上传 Banner 移动端图片"
           />

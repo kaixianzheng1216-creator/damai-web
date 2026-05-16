@@ -32,18 +32,23 @@ const linkTarget = computed(() => props.to || `/ticket/${props.id}`)
       <img
         :src="eventCoverUrlSnapshot || ''"
         alt="电子票封面"
-        class="aspect-[3/4] h-auto w-24 rounded-lg object-cover"
+        class="aspect-[3/4] h-auto w-20 rounded-lg object-cover sm:w-24"
       />
     </template>
     <template #title>
       <p class="line-clamp-2 text-sm font-bold text-foreground">{{ eventNameSnapshot }}</p>
     </template>
     <template #details>
-      <p v-if="venueNameSnapshot" class="flex items-center gap-1 text-xs text-muted-foreground">
-        <icon-lucide-map-pin class="h-3 w-3" />{{ venueNameSnapshot }}
+      <p
+        v-if="venueNameSnapshot"
+        class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
+      >
+        <icon-lucide-map-pin class="h-3 w-3 shrink-0" />
+        <span class="truncate">{{ venueNameSnapshot }}</span>
       </p>
-      <p class="flex items-center gap-1 text-xs text-muted-foreground">
-        <icon-lucide-calendar class="h-3 w-3" />{{ formatDateTime(sessionStartAtSnapshot) }}
+      <p class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+        <icon-lucide-calendar class="h-3 w-3 shrink-0" />
+        <span class="truncate">{{ formatDateTime(sessionStartAtSnapshot) }}</span>
       </p>
     </template>
     <template #middle>
@@ -53,7 +58,7 @@ const linkTarget = computed(() => props.to || `/ticket/${props.id}`)
       </div>
     </template>
     <template #bottomLeft>
-      <p class="text-xs text-muted-foreground">{{ ticketNo }}</p>
+      <p class="truncate text-xs text-muted-foreground">{{ ticketNo }}</p>
     </template>
     <template #topRight>
       <Badge>{{ statusLabel }}</Badge>

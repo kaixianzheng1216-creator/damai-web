@@ -43,6 +43,8 @@ const emit = defineEmits<{
 
 const hasSessions = computed(() => props.detail.sessions.length > 0)
 const hasTicketTypes = computed(() => props.availableTicketTypes.length > 0)
+const quantityFieldMax = computed(() => Math.max(props.maxTicketQuantity, 1))
+const quantityDisabled = computed(() => props.maxTicketQuantity <= 0)
 const purchaseDisabledReason = computed(() => {
   if (!hasSessions.value) return '暂无可售场次'
   if (!hasTicketTypes.value) return '暂无可售票档'
@@ -209,7 +211,8 @@ const canBuyNow = computed(() => !props.isCreatingOrder && !purchaseDisabledReas
             class="w-40"
             :model-value="ticketQuantity"
             :min="1"
-            :max="maxTicketQuantity"
+            :max="quantityFieldMax"
+            :disabled="quantityDisabled"
             @update:model-value="(val) => val !== undefined && emit('update:ticketQuantity', val)"
           >
             <NumberFieldContent>

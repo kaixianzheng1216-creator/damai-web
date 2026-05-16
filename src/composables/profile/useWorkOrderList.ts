@@ -13,6 +13,8 @@ import { useWorkOrderChat } from '@/composables/common/useWorkOrderChat'
 import { useUserStore } from '@/stores/user'
 import type { WorkOrderVO } from '@/api/trade'
 
+const REPLY_REQUIRED_MESSAGE = '请输入回复内容'
+
 export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
   const enabled = useQueryEnabled(options.enabled)
   const queryClient = useQueryClient()
@@ -60,6 +62,12 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
   const selectedWorkOrderId = ref<string | null>(null)
   const replyContent = ref('')
   const replyError = ref('')
+
+  watch(replyContent, (content) => {
+    if (content.trim() && replyError.value === REPLY_REQUIRED_MESSAGE) {
+      replyError.value = ''
+    }
+  })
 
   const {
     page: workOrderPage,
@@ -158,14 +166,14 @@ export const useWorkOrderList = (options: QueryEnabledOptions = {}) => {
     replyError.value = ''
   }
 
-  const replySchema = z.string().min(1, '请输入回复内容')
+  const replySchema = z.string().min(1, REPLY_REQUIRED_MESSAGE)
 
   const submitWorkOrderReply = async () => {
     const content = replyContent.value.trim()
 
     const result = replySchema.safeParse(content)
     if (!result.success) {
-      replyError.value = result.error.issues[0]?.message ?? '请输入回复内容'
+      replyError.value = result.error.issues[0]?.message ?? REPLY_REQUIRED_MESSAGE
       return
     }
 

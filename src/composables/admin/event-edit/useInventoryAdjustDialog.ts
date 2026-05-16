@@ -28,6 +28,9 @@ export function useInventoryAdjustDialog(options: UseInventoryAdjustDialogOption
     queryClient.invalidateQueries({
       queryKey: queryKeys.admin.eventDetail(toValue(options.eventId)),
     })
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.admin.eventTicketInventories(toValue(options.eventId)),
+    })
   }
 
   watch(

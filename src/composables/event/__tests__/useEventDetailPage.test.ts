@@ -90,6 +90,9 @@ async function setupEventDetailPage({ loggedIn = true } = {}) {
   }))
   vi.doMock('@/api/event', () => ({
     fetchEventDetailById: vi.fn().mockResolvedValue(createDetail()),
+    fetchTicketAvailability: vi.fn().mockResolvedValue({
+      'ticket-1': { ticketTypeId: 'ticket-1', availableQty: 2 },
+    }),
     checkIsFollowedEvent: vi.fn().mockResolvedValue(false),
     followEvent: vi.fn().mockResolvedValue(undefined),
     unfollowEvent: vi.fn().mockResolvedValue(undefined),
@@ -114,6 +117,7 @@ async function setupEventDetailPage({ loggedIn = true } = {}) {
   app.use(VueQueryPlugin, { queryClient })
 
   const { useEventDetailPage } = await import('../useEventDetailPage')
+  const eventApi = await import('@/api/event')
   const tradeApi = await import('@/api/trade')
   const result = app.runWithContext(() => {
     scope = effectScope()
@@ -136,6 +140,7 @@ async function setupEventDetailPage({ loggedIn = true } = {}) {
   return {
     result,
     push,
+    eventApi,
     tradeApi,
     cleanup: () => {
       scope?.stop()
@@ -179,6 +184,7 @@ describe('useEventDetailPage', () => {
     expect(harness.result.selectedSessionId.value).toBe('session-1')
     expect(harness.result.selectedTicketTypeId.value).toBe('ticket-1')
     expect(harness.result.selectedPassengerIds.value).toEqual(['passenger-1'])
+    expect(harness.eventApi.fetchTicketAvailability).toHaveBeenCalledWith(['ticket-1'])
     expect(harness.tradeApi.fetchMyPurchaseCounts).toHaveBeenCalledWith(['ticket-1'])
 
     await harness.result.handleBuyNow()
@@ -196,6 +202,22 @@ describe('useEventDetailPage', () => {
     })
     expect(harness.result.showPassengerModal.value).toBe(false)
     expect(harness.push).toHaveBeenCalledWith('/checkout/order-1')
+
+    harness.cleanup()
+  })
+
+  it('does not open passenger dialog when live availability is zero', async () => {
+    const harness = await setupEventDetailPage({ loggedIn: true })
+    vi.mocked(harness.eventApi.fetchTicketAvailability).mockResolvedValue({
+      'ticket-1': { ticketTypeId: 'ticket-1', availableQty: 0 },
+    })
+
+    await harness.result.ticketAvailabilityQuery.refetch()
+    await harness.result.handleBuyNow()
+
+    expect(harness.result.maxTicketQuantity.value).toBe(0)
+    expect(harness.result.showPassengerModal.value).toBe(false)
+    expect(harness.tradeApi.createTicketOrder).not.toHaveBeenCalled()
 
     harness.cleanup()
   })

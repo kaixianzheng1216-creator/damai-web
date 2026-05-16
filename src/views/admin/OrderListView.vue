@@ -14,6 +14,9 @@ import { useOrderListPage } from '@/composables/admin'
 const OrderDetailDialog = defineAsyncComponent(
   () => import('@/components/features/admin-order/OrderDetailDialog.vue'),
 )
+const RefundDialog = defineAsyncComponent(
+  () => import('@/components/features/checkout/RefundDialog.vue'),
+)
 
 const {
   currentPage,
@@ -22,14 +25,19 @@ const {
   showDetailDialog,
   selectedOrder,
   isDetailLoading,
+  showRefundDialog,
   statusOptions,
   isLoading,
+  canRefundSelectedOrder,
   list,
   totalRow,
   totalPages,
+  refundMutation,
   handleSearch,
   openDetail,
   closeDetail,
+  openRefundDialog,
+  closeRefundDialog,
 } = useOrderListPage()
 
 const columns = createOrderColumns()
@@ -70,7 +78,20 @@ const columns = createOrderColumns()
     :order="selectedOrder"
     :open="showDetailDialog"
     :loading="isDetailLoading"
+    :can-refund="canRefundSelectedOrder"
+    :refund-loading="refundMutation.isPending.value"
     @update:open="!$event && closeDetail()"
     @close="closeDetail"
+    @refund="openRefundDialog"
+  />
+
+  <RefundDialog
+    :open="showRefundDialog"
+    :loading="refundMutation.isPending.value"
+    title="后台退款"
+    description="确认退款后，订单会变为已退款，电子票作废，并同步退回库存。"
+    submit-text="确认退款"
+    @close="closeRefundDialog"
+    @submit="refundMutation.mutate"
   />
 </template>

@@ -12,6 +12,7 @@ export interface PassengerSlot {
 export interface MaxTicketQuantityOptions {
   ticketType: TicketTypeVO | undefined
   userPurchasedCount: number
+  availableQty?: number
   defaultLimit?: number
 }
 
@@ -94,18 +95,20 @@ export const getUserPurchasedCount = (
 export const calculateMaxTicketQuantity = ({
   ticketType,
   userPurchasedCount,
+  availableQty,
   defaultLimit = EVENT_CONFIG.DEFAULT_ORDER_LIMIT,
 }: MaxTicketQuantityOptions) => {
   const orderLimit = ticketType?.orderLimit ?? defaultLimit
   const inventory = ticketType?.inventory
-  const availableQty = inventory
+  const inventoryAvailableQty = inventory
     ? inventory.totalQty - inventory.lockedQty - inventory.soldQty
     : orderLimit
+  const resolvedAvailableQty = availableQty ?? inventoryAvailableQty
   const accountLimit = ticketType?.accountLimit ?? 0
   const userRemaining =
     accountLimit > 0 ? Math.max(0, accountLimit - userPurchasedCount) : orderLimit
 
-  return Math.max(1, Math.min(orderLimit, availableQty, userRemaining))
+  return Math.max(0, Math.min(orderLimit, resolvedAvailableQty, userRemaining))
 }
 
 export const getCurrentNotices = (

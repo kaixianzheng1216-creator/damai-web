@@ -15,11 +15,14 @@ interface UseTicketTypeDialogOptions {
   onSaved: () => void
 }
 
-type TicketTypeForm = TicketTypeCreateRequest & Partial<TicketTypeUpdateRequest>
+type TicketTypeForm = Omit<TicketTypeCreateRequest, 'salePrice'> &
+  Partial<Omit<TicketTypeUpdateRequest, 'salePrice'>> & {
+    salePriceYuan: number
+  }
 
 const ticketTypeSchema = z.object({
   name: z.string().min(1, FORM_COPY.fillTicketTypeNameAndPrice),
-  salePrice: z.number().positive(FORM_COPY.fillTicketTypeNameAndPrice),
+  salePriceYuan: z.number().positive(FORM_COPY.fillTicketTypeNameAndPrice),
   orderLimit: z.number().min(1),
   accountLimit: z.number().min(1),
   saleStartAt: z.string(),
@@ -30,12 +33,15 @@ const createTicketTypeSchema = ticketTypeSchema.extend({
   totalQty: z.number().positive(FORM_COPY.fillTotalQtyError),
 })
 
+const centsToYuan = (value?: number) => Number(((value ?? 0) / 100).toFixed(2))
+const yuanToCents = (value: number) => Math.round(value * 100)
+
 export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
   const queryClient = useQueryClient()
 
   const form = reactive<TicketTypeForm>({
     name: '',
-    salePrice: 0,
+    salePriceYuan: 0,
     orderLimit: 1,
     accountLimit: 1,
     saleStartAt: '',
@@ -58,7 +64,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
 
   const resetForm = () => {
     form.name = ''
-    form.salePrice = 0
+    form.salePriceYuan = 0
     form.orderLimit = 1
     form.accountLimit = 1
     form.saleStartAt = ''
@@ -76,7 +82,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
       }
 
       form.name = ticketType.name
-      form.salePrice = ticketType.salePrice ?? 0
+      form.salePriceYuan = centsToYuan(ticketType.salePrice)
       form.orderLimit = ticketType.orderLimit || 1
       form.accountLimit = ticketType.accountLimit || 1
       form.saleStartAt = formatDateTimeLocalInput(ticketType.saleStartAt)
@@ -141,7 +147,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
         ticketTypeId: ticketType.id,
         data: {
           name: form.name,
-          salePrice: form.salePrice,
+          salePrice: yuanToCents(form.salePriceYuan),
           orderLimit: form.orderLimit,
           accountLimit: form.accountLimit,
           saleStartAt: form.saleStartAt || undefined,
@@ -153,7 +159,7 @@ export function useTicketTypeDialog(options: UseTicketTypeDialogOptions) {
 
     await createTicketTypeMutation.mutateAsync({
       name: form.name,
-      salePrice: form.salePrice,
+      salePrice: yuanToCents(form.salePriceYuan),
       orderLimit: form.orderLimit,
       accountLimit: form.accountLimit,
       saleStartAt: form.saleStartAt,

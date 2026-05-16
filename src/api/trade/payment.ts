@@ -19,3 +19,6 @@ export const cancelTicketOrder = (id: string): Promise<void> =>
 
 export const createRefund = (id: string, data: RefundCreateRequest): Promise<RefundVO> =>
   request.post<RefundVO>(`/api/order/front/ticket-orders/${id}/refund`, data)
+
+export const createAdminRefund = (id: string, data: RefundCreateRequest): Promise<RefundVO> =>
+  request.post<RefundVO>(`/api/order/admin/ticket-orders/${id}/refund`, data)

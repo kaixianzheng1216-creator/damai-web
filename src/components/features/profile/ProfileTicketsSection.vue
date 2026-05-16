@@ -37,7 +37,7 @@ const viewTicketDetail = (ticketId: string) => {
     @row-click="(ticket) => viewTicketDetail(ticket.id)"
   >
     <template #cardTemplate="{ data }">
-      <div class="space-y-4">
+      <div class="space-y-3 sm:space-y-4">
         <TicketCard
           v-for="ticket in data"
           :key="ticket.id"

@@ -90,6 +90,10 @@ const applyHeading = (option: (typeof headingOptions)[0]) => {
   option.action()
 }
 
+const blurEditor = () => {
+  editor.value?.commands.blur()
+}
+
 // ─── Clear formatting ─────────────────────────────────────
 
 const clearFormatting = () => {
@@ -136,13 +140,16 @@ const clearFormatting = () => {
       <Separator orientation="vertical" class="mx-1 h-5" />
 
       <!-- Heading Dropdown -->
-      <DropdownMenu>
+      <DropdownMenu :modal="false">
         <DropdownMenuTrigger as-child>
           <Button
             type="button"
             variant="ghost"
             size="sm"
             class="h-7 gap-1 px-2 text-xs font-medium min-w-[68px] justify-between"
+            @pointerdown="blurEditor"
+            @keydown.enter="blurEditor"
+            @keydown.space="blurEditor"
           >
             <span>{{ currentHeadingLabel() }}</span>
             <icon-lucide-chevron-down class="h-3 w-3 opacity-60" />

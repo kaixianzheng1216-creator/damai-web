@@ -1,6 +1,6 @@
 import { computed, reactive, ref, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import { toast } from 'vue3-toastify'
 import { updateEventInfo } from '@/api/event/event'
 import { fetchAdminNoticeList } from '@/api/event/notice'
@@ -14,8 +14,6 @@ interface UseEventInfoTabOptions {
 }
 
 export function useEventInfoTab(options: UseEventInfoTabOptions) {
-  const queryClient = useQueryClient()
-
   const { data: noticeTemplates } = useQuery({
     queryKey: queryKeys.admin.list('notices'),
     queryFn: fetchAdminNoticeList,
@@ -66,10 +64,6 @@ export function useEventInfoTab(options: UseEventInfoTabOptions) {
     mutationFn: (payload: EventInfoCreateRequest) =>
       updateEventInfo(toValue(options.eventId), payload),
     onSuccess: () => {
-      toast.success(TOAST_COPY.infoSaved)
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.admin.eventDetail(toValue(options.eventId)),
-      })
       options.onUpdated()
     },
     onError: () => {
@@ -77,7 +71,7 @@ export function useEventInfoTab(options: UseEventInfoTabOptions) {
     },
   })
 
-  const save = async () => {
+  const save = async (): Promise<boolean> => {
     const purchaseNotice = purchaseTemplates.value
       .filter((template) => purchaseContent[template.id]?.trim())
       .map((template) => ({ name: template.name, description: purchaseContent[template.id] ?? '' }))
@@ -94,6 +88,7 @@ export function useEventInfoTab(options: UseEventInfoTabOptions) {
       purchaseNotice,
       admissionNotice,
     })
+    return true
   }
 
   return {

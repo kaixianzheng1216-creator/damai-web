@@ -12,51 +12,71 @@ defineEmits<{
 </script>
 
 <template>
-  <RouterLink v-if="to" :to="to" class="outline-none block" @click.stop>
-    <Card class="flex-row gap-5 p-5 cursor-pointer hover:shadow-md">
+  <RouterLink v-if="to" :to="to" class="block min-w-0 outline-none" @click.stop>
+    <Card class="cursor-pointer flex-row gap-3 p-3 hover:shadow-md sm:gap-5 sm:p-5">
       <div class="shrink-0">
         <slot name="cover" />
       </div>
-      <div class="flex flex-1 flex-col justify-between py-1">
+      <div class="flex min-w-0 flex-1 flex-col justify-between py-1">
         <div class="space-y-1">
           <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
               <slot name="title" />
             </div>
-            <slot name="topRight"><div /></slot>
+            <div class="shrink-0">
+              <slot name="topRight"><div /></slot>
+            </div>
           </div>
-          <div class="space-y-0.5">
+          <div class="min-w-0 space-y-0.5">
             <slot name="details" />
           </div>
         </div>
-        <slot name="middle" />
-        <div class="flex items-end justify-between">
-          <slot name="bottomLeft"><div /></slot>
-          <slot name="bottomRight" />
+        <div class="min-w-0">
+          <slot name="middle" />
+        </div>
+        <div class="flex min-w-0 items-end justify-between gap-2">
+          <div class="min-w-0">
+            <slot name="bottomLeft"><div /></slot>
+          </div>
+          <div class="shrink-0">
+            <slot name="bottomRight" />
+          </div>
         </div>
       </div>
     </Card>
   </RouterLink>
-  <Card v-else class="flex-row gap-5 p-5 cursor-pointer hover:shadow-md" @click="$emit('click')">
+  <Card
+    v-else
+    class="cursor-pointer flex-row gap-3 p-3 hover:shadow-md sm:gap-5 sm:p-5"
+    @click="$emit('click')"
+  >
     <div class="shrink-0">
       <slot name="cover" />
     </div>
-    <div class="flex flex-1 flex-col justify-between py-1">
+    <div class="flex min-w-0 flex-1 flex-col justify-between py-1">
       <div class="space-y-1">
         <div class="flex items-start justify-between gap-2">
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1">
             <slot name="title" />
           </div>
-          <slot name="topRight"><div /></slot>
+          <div class="shrink-0">
+            <slot name="topRight"><div /></slot>
+          </div>
         </div>
-        <div class="space-y-0.5">
+        <div class="min-w-0 space-y-0.5">
           <slot name="details" />
         </div>
       </div>
-      <slot name="middle" />
-      <div class="flex items-end justify-between">
-        <slot name="bottomLeft"><div /></slot>
-        <slot name="bottomRight" />
+      <div class="min-w-0">
+        <slot name="middle" />
+      </div>
+      <div class="flex min-w-0 items-end justify-between gap-2">
+        <div class="min-w-0">
+          <slot name="bottomLeft"><div /></slot>
+        </div>
+        <div class="shrink-0">
+          <slot name="bottomRight" />
+        </div>
       </div>
     </div>
   </Card>

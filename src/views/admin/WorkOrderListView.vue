@@ -36,6 +36,7 @@ const {
   closeDetail,
   submitReply,
   requestClose,
+  closeSelectedWorkOrder,
   closeConfirm,
   handleConfirm,
 } = useAdminWorkOrderListPage()
@@ -88,6 +89,6 @@ const columns = createWorkOrderColumns({ openDetail, requestClose })
     :reply-error="replyError"
     @close="closeDetail"
     @reply="submitReply"
-    @close-work-order="requestClose()"
+    @close-work-order="closeSelectedWorkOrder"
   />
 </template>

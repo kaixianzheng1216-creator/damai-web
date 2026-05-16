@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
+import { Badge } from '@/components/common/ui/badge'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -10,14 +11,15 @@ import {
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
-import { formatDateTime } from '@/utils/format'
-import type { SessionVO, TicketTypeVO } from '@/api/event'
+import { formatDateTime, formatDateTimeRange, formatPrice } from '@/utils/format'
+import type { SessionVO, TicketInventoryVO, TicketTypeVO } from '@/api/event'
 import { useSessionList } from '@/composables/admin'
 import SessionDialog from './SessionDialog.vue'
 
 const props = defineProps<{
   eventId: string
   sessions: SessionVO[] | undefined
+  ticketInventories?: Record<string, TicketInventoryVO>
 }>()
 
 const emit = defineEmits<{
@@ -62,6 +64,21 @@ const handleUpdateSessionForm = (form: { name: string; startAt?: string; endAt?:
 const handleUpdateBatchRows = (rows: { name: string; startAt: string; endAt: string }[]) => {
   batchSessionRows.value = rows
 }
+
+const getAvailableStock = (ticketType: TicketTypeVO) => {
+  const inventory = getTicketInventory(ticketType)
+  if (!inventory) return undefined
+  return Math.max(inventory.totalQty - inventory.lockedQty - inventory.soldQty, 0)
+}
+
+const getTicketInventory = (ticketType: TicketTypeVO) =>
+  props.ticketInventories?.[ticketType.id] ?? ticketType.inventory
+
+const formatTicketPrice = (ticketType: TicketTypeVO) =>
+  ticketType.salePrice == null ? '-' : formatPrice(ticketType.salePrice)
+
+const formatTicketSaleWindow = (ticketType: TicketTypeVO) =>
+  formatDateTimeRange(ticketType.saleStartAt, ticketType.saleEndAt) || '-'
 </script>
 
 <template>
@@ -140,12 +157,25 @@ const handleUpdateBatchRows = (rows: { name: string; startAt: string; endAt: str
             <div
               v-for="tt in session.ticketTypes"
               :key="tt.id"
-              class="flex items-center justify-between p-3 bg-muted/40 rounded-md"
+              class="flex flex-col gap-3 rounded-md bg-muted/40 p-3 sm:flex-row sm:items-center sm:justify-between"
             >
-              <div>
+              <div class="min-w-0 space-y-2">
                 <div class="font-medium text-sm">{{ tt.name }}</div>
+                <div
+                  class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground"
+                >
+                  <span>售价 {{ formatTicketPrice(tt) }}</span>
+                  <span>售卖 {{ formatTicketSaleWindow(tt) }}</span>
+                </div>
+                <div v-if="getTicketInventory(tt)" class="flex flex-wrap gap-1.5 text-xs">
+                  <Badge variant="outline">总库存 {{ getTicketInventory(tt)?.totalQty }}</Badge>
+                  <Badge variant="outline">可售 {{ getAvailableStock(tt) }}</Badge>
+                  <Badge variant="outline">已售 {{ getTicketInventory(tt)?.soldQty }}</Badge>
+                  <Badge variant="outline">锁定 {{ getTicketInventory(tt)?.lockedQty }}</Badge>
+                </div>
+                <p v-else class="text-xs text-muted-foreground">库存未配置</p>
               </div>
-              <div class="flex gap-2">
+              <div class="flex shrink-0 flex-wrap gap-2">
                 <Button variant="outline" size="sm" @click="emit('edit-ticket-type', tt)"
                   >编辑</Button
                 >

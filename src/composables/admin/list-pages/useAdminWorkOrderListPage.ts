@@ -8,6 +8,8 @@ import type { ConfirmDialogState } from '@/composables/common/useAppConfirmDialo
 import { useWorkOrderChat } from '@/composables/common/useWorkOrderChat'
 import { useAdminStore } from '@/stores/admin'
 
+const REPLY_REQUIRED_MESSAGE = '请输入回复内容'
+
 export const ADMIN_WORK_ORDER_STATUS_OPTIONS = [
   { label: '全部', value: 'all' },
   { label: '待处理', value: String(WORK_ORDER_STATUS.PENDING) },
@@ -36,6 +38,7 @@ export function useAdminWorkOrderListPage(): {
   closeDetail: () => void
   submitReply: () => Promise<void>
   requestClose: (row?: WorkOrderVO) => void
+  closeSelectedWorkOrder: () => Promise<void>
   closeConfirm: () => void
   handleConfirm: () => Promise<void>
 } {
@@ -50,6 +53,12 @@ export function useAdminWorkOrderListPage(): {
   const selectedWorkOrderId = ref<string | null>(null)
   const replyContent = ref('')
   const replyError = ref('')
+
+  watch(replyContent, (content) => {
+    if (content.trim() && replyError.value === REPLY_REQUIRED_MESSAGE) {
+      replyError.value = ''
+    }
+  })
 
   watch(
     () => adminStore.adminToken,
@@ -169,14 +178,14 @@ export function useAdminWorkOrderListPage(): {
     replyError.value = ''
   }
 
-  const replySchema = z.string().min(1, '请输入回复内容')
+  const replySchema = z.string().min(1, REPLY_REQUIRED_MESSAGE)
 
   const submitReply = async () => {
     const content = replyContent.value.trim()
 
     const result = replySchema.safeParse(content)
     if (!result.success) {
-      replyError.value = result.error.issues[0]?.message ?? '请输入回复内容'
+      replyError.value = result.error.issues[0]?.message ?? REPLY_REQUIRED_MESSAGE
       return
     }
 
@@ -207,6 +216,16 @@ export function useAdminWorkOrderListPage(): {
     )
   }
 
+  const closeSelectedWorkOrder = async () => {
+    if (!selectedWorkOrderId.value) {
+      return
+    }
+
+    const id = selectedWorkOrderId.value
+    closeDetail()
+    await closeMutation.mutateAsync(id)
+  }
+
   return {
     currentPage,
     pageSize,
@@ -228,6 +247,7 @@ export function useAdminWorkOrderListPage(): {
     closeDetail,
     submitReply,
     requestClose,
+    closeSelectedWorkOrder,
     closeConfirm,
     handleConfirm,
   }

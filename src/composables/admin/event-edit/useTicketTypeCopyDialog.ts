@@ -36,13 +36,15 @@ export function useTicketTypeCopyDialog(options: UseTicketTypeCopyDialogOptions)
     },
   )
 
-  const toggleCopyTarget = (sessionId: string) => {
+  const setCopyTarget = (sessionId: string, checked: boolean | 'indeterminate') => {
     const index = copyTargetSessionIds.value.indexOf(sessionId)
-    if (index === -1) {
+    if (checked === true && index === -1) {
       copyTargetSessionIds.value.push(sessionId)
       return
     }
-    copyTargetSessionIds.value.splice(index, 1)
+    if (checked !== true && index !== -1) {
+      copyTargetSessionIds.value.splice(index, 1)
+    }
   }
 
   const copyTicketTypesMutation = useMutation({
@@ -87,7 +89,7 @@ export function useTicketTypeCopyDialog(options: UseTicketTypeCopyDialogOptions)
     copyTargetSessionIds,
     targetSessions,
     copyTicketTypesMutation,
-    toggleCopyTarget,
+    setCopyTarget,
     handleCopyTicketTypes,
   }
 }

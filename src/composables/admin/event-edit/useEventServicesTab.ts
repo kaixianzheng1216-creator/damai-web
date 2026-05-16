@@ -97,6 +97,31 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
     await batchAddServicesMutation.mutateAsync({ services })
   }
 
+  const selectService = (service: ServiceGuaranteeVO, optionId?: string) => {
+    const selected = selectedServices.value.find((item) => item.serviceId === service.id)
+    const resolvedOptionId = optionId ?? selected?.optionId ?? service.options?.[0]?.id ?? ''
+    if (selected) {
+      selected.optionId = resolvedOptionId
+      return
+    }
+    selectedServices.value.push({
+      serviceId: service.id,
+      optionId: resolvedOptionId,
+    })
+  }
+
+  const setServiceSelected = (service: ServiceGuaranteeVO, checked: boolean | 'indeterminate') => {
+    const index = selectedServices.value.findIndex((item) => item.serviceId === service.id)
+    if (checked !== true) {
+      if (index > -1) {
+        selectedServices.value.splice(index, 1)
+      }
+      return
+    }
+
+    selectService(service)
+  }
+
   const toggleService = (service: ServiceGuaranteeVO) => {
     const index = selectedServices.value.findIndex((item) => item.serviceId === service.id)
     if (index > -1) {
@@ -104,13 +129,7 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
       return
     }
 
-    const firstOption = service.options?.[0]
-    if (firstOption) {
-      selectedServices.value.push({
-        serviceId: service.id,
-        optionId: firstOption.id,
-      })
-    }
+    selectService(service)
   }
 
   const isServiceSelected = (serviceId: string) =>
@@ -119,11 +138,13 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
   const getSelectedOption = (serviceId: string) =>
     selectedServices.value.find((item) => item.serviceId === serviceId)?.optionId
 
-  const setSelectedOption = (serviceId: string, optionId: string) => {
-    const service = selectedServices.value.find((item) => item.serviceId === serviceId)
-    if (service) {
-      service.optionId = optionId
+  const setSelectedOption = (service: ServiceGuaranteeVO, optionId: string) => {
+    const selected = selectedServices.value.find((item) => item.serviceId === service.id)
+    if (selected) {
+      selected.optionId = optionId
+      return
     }
+    selectService(service, optionId)
   }
 
   const handleRemoveService = (eventService: EventServiceGuaranteeVO) => {
@@ -142,6 +163,7 @@ export function useEventServicesTab(options: UseEventServicesTabOptions) {
     batchAddServicesMutation,
     openServiceDialog,
     handleSaveServices,
+    setServiceSelected,
     toggleService,
     isServiceSelected,
     getSelectedOption,

@@ -42,7 +42,7 @@ const handleUnfollowClick = (eventId: string) => {
     @row-click="(item) => item.event && viewEventDetail(item.event.id)"
   >
     <template #cardTemplate="{ data }">
-      <div class="space-y-4">
+      <div class="space-y-3 sm:space-y-4">
         <template v-for="item in data" :key="item.id">
           <EventCard
             v-if="item.event"

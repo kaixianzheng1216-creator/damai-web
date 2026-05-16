@@ -29,6 +29,9 @@ export function useSessionsAndTicketsTab(options: UseSessionsAndTicketsTabOption
     queryClient.invalidateQueries({
       queryKey: queryKeys.admin.eventDetail(toValue(options.eventId)),
     })
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.admin.eventTicketInventories(toValue(options.eventId)),
+    })
   }
 
   const deleteTicketTypeMutation = useMutation({

@@ -136,24 +136,22 @@ const updateBatchRow = (
             />
           </div>
           <div class="grid gap-1">
-            <Label v-if="idx === 0" :for="`batch-session-start-${idx}`">开始时间</Label>
-            <Input
-              :id="`batch-session-start-${idx}`"
+            <Label v-if="idx === 0">开始时间</Label>
+            <DateTimePicker
               :model-value="row.startAt"
               @update:model-value="updateBatchRow(idx, 'startAt', $event)"
-              type="datetime-local"
               :aria-label="`第 ${idx + 1} 行开始时间`"
+              placeholder="选择开始时间"
               :disabled="isSaving"
             />
           </div>
           <div class="grid gap-1">
-            <Label v-if="idx === 0" :for="`batch-session-end-${idx}`">结束时间</Label>
-            <Input
-              :id="`batch-session-end-${idx}`"
+            <Label v-if="idx === 0">结束时间</Label>
+            <DateTimePicker
               :model-value="row.endAt"
               @update:model-value="updateBatchRow(idx, 'endAt', $event)"
-              type="datetime-local"
               :aria-label="`第 ${idx + 1} 行结束时间`"
+              placeholder="选择结束时间"
               :disabled="isSaving"
             />
           </div>

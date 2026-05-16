@@ -9,12 +9,14 @@ import type {
   SessionVO,
   TicketTypeVO,
 } from '@/api/event'
-import { TICKET_TYPE_STATUS, queryKeys } from '@/constants'
+import { TICKET_TYPE_STATUS, TOAST_COPY, queryKeys } from '@/constants'
 import { useEventBasicTab } from '../useEventBasicTab'
+import { useEventEditPage } from '../useEventEditPage'
 import { useEventParticipantsTab } from '../useEventParticipantsTab'
 import { useEventServicesTab } from '../useEventServicesTab'
 import { useInventoryAdjustDialog } from '../useInventoryAdjustDialog'
 import { useSessionsAndTicketsTab } from '../useSessionsAndTicketsTab'
+import { useTicketTypeCopyDialog } from '../useTicketTypeCopyDialog'
 import { useTicketTypeDialog } from '../useTicketTypeDialog'
 
 const toastMocks = vi.hoisted(() => ({
@@ -23,9 +25,13 @@ const toastMocks = vi.hoisted(() => ({
 }))
 
 const eventApiMocks = vi.hoisted(() => ({
+  fetchAdminEventById: vi.fn(),
+  fetchAdminTicketInventories: vi.fn(),
   createEvent: vi.fn(),
   updateEvent: vi.fn(),
   deleteEvent: vi.fn(),
+  publishEvent: vi.fn(),
+  offlineEvent: vi.fn(),
   adminCreateTicketType: vi.fn(),
   adminUpdateTicketType: vi.fn(),
   adminDeleteTicketType: vi.fn(),
@@ -34,6 +40,7 @@ const eventApiMocks = vi.hoisted(() => ({
   removeParticipant: vi.fn(),
   adminBatchAddServices: vi.fn(),
   adminDeleteEventService: vi.fn(),
+  adminCopyTicketTypes: vi.fn(),
 }))
 
 const optionApiMocks = vi.hoisted(() => ({
@@ -45,8 +52,18 @@ const optionApiMocks = vi.hoisted(() => ({
   fetchAdminServiceList: vi.fn(),
 }))
 
+const routerMocks = vi.hoisted(() => ({
+  routeParams: { id: 'event-1' as string | string[] | undefined },
+  push: vi.fn(),
+}))
+
 vi.mock('vue3-toastify', () => ({
   toast: toastMocks,
+}))
+
+vi.mock('vue-router', () => ({
+  useRoute: () => ({ params: routerMocks.routeParams }),
+  useRouter: () => ({ push: routerMocks.push }),
 }))
 
 vi.mock('@/api/event/event', () => eventApiMocks)
@@ -178,9 +195,20 @@ const createSessionVO = (): SessionVO => ({
 })
 
 beforeEach(() => {
+  routerMocks.routeParams.id = 'event-1'
+  eventApiMocks.fetchAdminEventById.mockResolvedValue({
+    event: createEventVO(),
+    participants: [],
+    services: [],
+    info: null,
+    sessions: [],
+  })
+  eventApiMocks.fetchAdminTicketInventories.mockResolvedValue({})
   eventApiMocks.createEvent.mockResolvedValue('event-new')
   eventApiMocks.updateEvent.mockResolvedValue(undefined)
   eventApiMocks.deleteEvent.mockResolvedValue(undefined)
+  eventApiMocks.publishEvent.mockResolvedValue(undefined)
+  eventApiMocks.offlineEvent.mockResolvedValue(undefined)
   eventApiMocks.adminCreateTicketType.mockResolvedValue(undefined)
   eventApiMocks.adminUpdateTicketType.mockResolvedValue(undefined)
   eventApiMocks.adminDeleteTicketType.mockResolvedValue(undefined)
@@ -189,6 +217,7 @@ beforeEach(() => {
   eventApiMocks.removeParticipant.mockResolvedValue(undefined)
   eventApiMocks.adminBatchAddServices.mockResolvedValue(undefined)
   eventApiMocks.adminDeleteEventService.mockResolvedValue(undefined)
+  eventApiMocks.adminCopyTicketTypes.mockResolvedValue(undefined)
 
   optionApiMocks.fetchAdminCityList.mockResolvedValue([])
   optionApiMocks.fetchAdminCategoryList.mockResolvedValue([])
@@ -209,6 +238,28 @@ afterEach(() => {
 })
 
 describe('event edit flows', () => {
+  it('publishes and offlines from the edit page while refreshing event caches', async () => {
+    const harness = setupComposable(() => useEventEditPage())
+    const invalidateSpy = vi.spyOn(harness.queryClient, 'invalidateQueries')
+
+    await harness.result.publishMutation.mutateAsync()
+
+    expect(eventApiMocks.publishEvent).toHaveBeenCalledWith('event-1')
+    expect(toastMocks.success).toHaveBeenCalledWith(TOAST_COPY.eventPublished)
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: queryKeys.admin.list('events') })
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: queryKeys.admin.eventDetail('event-1') })
+
+    invalidateSpy.mockClear()
+    await harness.result.offlineMutation.mutateAsync()
+
+    expect(eventApiMocks.offlineEvent).toHaveBeenCalledWith('event-1')
+    expect(toastMocks.success).toHaveBeenCalledWith(TOAST_COPY.eventOfflined)
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: queryKeys.admin.list('events') })
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: queryKeys.admin.eventDetail('event-1') })
+
+    harness.cleanup()
+  })
+
   it('creates an event from the basic tab form', async () => {
     const onCreated = vi.fn()
     const harness = setupComposable(() =>
@@ -243,7 +294,7 @@ describe('event edit flows', () => {
       }),
     )
     expect(onCreated).toHaveBeenCalledWith('event-new')
-    expect(toastMocks.success).toHaveBeenCalledWith('活动创建成功')
+    expect(toastMocks.success).not.toHaveBeenCalled()
 
     harness.cleanup()
   })
@@ -266,7 +317,7 @@ describe('event edit flows', () => {
 
     Object.assign(harness.result.form, {
       name: '看台',
-      salePrice: 188,
+      salePriceYuan: 188,
       totalQty: 10,
       orderLimit: 2,
       accountLimit: 3,
@@ -278,7 +329,7 @@ describe('event edit flows', () => {
 
     expect(eventApiMocks.adminCreateTicketType).toHaveBeenCalledWith('event-1', 'session-1', {
       name: '看台',
-      salePrice: 188,
+      salePrice: 18800,
       totalQty: 10,
       orderLimit: 2,
       accountLimit: 3,
@@ -351,6 +402,30 @@ describe('event edit flows', () => {
     harness.cleanup()
   })
 
+  it('sets participant selection from the checkbox checked value', () => {
+    const eventParticipants = ref([createEventParticipant('p1')])
+    const onUpdated = vi.fn()
+    const harness = setupComposable(() =>
+      useEventParticipantsTab({
+        eventId: 'event-1',
+        eventParticipants,
+        onUpdated,
+      }),
+    )
+
+    harness.result.openParticipantDialog()
+    harness.result.setParticipantSelected('p1', true)
+    harness.result.setParticipantSelected('p2', true)
+    harness.result.setParticipantSelected('p2', true)
+    expect(harness.result.selectedParticipantIds.value).toEqual(['p1', 'p2'])
+
+    harness.result.setParticipantSelected('p1', false)
+    harness.result.setParticipantSelected('p3', false)
+    expect(harness.result.selectedParticipantIds.value).toEqual(['p2'])
+
+    harness.cleanup()
+  })
+
   it('saves selected services after removing existing services', async () => {
     const eventServices = ref([createEventService()])
     const onUpdated = vi.fn()
@@ -382,6 +457,38 @@ describe('event edit flows', () => {
     })
     expect(harness.result.showServiceDialog.value).toBe(false)
     expect(onUpdated).toHaveBeenCalled()
+
+    harness.cleanup()
+  })
+
+  it('selects a service when choosing one of its options', async () => {
+    const eventServices = ref<EventServiceGuaranteeVO[]>([])
+    const onUpdated = vi.fn()
+    const service = createService()
+    const harness = setupComposable(() =>
+      useEventServicesTab({
+        eventId: 'event-1',
+        eventServices,
+        onUpdated,
+      }),
+    )
+
+    harness.result.openServiceDialog()
+    harness.result.setSelectedOption(service, 'option-2')
+
+    expect(harness.result.isServiceSelected('service-2')).toBe(true)
+    expect(harness.result.getSelectedOption('service-2')).toBe('option-2')
+
+    await harness.result.handleSaveServices()
+
+    expect(eventApiMocks.adminBatchAddServices).toHaveBeenCalledWith('event-1', {
+      services: [
+        {
+          serviceGuaranteeId: 'service-2',
+          serviceGuaranteeOptionId: 'option-2',
+        },
+      ],
+    })
 
     harness.cleanup()
   })
@@ -421,7 +528,7 @@ describe('event edit flows', () => {
       seriesId: undefined,
     })
     expect(onUpdated).toHaveBeenCalled()
-    expect(toastMocks.success).toHaveBeenCalled()
+    expect(toastMocks.success).not.toHaveBeenCalled()
 
     harness.cleanup()
   })
@@ -470,11 +577,12 @@ describe('event edit flows', () => {
 
     // Form should be prepopulated from editingTicketType
     expect(harness.result.form.name).toBe('看台')
+    expect(harness.result.form.salePriceYuan).toBe(1.88)
 
     // Modify fields
     Object.assign(harness.result.form, {
       name: 'VIP座',
-      salePrice: 388,
+      salePriceYuan: 388,
       orderLimit: 4,
       accountLimit: 6,
       saleStartAt: '2026-06-01T10:00',
@@ -485,7 +593,7 @@ describe('event edit flows', () => {
 
     expect(eventApiMocks.adminUpdateTicketType).toHaveBeenCalledWith('event-1', 'ticket-1', {
       name: 'VIP座',
-      salePrice: 388,
+      salePrice: 38800,
       orderLimit: 4,
       accountLimit: 6,
       saleStartAt: '2026-06-01T10:00',
@@ -537,6 +645,36 @@ describe('event edit flows', () => {
     expect(harness.result.activeSessionId.value).toBe('session-1')
     expect(harness.result.editingTicketType.value).toBeNull()
     expect(harness.result.showTicketTypeDialog.value).toBe(true)
+
+    harness.cleanup()
+  })
+
+  it('copies ticket types after selecting target sessions', async () => {
+    const onCopied = vi.fn()
+    const sourceSession = ref(createSessionVO())
+    const targetSession = { ...createSessionVO(), id: 'session-2', name: '第二场' }
+    const harness = setupComposable(() =>
+      useTicketTypeCopyDialog({
+        eventId: 'event-1',
+        sourceSession,
+        allSessions: [sourceSession.value, targetSession],
+        onOpenChange: vi.fn(),
+        onCopied,
+      }),
+    )
+
+    await harness.result.handleCopyTicketTypes()
+    expect(toastMocks.error).toHaveBeenCalledWith('请选择目标场次')
+    expect(eventApiMocks.adminCopyTicketTypes).not.toHaveBeenCalled()
+
+    harness.result.setCopyTarget('session-2', true)
+    await harness.result.handleCopyTicketTypes()
+
+    expect(eventApiMocks.adminCopyTicketTypes).toHaveBeenCalledWith('event-1', {
+      sourceSessionId: 'session-1',
+      targetSessionIds: ['session-2'],
+    })
+    expect(onCopied).toHaveBeenCalled()
 
     harness.cleanup()
   })

@@ -31,6 +31,7 @@ export const TOAST_COPY = {
   // event basic
   eventCreated: '活动创建成功',
   eventCreateFailed: '创建失败',
+  eventSaved: '保存成功',
   eventUpdated: '更新成功',
   eventUpdateFailed: '更新失败',
 
@@ -43,6 +44,8 @@ export const TOAST_COPY = {
   // refund
   refundSubmitted: '退款申请已提交',
   refundFailed: '退款申请失败，请稍后重试',
+  adminRefundSucceeded: '退款成功',
+  adminRefundFailed: '退款失败，请稍后重试',
 
   // checkout
   paymentCreateFailed: '创建支付失败，请重试',

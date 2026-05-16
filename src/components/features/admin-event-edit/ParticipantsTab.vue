@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
-import { Label } from '@/components/common/ui/label'
-import { Checkbox } from '@/components/common/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -39,7 +37,7 @@ const {
   openParticipantDialog,
   handleAddParticipants,
   handleRemoveParticipant,
-  toggleParticipant,
+  setParticipantSelected,
   closeConfirm,
   handleConfirm,
 } = useEventParticipantsTab({
@@ -54,6 +52,11 @@ const handleParticipantDialogOpenChange = (value: boolean) => {
   if (!value && !isAddingParticipants.value) {
     showParticipantDialog.value = false
   }
+}
+
+const handleParticipantChecked = (participantId: string, event: Event) => {
+  const target = event.target as HTMLInputElement | null
+  setParticipantSelected(participantId, target?.checked === true)
 }
 </script>
 
@@ -125,32 +128,38 @@ const handleParticipantDialogOpenChange = (value: boolean) => {
           {{ participantSearchQuery ? '未找到匹配的参与方' : '暂无可用参与方' }}
         </div>
         <div v-else class="space-y-2">
-          <div
+          <label
             v-for="participant in pageData.records"
             :key="participant.id"
+            :for="`participant-option-${participant.id}`"
             class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/40"
-            @click="toggleParticipant(participant.id)"
           >
-            <Checkbox
+            <input
               :id="`participant-option-${participant.id}`"
+              type="checkbox"
+              class="sr-only"
               :checked="selectedParticipantIds.includes(participant.id)"
-              :aria-label="`选择参与方 ${participant.name}`"
-              @update:checked="() => toggleParticipant(participant.id)"
-              @click.stop
+              @change="handleParticipantChecked(participant.id, $event)"
             />
+            <span
+              class="grid size-4 shrink-0 place-items-center rounded-[4px] border border-input shadow-xs"
+              :class="
+                selectedParticipantIds.includes(participant.id)
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'bg-background text-transparent'
+              "
+              :aria-label="`选择参与方 ${participant.name}`"
+            >
+              <icon-lucide-check class="size-3.5" />
+            </span>
             <Avatar class="w-9 h-9">
               <AvatarImage :src="participant.avatarUrl" alt="参与者封面" />
               <AvatarFallback>
                 <icon-lucide-user class="h-4 w-4" />
               </AvatarFallback>
             </Avatar>
-            <Label
-              :for="`participant-option-${participant.id}`"
-              class="font-medium cursor-pointer"
-              @click.stop
-              >{{ participant.name }}</Label
-            >
-          </div>
+            <span class="font-medium">{{ participant.name }}</span>
+          </label>
         </div>
       </div>
 

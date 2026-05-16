@@ -40,8 +40,10 @@ const emit = defineEmits<{
     @row-click="handleOrderClick"
   >
     <template #toolbar>
-      <div class="flex flex-wrap items-center gap-2">
-        <div class="flex flex-wrap gap-2">
+      <div
+        class="-mx-1 min-w-0 flex-1 overflow-x-auto px-1 scrollbar-hide sm:mx-0 sm:overflow-visible sm:px-0"
+      >
+        <div class="flex w-max gap-2 sm:w-auto sm:flex-wrap">
           <Button
             v-for="item in ORDER_FILTER_OPTIONS"
             :key="item.key"
@@ -58,7 +60,7 @@ const emit = defineEmits<{
     </template>
 
     <template #cardTemplate="{ data }">
-      <div class="space-y-4">
+      <div class="space-y-3 sm:space-y-4">
         <OrderCard
           v-for="order in data"
           :key="order.id"

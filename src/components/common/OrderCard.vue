@@ -26,11 +26,11 @@ const linkTarget = computed(() => props.to || `/checkout/${props.id}`)
         v-if="eventCoverUrlSnapshot"
         :src="eventCoverUrlSnapshot"
         alt="订单封面"
-        class="aspect-[3/4] h-auto w-24 rounded-lg object-cover"
+        class="aspect-[3/4] h-auto w-20 rounded-lg object-cover sm:w-24"
       />
       <div
         v-else
-        class="flex aspect-[3/4] h-auto w-24 items-center justify-center rounded-lg bg-muted"
+        class="flex aspect-[3/4] h-auto w-20 items-center justify-center rounded-lg bg-muted sm:w-24"
       >
         <icon-lucide-ticket class="h-8 w-8 text-muted-foreground" />
       </div>
@@ -39,14 +39,19 @@ const linkTarget = computed(() => props.to || `/checkout/${props.id}`)
       <p class="line-clamp-2 text-sm font-bold text-foreground">{{ eventNameSnapshot }}</p>
     </template>
     <template #details>
-      <p v-if="venueNameSnapshot" class="flex items-center gap-1 text-xs text-muted-foreground">
-        <icon-lucide-map-pin class="h-3 w-3" />{{ venueNameSnapshot }}
+      <p
+        v-if="venueNameSnapshot"
+        class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
+      >
+        <icon-lucide-map-pin class="h-3 w-3 shrink-0" />
+        <span class="truncate">{{ venueNameSnapshot }}</span>
       </p>
       <p
         v-if="sessionStartAtSnapshot"
-        class="flex items-center gap-1 text-xs text-muted-foreground"
+        class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
       >
-        <icon-lucide-calendar class="h-3 w-3" />{{ formatDateTime(sessionStartAtSnapshot) }}
+        <icon-lucide-calendar class="h-3 w-3 shrink-0" />
+        <span class="truncate">{{ formatDateTime(sessionStartAtSnapshot) }}</span>
       </p>
     </template>
     <template #middle>
@@ -62,7 +67,7 @@ const linkTarget = computed(() => props.to || `/checkout/${props.id}`)
       </div>
     </template>
     <template #bottomLeft>
-      <p class="text-xs text-muted-foreground">{{ orderNo }}</p>
+      <p class="truncate text-xs text-muted-foreground">{{ orderNo }}</p>
     </template>
     <template #topRight>
       <Badge>{{ statusLabel }}</Badge>

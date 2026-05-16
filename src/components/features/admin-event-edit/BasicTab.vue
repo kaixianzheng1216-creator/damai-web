@@ -41,9 +41,9 @@ defineExpose({ save })
       <CardTitle>活动基本信息</CardTitle>
     </CardHeader>
     <CardContent>
-      <div class="flex gap-8 items-start">
+      <div class="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
         <!-- 左侧：封面（3:4 竖版） -->
-        <div class="shrink-0 w-60 space-y-2">
+        <div class="mx-auto w-full max-w-60 space-y-2 md:mx-0 md:w-60 md:shrink-0">
           <Label id="event-basic-cover-label">封面</Label>
           <ImageUpload
             v-model="basicForm.coverUrl"
@@ -55,8 +55,8 @@ defineExpose({ save })
         </div>
 
         <!-- 右侧：表单 -->
-        <div class="flex-1 min-w-0 space-y-4 pt-0.5">
-          <div class="grid grid-cols-2 gap-x-4 gap-y-4">
+        <div class="w-full min-w-0 space-y-4 pt-0.5">
+          <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
             <div class="space-y-2">
               <Label for="event-basic-name">活动名称 <span class="text-destructive">*</span></Label>
               <Input id="event-basic-name" v-model="basicForm.name" placeholder="请输入活动名称" />

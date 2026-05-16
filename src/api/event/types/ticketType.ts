@@ -7,6 +7,11 @@ export interface TicketInventoryVO {
   soldQty: number
 }
 
+export interface TicketAvailabilityVO {
+  ticketTypeId: string
+  availableQty: number
+}
+
 export interface TicketTypeVO {
   id: string
   eventId?: string

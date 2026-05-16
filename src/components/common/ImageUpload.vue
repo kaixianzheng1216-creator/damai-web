@@ -17,6 +17,7 @@ const props = withDefaults(
     previewAlt?: string
     uploadLabel?: string
     uploadMode?: 'front' | 'admin'
+    compact?: boolean
   }>(),
   {
     aspectClass: 'aspect-video',
@@ -35,6 +36,17 @@ const acceptedLabel = computed(() =>
     .filter(Boolean)
     .join('、'),
 )
+const compactAcceptedLabel = computed(() =>
+  props.acceptedTypes
+    .map((type) => type.split('/')[1]?.toUpperCase())
+    .filter(Boolean)
+    .join('/'),
+)
+const uploadHelpText = computed(() => {
+  const types = props.compact ? compactAcceptedLabel.value : acceptedLabel.value
+  const typeCopy = props.compact ? types : `支持 ${types} 格式`
+  return `${typeCopy}，最大 ${props.maxSizeMb}MB`
+})
 const uploadHelpId = `${useId()}-help`
 const uploadErrorId = `${useId()}-error`
 
@@ -170,11 +182,7 @@ const triggerUpload = () => {
       v-if="modelValue"
       :class="['relative group w-full overflow-hidden rounded-lg border bg-muted', resolvedAspect]"
     >
-      <img
-        :src="modelValue"
-        alt="已上传图片预览"
-        class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
-      />
+      <img :src="modelValue" alt="已上传图片预览" class="h-full w-full object-cover" />
       <div
         class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
@@ -193,31 +201,44 @@ const triggerUpload = () => {
       <div
         ref="dropZoneRef"
         :class="[
-          'flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 transition-all duration-300',
+          'group flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 transition-all duration-300',
           resolvedAspect,
           uploadError
             ? 'border-destructive bg-destructive/5'
             : isOverDropZone
               ? 'border-primary bg-primary/5'
-              : 'border-muted-foreground/25',
+              : 'border-muted-foreground/25 hover:border-primary hover:bg-primary/5',
         ]"
       >
         <Button
           variant="ghost"
           type="button"
-          class="h-auto w-full py-0 cursor-pointer"
+          class="h-full min-h-full w-full cursor-pointer rounded-[inherit] whitespace-normal px-3 py-0 hover:bg-transparent"
           @click="triggerUpload"
         >
-          <div class="flex flex-col items-center gap-2 text-center">
-            <div class="flex-center h-12 w-12 rounded-full bg-primary/10">
-              <icon-lucide-upload-cloud class="h-6 w-6 text-primary" />
+          <div
+            class="flex max-w-full flex-col items-center text-center"
+            :class="compact ? 'gap-1.5' : 'gap-2'"
+          >
+            <div
+              class="flex-center rounded-full bg-primary/10"
+              :class="compact ? 'h-10 w-10' : 'h-12 w-12'"
+            >
+              <icon-lucide-upload-cloud
+                class="text-primary"
+                :class="compact ? 'h-5 w-5' : 'h-6 w-6'"
+              />
             </div>
             <div class="space-y-1">
               <p class="text-sm font-medium text-foreground">
                 {{ isUploading ? '上传中...' : isOverDropZone ? '松开上传图片' : '点击或拖拽上传' }}
               </p>
-              <p :id="uploadHelpId" class="text-xs text-muted-foreground">
-                支持 {{ acceptedLabel }} 格式，最大 {{ maxSizeMb }}MB
+              <p
+                :id="uploadHelpId"
+                class="max-w-full px-2 text-xs leading-5 text-muted-foreground"
+                :class="compact ? 'truncate' : 'whitespace-normal break-words'"
+              >
+                {{ uploadHelpText }}
               </p>
             </div>
           </div>

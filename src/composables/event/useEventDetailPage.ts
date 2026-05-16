@@ -1,8 +1,8 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchPassengerPage } from '@/api/account'
-import { fetchEventDetailById } from '@/api/event'
+import { fetchEventDetailById, fetchTicketAvailability } from '@/api/event'
 import { createTicketOrder, fetchMyPurchaseCounts } from '@/api/trade'
 import { queryKeys } from '@/constants'
 import type { PassengerItem, PageResponsePassengerVO } from '@/api/account'
@@ -62,6 +62,14 @@ export const useEventDetailPage = () => {
     enabled: computed(() => userStore.isLoggedIn && ticketSelection.ticketTypeIds.value.length > 0),
   })
 
+  const ticketAvailabilityQuery = useQuery({
+    queryKey: queryKeys.event.ticketAvailability(ticketSelection.ticketTypeIds),
+    queryFn: () => fetchTicketAvailability(ticketSelection.ticketTypeIds.value),
+    enabled: computed(() => ticketSelection.ticketTypeIds.value.length > 0),
+    refetchInterval: 5000,
+    refetchIntervalInBackground: false,
+  })
+
   const userPurchasedCount = computed(() =>
     getUserPurchasedCount(
       ticketSelection.selectedTicketTypeId.value,
@@ -74,12 +82,26 @@ export const useEventDetailPage = () => {
     return limit > 0 && userPurchasedCount.value >= limit
   })
 
+  const selectedAvailableQty = computed(() => {
+    const ticketTypeId = ticketSelection.selectedTicketTypeId.value
+    if (!ticketTypeId) return undefined
+
+    return ticketAvailabilityQuery.data.value?.[ticketTypeId]?.availableQty
+  })
+
   const maxTicketQuantity = computed(() =>
     calculateMaxTicketQuantity({
       ticketType: ticketSelection.selectedTicketType.value,
       userPurchasedCount: userPurchasedCount.value,
+      availableQty: selectedAvailableQty.value,
     }),
   )
+
+  watch(maxTicketQuantity, (maxQuantity) => {
+    if (maxQuantity > 0 && ticketSelection.ticketQuantity.value > maxQuantity) {
+      ticketSelection.ticketQuantity.value = maxQuantity
+    }
+  })
 
   const createOrderMutation = useMutation({
     mutationFn: createTicketOrder,
@@ -99,7 +121,11 @@ export const useEventDetailPage = () => {
       return
     }
 
-    if (!detailQuery.data.value || !ticketSelection.selectedTicketType.value) {
+    if (
+      !detailQuery.data.value ||
+      !ticketSelection.selectedTicketType.value ||
+      maxTicketQuantity.value <= 0
+    ) {
       return
     }
 
@@ -118,7 +144,8 @@ export const useEventDetailPage = () => {
     if (
       !detailQuery.data.value ||
       !ticketSelection.selectedTicketType.value ||
-      !ticketSelection.canSubmitOrder.value
+      !ticketSelection.canSubmitOrder.value ||
+      maxTicketQuantity.value <= 0
     ) {
       return
     }
@@ -148,6 +175,7 @@ export const useEventDetailPage = () => {
     showPassengerModal,
     detailQuery,
     passengerListQuery,
+    ticketAvailabilityQuery,
     passengers,
     passengerKeyword,
     isUserAccountLimitReached,

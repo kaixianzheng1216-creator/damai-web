@@ -7,6 +7,7 @@ import {
   DialogDescription,
 } from '@/components/common/ui/dialog'
 import { Badge } from '@/components/common/ui/badge'
+import { Button } from '@/components/common/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card'
 import type { TicketOrderVO } from '@/api/trade'
 import { formatPrice, formatDateTime } from '@/utils/format'
@@ -16,10 +17,13 @@ defineProps<{
   order: TicketOrderVO | null
   open: boolean
   loading?: boolean
+  canRefund?: boolean
+  refundLoading?: boolean
 }>()
 
 const emit = defineEmits<{
   close: []
+  refund: []
 }>()
 </script>
 
@@ -45,9 +49,21 @@ const emit = defineEmits<{
           <CardHeader class="pb-3">
             <div class="flex items-center justify-between">
               <CardTitle class="text-base">基本信息</CardTitle>
-              <Badge :class="getOrderStatusBadgeClass(order.status)">
-                {{ order.statusLabel }}
-              </Badge>
+              <div class="flex items-center gap-2">
+                <Button
+                  v-if="canRefund"
+                  size="sm"
+                  variant="destructive"
+                  :disabled="loading || refundLoading"
+                  @click="emit('refund')"
+                >
+                  <icon-lucide-loader2 v-if="refundLoading" class="mr-1.5 h-4 w-4 animate-spin" />
+                  后台退款
+                </Button>
+                <Badge :class="getOrderStatusBadgeClass(order.status)">
+                  {{ order.statusLabel }}
+                </Badge>
+              </div>
             </div>
           </CardHeader>
           <CardContent class="space-y-3 text-sm">

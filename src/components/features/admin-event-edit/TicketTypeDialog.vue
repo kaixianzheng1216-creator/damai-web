@@ -78,13 +78,15 @@ const handleOpenChange = (value: boolean) => {
         </div>
         <div class="grid gap-2">
           <Label for="ticket-type-sale-price"
-            >售价（分） <span class="text-destructive">*</span></Label
+            >售价（元） <span class="text-destructive">*</span></Label
           >
           <Input
             id="ticket-type-sale-price"
-            v-model.number="form.salePrice"
+            v-model.number="form.salePriceYuan"
             type="number"
-            placeholder="请输入售价（单位：分）"
+            step="0.01"
+            min="0"
+            placeholder="请输入售价（单位：元）"
             :disabled="isSaving"
             :aria-invalid="Boolean(formError) || undefined"
           />

@@ -310,9 +310,39 @@ describe('P0 admin list page composables', () => {
     expect(harness.result.replyError.value).toBe('请输入回复内容')
 
     harness.result.replyContent.value = '已为你处理'
+    await nextTick()
+    expect(harness.result.replyError.value).toBe('')
+
     await harness.result.submitReply()
 
     expect(mockChatSendMessage).toHaveBeenCalledWith('work-order-1', '已为你处理')
     expect(harness.result.replyContent.value).toBe('')
+  })
+
+  it('closes admin work order detail before sending close request', async () => {
+    const workOrder = createWorkOrder()
+    tradeMocks.fetchAdminWorkOrderPage.mockResolvedValue(
+      createPage([workOrder]) satisfies PageResponseWorkOrderVO,
+    )
+    tradeMocks.fetchAdminWorkOrderById.mockResolvedValue({ ...workOrder, replies: [] })
+    tradeMocks.cancelAdminWorkOrder.mockResolvedValue(undefined)
+    const harness = setupComposable(() => useAdminWorkOrderListPage())
+    cleanup = harness.cleanup
+
+    await vi.waitFor(() => {
+      expect(tradeMocks.fetchAdminWorkOrderPage).toHaveBeenCalled()
+    })
+
+    harness.result.openDetail(workOrder)
+    await vi.waitFor(() => {
+      expect(tradeMocks.fetchAdminWorkOrderById).toHaveBeenCalledWith('work-order-1')
+    })
+
+    await harness.result.closeSelectedWorkOrder()
+
+    expect(harness.result.selectedWorkOrderId.value).toBeNull()
+    expect(mockChatUnsubscribe).toHaveBeenCalledWith('work-order-1')
+    expect(tradeMocks.cancelAdminWorkOrder.mock.calls[0]?.[0]).toBe('work-order-1')
+    expect(harness.invalidateSpy).toHaveBeenCalledWith({ queryKey: ['admin-work-order-list'] })
   })
 })

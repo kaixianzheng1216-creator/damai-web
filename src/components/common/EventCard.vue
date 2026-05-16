@@ -37,7 +37,7 @@ const linkTarget = computed(() => props.to || `/detail/${props.id}`)
       <img
         :src="coverUrl || ''"
         alt="活动封面"
-        class="aspect-[3/4] h-auto w-24 rounded-lg object-cover"
+        class="aspect-[3/4] h-auto w-20 rounded-lg object-cover sm:w-24"
       />
     </template>
     <template #title>
@@ -47,15 +47,18 @@ const linkTarget = computed(() => props.to || `/detail/${props.id}`)
       <p v-if="participantName" class="text-xs text-muted-foreground">
         {{ participantName }}
       </p>
-      <p class="flex items-center gap-1 text-xs text-muted-foreground">
-        <icon-lucide-map-pin class="h-3 w-3" />{{ cityNameSnapshot
-        }}<template v-if="cityNameSnapshot && venueNameSnapshot"> | </template
-        >{{ venueNameSnapshot }}
+      <p class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+        <icon-lucide-map-pin class="h-3 w-3 shrink-0" />
+        <span class="truncate">
+          {{ cityNameSnapshot }}<template v-if="cityNameSnapshot && venueNameSnapshot"> | </template
+          >{{ venueNameSnapshot }}
+        </span>
       </p>
-      <p class="flex items-center gap-1 text-xs text-muted-foreground">
-        <icon-lucide-calendar class="h-3 w-3" />{{
-          formatDateTimeRange(firstSessionStartAt, lastSessionEndAt)
-        }}
+      <p class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+        <icon-lucide-calendar class="h-3 w-3 shrink-0" />
+        <span class="truncate">
+          {{ formatDateTimeRange(firstSessionStartAt, lastSessionEndAt) }}
+        </span>
       </p>
     </template>
     <template #bottomLeft>

@@ -86,7 +86,10 @@ describe('eventDetailState', () => {
     })
 
     expect(calculateMaxTicketQuantity({ ticketType, userPurchasedCount: 1 })).toBe(2)
-    expect(calculateMaxTicketQuantity({ ticketType, userPurchasedCount: 3 })).toBe(1)
+    expect(calculateMaxTicketQuantity({ ticketType, userPurchasedCount: 3 })).toBe(0)
+    expect(calculateMaxTicketQuantity({ ticketType, userPurchasedCount: 0, availableQty: 1 })).toBe(
+      1,
+    )
     expect(getUserPurchasedCount('ticket-1', { 'ticket-1': 2 })).toBe(2)
     expect(getUserPurchasedCount(undefined, { 'ticket-1': 2 })).toBe(0)
   })

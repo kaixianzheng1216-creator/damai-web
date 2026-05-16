@@ -74,7 +74,7 @@ export const ORDER_FILTER_OPTIONS: OrderFilterOption[] = [
 export const ORDER_STATUS_BY_FILTER: Partial<Record<Exclude<OrderFilterKey, 'all'>, number>> = {
   pending: ORDER_STATUS.PENDING,
   paid: ORDER_STATUS.PAID,
-  done: ORDER_STATUS.REFUNDED,
+  done: ORDER_STATUS.CLOSED,
   cancel: ORDER_STATUS.CANCELLED,
   refunded: ORDER_STATUS.REFUNDED,
 }

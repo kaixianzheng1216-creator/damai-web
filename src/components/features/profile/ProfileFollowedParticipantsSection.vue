@@ -44,11 +44,11 @@ const handleUnfollowClick = (participantId: string) => {
     @row-click="(item) => viewParticipantDetail(item.participantId)"
   >
     <template #cardTemplate="{ data }">
-      <div class="space-y-4">
+      <div class="space-y-3 sm:space-y-4">
         <template v-for="item in data" :key="item.id">
           <CardListItem v-if="item.participant" :to="'/participant/' + item.participantId">
             <template #cover>
-              <Avatar class="aspect-square h-auto w-24">
+              <Avatar class="aspect-square h-auto w-20 sm:w-24">
                 <AvatarImage :src="item.participant.avatarUrl || ''" alt="参与者头像" />
                 <AvatarFallback>
                   <icon-lucide-user class="h-8 w-8" />
@@ -61,17 +61,16 @@ const handleUnfollowClick = (participantId: string) => {
               </p>
               <p
                 v-if="item.participant.followCount != null"
-                class="flex items-center gap-1 text-xs text-muted-foreground"
+                class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
               >
-                <icon-lucide-users class="h-3 w-3 shrink-0" />{{ item.participant.followCount }}
-                人关注
+                <icon-lucide-users class="h-3 w-3 shrink-0" />
+                <span class="truncate">{{ item.participant.followCount }} 人关注</span>
               </p>
             </template>
             <template #details>
-              <p class="flex items-center gap-1 text-xs text-muted-foreground">
-                <icon-lucide-clock class="h-3 w-3 shrink-0" />{{
-                  formatDateTime(item.createAt, '-')
-                }}
+              <p class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+                <icon-lucide-clock class="h-3 w-3 shrink-0" />
+                <span class="truncate">{{ formatDateTime(item.createAt, '-') }}</span>
               </p>
             </template>
             <template #bottomRight>

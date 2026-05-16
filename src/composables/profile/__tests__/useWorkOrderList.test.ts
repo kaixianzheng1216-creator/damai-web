@@ -179,6 +179,9 @@ describe('useWorkOrderList', () => {
     expect(mockChatSendMessage).not.toHaveBeenCalled()
 
     harness.result.replyContent.value = '已为你处理'
+    await nextTick()
+    expect(harness.result.replyError.value).toBe('')
+
     await harness.result.submitWorkOrderReply()
 
     expect(mockChatSendMessage).toHaveBeenCalledWith('wo-1', '已为你处理')

@@ -7,11 +7,22 @@ import type { PageResponseTicketOrderVO, TicketOrderVO } from '@/api/trade'
 const tradeMocks = vi.hoisted(() => ({
   fetchAdminOrderPage: vi.fn(),
   fetchAdminOrderById: vi.fn(),
+  createAdminRefund: vi.fn(),
+}))
+
+const toastMocks = vi.hoisted(() => ({
+  success: vi.fn(),
+  error: vi.fn(),
 }))
 
 vi.mock('@/api/trade', () => ({
   fetchAdminOrderPage: tradeMocks.fetchAdminOrderPage,
   fetchAdminOrderById: tradeMocks.fetchAdminOrderById,
+  createAdminRefund: tradeMocks.createAdminRefund,
+}))
+
+vi.mock('vue3-toastify', () => ({
+  toast: toastMocks,
 }))
 
 const createOrder = (id = 'order-1'): TicketOrderVO => ({
@@ -120,5 +131,49 @@ describe('useOrderListPage', () => {
 
     harness.result.closeDetail()
     expect(harness.result.showDetailDialog.value).toBe(false)
+  })
+
+  it('submits an admin refund and refreshes the selected order', async () => {
+    const order = createOrder('order-3')
+    const refundedOrder = {
+      ...order,
+      status: 4,
+      statusLabel: '已退款',
+      refundTime: '2026-05-01T11:00:00.000Z',
+    }
+    tradeMocks.fetchAdminOrderPage.mockResolvedValue(createPage([order]))
+    tradeMocks.fetchAdminOrderById.mockResolvedValueOnce(order).mockResolvedValueOnce(refundedOrder)
+    tradeMocks.createAdminRefund.mockResolvedValue({
+      id: 'refund-1',
+      refundNo: 'RFD-1',
+      paymentId: 'payment-1',
+      orderId: order.id,
+      userId: 'user-1',
+      amount: 188,
+      reason: '后台退款',
+      channel: 1,
+      channelLabel: '支付宝',
+      outRefundNo: 'RFD-1',
+      channelRefundNo: 'RFD-1',
+      status: 1,
+      statusLabel: '退款成功',
+      createAt: '2026-05-01T11:00:00.000Z',
+    })
+
+    const harness = setupOrderListPage()
+    cleanup = harness.cleanup
+
+    await harness.result.openDetail(order)
+    expect(harness.result.canRefundSelectedOrder.value).toBe(true)
+
+    harness.result.openRefundDialog()
+    expect(harness.result.showRefundDialog.value).toBe(true)
+
+    await harness.result.refundMutation.mutateAsync('后台退款')
+
+    expect(tradeMocks.createAdminRefund).toHaveBeenCalledWith(order.id, { reason: '后台退款' })
+    expect(toastMocks.success).toHaveBeenCalledWith('退款成功')
+    expect(harness.result.showRefundDialog.value).toBe(false)
+    expect(harness.result.selectedOrder.value).toEqual(refundedOrder)
   })
 })

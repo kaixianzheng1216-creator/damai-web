@@ -2,7 +2,7 @@
 import { defineAsyncComponent } from 'vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import SessionList from './SessionList.vue'
-import type { SessionVO } from '@/api/event'
+import type { SessionVO, TicketInventoryVO } from '@/api/event'
 import { useSessionsAndTicketsTab } from '@/composables/admin'
 
 const TicketTypeDialog = defineAsyncComponent(() => import('./TicketTypeDialog.vue'))
@@ -12,6 +12,7 @@ const TicketTypeCopyDialog = defineAsyncComponent(() => import('./TicketTypeCopy
 const props = defineProps<{
   eventId: string
   sessions: SessionVO[] | undefined
+  ticketInventories?: Record<string, TicketInventoryVO>
 }>()
 
 const emit = defineEmits<{
@@ -49,6 +50,7 @@ const {
     <SessionList
       :event-id="eventId"
       :sessions="sessions"
+      :ticket-inventories="ticketInventories"
       @updated="handleUpdated"
       @create-ticket-type="handleCreateTicketType"
       @edit-ticket-type="handleEditTicketType"

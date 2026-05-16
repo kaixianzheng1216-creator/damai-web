@@ -2,7 +2,12 @@ import { computed, ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
-import { fetchAdminEventById, offlineEvent, publishEvent } from '@/api/event/event'
+import {
+  fetchAdminEventById,
+  fetchAdminTicketInventories,
+  offlineEvent,
+  publishEvent,
+} from '@/api/event/event'
 import { queryKeys, TOAST_COPY } from '@/constants'
 
 export function useEventEditPage() {
@@ -32,9 +37,46 @@ export function useEventEditPage() {
   const eventParticipants = computed(() => eventDetailData.value?.participants ?? [])
   const eventInfo = computed(() => eventDetailData.value?.info)
   const sessionsData = computed(() => eventDetailData.value?.sessions)
+  const ticketTypeIds = computed(
+    () =>
+      sessionsData.value?.flatMap((session) =>
+        (session.ticketTypes ?? []).map((ticketType) => ticketType.id),
+      ) ?? [],
+  )
+  const ticketInventoriesQueryKey = computed(() =>
+    queryKeys.admin.eventTicketInventories(eventId.value, ticketTypeIds),
+  )
+
+  const { data: ticketInventoriesData } = useQuery({
+    queryKey: ticketInventoriesQueryKey,
+    queryFn: () =>
+      eventId.value && ticketTypeIds.value.length > 0
+        ? fetchAdminTicketInventories(eventId.value, ticketTypeIds.value)
+        : Promise.resolve({}),
+    enabled: computed(
+      () =>
+        currentTab.value === 'sessions-tickets' &&
+        Boolean(eventId.value) &&
+        ticketTypeIds.value.length > 0,
+    ),
+    refetchInterval: 5000,
+    refetchIntervalInBackground: false,
+  })
 
   const invalidateEventDetail = () => {
     queryClient.invalidateQueries({ queryKey: eventDetailQueryKey.value })
+  }
+
+  const invalidateTicketInventories = () => {
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.admin.eventTicketInventories(eventId.value),
+    })
+  }
+
+  const invalidateEventAfterSave = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.admin.list('events') })
+    invalidateEventDetail()
+    invalidateTicketInventories()
   }
 
   const requireEventId = () => {
@@ -48,7 +90,7 @@ export function useEventEditPage() {
     mutationFn: () => publishEvent(requireEventId()),
     onSuccess: () => {
       toast.success(TOAST_COPY.eventPublished)
-      invalidateEventDetail()
+      invalidateEventAfterSave()
     },
     onError: () => {
       toast.error(TOAST_COPY.eventPublishFailed)
@@ -59,7 +101,7 @@ export function useEventEditPage() {
     mutationFn: () => offlineEvent(requireEventId()),
     onSuccess: () => {
       toast.success(TOAST_COPY.eventOfflined)
-      invalidateEventDetail()
+      invalidateEventAfterSave()
     },
     onError: () => {
       toast.error(TOAST_COPY.eventOfflineFailed)
@@ -84,10 +126,13 @@ export function useEventEditPage() {
     eventParticipants,
     eventInfo,
     sessionsData,
+    ticketInventoriesData,
     publishMutation,
     offlineMutation,
     handleCreated,
     goBack,
     invalidateEventDetail,
+    invalidateTicketInventories,
+    invalidateEventAfterSave,
   }
 }

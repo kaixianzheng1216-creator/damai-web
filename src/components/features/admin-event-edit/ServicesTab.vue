@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { Button } from '@/components/common/ui/button'
 import { Label } from '@/components/common/ui/label'
-import { Checkbox } from '@/components/common/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/common/ui/radio-group'
 import {
   Dialog,
@@ -34,7 +33,7 @@ const {
   batchAddServicesMutation,
   openServiceDialog,
   handleSaveServices,
-  toggleService,
+  setServiceSelected,
   isServiceSelected,
   getSelectedOption,
   setSelectedOption,
@@ -53,6 +52,11 @@ const handleServiceDialogOpenChange = (value: boolean) => {
   if (!value && !isSavingServices.value) {
     showServiceDialog.value = false
   }
+}
+
+const handleServiceChecked = (service: Parameters<typeof setServiceSelected>[0], event: Event) => {
+  const target = event.target as HTMLInputElement | null
+  setServiceSelected(service, target?.checked === true)
 }
 </script>
 
@@ -109,12 +113,25 @@ const handleServiceDialogOpenChange = (value: boolean) => {
         <div v-else class="space-y-4">
           <div v-for="service in servicesData" :key="service.id" class="p-4 border rounded-lg">
             <div class="flex items-start gap-3">
-              <Checkbox
+              <input
                 :id="`service-option-${service.id}`"
+                type="checkbox"
+                class="sr-only"
                 :checked="isServiceSelected(service.id)"
-                :aria-label="`选择服务保障 ${service.name}`"
-                @update:checked="() => toggleService(service)"
+                @change="handleServiceChecked(service, $event)"
               />
+              <Label
+                :for="`service-option-${service.id}`"
+                class="mt-0.5 grid size-4 shrink-0 cursor-pointer place-items-center rounded-[4px] border border-input shadow-xs"
+                :class="
+                  isServiceSelected(service.id)
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'bg-background text-transparent'
+                "
+                :aria-label="`选择服务保障 ${service.name}`"
+              >
+                <icon-lucide-check class="size-3.5" />
+              </Label>
               <div class="flex-1">
                 <Label :for="`service-option-${service.id}`" class="font-medium">
                   {{ service.name }}
@@ -122,15 +139,13 @@ const handleServiceDialogOpenChange = (value: boolean) => {
                 <div v-if="service.options && service.options.length > 0" class="mt-3">
                   <RadioGroup
                     :value="getSelectedOption(service.id) || ''"
-                    @update:value="(v: string) => setSelectedOption(service.id, v)"
-                    :disabled="!isServiceSelected(service.id)"
+                    @update:value="(v: string) => setSelectedOption(service, v)"
                     class="space-y-2"
                   >
                     <div
                       v-for="option in service.options"
                       :key="option.id"
                       class="flex items-center gap-2 p-3 border rounded-lg"
-                      :class="!isServiceSelected(service.id) ? 'opacity-50' : ''"
                     >
                       <RadioGroupItem
                         :value="option.id"

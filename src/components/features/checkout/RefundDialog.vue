@@ -14,6 +14,9 @@ import TextareaField from '@/components/common/TextareaField.vue'
 const props = defineProps<{
   open: boolean
   loading?: boolean
+  title?: string
+  description?: string
+  submitText?: string
 }>()
 
 const emit = defineEmits<{
@@ -61,8 +64,10 @@ const handleClose = () => {
   <Dialog :open="open" @update:open="(val) => !val && handleClose()">
     <DialogContent class="w-[calc(100vw-2rem)] max-w-md sm:max-w-md" :show-close-button="!loading">
       <DialogHeader>
-        <DialogTitle>申请退款</DialogTitle>
-        <DialogDescription>请填写退款原因，提交后将进入退款审核流程。</DialogDescription>
+        <DialogTitle>{{ title ?? '申请退款' }}</DialogTitle>
+        <DialogDescription>
+          {{ description ?? '请填写退款原因，提交后将进入退款审核流程。' }}
+        </DialogDescription>
       </DialogHeader>
       <div class="space-y-3">
         <TextareaField
@@ -84,7 +89,7 @@ const handleClose = () => {
         >
         <Button type="button" :disabled="loading" @click="handleSubmit">
           <icon-lucide-loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
-          提交申请
+          {{ submitText ?? '提交申请' }}
         </Button>
       </DialogFooter>
     </DialogContent>
