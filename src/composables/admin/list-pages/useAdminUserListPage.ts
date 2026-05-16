@@ -1,5 +1,6 @@
 import { computed, ref, type Ref, type ComputedRef } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue3-toastify'
 import { fetchAdminUserPage, updateAdminUserStatus } from '@/api/account/user'
 import type { UserVO } from '@/api/account'
 import { queryKeys, USER_STATUS } from '@/constants'
@@ -59,6 +60,9 @@ export function useAdminUserListPage(): {
     mutationFn: ({ id, status }: { id: string; status: number }) =>
       updateAdminUserStatus(id, status as 0 | 1),
     onSuccess: invalidate,
+    onError: () => {
+      toast.error('用户状态更新失败')
+    },
   })
 
   const toggleStatus = (row: UserVO) => {

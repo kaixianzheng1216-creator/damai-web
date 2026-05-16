@@ -144,6 +144,17 @@ const getColumnStyle = (column: Column<TData, unknown>): CSSProperties => {
     maxWidth: width,
   }
 }
+
+const getCellClass = (cell: Cell<TData, unknown>) => [
+  'truncate !px-4 !py-3',
+  cell.column.id === ACTIONS_COLUMN_ID ? 'relative z-10 overflow-visible' : '',
+]
+
+const handleCellClick = (event: MouseEvent, cell: Cell<TData, unknown>) => {
+  if (cell.column.id === ACTIONS_COLUMN_ID) {
+    event.stopPropagation()
+  }
+}
 </script>
 
 <template>
@@ -215,7 +226,11 @@ const getColumnStyle = (column: Column<TData, unknown>): CSSProperties => {
                       aria-hidden="true"
                       class="!px-0 !py-3"
                     />
-                    <TableCell class="truncate !px-4 !py-3" :style="getColumnStyle(cell.column)">
+                    <TableCell
+                      :class="getCellClass(cell)"
+                      :style="getColumnStyle(cell.column)"
+                      @click="handleCellClick($event, cell)"
+                    >
                       <Tooltip v-if="getCellTitle(cell)">
                         <TooltipTrigger as-child>
                           <span class="block truncate">

@@ -38,7 +38,7 @@ defineExpose({ save })
     <CardHeader>
       <CardTitle>详情信息</CardTitle>
     </CardHeader>
-    <CardContent class="space-y-6 max-w-3xl">
+    <CardContent class="space-y-6">
       <!-- 活动描述 -->
       <div class="space-y-2">
         <Label id="event-info-description-label">活动描述</Label>

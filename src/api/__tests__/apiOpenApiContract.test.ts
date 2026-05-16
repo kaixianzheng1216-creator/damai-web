@@ -7,6 +7,7 @@ import {
   login,
   sendVerifyCode,
   updateAdminStatus,
+  updateAdminUserStatus,
   type AdminCreateRequest,
   type LoginParams,
   type LoginResponse,
@@ -720,6 +721,24 @@ describe('API OpenAPI contracts', () => {
       body: 0,
       requestBodyType: 'integer',
       responseSchema: 'ApiResponseVoid',
+    })
+    expect(requestMock.put.mock.calls[0][2]).toMatchObject({
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    vi.clearAllMocks()
+    await updateAdminUserStatus('202', 0)
+    expectRequestMatchesOpenApi({
+      service: 'account',
+      method: 'put',
+      docPath: '/admin/user/{id}/status',
+      pathParams: { id: '202' },
+      body: 0,
+      requestBodyType: 'integer',
+      responseSchema: 'ApiResponseVoid',
+    })
+    expect(requestMock.put.mock.calls[0][2]).toMatchObject({
+      headers: { 'Content-Type': 'application/json' },
     })
   })
 

@@ -2,7 +2,9 @@ import { computed, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 import { fetchMyTicketById, type TicketVO } from '@/api/ticket'
-import { queryKeys } from '@/constants'
+import { queryKeys, TICKET_STATUS } from '@/constants'
+
+export const TICKET_DETAIL_STATUS_REFETCH_INTERVAL_MS = 5000
 
 export function useTicketDetailPage(): {
   ticketId: ComputedRef<string>
@@ -30,6 +32,13 @@ export function useTicketDetailPage(): {
     queryKey: queryKeys.ticket.detail(ticketId),
     queryFn: () => fetchMyTicketById(ticketId.value),
     enabled: hasTicketId,
+    refetchInterval: (query) => {
+      const currentStatus = (query.state.data as TicketVO | undefined)?.status
+      return currentStatus === TICKET_STATUS.UNUSED
+        ? TICKET_DETAIL_STATUS_REFETCH_INTERVAL_MS
+        : false
+    },
+    refetchIntervalInBackground: false,
   })
 
   const isEmpty = computed(() => !hasTicketId.value)

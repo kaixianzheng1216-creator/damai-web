@@ -1,15 +1,17 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
 import DataTableCrud from '@/components/admin/DataTableCrud.vue'
+import { createUserColumns } from '@/components/admin/columns/userColumns'
 import CheckoutPaymentPanel from '@/components/features/checkout/CheckoutPaymentPanel.vue'
 import OrderDetailDialog from '@/components/features/admin-order/OrderDetailDialog.vue'
 import SearchFilterPanel from '@/components/features/search/SearchFilterPanel.vue'
 import ProfileInfoSection from '@/components/features/profile/ProfileInfoSection.vue'
+import type { UserVO } from '@/api/account'
 import type { TicketOrderVO } from '@/api/trade'
 import type { ProfileInfo } from '@/api/account'
-import { PAYMENT_CHANNELS, PAYMENT_COPY, PAYMENT_METHODS } from '@/constants'
+import { PAYMENT_CHANNELS, PAYMENT_COPY, PAYMENT_METHODS, USER_STATUS } from '@/constants'
 
 const findButtonByText = (wrapper: VueWrapper, text: string) => {
   const button = wrapper.findAll('button').find((item) => item.text().includes(text))
@@ -62,6 +64,33 @@ describe('component smoke coverage', () => {
 
     await wrapper.find('.cursor-pointer').trigger('click')
     expect(wrapper.emitted('row-click')?.[0]).toEqual([row])
+  })
+
+  it('keeps admin table action buttons clickable without triggering row-click', async () => {
+    const toggleStatus = vi.fn()
+    const user: UserVO = {
+      id: 'user-1',
+      username: 'test_user',
+      mobile: '13800138000',
+      avatarUrl: '',
+      status: USER_STATUS.NORMAL,
+      statusLabel: '正常',
+    }
+
+    const wrapper = mount(DataTableCrud<UserVO>, {
+      props: {
+        columns: createUserColumns({ toggleStatus }),
+        data: [user],
+        title: '用户管理',
+        showPagination: false,
+        showCreateButton: false,
+      },
+    })
+
+    await findButtonByText(wrapper, '封禁').trigger('click')
+
+    expect(toggleStatus).toHaveBeenCalledWith(user)
+    expect(wrapper.emitted('row-click')).toBeUndefined()
   })
 
   it('emits checkout payment actions from visible controls', async () => {

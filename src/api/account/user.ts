@@ -18,4 +18,6 @@ export const fetchAdminUserById = (id: string): Promise<UserVO> =>
   request.get<UserVO>(`/api/account/admin/user/${id}`)
 
 export const updateAdminUserStatus = (id: string, status: 0 | 1): Promise<void> =>
-  request.put<void>(`/api/account/admin/user/${id}/status`, status)
+  request.put<void>(`/api/account/admin/user/${id}/status`, status, {
+    headers: { 'Content-Type': 'application/json' },
+  })

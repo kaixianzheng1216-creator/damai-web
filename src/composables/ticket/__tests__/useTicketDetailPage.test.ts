@@ -2,7 +2,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, effectScope, type EffectScope } from 'vue'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
 import { fetchMyTicketById, type TicketVO } from '@/api/ticket'
-import { useTicketDetailPage } from '../useTicketDetailPage'
+import { TICKET_STATUS } from '@/constants'
+import {
+  TICKET_DETAIL_STATUS_REFETCH_INTERVAL_MS,
+  useTicketDetailPage,
+} from '../useTicketDetailPage'
 
 const routerMocks = vi.hoisted(() => ({
   route: { params: { id: 'ticket-1' } },
@@ -18,7 +22,7 @@ vi.mock('@/api/ticket', () => ({
   fetchMyTicketById: vi.fn(),
 }))
 
-const createTicket = (): TicketVO => ({
+const createTicket = (overrides: Partial<TicketVO> = {}): TicketVO => ({
   id: 'ticket-1',
   ticketNo: 'TICKET-1',
   orderId: 'order-1',
@@ -34,11 +38,12 @@ const createTicket = (): TicketVO => ({
   ticketTypeNameSnapshot: '看台',
   passengerId: 'passenger-1',
   passengerNameSnapshot: '张三',
-  status: 1,
+  status: TICKET_STATUS.UNUSED,
   statusLabel: '未使用',
   qrCodeToken: 'qr-token',
   qrCodeBase64: 'qr',
   createAt: '2026-04-28T10:00:00.000Z',
+  ...overrides,
 })
 
 function setupTicketDetail() {
@@ -76,6 +81,7 @@ let cleanup: (() => void) | undefined
 afterEach(() => {
   cleanup?.()
   cleanup = undefined
+  vi.useRealTimers()
   vi.clearAllMocks()
   routerMocks.route.params.id = 'ticket-1'
 })
@@ -102,5 +108,26 @@ describe('useTicketDetailPage', () => {
 
     harness.result.goBack()
     expect(routerMocks.back).toHaveBeenCalled()
+  })
+
+  it('polls while the ticket is unused and stops after a terminal status', async () => {
+    vi.useFakeTimers()
+    vi.mocked(fetchMyTicketById)
+      .mockResolvedValueOnce(createTicket())
+      .mockResolvedValueOnce(createTicket({ status: TICKET_STATUS.USED, statusLabel: '已使用' }))
+    const harness = setupTicketDetail()
+    cleanup = harness.cleanup
+
+    await vi.waitFor(() => {
+      expect(fetchMyTicketById).toHaveBeenCalledTimes(1)
+    })
+
+    await vi.advanceTimersByTimeAsync(TICKET_DETAIL_STATUS_REFETCH_INTERVAL_MS)
+    await vi.waitFor(() => {
+      expect(fetchMyTicketById).toHaveBeenCalledTimes(2)
+    })
+
+    await vi.advanceTimersByTimeAsync(TICKET_DETAIL_STATUS_REFETCH_INTERVAL_MS * 2)
+    expect(fetchMyTicketById).toHaveBeenCalledTimes(2)
   })
 })

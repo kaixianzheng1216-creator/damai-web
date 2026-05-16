@@ -11,6 +11,7 @@ export interface CrudColumnActions<T> {
 }
 
 export const stopAndRun = (event: Event, action: () => void) => {
+  event.preventDefault()
   event.stopPropagation()
   action()
 }
@@ -19,10 +20,28 @@ export const actionButton = (
   label: string,
   variant: 'default' | 'outline' | 'destructive',
   onClick: (event: Event) => void,
-) => h(Button, { size: 'sm', variant, onClick }, () => label)
+) =>
+  h(
+    Button,
+    {
+      type: 'button',
+      size: 'sm',
+      variant,
+      class: 'relative z-10 pointer-events-auto',
+      onClick: (event: Event) => onClick(event),
+    },
+    () => label,
+  )
 
 export const actionGroup = (buttons: (VNode | null)[]) =>
-  h('div', { class: 'flex items-center gap-2' }, buttons.filter(Boolean))
+  h(
+    'div',
+    {
+      class: 'relative z-10 flex items-center gap-2',
+      onClick: (event: Event) => event.stopPropagation(),
+    },
+    buttons.filter(Boolean),
+  )
 
 export const editDeleteActions = <T>(row: T, { openEdit, handleDelete }: CrudColumnActions<T>) =>
   actionGroup([
